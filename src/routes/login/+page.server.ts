@@ -1,12 +1,18 @@
-import { redirect } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { supabase } from "$lib/supabase";
 
 export const actions = {
-  login: async ({ cookies, url, request }) => {
+  login: async ({ cookies, request }) => {
     const formData = await request.formData();
     const email = import.meta.env.VITE_LOGIN_EMAIL;
     const password = formData.get("password") as string;
+
+    if (password.length < 6) {
+      return fail(422, {
+        error: "Passwords must be at least 6 characters long",
+      });
+    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -14,34 +20,23 @@ export const actions = {
     });
 
     if (error) {
-      console.error(error);
-      // redirect(303, "/auth/error");
+      return fail(422, {
+        error: error.message,
+      });
     } else {
       cookies.set("logged_in", "true", { path: "/" });
-      redirect(303, "/vocab");
+      throw redirect(303, "/vocab");
     }
   },
   logout: async ({ cookies }) => {
     const { error } = await supabase.auth.signOut();
     cookies.delete("logged_in", { path: "/" });
-    redirect(303, "/");
+    throw redirect(303, "/");
   },
 } satisfies Actions;
 
-// async function handleSubmit() {
-//   // Handle login logic here
-//   // console.log("Username:", username);
-//   // console.log("Password:", password);
-
-//   const { error } = await supabase.auth.signInWithPassword({
-//     email,
-//     password,
-//   });
-
-//   if (error) {
-//     console.error("Error logging in:", error.message);
-//   } else {
-//     console.log("Login successful");
-//     goto("/vocab");
-//   }
-// }
+export function load({ cookies }) {
+  if (cookies.get("logged_in")) {
+    redirect(308, `/vocab`);
+  }
+}

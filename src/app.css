@@ -1,4 +1,17 @@
-/* Ensure Tailwind CSS is installed and configured */
+@import "$lib/styles/fonts.css";
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+img {
+  -webkit-user-drag: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
