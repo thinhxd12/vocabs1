@@ -1,7 +1,8 @@
 <script lang="ts">
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
-  import { showLayout } from "$lib/store/layout";
+  import { showLayout } from "$lib/store/layoutstore";
+
   let { children } = $props();
 </script>
 
@@ -10,13 +11,13 @@
     ? 'flex-row-reverse'
     : ''} items-end justify-center"
 >
-  <section class="w-[402px] h-full flex flex-col">
-    <div class="flex-1 bg-blue-400">
+  <section class="w-main h-full flex flex-col items-center">
+    <div class="flex-1">
       {@render children()}
     </div>
     <Nav />
   </section>
-  <div class="mb-36">
+  <div class="mb-[42px]">
     <Menu />
   </div>
   {#if $showLayout}

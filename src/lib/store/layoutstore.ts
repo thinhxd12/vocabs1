@@ -1,9 +1,7 @@
 import { writable } from "svelte/store";
+import type { LoginImageType } from "../../types";
 
-// export const layoutStore = writable<LayoutStoreType>({
-//   showLayout: false,
-//   showBookmark: false,
-// });
+// export const layoutImage = writable<LoginImageType | undefined>(undefined);
 
 // type LayoutStoreType = {
 //   showLayout: boolean;

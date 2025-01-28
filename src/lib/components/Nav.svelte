@@ -1,13 +1,14 @@
 <script>
   import { page } from "$app/stores";
+  import { isAutoPlay } from "$lib/store/navstore";
   import { format } from "date-fns";
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let totalMemories = 3653;
 </script>
 
-<nav class="w-[402px] h-[42px] flex">
+<nav class="w-content h-[42px] flex">
   <div
-    class="flex h-36 w-12 flex-col items-center justify-between rounded-3 bg-black/60 shadow-md shadow-black/30 backdrop-blur-md"
+    class="flex h-36 w-12 flex-col items-center justify-between rounded-3 bg-black/60 shadow-md shadow-black/45 backdrop-blur-md"
   >
     <div class="flex flex-col justify-center text-center">
       <span class="text-9 leading-10 text-white"> 13 </span>
@@ -29,9 +30,9 @@
     class:active={$page.url.pathname === "/schedule"}
     class="btn-nav">Pecunia non olet.Money does not stink.</a
   >
-  <a href="/login" class="btn-nav">Memento mori.Rem'ber you will die.</a>
+  <a href="/about" class="btn-nav">Memento mori.Rem'ber you will die.</a>
   <div
-    class="ml-3 flex h-36 flex-col items-center justify-center rounded-3 bg-black/60 px-1 text-white shadow-sm shadow-black/30 backdrop-blur-md"
+    class="ml-3 flex h-36 flex-col items-center justify-center rounded-3 bg-black/60 px-1 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >
     <span class="font-tupa text-18 font-600 leading-15">
       {Math.floor(totalMemories / 100) < 10
@@ -69,19 +70,47 @@
     </div>
   </a>
 
-  <div></div>
+  <button
+    class={$isAutoPlay ? "btn-play" : "btn-pause"}
+    onclick={() => ($isAutoPlay = !$isAutoPlay)}
+  >
+    <!-- <div
+      class={`absolute left-0 top-0 z-10 h-full w-full ${navStore.playButton ? "bg-[url('/images/sunrise.webp')]" : "bg-[url('/images/sunset.webp')]"} bg-cover`}
+      style="background-size: 90px 36px;"
+    ></div> -->
+
+    <!-- <Show when={navStore.listCount}>
+      <div
+        class={`absolute left-0 top-0 z-30 h-full bg-[url('/images/sunrise.webp')] bg-cover transition-all duration-300`}
+        style={{
+          width: `${Math.floor(((navStore.listCount + 1) / navStore.listContent.length) * 90)}px`,
+          "box-shadow": "2px 0px 6px rgba(0, 0, 0, 0.6)",
+          "border-right": "0.5px solid #000000",
+          "background-size": "90px 36px",
+        }}
+      ></div>
+    </Show> -->
+  </button>
 </nav>
 
 <style>
   .btn-nav {
-    @apply ml-3 flex h-36 flex-1 items-center justify-center overflow-hidden rounded-3 text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/30 backdrop-blur-md transition hover:bg-black/20;
+    @apply ml-3 flex h-36 flex-1 items-center justify-center overflow-hidden rounded-3 text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/45 backdrop-blur-md transition hover:bg-black/20;
   }
   .btn-nav.active {
     @apply bg-black/20;
   }
 
   .btn-weather {
-    @apply relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/30 bg-[url(src/lib/assets/openmeteo/weather/partly-cloudy.webp)] bg-cover;
+    @apply relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(src/lib/assets/openmeteo/weather/partly-cloudy.webp)] bg-cover;
+  }
+
+  .btn-play {
+    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(src/lib/assets/images/sunrise.webp)] bg-cover;
+  }
+
+  .btn-pause {
+    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(src/lib/assets/images/sunset.webp)] bg-cover;
   }
 
   .marquee-container {

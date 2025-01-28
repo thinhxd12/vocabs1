@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { showLayout } from "$lib/store/layout";
+  import { showLayout } from "$lib/store/layoutstore";
   import Icon from "@iconify/svelte";
 </script>
 
 <div class="flex flex-col items-center justify-center w-30">
-  <button class="btn-menu">
-    <Icon icon="garden:exit-stroke-16" width="15" height="15" />
-  </button>
+  <form method="POST" action="/login?/logout">
+    <button class="btn-menu">
+      <Icon icon="garden:exit-stroke-16" width="15" height="15" />
+    </button>
+  </form>
 
   <button class="btn-menu">
     <span>700</span>

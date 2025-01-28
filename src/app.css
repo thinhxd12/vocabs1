@@ -15,3 +15,15 @@ body {
   scroll-behavior: smooth;
   box-sizing: border-box;
 }
+
+.w-main {
+  width: 402px;
+}
+
+.w-content {
+  width: 378px;
+}
+
+.layout-white {
+  @apply bg-white/35 shadow-sm shadow-black/45 backdrop-blur-xl;
+}
