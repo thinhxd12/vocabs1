@@ -1,6 +1,6 @@
 import { DrizzleError, eq } from "drizzle-orm";
 import { db } from "../index";
-import { bookmarkTable, SelectVocab, vocabTable } from "../schema";
+import { bookmarkTable, type SelectVocab, vocabTable } from "../schema";
 
 export const deleteVocabById = async (id: SelectVocab["id"]) => {
   try {

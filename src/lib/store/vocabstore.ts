@@ -1,6 +1,7 @@
 import type { SelectVocab } from "$lib/db/schema";
 import { writable } from "svelte/store";
 import type { VocabularySearchType } from "../../types";
+import type { SvelteComponent } from "svelte";
 
 const item = {
   id: "0194071f-90f8-75d6-85e1-a3a17c972910",
@@ -68,3 +69,5 @@ const item = {
 export const renderWord = writable<SelectVocab | undefined>(undefined);
 export const searchTerm = writable<string>("");
 export const searchResults = writable<VocabularySearchType[]>([]);
+export const modal = writable<any>(null);
+// export const showEdit = writable<boolean>(false);

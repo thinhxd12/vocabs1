@@ -1,9 +1,8 @@
 <script>
   import { page } from "$app/stores";
-  import { isAutoPlay } from "$lib/store/navstore";
+  import { isAutoPlay, totalMemories } from "$lib/store/navstore";
   import { format } from "date-fns";
   const todayDate = format(new Date(), "yyyy-MM-dd");
-  let totalMemories = 3653;
 </script>
 
 <nav class="w-content h-[42px] flex">
@@ -35,14 +34,14 @@
     class="ml-3 flex h-36 flex-col items-center justify-center rounded-3 bg-black/60 px-1 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >
     <span class="font-tupa text-18 font-600 leading-15">
-      {Math.floor(totalMemories / 100) < 10
-        ? "0" + Math.floor(totalMemories / 100)
-        : Math.floor(totalMemories / 100)}
+      {Math.floor($totalMemories / 100) < 10
+        ? "0" + Math.floor($totalMemories / 100)
+        : Math.floor($totalMemories / 100)}
     </span>
     <span class="font-tupa text-18 font-600 leading-18">
-      {totalMemories % 100 < 10
-        ? "0" + (totalMemories % 100)
-        : totalMemories % 100}
+      {$totalMemories % 100 < 10
+        ? "0" + ($totalMemories % 100)
+        : $totalMemories % 100}
     </span>
   </div>
   <a href="/vocab" class="btn-weather">

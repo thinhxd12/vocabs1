@@ -2,8 +2,10 @@
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
   import { showLayout } from "$lib/store/layoutstore";
+  import { totalMemories } from "$lib/store/navstore.js";
 
-  let { children } = $props();
+  let { data, children } = $props();
+  $totalMemories = data.totalMemories;
 </script>
 
 <main

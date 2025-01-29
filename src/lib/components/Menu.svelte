@@ -1,6 +1,11 @@
 <script lang="ts">
   import { showLayout } from "$lib/store/layoutstore";
+  import { modal } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
+  import Modal, { bind } from "svelte-simple-modal";
+  import Translate from "$lib/components/Translate.svelte";
+
+  const showModalTranslate = () => modal.set(Translate);
 </script>
 
 <div class="flex flex-col items-center justify-center w-30">
@@ -25,7 +30,7 @@
       ><Icon icon="ri:layout-left-line" width="15" height="15" /></button
     >
   {/if}
-  <button class="btn-menu"
+  <button class="btn-menu" onclick={showModalTranslate}
     ><Icon icon="ri:translate" width="15" height="15" /></button
   >
   <button class="btn-menu"

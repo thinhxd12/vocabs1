@@ -259,3 +259,12 @@ export const findTextBookmark = async (text: string) => {
     console.log(error);
   }
 };
+
+export const getTotalMemories = async () => {
+  try {
+    const length = await db.select({ count: count() }).from(memoriesTable);
+    return length[0].count;
+  } catch (error) {
+    return 0;
+  }
+};

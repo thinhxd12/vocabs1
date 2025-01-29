@@ -27,3 +27,11 @@ body {
 .layout-white {
   @apply bg-white/35 shadow-sm shadow-black/45 backdrop-blur-xl;
 }
+
+.layout-light {
+  @apply border-y border-b-white/15 border-t-white/25 bg-black/15 shadow-md shadow-black/45 backdrop-blur-xl;
+}
+
+.layout-dark {
+  @apply border-y border-b-white/10 border-t-white/15 bg-black/45 shadow-md shadow-black/45 backdrop-blur-xl;
+}
