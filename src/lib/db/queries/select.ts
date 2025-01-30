@@ -71,6 +71,7 @@ export const getMemoriesByWord = async (text: SelectMemories["word"]) => {
     }
     return {
       status: false,
+      message: `Not found!`,
     };
   } catch (error) {
     return {

@@ -1,11 +1,9 @@
 <script lang="ts">
   import { showLayout } from "$lib/store/layoutstore";
-  import { modal } from "$lib/store/vocabstore";
+  import { modal, showEdit, showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
-  import Modal, { bind } from "svelte-simple-modal";
   import Translate from "$lib/components/Translate.svelte";
-
-  const showModalTranslate = () => modal.set(Translate);
+  import { AlertDialog } from "bits-ui";
 </script>
 
 <div class="flex flex-col items-center justify-center w-30">
@@ -30,13 +28,14 @@
       ><Icon icon="ri:layout-left-line" width="15" height="15" /></button
     >
   {/if}
-  <button class="btn-menu" onclick={showModalTranslate}
+
+  <button class="btn-menu" onclick={() => ($showTranslate = true)}
     ><Icon icon="ri:translate" width="15" height="15" /></button
   >
   <button class="btn-menu"
     ><Icon icon="cuida:image-outline" width="15" height="15" /></button
   >
-  <button class="btn-menu"
+  <button class="btn-menu" onclick={() => ($showEdit = true)}
     ><Icon icon="hugeicons:pencil-edit-02" width="15" height="15" /></button
   >
   <button class="btn-menu"

@@ -1,20 +1,15 @@
 <script lang="ts">
   import Definition from "$lib/components/Definition.svelte";
   import Flipcard from "$lib/components/Flipcard.svelte";
-  import ModalCloseButton from "$lib/components/ModalCloseButton.svelte";
   import Translate from "$lib/components/Translate.svelte";
+  import Edit from "$lib/components/Edit.svelte";
   import type { SelectVocab } from "$lib/db/schema";
-  import { showLayout } from "$lib/store/layoutstore";
-  import {
-    renderWord,
-    searchTerm,
-    searchResults,
-    modal,
-  } from "$lib/store/vocabstore";
+  import { renderWord, searchTerm, searchResults } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
-  import { getContext, untrack } from "svelte";
-  import Modal, { bind } from "svelte-simple-modal";
+  import { untrack } from "svelte";
+  import { totalMemories } from "$lib/store/navstore";
 
+  let { data, form } = $props();
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
   const trigger = debounce(async (str: string) => {
@@ -99,12 +94,12 @@
       const wordData = (await response.json()) as SelectVocab;
       if (wordData) {
         $renderWord = wordData;
-        // if (wordData.number > 1) {
-        //   await fetch(`/server/checkword?id=${id}`);
-        // } else {
-        //   $totalMemories += 1;
-        //   await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
-        // }
+        if (wordData.number > 1) {
+          await fetch(`/server/checkword?id=${id}`);
+        } else {
+          $totalMemories += 1;
+          await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
+        }
       }
     }
     $searchTerm = "";
@@ -138,8 +133,6 @@
     paused0 = false;
     flipNumber = $renderWord!.number - 1;
   }
-
-  let modalTransition = { duration: 50 };
 </script>
 
 <audio src={src0} bind:paused={paused0}></audio>
@@ -201,26 +194,8 @@
     </div>
   {/if}
 
-  {#if $showLayout}
-    <Modal
-      show={$modal}
-      unstyled={true}
-      classBg="fixed top-0 left-0 w-screen h-screen bg-black/30"
-      classWindowWrap="w-full h-full flex justify-end"
-      classWindow="relative layout-light mt-[48px] mr-12 h-[calc(100vh-96px)] overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none bg-red-500 w-content "
-      closeButton={ModalCloseButton}
-    />
-  {:else}
-    <Modal
-      show={$modal}
-      unstyled={true}
-      classBg="fixed top-0 left-0 w-screen h-screen bg-black/30"
-      classWindowWrap="w-full h-full flex justify-center"
-      classWindow="relative layout-light mt-[48px] mr-30 h-[calc(100vh-96px)] overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none bg-red-500 w-content "
-      closeButton={ModalCloseButton}
-      transitionBgProps={modalTransition}
-    />
-  {/if}
+  <Translate formResult={form} />
+  <Edit />
 </div>
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />

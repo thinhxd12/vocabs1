@@ -1,5 +1,5 @@
 // import { rgbaToThumbHash } from "thumbhash";
-import type { LoginImageType } from "../types";
+import type { LoginImageType } from "./types";
 // import sharp from "sharp";
 
 export const getSpotlightImage_v4 = async (fetch: any, setHeaders: any) => {
@@ -49,3 +49,23 @@ export function base64ToUint8Array(base64String: string) {
   }
   return uint8Array;
 }
+
+export const getTranslationArr = (str: string) => {
+  const breakpoint = /\s+-/g;
+  let means = str.split(breakpoint).filter((item) => item);
+  const matchesMean = means.map((m) => {
+    if (m) {
+      let newM = /(\w+)\-.+/.exec(m);
+      return {
+        partOfSpeech: newM ? newM[1] : "null",
+        translations: newM
+          ? m
+              .replace(newM[1], "")
+              .split(/\-|\s-/)
+              .filter((item) => item)
+          : [],
+      };
+    }
+  });
+  return matchesMean;
+};

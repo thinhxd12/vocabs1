@@ -3,6 +3,7 @@
   import Nav from "$lib/components/Nav.svelte";
   import { showLayout } from "$lib/store/layoutstore";
   import { totalMemories } from "$lib/store/navstore.js";
+  import { Toaster, toast } from "svelte-sonner";
 
   let { data, children } = $props();
   $totalMemories = data.totalMemories;
@@ -26,3 +27,4 @@
     <section class="bg-red-400 flex-1 h-full"></section>
   {/if}
 </main>
+<Toaster position="top-right" richColors />

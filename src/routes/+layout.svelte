@@ -4,7 +4,7 @@
   // let { data,　children } = $props();
   let { children } = $props();
   import { innerWidth } from "svelte/reactivity/window";
-  import type { LoginImageType } from "../types";
+  import type { LoginImageType } from "$lib/types";
   let data = {
     title: "Sailing the Spice Islands",
     hs1_title: "Zanzibar, Tanzania",

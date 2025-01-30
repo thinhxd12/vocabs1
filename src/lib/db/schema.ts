@@ -10,7 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { v7 as uuidv7 } from "uuid";
-import type { VocabMeaningType } from "../../types";
+import type { VocabMeaningType } from "../types";
 
 export const vocabTable = pgTable("vocab_table", {
   id: uuid("id").notNull().primaryKey().$defaultFn(uuidv7),
