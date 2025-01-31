@@ -3,7 +3,10 @@ import { error, json } from "@sveltejs/kit";
 
 export async function GET({ url }) {
   const id = url.searchParams.get("id");
-  if (!id) throw error(400, "not found id");
+  if (!id) return json({ message: "Id not found", status: false });
   const result = await deleteVocabById(id);
-  return json({ data: result.data.message }, { status: 201 });
+  if (result.status) {
+    return json({ message: result.data.message, status: result.status });
+  }
+  return json({ message: result.data.message, status: result.status });
 }

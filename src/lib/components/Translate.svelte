@@ -12,7 +12,6 @@
   import { getTranslationArr } from "$lib/functions";
   import Definition from "./Definition.svelte";
 
-  let { formResult } = $props();
   let translateWord = $state<InsertVocab>({
     word: "",
     audio: "",
@@ -108,10 +107,8 @@
         class="w-full mb-6"
         use:enhance={({ formElement, formData, action, cancel }) => {
           return async ({ result }) => {
-            if (result.status === 422) {
-              toast.error("Invalid data");
-            } else if (result.status === 423) {
-              toast.error(formResult.error);
+            if (result.type === "failure") {
+              toast.error(result.data?.error as string);
             } else {
               toast.success("Vocab inserted successfully");
             }

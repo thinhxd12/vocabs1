@@ -95,9 +95,21 @@ export const getVocabList = async (startIndex: number) => {
   }
 };
 
-export const getWeather = async () => {
+export const getWeatherList = async () => {
   try {
     const result = await db.select().from(weatherTable);
+    return result;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const getSchedule = async () => {
+  try {
+    const result = await db
+      .select()
+      .from(scheduleTable)
+      .orderBy(asc(scheduleTable.id));
     return result;
   } catch (error) {
     return [];

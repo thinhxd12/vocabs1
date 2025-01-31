@@ -4,12 +4,18 @@
   import Translate from "$lib/components/Translate.svelte";
   import Edit from "$lib/components/Edit.svelte";
   import type { SelectVocab } from "$lib/db/schema";
-  import { renderWord, searchTerm, searchResults } from "$lib/store/vocabstore";
+  import {
+    renderWord,
+    searchTerm,
+    searchResults,
+    showEdit,
+  } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
   import { totalMemories } from "$lib/store/navstore";
+  import { fade, fly, slide } from "svelte/transition";
+  import { toast } from "svelte-sonner";
 
-  let { data, form } = $props();
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
   const trigger = debounce(async (str: string) => {
@@ -22,6 +28,7 @@
           searchTermFounded = true;
           $searchTerm = "";
           $searchResults = [];
+          deleteIndex = 9;
         }, 1500);
         src0 = "src/lib/assets/sounds/mp3_Boing.mp3";
         paused0 = false;
@@ -29,6 +36,7 @@
       case 1:
         searchTermFounded = true;
         $searchResults = result;
+        deleteIndex = 9;
         if (str.length > 3) {
           checkTimeout = setTimeout(() => {
             handleSelectWordFromSearch(result[0].id);
@@ -38,6 +46,7 @@
       default:
         searchTermFounded = true;
         $searchResults = result;
+        deleteIndex = 9;
         break;
     }
   }, 300);
@@ -94,12 +103,12 @@
       const wordData = (await response.json()) as SelectVocab;
       if (wordData) {
         $renderWord = wordData;
-        if (wordData.number > 1) {
-          await fetch(`/server/checkword?id=${id}`);
-        } else {
-          $totalMemories += 1;
-          await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
-        }
+        // if (wordData.number > 1) {
+        //   await fetch(`/server/checkword?id=${id}`);
+        // } else {
+        //   $totalMemories += 1;
+        //   await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
+        // }
       }
     }
     $searchTerm = "";
@@ -112,6 +121,7 @@
   let src1 = $state<string>("");
   let paused1 = $state<boolean>(true);
   let flipNumber = $state<number>(0);
+  let deleteIndex = $state<number>(9);
 
   $effect(() => {
     const v = $renderWord?.id;
@@ -133,6 +143,30 @@
     paused0 = false;
     flipNumber = $renderWord!.number - 1;
   }
+
+  async function confirmDelete(id: string) {
+    const response = await fetch(`/server/deleteword?id=${id}`);
+    const result = await response.json();
+
+    if (result.status) {
+      toast.success(result.message);
+      searchTermFounded = true;
+      $searchTerm = "";
+      $searchResults = [];
+    } else toast.error(result.message);
+  }
+
+  let editId = $state<string>("");
+
+  function handleEditFromSearch(id: string) {
+    $showEdit = true;
+    editId = id;
+  }
+
+  function handleEditFromDefinition() {
+    $showEdit = true;
+    editId = $renderWord!.id;
+  }
 </script>
 
 <audio src={src0} bind:paused={paused0}></audio>
@@ -143,9 +177,8 @@
   {#if $renderWord}
     <Flipcard number={flipNumber} />
     <p
-      class="layout-white {searchTermFounded
-        ? 'text-white'
-        : ''} rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
+      style="color: {searchTermFounded ? 'white' : 'black'}"
+      class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
     >
       {$searchTerm || $renderWord.word}
       <small
@@ -156,6 +189,7 @@
     </p>
   {:else}
     <p
+      style="color: {searchTermFounded ? 'white' : 'black'}"
       class="layout-white rounded-3 h-36 w-full pt-2 truncate text-center font-constantine text-21 font-700 uppercase leading-36 text-white"
     >
       {$searchTerm}
@@ -165,7 +199,7 @@
 <div class="relative w-content h-[calc(100%-54px)]">
   {#if $renderWord}
     <div class="absolute w-full h-full z-10 no-scrollbar overflow-y-scroll">
-      <Definition item={$renderWord} />
+      <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
     </div>
   {/if}
   {#if $searchResults.length}
@@ -174,28 +208,51 @@
       class="layout-white p-6 rounded-3 absolute flex flex-col w-full h-full z-20 no-scrollbar overflow-y-scroll"
     >
       {#each $searchResults as item, i}
-        <div
-          class="flex items-center justify-between h-27 my-6 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
-        >
-          <button class="text-secondary-white text-10 leading-10 w-27 h-full"
-            >{i + 1}</button
+        {#if i === deleteIndex}
+          <div
+            transition:slide={{ duration: 300 }}
+            class="flex items-center px-12 justify-between h-27 my-6 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
           >
-          <button
-            style="text-shadow: 0 2px 3px black;"
-            class="font-constantine text-24 font-700 leading-27 text-white hover:scale-[2] transition duration-100"
-            onclick={() => handleSelectWordFromSearch(item.id)}
-            >{item.word}</button
+            <span class="text-12 text-white">Delete this word?</span>
+            <button
+              onclick={() => confirmDelete(item.id)}
+              class="text-12 text-secondary-white hover:text-black hover:font-600"
+              >Yes</button
+            >
+            <button
+              onclick={() => (deleteIndex = 9)}
+              class="text-12 text-secondary-white">No</button
+            >
+          </div>
+        {:else}
+          <div
+            class="flex items-center justify-between h-27 my-6 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
           >
-          <button class="text-secondary-white text-10 leading-10 w-27 h-full">
-            <Icon icon="iconamoon:trash" width="14" height="14" />
-          </button>
-        </div>
+            <button
+              onclick={() => handleEditFromSearch(item.id)}
+              class="text-secondary-white text-10 leading-10 w-27 h-full"
+              >{i + 1}</button
+            >
+            <button
+              style="text-shadow: 0 2px 3px black;"
+              class="font-constantine text-24 font-700 leading-27 text-white hover:scale-[2] transition duration-100"
+              onclick={() => handleSelectWordFromSearch(item.id)}
+              >{item.word}</button
+            >
+            <button
+              onclick={() => (deleteIndex = i)}
+              class="text-secondary-white text-10 leading-10 w-27 h-full"
+            >
+              <Icon icon="iconamoon:trash" width="14" height="14" />
+            </button>
+          </div>
+        {/if}
       {/each}
     </div>
   {/if}
 
-  <Translate formResult={form} />
-  <Edit />
+  <Translate />
+  <Edit id={editId} />
 </div>
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />

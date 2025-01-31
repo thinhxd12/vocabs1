@@ -2,11 +2,29 @@
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
   import { showLayout } from "$lib/store/layoutstore";
-  import { totalMemories } from "$lib/store/navstore.js";
+  import {
+    todaySchedule,
+    totalMemories,
+    locationList,
+  } from "$lib/store/navstore.js";
+  import { format } from "date-fns";
   import { Toaster, toast } from "svelte-sonner";
 
   let { data, children } = $props();
+  const todayDate = format(new Date(), "yyyy-MM-dd");
   $totalMemories = data.totalMemories;
+
+  if (data.schedule) {
+    let index = data.schedule.findIndex(
+      (item) => format(item.date!, "yyyy-MM-dd") === todayDate
+    );
+    $todaySchedule = {
+      start: data.schedule[index],
+      end: data.schedule[index + 1],
+    };
+  }
+
+  $locationList = data.weather;
 </script>
 
 <main

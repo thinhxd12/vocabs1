@@ -1,4 +1,8 @@
-import { getTotalMemories } from "$lib/db/queries/select";
+import {
+  getSchedule,
+  getTotalMemories,
+  getWeatherList,
+} from "$lib/db/queries/select";
 import { redirect } from "@sveltejs/kit";
 
 export async function load({ cookies }) {
@@ -7,5 +11,7 @@ export async function load({ cookies }) {
   }
 
   const length = await getTotalMemories();
-  return { totalMemories: length };
+  const schedule = await getSchedule();
+  const weatherList = await getWeatherList();
+  return { totalMemories: length, schedule: schedule, weather: weatherList };
 }

@@ -7,7 +7,7 @@ export const deleteVocabById = async (id: SelectVocab["id"]) => {
     await db.delete(vocabTable).where(eq(vocabTable.id, id));
     return {
       status: true,
-      data: { message: "Action was successful!" } as DrizzleError,
+      data: { message: "Delete action was successful!" } as DrizzleError,
     };
   } catch (error) {
     return {

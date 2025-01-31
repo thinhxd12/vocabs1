@@ -1,8 +1,85 @@
-<script>
-  import { page } from "$app/stores";
-  import { isAutoPlay, totalMemories } from "$lib/store/navstore";
+<script lang="ts">
+  import { page } from "$app/state";
+  import {
+    currentSchedule,
+    isAutoPlay,
+    listContent,
+    listCount,
+    todaySchedule,
+    totalMemories,
+  } from "$lib/store/navstore";
+  import { renderWord } from "$lib/store/vocabstore";
   import { format } from "date-fns";
+
   const todayDate = format(new Date(), "yyyy-MM-dd");
+  // -------------------AUTOPLAY START-------------------- //
+
+  let intervalAutoplay: ReturnType<typeof setInterval>;
+
+  const handleRenderWord = async () => {
+    $renderWord = $listContent[$listCount];
+    $listCount += 1;
+    if ($renderWord.number > 1) {
+      await fetch(`/server/checkword?id=${$renderWord.id}`);
+    } else {
+      $totalMemories += 1;
+      await fetch(
+        `/server/archiveword?word=${$renderWord.word}&id=${$renderWord.id}`
+      );
+    }
+  };
+
+  const startAutoplay = async () => {
+    clearInterval(intervalAutoplay);
+    handleRenderWord();
+    intervalAutoplay = setInterval(() => {
+      if ($listCount < $listContent.length) {
+        handleRenderWord();
+      } else {
+        endAutoplay();
+      }
+    }, 7000);
+  };
+
+  const pauseAutoplay = () => {
+    clearInterval(intervalAutoplay);
+  };
+
+  const endAutoplay = async () => {
+    clearInterval(intervalAutoplay);
+    $listCount = 0;
+    $renderWord = undefined;
+    await updateTodayScheduleLocal();
+    // if ($currentSchedule && $currentSchedule.count < 9) {
+    //   startCountdown();
+    // }
+  };
+
+  const handleAutoplay = () => {
+    if (page.url.pathname === "/vocab" && $listContent.length > 0) {
+      if ($isAutoPlay) {
+        $isAutoPlay = false;
+        startAutoplay();
+      } else {
+        $isAutoPlay = true;
+        pauseAutoplay();
+      }
+    }
+  };
+
+  const updateTodayScheduleLocal = async () => {
+    if (!$currentSchedule || !$todaySchedule) return;
+    const response = await fetch(
+      `/server/updateschedule?id=${$currentSchedule.id}&date=${todayDate}`
+    );
+    const data = await response.json();
+    $currentSchedule = data;
+    if ($todaySchedule.start.id === $currentSchedule!.id) {
+      $todaySchedule.start = data;
+    } else $todaySchedule.end = data;
+  };
+
+  // -------------------AUTOPLAY END-------------------- //
 </script>
 
 <nav class="w-content h-[42px] flex">
@@ -10,8 +87,17 @@
     class="flex h-36 w-12 flex-col items-center justify-between rounded-3 bg-black/60 shadow-md shadow-black/45 backdrop-blur-md"
   >
     <div class="flex flex-col justify-center text-center">
-      <span class="text-9 leading-10 text-white"> 13 </span>
-      <span class="text-9 leading-10 text-white"> 12 </span>
+      {#if $todaySchedule}
+        <span class="text-9 leading-10 text-white">
+          {$todaySchedule.start.count}
+        </span>
+        <span class="text-9 leading-10 text-white">
+          {$todaySchedule.end.count}
+        </span>
+      {:else}
+        <span class="text-9 leading-10 text-white"> N </span>
+        <span class="text-9 leading-10 text-white"> N </span>
+      {/if}
     </div>
     <span
       class="px-2 -translate-y-3 -rotate-90 rounded-3 bg-white/15 text-center text-8 leading-10 text-white"
@@ -19,14 +105,12 @@
       {format(todayDate, "eeeeee")}
     </span>
   </div>
-  <a
-    href="/vocab"
-    class:active={$page.url.pathname === "/vocab"}
-    class="btn-nav">Danger is sweet.Dulce periculum.</a
+  <a href="/vocab" class:active={page.url.pathname === "/vocab"} class="btn-nav"
+    >Danger is sweet.Dulce periculum.</a
   >
   <a
     href="/schedule"
-    class:active={$page.url.pathname === "/schedule"}
+    class:active={page.url.pathname === "/schedule"}
     class="btn-nav">Pecunia non olet.Money does not stink.</a
   >
   <a href="/about" class="btn-nav">Memento mori.Rem'ber you will die.</a>
@@ -71,24 +155,16 @@
 
   <button
     class={$isAutoPlay ? "btn-play" : "btn-pause"}
-    onclick={() => ($isAutoPlay = !$isAutoPlay)}
+    onclick={handleAutoplay}
   >
-    <!-- <div
-      class={`absolute left-0 top-0 z-10 h-full w-full ${navStore.playButton ? "bg-[url('/images/sunrise.webp')]" : "bg-[url('/images/sunset.webp')]"} bg-cover`}
-      style="background-size: 90px 36px;"
-    ></div> -->
-
-    <!-- <Show when={navStore.listCount}>
+    {#if $listCount}
       <div
-        class={`absolute left-0 top-0 z-30 h-full bg-[url('/images/sunrise.webp')] bg-cover transition-all duration-300`}
-        style={{
-          width: `${Math.floor(((navStore.listCount + 1) / navStore.listContent.length) * 90)}px`,
-          "box-shadow": "2px 0px 6px rgba(0, 0, 0, 0.6)",
-          "border-right": "0.5px solid #000000",
-          "background-size": "90px 36px",
-        }}
+        class={`absolute left-0 top-0 z-30 h-full bg-[url('src/lib/assets/images/sunrise.webp')] bg-cover transition-all duration-300`}
+        style="box-shadow: rgba(0, 0, 0, 0.6) 2px 0px 6px; border-right: 0.5px solid rgb(0, 0, 0); background-size: 90px 36px; width: {Math.floor(
+          (($listCount + 1) / $listContent.length) * 90
+        )}px;"
       ></div>
-    </Show> -->
+    {/if}
   </button>
 </nav>
 

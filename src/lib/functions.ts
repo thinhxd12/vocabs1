@@ -1,6 +1,13 @@
 // import { rgbaToThumbHash } from "thumbhash";
 import type { LoginImageType } from "./types";
 // import sharp from "sharp";
+import {
+  currentSchedule,
+  isAutoPlay,
+  listContent,
+  quizRender,
+  todaySchedule,
+} from "$lib/store/navstore";
 
 export const getSpotlightImage_v4 = async (fetch: any, setHeaders: any) => {
   const url =
