@@ -2,6 +2,7 @@
   import { page } from "$app/state";
   import {
     currentSchedule,
+    handleAutoplay,
     isAutoPlay,
     listContent,
     listCount,
@@ -12,74 +13,6 @@
   import { format } from "date-fns";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
-  // -------------------AUTOPLAY START-------------------- //
-
-  let intervalAutoplay: ReturnType<typeof setInterval>;
-
-  const handleRenderWord = async () => {
-    $renderWord = $listContent[$listCount];
-    $listCount += 1;
-    if ($renderWord.number > 1) {
-      await fetch(`/server/checkword?id=${$renderWord.id}`);
-    } else {
-      $totalMemories += 1;
-      await fetch(
-        `/server/archiveword?word=${$renderWord.word}&id=${$renderWord.id}`
-      );
-    }
-  };
-
-  const startAutoplay = async () => {
-    clearInterval(intervalAutoplay);
-    handleRenderWord();
-    intervalAutoplay = setInterval(() => {
-      if ($listCount < $listContent.length) {
-        handleRenderWord();
-      } else {
-        endAutoplay();
-      }
-    }, 7000);
-  };
-
-  const pauseAutoplay = () => {
-    clearInterval(intervalAutoplay);
-  };
-
-  const endAutoplay = async () => {
-    clearInterval(intervalAutoplay);
-    $listCount = 0;
-    $renderWord = undefined;
-    await updateTodayScheduleLocal();
-    // if ($currentSchedule && $currentSchedule.count < 9) {
-    //   startCountdown();
-    // }
-  };
-
-  const handleAutoplay = () => {
-    if (page.url.pathname === "/vocab" && $listContent.length > 0) {
-      if ($isAutoPlay) {
-        $isAutoPlay = false;
-        startAutoplay();
-      } else {
-        $isAutoPlay = true;
-        pauseAutoplay();
-      }
-    }
-  };
-
-  const updateTodayScheduleLocal = async () => {
-    if (!$currentSchedule || !$todaySchedule) return;
-    const response = await fetch(
-      `/server/updateschedule?id=${$currentSchedule.id}&date=${todayDate}`
-    );
-    const data = await response.json();
-    $currentSchedule = data;
-    if ($todaySchedule.start.id === $currentSchedule!.id) {
-      $todaySchedule.start = data;
-    } else $todaySchedule.end = data;
-  };
-
-  // -------------------AUTOPLAY END-------------------- //
 </script>
 
 <nav class="w-content h-[42px] flex">

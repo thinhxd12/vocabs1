@@ -200,7 +200,7 @@
         </div>
       </form>
 
-      <Definition item={translateWord} />
+      <Definition isEdit={true} item={translateWord} />
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>

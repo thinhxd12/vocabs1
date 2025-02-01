@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { applyAction, enhance } from "$app/forms";
+  import { enhance } from "$app/forms";
   import type { InsertVocab, SelectVocab } from "$lib/db/schema";
   import { showLayout } from "$lib/store/layoutstore";
-  import { renderWord, showEdit, showTranslate } from "$lib/store/vocabstore";
+  import { renderWord, showEdit } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { Dialog } from "bits-ui";
-  import { onMount, untrack } from "svelte";
+  import { untrack } from "svelte";
   import { fade } from "svelte/transition";
-  import { Toaster, toast } from "svelte-sonner";
-  import type { TranslateType, VocabMeaningType } from "$lib/types";
+  import { toast } from "svelte-sonner";
+  import type { VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/functions";
   import Definition from "./Definition.svelte";
 
@@ -31,10 +31,10 @@
   let { id } = $props();
 
   $effect(() => {
-    const v = id;
+    const v = $showEdit;
     untrack(async () => {
-      if (v) {
-        const response = await fetch(`/server/getword?id=${v}`);
+      if (id && $showEdit) {
+        const response = await fetch(`/server/getword?id=${id}`);
         editWord = (await response.json()) as SelectVocab;
         meaningsText = JSON.stringify(editWord.meanings, null, "     ");
         translationText = makeTranslationText(editWord.meanings);
@@ -218,7 +218,11 @@
         </div>
       </form>
 
-      <Definition item={editRenderWord} onCheck={handleCheckEdit} />
+      <Definition
+        item={editRenderWord}
+        isEdit={true}
+        onCheck={handleCheckEdit}
+      />
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>

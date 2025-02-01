@@ -7,9 +7,10 @@
     item: SelectVocab | InsertVocab;
     onEdit?: () => void;
     onCheck?: () => void;
+    isEdit?: boolean;
   }
 
-  let { item, onCheck, onEdit }: Props = $props();
+  let { item, onCheck, onEdit, isEdit = false }: Props = $props();
 </script>
 
 {#each item.meanings as entry}
@@ -32,14 +33,24 @@
           class="relative mb-2 flex min-h-[210px] w-full flex-col justify-between"
         >
           {#if el.image}
-            <ImageLoader
-              width={388}
-              height={218}
-              imageSrc={el.image}
-              hash={el.hash}
-              word={item}
-              className="!absolute !h-full !w-full object-cover brightness-75"
-            />
+            {#if isEdit}
+              <img
+                alt="..."
+                width={388}
+                height={218}
+                src={el.image}
+                class="!absolute !h-full !w-full object-cover brightness-75"
+              />
+            {:else}
+              <ImageLoader
+                width={388}
+                height={218}
+                imageSrc={el.image}
+                hash={el.hash}
+                word={item}
+                className="!absolute !h-full !w-full object-cover brightness-75"
+              />
+            {/if}
           {/if}
           {#if el.example.sentence}
             <div class="z-30 flex flex-1 items-center p-18">

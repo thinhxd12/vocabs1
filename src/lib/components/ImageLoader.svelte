@@ -23,13 +23,41 @@
 
   $effect(() => {
     const v = imageSrc;
-    untrack(() => {
+    untrack(async () => {
       placeholderData = "";
       if (hash) {
         const thumbHashFromBase64 = base64ToUint8Array(hash);
         placeholderData = thumbHashToDataURL(thumbHashFromBase64);
       } else {
-        // create thumhash
+        const response = await fetch("/server/thumbhash", {
+          method: "POST",
+          body: JSON.stringify({ imageSrc }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const thumbhash = await response.text();
+        const thumbHashFromBase64 = base64ToUint8Array(thumbhash);
+        placeholderData = thumbHashToDataURL(thumbHashFromBase64);
+
+        if (word) {
+          let newMeanings = [...word.meanings].map((item) => {
+            const updatedDefinitions = item.definitions.map((el) => {
+              return {
+                ...el,
+                hash: el.image === imageSrc ? thumbhash : "",
+              };
+            });
+            return { ...item, definitions: updatedDefinitions };
+          });
+          fetch("/server/updateword", {
+            method: "POST",
+            body: JSON.stringify({ vocab: { ...word, meanings: newMeanings } }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }
       }
     });
   });
@@ -44,16 +72,16 @@
 >
   {#if placeholderData}
     <img
-      transition:fade
+      transition:fade={{ duration: 50 }}
       class="absolute left-0 top-0 z-20 h-full w-full object-cover"
       src={placeholderData}
-      alt="placeholder"
+      alt="thumbnail"
     />
   {/if}
 
   <img
     class="absolute left-0 top-0 z-10 h-full w-full object-cover"
-    alt="mainimage"
+    alt="fullimage"
     src={imageSrc}
     onload={handleLoad}
     loading="eager"

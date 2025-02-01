@@ -103,19 +103,19 @@
       const wordData = (await response.json()) as SelectVocab;
       if (wordData) {
         $renderWord = wordData;
-        // if (wordData.number > 1) {
-        //   await fetch(`/server/checkword?id=${id}`);
-        // } else {
-        //   $totalMemories += 1;
-        //   await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
-        // }
+        if (wordData.number > 1) {
+          await fetch(`/server/checkword?id=${id}`);
+        } else {
+          $totalMemories += 1;
+          await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
+        }
       }
     }
     $searchTerm = "";
     $searchResults = [];
   }
 
-  let searchTermFounded = $state<boolean>(false);
+  let searchTermFounded = $state<boolean>(true);
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
   let src1 = $state<string>("");

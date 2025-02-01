@@ -2,6 +2,7 @@ import type { SelectVocab } from "$lib/db/schema";
 import { writable } from "svelte/store";
 import type { VocabularySearchType } from "../types";
 import type { SvelteComponent } from "svelte";
+import { page } from "$app/state";
 
 const item = {
   id: "0194071f-90f8-75d6-85e1-a3a17c972910",

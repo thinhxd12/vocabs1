@@ -16,8 +16,10 @@
 
   if (data.schedule) {
     let index = data.schedule.findIndex(
-      (item) => format(item.date!, "yyyy-MM-dd") === todayDate
+      (item) =>
+        format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null
     );
+
     $todaySchedule = {
       start: data.schedule[index],
       end: data.schedule[index + 1],

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Flipcard from "$lib/components/Flipcard.svelte";
+  import ImageLoader from "$lib/components/ImageLoader.svelte";
 
   let state = $state(123);
 </script>
@@ -20,4 +21,11 @@
     </button>
   </div>
   <Flipcard number={state} />
+
+  <ImageLoader
+    width={360}
+    height={208}
+    hash="qggKDYKKnUh/dpiEiImJhyfF/6XI"
+    imageSrc="https://media.gettyimages.com/id/2157231571/photo/a-senior-couple-embracing-on-a-public-bench-in-a-park.jpg?s=612x612&w=0&k=20&c=mr4D1DEukt60L44QJC5IeQqXKnnLbdaP_lcNRljy3tI="
+  />
 </main>

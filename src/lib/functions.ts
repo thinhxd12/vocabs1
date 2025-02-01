@@ -34,20 +34,6 @@ export const getSpotlightImage_v4 = async (fetch: any, setHeaders: any) => {
   } as LoginImageType;
 };
 
-// export const createThumbhash = async (imageUrl: string) => {
-//   const imageBuffer = await fetch(imageUrl).then((res) => res.arrayBuffer());
-//   const image = sharp(imageBuffer).resize(90, 90, { fit: "inside" });
-//   const { data, info } = await image
-//     .ensureAlpha()
-//     .raw()
-//     .toBuffer({ resolveWithObject: true });
-//   const binaryThumbHash = rgbaToThumbHash(info.width, info.height, data);
-//   const base64String = btoa(
-//     String.fromCharCode(...new Uint8Array(binaryThumbHash))
-//   );
-//   return base64String;
-// };
-
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
   const uint8Array = new Uint8Array(binaryString.length);
