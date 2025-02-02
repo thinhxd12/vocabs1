@@ -8,6 +8,9 @@ const config = {
   }),
   kit: {
     adapter: adapter(),
+    alias: {
+      "assets/*": "./src/lib/assets/*",
+    },
   },
 };
 

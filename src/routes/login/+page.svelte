@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   let password = $state("");
-  import loadingIcon from "$lib/assets/svg/loader-button.svg";
   let { form } = $props();
   let creating = $state(false);
 </script>
@@ -35,7 +34,12 @@
           ? 'opacity-100'
           : 'opacity-0'}"
       >
-        <img alt="loading" src={loadingIcon} width={15} height={15} />
+        <img
+          alt="loading"
+          src="/svg/loader-button.svg"
+          width={15}
+          height={15}
+        />
       </button>
     </div>
     {#if form?.error}

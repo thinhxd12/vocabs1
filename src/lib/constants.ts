@@ -47,310 +47,310 @@ export const WMOCODE: WeatherCodeData = {
   "0": {
     day: {
       description: "Sunny Day",
-      image: "src/lib/assets/openmeteo/icons/01d.svg",
+      image: "/openmeteo/icons/01d.svg",
     },
     night: {
       description: "Clear",
-      image: "src/lib/assets/openmeteo/icons/01n.svg",
+      image: "/openmeteo/icons/01n.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/clear.webp",
+    textdescription: "/openmeteo/weather/clear.webp",
   },
   "1": {
     day: {
       description: "Mainly Sunny",
-      image: "src/lib/assets/openmeteo/icons/02d.svg",
+      image: "/openmeteo/icons/02d.svg",
     },
     night: {
       description: "Mainly Clear",
-      image: "src/lib/assets/openmeteo/icons/02n.svg",
+      image: "/openmeteo/icons/02n.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/clear.webp",
+    textdescription: "/openmeteo/weather/clear.webp",
   },
   "2": {
     day: {
       description: "Partly Cloudy",
-      image: "src/lib/assets/openmeteo/icons/03d.svg",
+      image: "/openmeteo/icons/03d.svg",
     },
     night: {
       description: "Partly Cloudy",
-      image: "src/lib/assets/openmeteo/icons/03n.svg",
+      image: "/openmeteo/icons/03n.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/partly-cloudy.webp",
+    textdescription: "/openmeteo/weather/partly-cloudy.webp",
   },
   "3": {
     day: {
       description: "Mostly Cloudy",
-      image: "src/lib/assets/openmeteo/icons/04.svg",
+      image: "/openmeteo/icons/04.svg",
     },
     night: {
       description: "Mostly Cloudy",
-      image: "src/lib/assets/openmeteo/icons/04.svg",
+      image: "/openmeteo/icons/04.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/cloudy.webp",
+    textdescription: "/openmeteo/weather/cloudy.webp",
   },
   "45": {
     day: {
       description: "Foggy",
-      image: "src/lib/assets/openmeteo/icons/15.svg",
+      image: "/openmeteo/icons/15.svg",
     },
     night: {
       description: "Foggy",
-      image: "src/lib/assets/openmeteo/icons/15.svg",
+      image: "/openmeteo/icons/15.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/foggy.webp",
+    textdescription: "/openmeteo/weather/foggy.webp",
   },
   "48": {
     day: {
       description: "Rime Fog",
-      image: "src/lib/assets/openmeteo/icons/15.svg",
+      image: "/openmeteo/icons/15.svg",
     },
     night: {
       description: "Rime Fog",
-      image: "src/lib/assets/openmeteo/icons/15.svg",
+      image: "/openmeteo/icons/15.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/foggy.webp",
+    textdescription: "/openmeteo/weather/foggy.webp",
   },
   "51": {
     day: {
       description: "Light Drizzle",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
     night: {
       description: "Light Drizzle",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "53": {
     day: {
       description: "Drizzle",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
     night: {
       description: "Drizzle",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "55": {
     day: {
       description: "Heavy Drizzle",
-      image: "src/lib/assets/openmeteo/icons/09.svg",
+      image: "/openmeteo/icons/09.svg",
     },
     night: {
       description: "Heavy Drizzle",
-      image: "src/lib/assets/openmeteo/icons/09.svg",
+      image: "/openmeteo/icons/09.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "56": {
     day: {
       description: "Light Freezing Drizzle",
-      image: "src/lib/assets/openmeteo/icons/47.svg",
+      image: "/openmeteo/icons/47.svg",
     },
     night: {
       description: "Light Freezing Drizzle",
-      image: "src/lib/assets/openmeteo/icons/47.svg",
+      image: "/openmeteo/icons/47.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "57": {
     day: {
       description: "Freezing Drizzle",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
     night: {
       description: "Freezing Drizzle",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "61": {
     day: {
       description: "Light Rain",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
     night: {
       description: "Light Rain",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "63": {
     day: {
       description: "Rain",
-      image: "src/lib/assets/openmeteo/icons/09.svg",
+      image: "/openmeteo/icons/09.svg",
     },
     night: {
       description: "Rain",
-      image: "src/lib/assets/openmeteo/icons/09.svg",
+      image: "/openmeteo/icons/09.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "65": {
     day: {
       description: "Heavy Rain",
-      image: "src/lib/assets/openmeteo/icons/10.svg",
+      image: "/openmeteo/icons/10.svg",
     },
     night: {
       description: "Heavy Rain",
-      image: "src/lib/assets/openmeteo/icons/10.svg",
+      image: "/openmeteo/icons/10.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "66": {
     day: {
       description: "Light Freezing Rain",
-      image: "src/lib/assets/openmeteo/icons/47.svg",
+      image: "/openmeteo/icons/47.svg",
     },
     night: {
       description: "Light Freezing Rain",
-      image: "src/lib/assets/openmeteo/icons/47.svg",
+      image: "/openmeteo/icons/47.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "67": {
     day: {
       description: "Freezing Rain",
-      image: "src/lib/assets/openmeteo/icons/12.svg",
+      image: "/openmeteo/icons/12.svg",
     },
     night: {
       description: "Freezing Rain",
-      image: "src/lib/assets/openmeteo/icons/12.svg",
+      image: "/openmeteo/icons/12.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "71": {
     day: {
       description: "Light Snow",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
     night: {
       description: "Light Snow",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/snow.webp",
+    textdescription: "/openmeteo/weather/snow.webp",
   },
   "73": {
     day: {
       description: "Snow",
-      image: "src/lib/assets/openmeteo/icons/13.svg",
+      image: "/openmeteo/icons/13.svg",
     },
     night: {
       description: "Snow",
-      image: "src/lib/assets/openmeteo/icons/13.svg",
+      image: "/openmeteo/icons/13.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/snow.webp",
+    textdescription: "/openmeteo/weather/snow.webp",
   },
   "75": {
     day: {
       description: "Heavy Snow",
-      image: "src/lib/assets/openmeteo/icons/50.svg",
+      image: "/openmeteo/icons/50.svg",
     },
     night: {
       description: "Heavy Snow",
-      image: "src/lib/assets/openmeteo/icons/50.svg",
+      image: "/openmeteo/icons/50.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/snow.webp",
+    textdescription: "/openmeteo/weather/snow.webp",
   },
   "77": {
     day: {
       description: "Snow Grains",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
     night: {
       description: "Snow Grains",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/snow.webp",
+    textdescription: "/openmeteo/weather/snow.webp",
   },
   "80": {
     day: {
       description: "Light Showers",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
     night: {
       description: "Light Showers",
-      image: "src/lib/assets/openmeteo/icons/46.svg",
+      image: "/openmeteo/icons/46.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "81": {
     day: {
       description: "Showers",
-      image: "src/lib/assets/openmeteo/icons/09.svg",
+      image: "/openmeteo/icons/09.svg",
     },
     night: {
       description: "Showers",
-      image: "src/lib/assets/openmeteo/icons/09.svg",
+      image: "/openmeteo/icons/09.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "82": {
     day: {
       description: "Heavy Showers",
-      image: "src/lib/assets/openmeteo/icons/10.svg",
+      image: "/openmeteo/icons/10.svg",
     },
     night: {
       description: "Heavy Showers",
-      image: "src/lib/assets/openmeteo/icons/10.svg",
+      image: "/openmeteo/icons/10.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/rain.webp",
+    textdescription: "/openmeteo/weather/rain.webp",
   },
   "85": {
     day: {
       description: "Light Snow Showers",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
     night: {
       description: "Light Snow Showers",
-      image: "src/lib/assets/openmeteo/icons/49.svg",
+      image: "/openmeteo/icons/49.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/snow.webp",
+    textdescription: "/openmeteo/weather/snow.webp",
   },
   "86": {
     day: {
       description: "Snow Showers",
-      image: "src/lib/assets/openmeteo/icons/13.svg",
+      image: "/openmeteo/icons/13.svg",
     },
     night: {
       description: "Snow Showers",
-      image: "src/lib/assets/openmeteo/icons/13.svg",
+      image: "/openmeteo/icons/13.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/snow.webp",
+    textdescription: "/openmeteo/weather/snow.webp",
   },
   "95": {
     day: {
       description: "Thunderstorm",
-      image: "src/lib/assets/openmeteo/icons/11.svg",
+      image: "/openmeteo/icons/11.svg",
     },
     night: {
       description: "Thunderstorm",
-      image: "src/lib/assets/openmeteo/icons/11.svg",
+      image: "/openmeteo/icons/11.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/thunderstorm.webp",
+    textdescription: "/openmeteo/weather/thunderstorm.webp",
   },
   "96": {
     day: {
       description: "Light Thunderstorms With Hail",
-      image: "src/lib/assets/openmeteo/icons/20d.svg",
+      image: "/openmeteo/icons/20d.svg",
     },
     night: {
       description: "Light Thunderstorms With Hail",
-      image: "src/lib/assets/openmeteo/icons/20n.svg",
+      image: "/openmeteo/icons/20n.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/thunderstorm.webp",
+    textdescription: "/openmeteo/weather/thunderstorm.webp",
   },
   "99": {
     day: {
       description: "Thunderstorm With Hail",
-      image: "src/lib/assets/openmeteo/icons/27d.svg",
+      image: "/openmeteo/icons/27d.svg",
     },
     night: {
       description: "Thunderstorm With Hail",
-      image: "src/lib/assets/openmeteo/icons/27n.svg",
+      image: "/openmeteo/icons/27n.svg",
     },
-    textdescription: "src/lib/assets/openmeteo/weather/thunderstorm-hail.webp",
+    textdescription: "/openmeteo/weather/thunderstorm-hail.webp",
   },
 };
 

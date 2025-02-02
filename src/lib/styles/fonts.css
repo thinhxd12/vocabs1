@@ -1,7 +1,6 @@
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-BlackItalic.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-BlackItalic.woff2") format("woff2");
   font-weight: 900;
   font-style: italic;
   font-display: swap;
@@ -9,7 +8,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-Regular.woff2") format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -17,7 +16,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-Medium.woff2") format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -25,7 +24,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-Bold.woff2") format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-Bold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -33,8 +32,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-LightItalic.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-LightItalic.woff2") format("woff2");
   font-weight: 200;
   font-style: italic;
   font-display: swap;
@@ -42,8 +40,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-HeavyItalic.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-HeavyItalic.woff2") format("woff2");
   font-weight: 900;
   font-style: italic;
   font-display: swap;
@@ -51,8 +48,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-UltralightItalic.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-UltralightItalic.woff2") format("woff2");
   font-weight: 200;
   font-style: italic;
   font-display: swap;
@@ -60,8 +56,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-SemiboldItalic.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-SemiboldItalic.woff2") format("woff2");
   font-weight: 600;
   font-style: italic;
   font-display: swap;
@@ -69,8 +64,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-ThinItalic.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-ThinItalic.woff2") format("woff2");
   font-weight: 100;
   font-style: italic;
   font-display: swap;
@@ -78,8 +72,7 @@
 
 @font-face {
   font-family: "SF Pro Display";
-  src: url("$lib/assets/fonts/sfpro/SFProDisplay-Ultralight.woff2")
-    format("woff2");
+  src: url("/fonts/sfpro/SFProDisplay-Ultralight.woff2") format("woff2");
   font-weight: 100;
   font-style: normal;
   font-display: swap;
@@ -87,7 +80,7 @@
 
 @font-face {
   font-family: "Open Sans";
-  src: url("$lib/assets/fonts/opensans/OpenSans-Bold.woff2") format("woff2");
+  src: url("/fonts/opensans/OpenSans-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -95,7 +88,7 @@
 
 @font-face {
   font-family: "Open Sans";
-  src: url("$lib/assets/fonts/opensans/OpenSans-Regular.woff2") format("woff2");
+  src: url("/fonts/opensans/OpenSans-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -103,8 +96,7 @@
 
 @font-face {
   font-family: "Roslindale";
-  src: url("$lib/assets/fonts/roslindale/Roslindale-DisplayLight.woff2")
-    format("woff2");
+  src: url("/fonts/roslindale/Roslindale-DisplayLight.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -112,8 +104,7 @@
 
 @font-face {
   font-family: "Roslindale";
-  src: url("$lib/assets/fonts/roslindale/Roslindale-DisplayRegular.woff2")
-    format("woff2");
+  src: url("/fonts/roslindale/Roslindale-DisplayRegular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -121,8 +112,7 @@
 
 @font-face {
   font-family: "Roslindale";
-  src: url("$lib/assets/fonts/roslindale/Roslindale-DisplayMedium.woff2")
-    format("woff2");
+  src: url("/fonts/roslindale/Roslindale-DisplayMedium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -130,8 +120,7 @@
 
 @font-face {
   font-family: "Roslindale";
-  src: url("$lib/assets/fonts/roslindale/Roslindale-DisplaySemiBold.woff2")
-    format("woff2");
+  src: url("/fonts/roslindale/Roslindale-DisplaySemiBold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -139,8 +128,7 @@
 
 @font-face {
   font-family: "Roslindale";
-  src: url("$lib/assets/fonts/roslindale/Roslindale-DisplayBold.woff2")
-    format("woff2");
+  src: url("/fonts/roslindale/Roslindale-DisplayBold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -148,8 +136,7 @@
 
 @font-face {
   font-family: "Roslindale";
-  src: url("$lib/assets/fonts/roslindale/Roslindale-DisplayUltra.woff2")
-    format("woff2");
+  src: url("/fonts/roslindale/Roslindale-DisplayUltra.woff2") format("woff2");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -157,7 +144,7 @@
 
 @font-face {
   font-family: "Constantine";
-  src: url("$lib/assets/fonts/constantine/Constantine.woff2") format("woff2");
+  src: url("/fonts/constantine/Constantine.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -165,8 +152,7 @@
 
 @font-face {
   font-family: "Basier";
-  src: url("$lib/assets/fonts/basier/basiersquare-regular.woff2")
-    format("woff2");
+  src: url("/fonts/basier/basiersquare-regular.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -174,8 +160,7 @@
 
 @font-face {
   font-family: "Helvetica Neue";
-  src: url("$lib/assets/fonts/helvetica/HelveticaNeue-CondensedBold.woff2")
-    format("woff2");
+  src: url("/fonts/helvetica/HelveticaNeue-CondensedBold.woff2") format("woff2");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -183,8 +168,7 @@
 
 @font-face {
   font-family: "GaramondPro";
-  src: url("$lib/assets/fonts/garamond/GaramondPremrPro-Bd.woff2")
-    format("woff2");
+  src: url("/fonts/garamond/GaramondPremrPro-Bd.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -192,8 +176,7 @@
 
 @font-face {
   font-family: "GaramondPro";
-  src: url("$lib/assets/fonts/garamond/GaramondPremrPro-Med.woff2")
-    format("woff2");
+  src: url("/fonts/garamond/GaramondPremrPro-Med.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -201,8 +184,7 @@
 
 @font-face {
   font-family: "GaramondPro";
-  src: url("$lib/assets/fonts/garamond/GaramondPremrPro-It.woff2")
-    format("woff2");
+  src: url("/fonts/garamond/GaramondPremrPro-It.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -210,7 +192,7 @@
 
 @font-face {
   font-family: "GaramondPro";
-  src: url("$lib/assets/fonts/garamond/GaramondPremrPro.woff2") format("woff2");
+  src: url("/fonts/garamond/GaramondPremrPro.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -218,7 +200,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-Light.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -226,7 +208,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-Regular.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -234,7 +216,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-Medium.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -242,7 +224,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-SemiBold.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-SemiBold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -250,7 +232,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-Bold.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -258,7 +240,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-ExtraBold.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-ExtraBold.woff2") format("woff2");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -266,7 +248,7 @@
 
 @font-face {
   font-family: "Rubik";
-  src: url("$lib/assets/fonts/rubik/Rubik-Italic.woff2") format("woff2");
+  src: url("/fonts/rubik/Rubik-Italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -274,7 +256,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaBold.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaBold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -282,7 +264,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaExtraBold.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaExtraBold.woff2") format("woff2");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -290,7 +272,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaExtraLight.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaExtraLight.woff2") format("woff2");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
@@ -298,7 +280,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaMedium.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaMedium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -306,7 +288,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaHeavy.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaHeavy.woff2") format("woff2");
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -314,7 +296,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaLight.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaLight.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -322,7 +304,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaRegular.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaRegular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -330,7 +312,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaThin.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaThin.woff2") format("woff2");
   font-weight: 100;
   font-style: normal;
   font-display: swap;
@@ -338,7 +320,7 @@
 
 @font-face {
   font-family: "Tupa Nova";
-  src: url("$lib/assets/fonts/tupa/NdTupaNovaSemibold.woff2") format("woff2");
+  src: url("/fonts/tupa/NdTupaNovaSemibold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
