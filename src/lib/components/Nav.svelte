@@ -1,18 +1,56 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import { WMOCODE } from "$lib/constants";
   import {
     currentSchedule,
     handleAutoplay,
     isAutoPlay,
     listContent,
     listCount,
+    locationList,
     todaySchedule,
     totalMemories,
   } from "$lib/store/navstore";
   import { renderWord } from "$lib/store/vocabstore";
+  import type { CurrentlyWeatherType } from "$lib/types";
   import { format } from "date-fns";
+  import { getCurrentWeatherData } from "$lib/functions";
+  import { onDestroy } from "svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
+
+  let navWeatherData = $state<CurrentlyWeatherType>({
+    apparentTemperature: 0,
+    isDayTime: false,
+    humidity: 0,
+    temperature: 0,
+    uvIndex: 0,
+    icon: 96,
+    windDirection: 0,
+    windSpeed: 0,
+  });
+  let interval: ReturnType<typeof setInterval>;
+
+  async function getNavWeatherData() {
+    const defaultLocation = $locationList[0];
+    const data = await getCurrentWeatherData({
+      lat: defaultLocation.lat,
+      lon: defaultLocation.lon,
+    });
+    if (data) navWeatherData = data;
+  }
+
+  getNavWeatherData();
+  interval = setInterval(
+    () => {
+      getNavWeatherData();
+    },
+    1000 * 15 * 60
+  );
+
+  onDestroy(() => {
+    clearInterval(interval);
+  });
 </script>
 
 <nav class="w-content h-[42px] flex">
@@ -46,7 +84,7 @@
     class:active={page.url.pathname === "/schedule"}
     class="btn-nav">Pecunia non olet.Money does not stink.</a
   >
-  <a href="/about" class="btn-nav">Memento mori.Rem'ber you will die.</a>
+  <a href="/quiz" class="btn-nav">Memento mori.Rem'ber you will die.</a>
   <div
     class="ml-3 flex h-36 flex-col items-center justify-center rounded-3 bg-black/60 px-1 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >
@@ -61,9 +99,16 @@
         : $totalMemories % 100}
     </span>
   </div>
-  <a href="/vocab" class="btn-weather">
+  <a
+    href="/vocab"
+    class="btn-weather"
+    style="background-image: url({WMOCODE[navWeatherData.icon]
+      .textdescription});"
+  >
     <img
-      src="src/lib/assets/openmeteo/icons/01d.svg"
+      src={navWeatherData.isDayTime
+        ? WMOCODE[navWeatherData.icon].day.image
+        : WMOCODE[navWeatherData.icon].night.image}
       alt="Weather Icon"
       width={21}
       height={21}
@@ -74,14 +119,22 @@
       style="text-shadow: 0px 0px 6px #000000"
       class="absolute right-1 top-1 z-10 text-8 font-600 leading-8 text-white"
     >
-      {Math.round(12)}°
+      {Math.round(navWeatherData.temperature)}°
     </span>
     <div class="flex absolute bottom-0 left-0 z-10 w-full">
       <div class="marquee-container">
-        <div class="marquee-content">Partly Cloudy</div>
+        <div class="marquee-content">
+          {navWeatherData.isDayTime
+            ? WMOCODE[navWeatherData.icon].day.description
+            : WMOCODE[navWeatherData.icon].night.description}
+        </div>
       </div>
       <div class="marquee-container">
-        <div class="marquee-content">Partly Cloudy</div>
+        <div class="marquee-content">
+          {navWeatherData.isDayTime
+            ? WMOCODE[navWeatherData.icon].day.description
+            : WMOCODE[navWeatherData.icon].night.description}
+        </div>
       </div>
     </div>
   </a>
@@ -110,7 +163,7 @@
   }
 
   .btn-weather {
-    @apply relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(src/lib/assets/openmeteo/weather/partly-cloudy.webp)] bg-cover;
+    @apply relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-cover;
   }
 
   .btn-play {

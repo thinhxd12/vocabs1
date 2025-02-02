@@ -36,7 +36,7 @@
     </button>
   </form>
 
-  {#if page.url.pathname === "/vocab"}
+  <!-- {#if page.url.pathname === "/vocab"}
     <button
       class="btn-menu"
       class:active={$todaySchedule?.start.id === $currentSchedule?.id}
@@ -78,7 +78,29 @@
         <Icon icon="ri:question-mark" width="12" height="12" />
       {/if}
     </button>
-  {/if}
+  {/if} -->
+  <button
+    class="btn-menu"
+    class:active={$todaySchedule?.start.id === $currentSchedule?.id}
+    onclick={() => handleGetList(0)}
+  >
+    {#if $todaySchedule}
+      <span>{$todaySchedule.start.index}</span>
+    {:else}
+      <Icon icon="ri:question-mark" width="12" height="12" />
+    {/if}
+  </button>
+  <button
+    class="btn-menu"
+    class:active={$todaySchedule?.end.id === $currentSchedule?.id}
+    onclick={() => handleGetList(1)}
+  >
+    {#if $todaySchedule}
+      <span>{$todaySchedule.end.index}</span>
+    {:else}
+      <Icon icon="ri:question-mark" width="12" height="12" />
+    {/if}
+  </button>
 
   {#if $showLayout}
     <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}

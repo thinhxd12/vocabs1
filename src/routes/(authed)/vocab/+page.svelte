@@ -101,14 +101,12 @@
     const response = await fetch(`/server/getword?id=${id}`);
     if (response.status === 200) {
       const wordData = (await response.json()) as SelectVocab;
-      if (wordData) {
-        $renderWord = wordData;
-        if (wordData.number > 1) {
-          await fetch(`/server/checkword?id=${id}`);
-        } else {
-          $totalMemories += 1;
-          await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
-        }
+      $renderWord = wordData;
+      if (wordData.number > 1) {
+        await fetch(`/server/checkword?id=${id}`);
+      } else {
+        $totalMemories += 1;
+        await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
       }
     }
     $searchTerm = "";

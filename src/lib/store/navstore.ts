@@ -8,6 +8,7 @@ import arrayShuffle from "array-shuffle";
 import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
+import type { CurrentlyWeatherType } from "$lib/types";
 
 export const isAutoPlay = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
@@ -22,7 +23,7 @@ export const locationList = writable<SelectWeather[]>([]);
 export const listContent = writable<SelectVocab[]>([]);
 export const currentSchedule = writable<SelectSchedule | undefined>(undefined);
 export const listCount = writable<number>(0);
-export const quizCount = writable<number>(0);
+// export const quizCount = writable<number>(0);
 export const quizRender = writable<SelectVocab | undefined>(undefined);
 export const countdown = writable({
   timeLeft: 0,
@@ -108,9 +109,10 @@ const handleGetListContentQuiz = async (index: number) => {
   quizRender.set(undefined);
   const response = await fetch(`/server/getwordlist?index=${index}`);
   if (response.status === 200) {
-    const data = await response.json();
-    listContent.set(arrayShuffle(data));
-    quizRender.set(data[0]);
+    const data = (await response.json()) as SelectVocab[];
+    const content = arrayShuffle(data);
+    listContent.set(content);
+    quizRender.set(content[0]);
   }
 };
 

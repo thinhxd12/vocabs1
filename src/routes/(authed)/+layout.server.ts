@@ -13,5 +13,10 @@ export async function load({ cookies }) {
   const length = await getTotalMemories();
   const schedule = await getSchedule();
   const weatherList = await getWeatherList();
-  return { totalMemories: length, schedule: schedule, weather: weatherList };
+
+  return {
+    totalMemories: length,
+    schedule: schedule,
+    weather: weatherList,
+  };
 }

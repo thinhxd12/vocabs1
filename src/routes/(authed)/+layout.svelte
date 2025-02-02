@@ -1,6 +1,7 @@
 <script lang="ts">
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
+  import { getCurrentWeatherData } from "$lib/functions.js";
   import { showLayout } from "$lib/store/layoutstore";
   import {
     todaySchedule,
