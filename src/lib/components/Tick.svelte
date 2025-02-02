@@ -70,7 +70,7 @@
       <span class="tick-flip-panel-front-text">
         <span class="tick-flip-panel-text-wrapper">
           {#if image}
-            <img alt="cup" src="src/lib/assets/images/cup.webp" />
+            <img alt="cup" src="/images/cup.webp" />
           {:else}
             {toNumber}
           {/if}
@@ -115,7 +115,7 @@
         <span class="tick-flip-panel-back-text">
           <span class="tick-flip-panel-text-wrapper">
             {#if image}
-              <img alt="cup" src="src/lib/assets/images/cup.webp" />
+              <img alt="cup" src="/images/cup.webp" />
             {:else}
               {toNumber}
             {/if}
@@ -147,7 +147,7 @@
       <span class="tick-flip-panel-back-text">
         <span class="tick-flip-panel-text-wrapper">
           {#if image && visualProgress.current === 1}
-            <img alt="cup" src="src/lib/assets/images/cup.webp" />
+            <img alt="cup" src="/images/cup.webp" />
           {:else}
             {fromNumber}
           {/if}

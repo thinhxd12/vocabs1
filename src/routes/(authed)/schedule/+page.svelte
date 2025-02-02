@@ -18,10 +18,7 @@
 >
   <div
     class="w-full p-6 h-[378px] bg-cover mt-6 rounded-6 layout-white flex items-end justify-end"
-    style="background-image: url('src/lib/assets/images/{format(
-      new Date(),
-      'M'
-    )}.webp');"
+    style="background-image: url('/images/{format(new Date(), 'M')}.webp');"
   >
     <Calendar.Root
       class="w-[280px] rounded-6"

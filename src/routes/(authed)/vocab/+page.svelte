@@ -30,7 +30,7 @@
           $searchResults = [];
           deleteIndex = 9;
         }, 1500);
-        src0 = "src/lib/assets/sounds/mp3_Boing.mp3";
+        src0 = "/sounds/mp3_Boing.mp3";
         paused0 = false;
         break;
       case 1:

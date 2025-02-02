@@ -145,7 +145,7 @@
   >
     {#if $listCount}
       <div
-        class={`absolute left-0 top-0 z-30 h-full bg-[url('src/lib/assets/images/sunrise.webp')] bg-cover transition-all duration-300`}
+        class={`absolute left-0 top-0 z-30 h-full bg-[url('/images/sunrise.webp')] bg-cover transition-all duration-300`}
         style="box-shadow: rgba(0, 0, 0, 0.6) 2px 0px 6px; border-right: 0.5px solid rgb(0, 0, 0); background-size: 90px 36px; width: {Math.floor(
           (($listCount + 1) / $listContent.length) * 90
         )}px;"
@@ -167,11 +167,11 @@
   }
 
   .btn-play {
-    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(src/lib/assets/images/sunrise.webp)] bg-cover;
+    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
   }
 
   .btn-pause {
-    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(src/lib/assets/images/sunset.webp)] bg-cover;
+    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
   }
 
   .marquee-container {

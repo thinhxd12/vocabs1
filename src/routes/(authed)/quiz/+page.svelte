@@ -61,7 +61,7 @@
       src = $quizRender.audio;
       paused = false;
     } else {
-      src = "src/lib/assets/sounds/mp3_Boing.mp3";
+      src = "/sounds/mp3_Boing.mp3";
       paused = false;
     }
     $listCount += 1;
@@ -73,7 +73,7 @@
       }, 1000);
     } else {
       setTimeout(async () => {
-        src = "src/lib/assets/sounds/mp3_Ding.mp3";
+        src = "/sounds/mp3_Ding.mp3";
         paused = false;
         $quizRender = undefined;
         $listContent = [];
