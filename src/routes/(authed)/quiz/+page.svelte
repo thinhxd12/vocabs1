@@ -93,10 +93,11 @@
     if ($quizRender.number > 1) {
       await fetch(`/server/checkword?id=${$quizRender.id}`);
     } else {
-      $totalMemories += 1;
       await fetch(
         `/server/archiveword?word=${$quizRender.word}&id=${$quizRender.id}`
       );
+      const response = await fetch("/server/getmemorieslength");
+      $totalMemories = await response.json();
     }
   }
 </script>
@@ -121,33 +122,22 @@
     </div>
 
     <div class="bg-transparent no-scrollbar w-2/3 outline-none mx-auto">
-      {#if submitted}
-        {#each options as item}
-          {#if item == value}
-            <p
-              class={item === $quizRender.word
+      {#each options as item}
+        <button
+          class={submitted
+            ? item == value
+              ? item === $quizRender.word
                 ? "quiz-choice-true"
-                : "quiz-choice-false"}
-            >
-              {item}
-            </p>
-          {:else}
-            <p
-              class={item === $quizRender.word
+                : "quiz-choice-false"
+              : item === $quizRender.word
                 ? "quiz-choice-true"
-                : "quiz-choice"}
-            >
-              {item}
-            </p>
-          {/if}
-        {/each}
-      {:else}
-        {#each options as item}
-          <button class="quiz-choice" onclick={() => submitAnswer(item)}>
-            {item}
-          </button>
-        {/each}
-      {/if}
+                : "quiz-choice"
+            : "quiz-choice"}
+          onclick={() => submitAnswer(item)}
+        >
+          {item}
+        </button>
+      {/each}
     </div>
   </main>
 {/if}

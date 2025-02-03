@@ -19,6 +19,7 @@ import {
   scheduleTable,
   type SelectBookmark,
   type SelectMemories,
+  type SelectSchedule,
   type SelectVocab,
   vocabTable,
   weatherTable,
@@ -150,7 +151,7 @@ export const getAllScheduleHaveDate = async () => {
       .from(scheduleTable)
       .orderBy(asc(scheduleTable.id))
       .where(isNotNull(scheduleTable.date));
-    return result;
+    return result as SelectSchedule[];
   } catch (error) {
     return [];
   }

@@ -30,22 +30,37 @@
   $locationList = data.weather;
 </script>
 
-<main
+<section
   class="w-full h-full relative flex {$showLayout
     ? 'flex-row-reverse'
     : ''} items-end justify-center"
 >
-  <section class="w-main h-full flex flex-col items-center">
+  <div class="w-main h-full flex flex-col items-center">
     <div class="flex-1">
       {@render children()}
     </div>
     <Nav />
-  </section>
-  <div class="mb-[42px]">
+  </div>
+  <div class="menu-bar">
     <Menu />
   </div>
   {#if $showLayout}
-    <section class="bg-red-400 flex-1 h-full"></section>
+    <div class="bg-red-400 flex-1 h-full"></div>
   {/if}
-</main>
+</section>
 <Toaster position="top-right" richColors />
+
+<style>
+  @media only screen and (max-width: 600px) {
+    .menu-bar {
+      position: absolute;
+      right: calc(50% - 189px);
+      bottom: 0;
+      z-index: 50;
+    }
+  }
+
+  .menu-bar {
+    margin-bottom: 60px;
+  }
+</style>

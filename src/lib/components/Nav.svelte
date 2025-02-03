@@ -76,15 +76,26 @@
       {format(todayDate, "eeeeee")}
     </span>
   </div>
-  <a href="/vocab" class:active={page.url.pathname === "/vocab"} class="btn-nav"
-    >Danger is sweet.Dulce periculum.</a
+
+  <a
+    href="/vocab"
+    class:active={page.url.pathname === "/vocab"}
+    class="btn-nav"
   >
+    Danger is sweet.Dulce periculum.
+  </a>
+
   <a
     href="/schedule"
     class:active={page.url.pathname === "/schedule"}
-    class="btn-nav">Pecunia non olet.Money does not stink.</a
+    class="btn-nav"
+    data-sveltekit-preload-data="tap"
   >
+    Pecunia non olet.Money does not stink.
+  </a>
+
   <a href="/quiz" class="btn-nav">Memento mori.Rem'ber you will die.</a>
+
   <div
     class="ml-3 flex h-36 flex-col items-center justify-center rounded-3 bg-black/60 px-1 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >

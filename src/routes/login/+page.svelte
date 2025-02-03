@@ -25,7 +25,7 @@
         name="password"
         autocomplete="off"
         bind:value={password}
-        class="w-full h-27 leading-27 rounded-3 border-0 bg-black/30 px-9 py-3 text-center text-white shadow-md shadow-black/30 outline-none backdrop-blur-md transition focus:bg-black/25 focus:ring-white/10"
+        class="password w-full h-27 leading-27 rounded-3 border-0 bg-black/30 px-9 py-3 text-center text-white shadow-md shadow-black/30 outline-none backdrop-blur-md transition focus:bg-black/25 focus:ring-white/10"
         required
       />
       <button
@@ -52,3 +52,17 @@
     {/if}
   </form>
 </div>
+
+<style>
+  .password:-webkit-autofill,
+  .password:-webkit-autofill:focus {
+    transition:
+      background-color 600000s 0s,
+      color 600000s 0s;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  .password :global [data-autocompleted] {
+    background-color: transparent !important;
+  }
+</style>

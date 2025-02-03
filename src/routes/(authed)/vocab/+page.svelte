@@ -105,8 +105,9 @@
       if (wordData.number > 1) {
         await fetch(`/server/checkword?id=${id}`);
       } else {
-        $totalMemories += 1;
         await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
+        const response = await fetch("/server/getmemorieslength");
+        $totalMemories = await response.json();
       }
     }
     $searchTerm = "";
