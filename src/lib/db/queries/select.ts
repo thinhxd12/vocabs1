@@ -19,6 +19,7 @@ import {
   scheduleTable,
   type SelectBookmark,
   type SelectMemories,
+  type SelectProgress,
   type SelectSchedule,
   type SelectVocab,
   vocabTable,
@@ -278,6 +279,29 @@ export const getTotalMemories = async () => {
   try {
     const length = await db.select({ count: count() }).from(memoriesTable);
     return length[0].count;
+  } catch (error) {
+    return 0;
+  }
+};
+
+export const getTotalProgress = async () => {
+  try {
+    const length = await db.select({ count: count() }).from(progressTable);
+    return length[0].count;
+  } catch (error) {
+    return 0;
+  }
+};
+
+export const getTotalProgressByIndex = async (index: number) => {
+  try {
+    const result = await db
+      .select()
+      .from(progressTable)
+      .orderBy(asc(progressTable.id))
+      .offset(index * 5)
+      .limit(5);
+    return result as SelectProgress[];
   } catch (error) {
     return 0;
   }

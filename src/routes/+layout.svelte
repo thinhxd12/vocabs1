@@ -24,7 +24,7 @@
     ? `url(${data.image_L})`
     : `url(${data.image_P})`}
 >
-  {#if innerWidth.current && innerWidth.current > 640 && !$showLayout}
+  {#if innerWidth.current && innerWidth.current > 600 && !$showLayout}
     <div
       class="group absolute left-0 top-0 z-50 hidden w-[calc(50vw-215px)] md:block"
     >

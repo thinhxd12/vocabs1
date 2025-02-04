@@ -6,7 +6,7 @@
   import Icon from "@iconify/svelte";
   import { Dialog } from "bits-ui";
   import { untrack } from "svelte";
-  import { fade } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import type { VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/functions";
@@ -95,14 +95,14 @@
 <Dialog.Root bind:open={$showEdit} closeOnOutsideClick>
   <Dialog.Portal>
     <Dialog.Overlay
-      transition={fade}
+      transition={fly}
       transitionConfig={{ duration: 50 }}
-      class="fixed inset-0 z-50 bg-black/30"
+      class="fixed inset-0 z-30 bg-black/30"
     />
     <Dialog.Content
-      class="fixed top-0 {$showLayout
-        ? 'right-0 -translate-x-12'
-        : 'left-[50%] -translate-x-[calc(50%+15px)]'} outline-none z-50 layout-light mt-[48px] h-[calc(100vh-96px)] overflow-y-scroll no-scrollbar rounded-6 p-6 w-content"
+      class="fixed w-content {$showLayout
+        ? 'inset-[48px_12px_48px_calc(100vw-390px)]'
+        : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
     >
       <form
         action="?/editVocab"

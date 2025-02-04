@@ -18,6 +18,7 @@
   } from "$lib/store/navstore";
   import { page } from "$app/state";
   import arrayShuffle from "array-shuffle";
+  import { innerWidth } from "svelte/reactivity/window";
 
   function startOrStopCountdown() {
     $countdown.isRunning ? stopCountdown() : startCountdown(5);
@@ -36,49 +37,6 @@
     </button>
   </form>
 
-  <!-- {#if page.url.pathname === "/vocab"}
-    <button
-      class="btn-menu"
-      class:active={$todaySchedule?.start.id === $currentSchedule?.id}
-      onclick={() => handleGetList(0)}
-    >
-      {#if $todaySchedule}
-        <span>{$todaySchedule.start.index}</span>
-      {:else}
-        <Icon icon="ri:question-mark" width="12" height="12" />
-      {/if}
-    </button>
-  {:else}
-    <button class="btn-menu" onclick={() => handleGetList(0)}>
-      {#if $todaySchedule}
-        <span>{$todaySchedule.start.index}</span>
-      {:else}
-        <Icon icon="ri:question-mark" width="12" height="12" />
-      {/if}
-    </button>
-  {/if}
-
-  {#if page.url.pathname === "/vocab"}
-    <button
-      class="btn-menu"
-      class:active={$todaySchedule?.end.id === $currentSchedule?.id}
-      onclick={() => handleGetList(1)}
-    >
-      {#if $todaySchedule}
-        <span>{$todaySchedule.end.index}</span>
-      {:else}
-        <Icon icon="ri:question-mark" width="12" height="12" />
-      {/if}
-    </button>
-  {:else}
-    <button class="btn-menu" onclick={() => handleGetList(1)}>
-      {#if $todaySchedule}
-        <span>{$todaySchedule.end.index}</span>
-      {:else}
-        <Icon icon="ri:question-mark" width="12" height="12" />
-      {/if}
-    </button>
-  {/if} -->
   <button
     class="btn-menu"
     class:active={$todaySchedule?.start.id === $currentSchedule?.id}
@@ -102,25 +60,26 @@
     {/if}
   </button>
 
-  {#if $showLayout}
-    <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}
-      ><Icon icon="ri:layout-right-line" width="15" height="15" /></button
-    >
-  {:else}
-    <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}>
-      <Icon icon="ri:layout-left-line" width="15" height="15" />
-    </button>
+  {#if innerWidth.current && innerWidth.current > 600}
+    {#if $showLayout}
+      <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}
+        ><Icon icon="ri:layout-right-line" width="15" height="15" /></button
+      >
+    {:else}
+      <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}>
+        <Icon icon="ri:layout-left-line" width="15" height="15" />
+      </button>
+    {/if}
   {/if}
 
   <button class="btn-menu" onclick={() => ($showTranslate = true)}>
     <Icon icon="ri:translate" width="15" height="15" />
   </button>
+
   <button class="btn-menu">
     <Icon icon="cuida:image-outline" width="15" height="15" />
   </button>
-  <!-- <button class="btn-menu" onclick={() => ($showEdit = true)}
-    ><Icon icon="hugeicons:pencil-edit-02" width="15" height="15" /></button
-  > -->
+
   <button
     class="btn-menu relative overflow-hidden"
     onclick={startOrStopCountdown}

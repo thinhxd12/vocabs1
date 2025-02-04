@@ -23,7 +23,6 @@ export const locationList = writable<SelectWeather[]>([]);
 export const listContent = writable<SelectVocab[]>([]);
 export const currentSchedule = writable<SelectSchedule | undefined>(undefined);
 export const listCount = writable<number>(0);
-// export const quizCount = writable<number>(0);
 export const quizRender = writable<SelectVocab | undefined>(undefined);
 export const countdown = writable({
   timeLeft: 0,

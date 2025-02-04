@@ -37,7 +37,7 @@
         searchTermFounded = true;
         $searchResults = result;
         deleteIndex = 9;
-        if (str.length > 3) {
+        if (str.length > 4) {
           checkTimeout = setTimeout(() => {
             handleSelectWordFromSearch(result[0].id);
           }, 1500);

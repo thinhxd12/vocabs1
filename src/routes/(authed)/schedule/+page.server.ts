@@ -1,4 +1,7 @@
-import { getAllScheduleHaveDate } from "$lib/db/queries/select";
+import {
+  getAllScheduleHaveDate,
+  getTotalProgress,
+} from "$lib/db/queries/select";
 import type { SelectSchedule } from "$lib/db/schema";
 
 export async function load({ cookies }) {
@@ -20,5 +23,10 @@ export async function load({ cookies }) {
 
     return acc;
   }, []);
-  return { schedule: transformed };
+
+  const progressLength = await getTotalProgress();
+  return {
+    schedule: transformed,
+    progressLength: Math.floor(progressLength / 5),
+  };
 }

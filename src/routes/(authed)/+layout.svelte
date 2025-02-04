@@ -41,7 +41,7 @@
     </div>
     <Nav />
   </div>
-  <div class="menu-bar">
+  <div class={$showLayout ? "menu-bar-right" : "menu-bar-center"}>
     <Menu />
   </div>
   {#if $showLayout}
@@ -52,15 +52,29 @@
 
 <style>
   @media only screen and (max-width: 600px) {
-    .menu-bar {
-      position: absolute;
-      right: calc(50% - 189px);
-      bottom: 0;
-      z-index: 50;
+    .menu-bar-center {
+      width: 378px !important;
+      inset: 48px calc(50vw - 189px) 60px calc(50vw - 189px) !important;
     }
   }
 
-  .menu-bar {
-    margin-bottom: 60px;
+  .menu-bar-center {
+    position: fixed;
+    width: 440px;
+    inset: 48px calc(50vw - 220px) 60px calc(50vw - 220px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: end;
+    z-index: 10;
+  }
+
+  .menu-bar-right {
+    position: fixed;
+    width: 378px;
+    inset: 48px 12px 60px calc(100vw - 390px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: end;
+    z-index: 10;
   }
 </style>
