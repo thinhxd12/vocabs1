@@ -9,30 +9,6 @@ import {
   todaySchedule,
 } from "$lib/store/navstore";
 
-export const getSpotlightImage_v5 = async () => {
-  const url =
-    "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=1&country=DK&locale=en-US&fmt=json";
-  const response = await fetch(url, {
-    headers: {
-      "cache-control": "no-cache",
-    },
-  });
-  const data = await response.json();
-  const obj = data["batchrsp"]["items"][0]["item"];
-  const result = JSON.parse(obj)["ad"];
-  const urlP = result.portraitImage.asset;
-  const hs1 = result.iconHoverText.split("\r\n©");
-
-  return {
-    title: result.title,
-    hs1_title: hs1[0],
-    hs2_title: result.description,
-    image_L: result.landscapeImage.asset,
-    image_P: urlP,
-    hash: "",
-  } as LoginImageType;
-};
-
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
   const uint8Array = new Uint8Array(binaryString.length);

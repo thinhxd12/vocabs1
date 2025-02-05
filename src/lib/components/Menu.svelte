@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    handleChangeLayoutImage,
     layoutImage,
     showBookmark,
     showLayout,
@@ -23,7 +24,6 @@
   import { page } from "$app/state";
   import arrayShuffle from "array-shuffle";
   import { innerWidth } from "svelte/reactivity/window";
-  import { getSpotlightImage_v5 } from "$lib/functions";
 
   function startOrStopCountdown() {
     $countdown.isRunning ? stopCountdown() : startCountdown(5);
@@ -32,10 +32,6 @@
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
     handleGetListContent();
-  }
-
-  async function handleChangeLayoutImage() {
-    $layoutImage = await getSpotlightImage_v5();
   }
 </script>
 

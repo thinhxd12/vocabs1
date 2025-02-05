@@ -1,12 +1,15 @@
 <script lang="ts">
   import "../app.css";
-  import { layoutImage, showLayout } from "$lib/store/layoutstore";
+  import {
+    handleChangeLayoutImage,
+    layoutImage,
+    showLayout,
+  } from "$lib/store/layoutstore";
   let { children } = $props();
   import { innerWidth } from "svelte/reactivity/window";
   import { onMount } from "svelte";
-  import { getSpotlightImage_v5 } from "$lib/functions";
-  onMount(async () => {
-    $layoutImage = await getSpotlightImage_v5();
+  onMount(() => {
+    handleChangeLayoutImage();
   });
 </script>
 
