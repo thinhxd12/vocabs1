@@ -306,3 +306,16 @@ export const getTotalProgressByIndex = async (index: number) => {
     return 0;
   }
 };
+
+export const getLastProgress = async () => {
+  try {
+    const lastProgress = await db
+      .select()
+      .from(progressTable)
+      .orderBy(desc(progressTable.id))
+      .limit(1);
+    return lastProgress[0] as SelectProgress;
+  } catch (error) {
+    console.log(error);
+  }
+};

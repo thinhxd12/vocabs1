@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
 import type { CurrentlyWeatherType } from "$lib/types";
+import { onMount } from "svelte";
 
 export const isAutoPlay = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
@@ -119,21 +120,27 @@ const handleGetListContentQuiz = async (index: number) => {
 
 let intervalAutoplay: ReturnType<typeof setInterval>;
 
-// handlecheck
 const handleRenderWord = async () => {
   const listContentValue = get(listContent);
 
   listCount.update((n) => {
     const value = listContentValue[n];
+    handleCheckWord(value);
     renderWord.set(value);
-    if (value.number > 1) {
-      fetch(`/server/checkword?id=${value.id}`);
-    } else {
-      totalMemories.update((n) => n + 1);
-      fetch(`/server/archiveword?word=${value.word}&id=${value.id}`);
-    }
     return n + 1;
   });
+};
+
+// handlecheck
+const handleCheckWord = async (word: SelectVocab) => {
+  if (word.number > 1) {
+    fetch(`/server/checkword?id=${word.id}`);
+  } else {
+    const response = await fetch(
+      `/server/archiveword?word=${word.word}&id=${word.id}`
+    );
+    if (response.status == 201) totalMemories.update((n) => n + 1);
+  }
 };
 
 const startAutoplay = async () => {
@@ -192,7 +199,10 @@ export const updateTodayScheduleLocal = async () => {
   currentSchedule.set(data);
   if (todayScheduleValue.start.id === currentScheduleValue.id) {
     todaySchedule.set({ ...todayScheduleValue, start: data });
-  } else todaySchedule.set({ ...todayScheduleValue, end: data });
+  } else {
+    todaySchedule.set({ ...todayScheduleValue, end: data });
+    fetch(`/server/checkschedule`);
+  }
 };
 
 // -------------------AUTOPLAY END-------------------- //

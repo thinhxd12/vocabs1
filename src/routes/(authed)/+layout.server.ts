@@ -4,8 +4,9 @@ import {
   getWeatherList,
 } from "$lib/db/queries/select";
 import { redirect } from "@sveltejs/kit";
+import type { LayoutServerLoad } from "./$types";
 
-export async function load({ cookies }) {
+export const load: LayoutServerLoad = async ({ cookies }) => {
   if (!cookies.get("logged_in")) {
     redirect(303, `/login`);
   }
@@ -19,4 +20,4 @@ export async function load({ cookies }) {
     schedule: schedule,
     weather: weatherList,
   };
-}
+};

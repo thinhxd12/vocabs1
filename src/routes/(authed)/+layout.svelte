@@ -1,8 +1,10 @@
 <script lang="ts">
+  import Art from "$lib/components/Art.svelte";
+  import Bookmark from "$lib/components/Bookmark.svelte";
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
   import { getCurrentWeatherData } from "$lib/functions.js";
-  import { showLayout } from "$lib/store/layoutstore";
+  import { showBookmark, showLayout } from "$lib/store/layoutstore";
   import {
     todaySchedule,
     totalMemories,
@@ -10,6 +12,7 @@
   } from "$lib/store/navstore.js";
   import { format } from "date-fns";
   import { Toaster, toast } from "svelte-sonner";
+  import { fade } from "svelte/transition";
 
   let { data, children } = $props();
   const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -45,7 +48,11 @@
     <Menu />
   </div>
   {#if $showLayout}
-    <div class="bg-red-400 flex-1 h-full"></div>
+    {#if $showBookmark}
+      <Bookmark />
+    {:else}
+      <Art />
+    {/if}
   {/if}
 </section>
 <Toaster position="top-right" richColors />
@@ -53,15 +60,15 @@
 <style>
   @media only screen and (max-width: 600px) {
     .menu-bar-center {
-      width: 378px !important;
-      inset: 48px calc(50vw - 189px) 60px calc(50vw - 189px) !important;
+      inset: auto calc(50vw - 189px) 60px auto !important;
     }
   }
 
   .menu-bar-center {
     position: fixed;
-    width: 440px;
-    inset: 48px calc(50vw - 220px) 60px calc(50vw - 220px);
+    width: 30px;
+    height: 300px;
+    inset: auto auto 60px calc(50vw + 200px);
     display: flex;
     align-items: flex-end;
     justify-content: end;
@@ -70,8 +77,9 @@
 
   .menu-bar-right {
     position: fixed;
-    width: 378px;
-    inset: 48px 12px 60px calc(100vw - 390px);
+    width: 30px;
+    height: 300px;
+    inset: auto 12px 60px auto;
     display: flex;
     align-items: flex-end;
     justify-content: end;

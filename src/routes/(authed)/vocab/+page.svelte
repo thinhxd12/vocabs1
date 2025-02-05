@@ -103,11 +103,12 @@
       const wordData = (await response.json()) as SelectVocab;
       $renderWord = wordData;
       if (wordData.number > 1) {
-        await fetch(`/server/checkword?id=${id}`);
+        fetch(`/server/checkword?id=${id}`);
       } else {
-        await fetch(`/server/archiveword?word=${wordData.word}&id=${id}`);
-        const response = await fetch("/server/getmemorieslength");
-        $totalMemories = await response.json();
+        const response = await fetch(
+          `/server/archiveword?word=${wordData.word}&id=${id}`
+        );
+        if (response.status == 201) $totalMemories += 1;
       }
     }
     $searchTerm = "";
@@ -242,7 +243,7 @@
               onclick={() => (deleteIndex = i)}
               class="text-secondary-white text-10 leading-10 w-27 h-full"
             >
-              <Icon icon="iconamoon:trash" width="14" height="14" />
+              <Icon icon="hugeicons:delete-throw" width="14" height="14" />
             </button>
           </div>
         {/if}

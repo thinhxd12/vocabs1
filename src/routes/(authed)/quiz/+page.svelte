@@ -91,13 +91,12 @@
   async function handleCheckQuizWord() {
     if (!$quizRender) return;
     if ($quizRender.number > 1) {
-      await fetch(`/server/checkword?id=${$quizRender.id}`);
+      fetch(`/server/checkword?id=${$quizRender.id}`);
     } else {
-      await fetch(
+      const response = await fetch(
         `/server/archiveword?word=${$quizRender.word}&id=${$quizRender.id}`
       );
-      const response = await fetch("/server/getmemorieslength");
-      $totalMemories = await response.json();
+      if (response.status == 201) $totalMemories += 1;
     }
   }
 </script>

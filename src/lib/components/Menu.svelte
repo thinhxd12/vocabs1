@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { showLayout } from "$lib/store/layoutstore";
+  import {
+    layoutImage,
+    showBookmark,
+    showLayout,
+  } from "$lib/store/layoutstore";
   import { modal, showEdit, showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import Translate from "$lib/components/Translate.svelte";
@@ -19,6 +23,7 @@
   import { page } from "$app/state";
   import arrayShuffle from "array-shuffle";
   import { innerWidth } from "svelte/reactivity/window";
+  import { getSpotlightImage_v5 } from "$lib/functions";
 
   function startOrStopCountdown() {
     $countdown.isRunning ? stopCountdown() : startCountdown(5);
@@ -27,6 +32,10 @@
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
     handleGetListContent();
+  }
+
+  async function handleChangeLayoutImage() {
+    $layoutImage = await getSpotlightImage_v5();
   }
 </script>
 
@@ -48,6 +57,7 @@
       <Icon icon="ri:question-mark" width="12" height="12" />
     {/if}
   </button>
+
   <button
     class="btn-menu"
     class:active={$todaySchedule?.end.id === $currentSchedule?.id}
@@ -59,6 +69,16 @@
       <Icon icon="ri:question-mark" width="12" height="12" />
     {/if}
   </button>
+
+  {#if $showLayout}
+    <button class="btn-menu" onclick={() => ($showBookmark = !$showBookmark)}>
+      {#if $showBookmark}
+        <Icon icon="mdi:paint-outline" width="15" height="15" />
+      {:else}
+        <Icon icon="ion:book-outline" width="15" height="15" />
+      {/if}
+    </button>
+  {/if}
 
   {#if innerWidth.current && innerWidth.current > 600}
     {#if $showLayout}
@@ -76,7 +96,7 @@
     <Icon icon="ri:translate" width="15" height="15" />
   </button>
 
-  <button class="btn-menu">
+  <button class="btn-menu" onclick={handleChangeLayoutImage}>
     <Icon icon="cuida:image-outline" width="15" height="15" />
   </button>
 

@@ -30,28 +30,35 @@
     return exists;
   };
 
-  let progressItems = $state<SelectProgress[]>([]);
-
-  onMount(async () => {
-    getProgressByIndex(data.progressLength);
-  });
+  let progressItems = $state<SelectProgress[]>(data.progress);
 
   async function getProgressByIndex(index: number) {
     const response = await fetch(`/server/getprogress?index=${index}`);
     progressItems = await response.json();
   }
 
-  let showReset = $state<boolean>(true);
+  let showReset = $state<boolean>(false);
+  let showCreate = $state<boolean>(false);
 </script>
 
 <audio {src} bind:paused></audio>
 <main
-  class="relative z-50 w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col justify-start items-center gap-6"
+  class="w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col justify-start items-center gap-6"
 >
   <div
-    class="w-full h-[360px] mt-6 layout-white flex items-end justify-end relative bg-cover bg-left-bottom"
+    class="relative w-full h-[360px] mt-6 layout-white flex items-end justify-end bg-cover bg-left-bottom"
     style="background-image: url('/images/{format(new Date(), 'M')}.webp');"
   >
+    <div
+      class="absolute left-2 top-2 cursor-default px-3 py-1 bg-black/30 shadow-xl shadow-black/30 backdrop-blur-xl"
+    >
+      {#each data.diary as item}
+        <p class="text-7 font-400 leading-10 text-white">
+          {format(new Date(item.date), "yyyy-MM-dd")}
+          {item.count}
+        </p>
+      {/each}
+    </div>
     <Calendar.Root
       class="bg-white/45 backdrop-blur-[3px] w-full"
       let:months
@@ -76,15 +83,28 @@
         <div class="flex justify-center items-center relative">
           {#if showReset}
             <div
-              class="absolute -top-[66px] right-3 h-[57px] layout-white !bg-white"
+              class="absolute -top-[66px] right-1 layout-white !bg-white"
+              transition:fly={{ y: 15, duration: 50 }}
             >
-              <p class="text-12 font-rubik text-white bg-black leading-21 px-6">
-                Set current task
-              </p>
+              <div class="flex items-center justify-between bg-black">
+                <p class="text-12 font-rubik text-white leading-21 pl-6">
+                  Set current task
+                </p>
+                <button
+                  onclick={() => (showReset = !showReset)}
+                  class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
+                >
+                  <Icon
+                    icon="material-symbols:close-rounded"
+                    width="14"
+                    height="14"
+                  />
+                </button>
+              </div>
 
               {#if $todaySchedule}
                 <form
-                  action=""
+                  action="?/setProgress"
                   method="post"
                   class="w-full flex items-center justify-between gap-3 p-6"
                   use:enhance={({ formElement, formData, action, cancel }) => {
@@ -92,26 +112,40 @@
                       if (result.type === "failure") {
                         toast.error(result.data?.error as string);
                       } else {
-                        toast.success("Vocab inserted successfully");
+                        toast.success("Update successfully");
+                        showReset = false;
                       }
                     };
                   }}
                 >
                   <input
-                    name="word"
+                    name="count0"
                     autocomplete="off"
                     type="number"
                     min="0"
                     bind:value={$todaySchedule.start.count}
-                    class="text-12 font-rubik leading-24 h-24 pl-6 py-3 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                    class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
                   />
                   <input
-                    name="word"
+                    hidden
+                    name="id0"
+                    autocomplete="off"
+                    value={$todaySchedule.start.id}
+                  />
+
+                  <input
+                    name="count1"
                     autocomplete="off"
                     type="number"
                     min="0"
                     bind:value={$todaySchedule.end.count}
-                    class="text-12 font-rubik leading-24 h-24 pl-6 py-3 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                    class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                  />
+                  <input
+                    hidden
+                    name="id1"
+                    autocomplete="off"
+                    value={$todaySchedule.end.id}
                   />
                   <button
                     type="submit"
@@ -123,14 +157,127 @@
               {/if}
             </div>
           {/if}
+
+          {#if showCreate}
+            <div
+              class="absolute -top-[58px] right-1 layout-white !bg-white min-w-[180px]"
+              transition:fly={{ y: 15, duration: 50 }}
+            >
+              <div class="flex items-center justify-between bg-black">
+                <p class="text-12 font-rubik text-white leading-21 pl-6">
+                  Create new schedule
+                </p>
+                <button
+                  onclick={() => (showCreate = !showCreate)}
+                  class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
+                >
+                  <Icon
+                    icon="material-symbols:close-rounded"
+                    width="14"
+                    height="14"
+                  />
+                </button>
+              </div>
+
+              <form
+                action="?/setSchedule"
+                method="post"
+                class="w-full flex items-center justify-center gap-30 p-4"
+                use:enhance={({ formElement, formData, action, cancel }) => {
+                  return async ({ result }) => {
+                    if (result.type === "failure") {
+                      toast.error(result.data?.error as string);
+                    } else {
+                      toast.success("Create successfully");
+                      showReset = false;
+                    }
+                  };
+                }}
+              >
+                <button
+                  type="button"
+                  class="text-12 font-rubik hover:bg-black/20 rounded-3 px-4 pt-2"
+                  onclick={() => (showCreate = !showCreate)}
+                >
+                  Cancle
+                </button>
+
+                <button
+                  type="submit"
+                  class="text-12 font-rubik hover:bg-black/20 rounded-3 px-4 pt-2"
+                >
+                  Create
+                </button>
+              </form>
+
+              <!-- {#if $todaySchedule}
+              <form
+                action="?/setProgress"
+                method="post"
+                class="w-full flex items-center justify-between gap-3 p-6"
+                use:enhance={({ formElement, formData, action, cancel }) => {
+                  return async ({ result }) => {
+                    if (result.type === "failure") {
+                      toast.error(result.data?.error as string);
+                    } else {
+                      toast.success("Update successfully");
+                      showReset = false;
+                    }
+                  };
+                }}
+              >
+                <input
+                  name="count0"
+                  autocomplete="off"
+                  type="number"
+                  min="0"
+                  bind:value={$todaySchedule.start.count}
+                  class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                />
+                <input
+                  hidden
+                  name="id0"
+                  autocomplete="off"
+                  value={$todaySchedule.start.id}
+                />
+
+                <input
+                  name="count1"
+                  autocomplete="off"
+                  type="number"
+                  min="0"
+                  bind:value={$todaySchedule.end.count}
+                  class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                />
+                <input
+                  hidden
+                  name="id1"
+                  autocomplete="off"
+                  value={$todaySchedule.end.id}
+                />
+                <button
+                  type="submit"
+                  class="size-24 hover:bg-black/20 flex justify-center items-center rounded-3"
+                >
+                  <Icon icon="ri:link" width="16" height="16" />
+                </button>
+              </form>
+            {/if} -->
+            </div>
+          {/if}
           <button
-            class="hover:bg-black/20 text-[#363636] rounded-3 size-24 flex items-center justify-center"
+            class="hover:bg-black/20 {showReset
+              ? 'bg-black/20'
+              : ''} text-[#363636] rounded-3 size-24 flex items-center justify-center"
             onclick={() => (showReset = !showReset)}
           >
             <Icon icon="ri:reset-right-line" width="14" height="14" />
           </button>
           <button
-            class="hover:bg-black/20 text-[#363636] rounded-3 size-24 flex items-center justify-center"
+            class="hover:bg-black/20 {showCreate
+              ? 'bg-black/20'
+              : ''} text-[#363636] rounded-3 size-24 flex items-center justify-center"
+            onclick={() => (showCreate = !showCreate)}
           >
             <Icon icon="ri:calendar-2-line" width="14" height="14" />
           </button>
@@ -215,7 +362,9 @@
     </Calendar.Root>
   </div>
 
-  <div class="layout-white relative overflow-hidden !bg-green-400/15 p-6">
+  <div
+    class="layout-white relative overflow-hidden !bg-green-400/15 p-6 select-none"
+  >
     <p class="font-garamond text-12 font-500 leading-14">
       The tree that is supposed to grow to a proud height can dispense with bad
       weather and storms. Whether misfortune and external resistance, some kinds

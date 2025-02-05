@@ -1,4 +1,4 @@
-import { fail, redirect } from "@sveltejs/kit";
+import { fail, redirect, type ActionResult } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { supabase } from "$lib/supabase";
 
@@ -31,7 +31,7 @@ export const actions = {
   logout: async ({ cookies }) => {
     const { error } = await supabase.auth.signOut();
     cookies.delete("logged_in", { path: "/" });
-    throw redirect(303, "/");
+    throw redirect(303, "/login");
   },
 } satisfies Actions;
 

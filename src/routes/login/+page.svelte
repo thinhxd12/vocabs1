@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { goto } from "$app/navigation";
   let password = $state("");
   let { form } = $props();
   let creating = $state(false);
@@ -10,9 +11,9 @@
     action="?/login"
     method="post"
     class="w-[210px]"
-    use:enhance={() => {
+    use:enhance={({ formElement, formData, action, cancel }) => {
       creating = true;
-      return async ({ update }) => {
+      return async ({ result, update }) => {
         await update();
         creating = false;
       };
