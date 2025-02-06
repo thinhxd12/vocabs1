@@ -24,6 +24,7 @@
   import { page } from "$app/state";
   import arrayShuffle from "array-shuffle";
   import { innerWidth } from "svelte/reactivity/window";
+  import { enhance } from "$app/forms";
 
   function startOrStopCountdown() {
     $countdown.isRunning ? stopCountdown() : startCountdown(5);
@@ -36,7 +37,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-center w-30">
-  <form method="POST" action="/login?/logout">
+  <form method="POST" action="/login?/logout" use:enhance>
     <button class="btn-menu">
       <Icon icon="garden:exit-stroke-16" width="15" height="15" />
     </button>
@@ -44,25 +45,27 @@
 
   <button
     class="btn-menu"
-    class:active={$todaySchedule?.start.id === $currentSchedule?.id}
+    class:active={$todaySchedule &&
+      $todaySchedule.start.id === $currentSchedule?.id}
     onclick={() => handleGetList(0)}
   >
     {#if $todaySchedule}
       <span>{$todaySchedule.start.index}</span>
     {:else}
-      <Icon icon="ri:question-mark" width="12" height="12" />
+      <Icon icon="prime:question" width="15" height="15" />
     {/if}
   </button>
 
   <button
     class="btn-menu"
-    class:active={$todaySchedule?.end.id === $currentSchedule?.id}
+    class:active={$todaySchedule &&
+      $todaySchedule.end.id === $currentSchedule?.id}
     onclick={() => handleGetList(1)}
   >
     {#if $todaySchedule}
       <span>{$todaySchedule.end.index}</span>
     {:else}
-      <Icon icon="ri:question-mark" width="12" height="12" />
+      <Icon icon="prime:question" width="15" height="15" />
     {/if}
   </button>
 
@@ -117,7 +120,7 @@
 
 <style>
   .btn-menu {
-    @apply my-2 flex h-27 w-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-100 hover:shadow;
+    @apply outline-none my-2 flex h-27 w-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-100 hover:shadow;
   }
   .btn-menu span {
     @apply text-9;

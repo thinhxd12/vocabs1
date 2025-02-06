@@ -214,11 +214,13 @@ export const getBookmarkById = async (id: SelectBookmark["id"]) => {
 
 export const getBookmarkBySelected = async () => {
   try {
-    return await db
+    const result = await db
       .select()
       .from(bookmarkTable)
       .where(eq(bookmarkTable.selected, true))
       .limit(1);
+
+    return result[0] as SelectBookmark;
   } catch (error) {
     console.log(error);
   }

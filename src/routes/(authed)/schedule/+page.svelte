@@ -189,7 +189,7 @@
                       toast.error(result.data?.error as string);
                     } else {
                       toast.success("Create successfully");
-                      showReset = false;
+                      location.reload();
                     }
                   };
                 }}

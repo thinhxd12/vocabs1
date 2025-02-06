@@ -24,10 +24,12 @@
         format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null
     );
 
-    $todaySchedule = {
-      start: data.schedule[index],
-      end: data.schedule[index + 1],
-    };
+    if (index > -1) {
+      $todaySchedule = {
+        start: data.schedule[index],
+        end: data.schedule[index + 1],
+      };
+    } else $todaySchedule = undefined;
   }
 
   $locationList = data.weather;
@@ -58,7 +60,7 @@
 <Toaster position="top-right" richColors />
 
 <style>
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 405px) {
     .menu-bar-center {
       inset: auto calc(50vw - 189px) 60px auto !important;
     }

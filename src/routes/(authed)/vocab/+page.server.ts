@@ -9,7 +9,10 @@ import type { Actions } from "./$types";
 import { supabase } from "$lib/supabase";
 import type { InsertVocab, SelectVocab } from "$lib/db/schema";
 import { insertVocab } from "$lib/db/queries/insert";
-import { updateVocabById } from "$lib/db/queries/update";
+import {
+  updateBookmarkContentById,
+  updateVocabById,
+} from "$lib/db/queries/update";
 
 export const actions = {
   insertNewVocab: async ({ cookies, request }) => {
@@ -73,6 +76,28 @@ export const actions = {
     };
 
     const result = await updateVocabById(editedWord);
+    if (result.status) {
+      return {
+        type: "success",
+        status: 200,
+        data: {
+          message: "Edit successfully",
+        },
+      } as ActionResult;
+    } else {
+      return fail(422, { error: result.data.message });
+    }
+  },
+
+  editBookmark: async ({ cookies, request }) => {
+    const formData = await request.formData();
+    const id = formData.get("id") as string;
+    const content = formData.get("content") as string;
+
+    if (id.length === 0 || content.length === 0)
+      return fail(422, { error: "Invalid data" });
+
+    const result = await updateBookmarkContentById(id, content);
     if (result.status) {
       return {
         type: "success",

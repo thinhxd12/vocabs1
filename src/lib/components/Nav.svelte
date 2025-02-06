@@ -15,7 +15,7 @@
   import type { CurrentlyWeatherType } from "$lib/types";
   import { format } from "date-fns";
   import { getCurrentWeatherData } from "$lib/functions";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
 
@@ -167,22 +167,22 @@
 
 <style>
   .btn-nav {
-    @apply ml-3 flex h-36 flex-1 items-center justify-center overflow-hidden rounded-3 text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/45 backdrop-blur-md transition hover:bg-black/20;
+    @apply ml-3 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden rounded-3 text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/45 backdrop-blur-md transition hover:bg-black/20;
   }
   .btn-nav.active {
     @apply bg-black/20;
   }
 
   .btn-weather {
-    @apply relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-cover;
+    @apply relative outline-none ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-cover;
   }
 
   .btn-play {
-    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
+    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
   }
 
   .btn-pause {
-    @apply cursor-pointer relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
+    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
   }
 
   .marquee-container {
