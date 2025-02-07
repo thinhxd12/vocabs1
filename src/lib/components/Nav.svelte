@@ -2,20 +2,19 @@
   import { page } from "$app/state";
   import { WMOCODE } from "$lib/constants";
   import {
-    currentSchedule,
     handleAutoplay,
     isAutoPlay,
     listContent,
     listCount,
     locationList,
+    showWeather,
     todaySchedule,
     totalMemories,
   } from "$lib/store/navstore";
-  import { renderWord } from "$lib/store/vocabstore";
   import type { CurrentlyWeatherType } from "$lib/types";
   import { format } from "date-fns";
   import { getCurrentWeatherData } from "$lib/functions";
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy } from "svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
 
@@ -110,11 +109,11 @@
         : $totalMemories % 100}
     </span>
   </div>
-  <a
-    href="/vocab"
+  <button
     class="btn-weather"
     style="background-image: url({WMOCODE[navWeatherData.icon]
       .textdescription});"
+    onclick={() => ($showWeather = !$showWeather)}
   >
     <img
       src={navWeatherData.isDayTime
@@ -148,7 +147,7 @@
         </div>
       </div>
     </div>
-  </a>
+  </button>
 
   <button
     class={$isAutoPlay ? "btn-play" : "btn-pause"}

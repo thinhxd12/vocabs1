@@ -55,9 +55,9 @@
           {#if el.example.sentence}
             <div class="z-30 flex flex-1 items-center p-18">
               <h2 class="text-center text-18 leading-27">
-                <span class="definition-example shadow shadow-black/30"
-                  >{@html el.example.sentence}</span
-                >
+                <span class="definition-example shadow shadow-black/30">
+                  {@html el.example.sentence}
+                </span>
               </h2>
             </div>
           {/if}

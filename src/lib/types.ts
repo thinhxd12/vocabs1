@@ -54,7 +54,7 @@ export interface LayoutImageType {
   author: string;
   authorYears: string;
   content: string;
-  alsoItems: { url: string | undefined; img: string | undefined }[];
+  nextImageUrl: string;
 }
 
 export interface TranslateType {

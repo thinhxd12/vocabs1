@@ -7,42 +7,20 @@
   import { format } from "date-fns";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import { fly } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
 
-  let dummy = {
-    id: "019406cb-a459-7718-b722-0da365846a03",
-    authors: "Adolf Hitler",
-    bookTile: "Hitler's Table Talk 1941-1944: Secret Conversations",
-    page: 523,
-    location: "8015-8019",
-    dateOfCreation: "Added on Monday, February 20, 2023 10:26:10 PM".slice(9),
-    content:
-      "I have seen so many cases among members of our Party, whose wives have not been able to keep pace with their husbands’ rise in life. Grasping their opportunities, these latter have seen their talents blossom and expand in the execution of the tasks I have confided to them; burdened with wives who have ceased to be worthy of them, and exposed to unending petty domestic squabbles, they gradually come to accept as inevitable the idea of separation. To my mind, it is obvious that a man should seek in his wife qualities which are complementary to his own as the path towards a full and ideal life. But one cannot make hard and fast rules, and there are many exceptions.",
-    type: "HIGHLIGHT",
-    selected: true,
-    like: 2,
-  };
-  const bookdummy = {
-    title: "Hitler's Table Talk, 1941-1944",
-    authors: ["Norman Cameron", "R.H. Stevens", "Hugh Trevor-Roper"],
-    coverImage:
-      "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1328003686i/54332._SX500_.jpg",
-    detailsUrl:
-      "https://www.goodreads.com/book/show/54332.Hitler_s_Table_Talk_1941_1944?from_search=true&from_srp=true&qid=OvFEDpFiHY&rank=1",
-    goodreadsId: "54332",
-    publishedYear: "1953",
-    averageRating: "3.85",
-    numberOfRatings: "593",
-  };
   let bookmark = $state<SelectBookmark | undefined>(undefined);
   let bookInfo = $state<BookSearchType | undefined>(undefined);
 
-  let isReset = $state<boolean>(true);
+  let isReset = $state<boolean>(false);
 
   onMount(async () => {
     const response = await fetch(`/server/getbookmark?select=true`);
     bookmark = await response.json();
-    if (bookmark) handleGetBookInfo(bookmark);
+    if (bookmark) {
+      isReset = true;
+      handleGetBookInfo(bookmark);
+    }
   });
 
   async function handleGetBookInfo(data: SelectBookmark) {
@@ -53,9 +31,11 @@
   }
 
   async function handleGetNextBookmark() {
-    isReset = true;
+    isReset = false;
     const response = await fetch(`/server/getbookmark?nextid=${bookmark!.id}`);
     const data = await response.json();
+    isReset = true;
+
     if (data) {
       if (data.bookTile !== bookmark?.bookTile) {
         handleGetBookInfo(data);
@@ -65,9 +45,11 @@
   }
 
   async function handleGetPrevBookmark() {
-    isReset = true;
+    isReset = false;
     const response = await fetch(`/server/getbookmark?previd=${bookmark!.id}`);
     const data = await response.json();
+    isReset = true;
+
     if (data) {
       if (data.bookTile !== bookmark?.bookTile) {
         handleGetBookInfo(data);
@@ -111,7 +93,30 @@
   }
 
   let showEdit = $state<boolean>(false);
+  let showInsert = $state<boolean>(false);
+  let showDelete = $state<boolean>(false);
+
+  async function handleDeleteBookmark() {
+    if (!bookmark) return;
+    const response = await fetch(`/server/deletebookmark?id=${bookmark.id}`);
+    if (response.status === 200) {
+      toast.success("Delete bookmark successfully");
+    } else {
+      toast.error("Error");
+    }
+    handleGetNextBookmark();
+    showDelete = !showDelete;
+  }
 </script>
+
+<svelte:head>
+  <title
+    >{bookmark
+      ? `${bookmark.bookTile} by ${bookmark.authors}`
+      : "Bookmark"}</title
+  >
+  <meta name="bookmark" content="Some bookmark" />
+</svelte:head>
 
 <section class="flex-1 h-full pt-[48px] px-[48px] flex flex-col">
   {#if bookmark}
@@ -158,8 +163,35 @@
           ? "bg-[url('/images/paper.webp')]"
           : 'bg-[#dcd8d1]'} bg-cover bg-local"
       >
+        {#if showDelete}
+          <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 flex items-center p-6"
+            transition:fly={{ y: "-100%", duration: 100 }}
+          >
+            <div
+              class="layout-light flex flex-col items-center justify-center rounded-3 p-6"
+            >
+              <p class="mb-6 text-12 text-white">Delete this bookmark?</p>
+              <div class="flex items-center justify-center">
+                <button
+                  class="btn-bookmark-delete"
+                  onclick={() => (showDelete = !showDelete)}
+                >
+                  Cancel
+                </button>
+                <button
+                  class="btn-bookmark-delete !text-red-600"
+                  onclick={handleDeleteBookmark}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        {/if}
         <div
           class="bookmarkText p-9 pl-21 font-garamond text-20 font-400 leading-30"
+          transition:fade={{ duration: 300 }}
         >
           <div
             class="float-right w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
@@ -188,10 +220,8 @@
       </div>
     </div>
 
-    <div class="h-[48px] flex justify-center items-center">
-      <div
-        class=" flex flex-col items-center justify-center mr-6 pt-6 relative"
-      >
+    <div class="h-[48px] flex justify-center items-baseline p-9">
+      <div class=" flex flex-col items-center justify-center mr-6 relative">
         <button class="btn-heart text-black" onclick={handleCheckBookmark}>
           <Icon
             icon="bi:heart-fill"
@@ -218,15 +248,11 @@
         <Icon icon="hugeicons:book-edit" width="15" height="15" />
       </button>
 
-      <button class="btn-menu">
+      <button class="btn-menu" onclick={() => (showInsert = !showInsert)}>
         <Icon icon="hugeicons:row-insert" width="15" height="15" />
       </button>
 
-      <button class="btn-menu">
-        <Icon icon="hugeicons:property-search" width="15" height="15" />
-      </button>
-
-      <button class="btn-menu">
+      <button class="btn-menu" onclick={() => (showDelete = !showDelete)}>
         <Icon icon="hugeicons:delete-throw" width="15" height="15" />
       </button>
 
@@ -254,9 +280,9 @@
 <Dialog.Root bind:open={showEdit} closeOnOutsideClick>
   <Dialog.Portal>
     <Dialog.Overlay
-      transition={fly}
-      transitionConfig={{ duration: 50 }}
-      class="fixed inset-0 z-30 bg-black/30"
+      transition={fade}
+      transitionConfig={{ duration: 100 }}
+      class="fixed inset-0 z-30 bg-black/60"
     />
     <Dialog.Content
       class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
@@ -268,10 +294,10 @@
           class="w-full p-18"
           use:enhance={({ formElement, formData, action, cancel }) => {
             return async ({ result }) => {
-              if (result.type === "failure") {
-                toast.error(result.data?.error as string);
-              } else {
+              if (result.status === 200) {
                 toast.success("Update bookmark successfully");
+              } else {
+                toast.error("Error");
               }
             };
           }}
@@ -302,9 +328,69 @@
   </Dialog.Portal>
 </Dialog.Root>
 
+<Dialog.Root bind:open={showInsert} closeOnOutsideClick>
+  <Dialog.Portal>
+    <Dialog.Overlay
+      transition={fade}
+      transitionConfig={{ duration: 100 }}
+      class="fixed inset-0 z-30 bg-black/60"
+    />
+    <Dialog.Content
+      class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
+    >
+      <form
+        action="?/insertBookmark"
+        method="post"
+        class="w-full p-18"
+        use:enhance={({ formElement, formData, action, cancel }) => {
+          return async ({ result }) => {
+            if (result.status === 200) {
+              toast.success("Insert items successfully");
+            } else {
+              toast.error("Error");
+            }
+          };
+        }}
+      >
+        <textarea
+          class="p-9 w-full rounded-6 border-0 font-garamond text-18 font-400 leading-21 bg-[#dcd8d1] outline-none ring-1 ring-white/30"
+          name="content"
+          autocomplete="off"
+          onkeydown={(e) => e.stopPropagation()}
+          rows="12"
+        ></textarea>
+        <div class="flex w-full items-center justify-center gap-24 mt-6">
+          <Dialog.Close
+            class="rounded-6 text-center text-12 shadow font-400 leading-18 text-white  bg-white/15 transition hover:bg-white/10 py-3 px-6"
+            >Cancel</Dialog.Close
+          >
+          <button
+            type="submit"
+            class="rounded-6 text-center text-12 shadow font-400 leading-18 text-white bg-white/15 transition hover:bg-white/10 py-3 px-6"
+            >Insert</button
+          >
+        </div>
+      </form>
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
+
 <style>
   .btn-menu {
-    @apply mr-6 flex size-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-100 hover:shadow;
+    @apply mr-6 flex size-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-150;
+  }
+
+  .btn-menu:active :global svg {
+    transform: scale(1.1);
+  }
+
+  .btn-heart:active {
+    transform: scale(1.1);
+    transition-duration: 300ms ease;
+  }
+
+  .btn-bookmark-delete {
+    @apply h-24 w-[60px] rounded-3 bg-black/15 text-center text-12 font-600 leading-18 text-black/75 transition duration-100 first-of-type:mr-6 hover:bg-black/10;
   }
 
   .bookmarkText::first-letter {

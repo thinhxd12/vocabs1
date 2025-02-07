@@ -8,10 +8,9 @@ import arrayShuffle from "array-shuffle";
 import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
-import type { CurrentlyWeatherType } from "$lib/types";
-import { onMount } from "svelte";
 
 export const isAutoPlay = writable<boolean>(false);
+export const showWeather = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const todaySchedule = writable<
   | {

@@ -20,7 +20,14 @@ export const deleteVocabById = async (id: SelectVocab["id"]) => {
 export const deleteBookmarkById = async (id: SelectVocab["id"]) => {
   try {
     await db.delete(bookmarkTable).where(eq(bookmarkTable.id, id));
+    return {
+      status: true,
+      data: { message: "Delete action was successful!" } as DrizzleError,
+    };
   } catch (error) {
-    console.log(error);
+    return {
+      status: false,
+      data: error as DrizzleError,
+    };
   }
 };

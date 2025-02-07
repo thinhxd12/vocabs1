@@ -6,7 +6,7 @@ export async function GET({ url }) {
   if (!id) return json({ message: "Id not found", status: false });
   const result = await deleteVocabById(id);
   if (result.status) {
-    return json({ message: result.data.message, status: result.status });
+    return json({ message: result.data.message, status: 200 });
   }
   return json({ message: result.data.message, status: result.status });
 }

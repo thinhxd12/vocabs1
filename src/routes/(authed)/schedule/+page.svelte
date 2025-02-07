@@ -41,6 +41,11 @@
   let showCreate = $state<boolean>(false);
 </script>
 
+<svelte:head>
+  <title>📆</title>
+  <meta name="Schedule" content="Some Schedule" />
+</svelte:head>
+
 <audio {src} bind:paused></audio>
 <main
   class="w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col justify-start items-center gap-6"
@@ -209,60 +214,6 @@
                   Create
                 </button>
               </form>
-
-              <!-- {#if $todaySchedule}
-              <form
-                action="?/setProgress"
-                method="post"
-                class="w-full flex items-center justify-between gap-3 p-6"
-                use:enhance={({ formElement, formData, action, cancel }) => {
-                  return async ({ result }) => {
-                    if (result.type === "failure") {
-                      toast.error(result.data?.error as string);
-                    } else {
-                      toast.success("Update successfully");
-                      showReset = false;
-                    }
-                  };
-                }}
-              >
-                <input
-                  name="count0"
-                  autocomplete="off"
-                  type="number"
-                  min="0"
-                  bind:value={$todaySchedule.start.count}
-                  class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
-                />
-                <input
-                  hidden
-                  name="id0"
-                  autocomplete="off"
-                  value={$todaySchedule.start.id}
-                />
-
-                <input
-                  name="count1"
-                  autocomplete="off"
-                  type="number"
-                  min="0"
-                  bind:value={$todaySchedule.end.count}
-                  class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
-                />
-                <input
-                  hidden
-                  name="id1"
-                  autocomplete="off"
-                  value={$todaySchedule.end.id}
-                />
-                <button
-                  type="submit"
-                  class="size-24 hover:bg-black/20 flex justify-center items-center rounded-3"
-                >
-                  <Icon icon="ri:link" width="16" height="16" />
-                </button>
-              </form>
-            {/if} -->
             </div>
           {/if}
           <button
@@ -377,7 +328,7 @@
 
   <Pagination.Root
     count={data.progressLength}
-    onPageChange={(page) => getProgressByIndex(data.progressLength - page + 1)}
+    onPageChange={(page) => getProgressByIndex(data.progressLength - page)}
     perPage={1}
     let:pages
   >

@@ -12,9 +12,19 @@
   } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
-  import { totalMemories } from "$lib/store/navstore";
+  import { showWeather, totalMemories } from "$lib/store/navstore";
   import { fade, fly, slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
+  import Weather from "$lib/components/Weather.svelte";
+  import {
+    bounceIn,
+    linear,
+    quadIn,
+    quartIn,
+    quintIn,
+    quintOut,
+    sineIn,
+  } from "svelte/easing";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
@@ -169,6 +179,11 @@
   }
 </script>
 
+<svelte:head>
+  <title>{$renderWord ? `${$renderWord.word}` : "Vocab"}</title>
+  <meta name="Vocab" content="Some Vocab" />
+</svelte:head>
+
 <audio src={src0} bind:paused={paused0}></audio>
 <audio src={src1} bind:paused={paused1} onended={handlePlaySoundMeanings}
 ></audio>
@@ -196,7 +211,7 @@
     </p>
   {/if}
 </div>
-<div class="relative w-content h-[calc(100%-54px)]">
+<div class="relative w-content h-[calc(100%-54px)] overflow-hidden">
   {#if $renderWord}
     <div class="absolute w-full h-full z-10 no-scrollbar overflow-y-scroll">
       <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
@@ -253,6 +268,10 @@
 
   <Translate />
   <Edit id={editId} />
+
+  {#if $showWeather}
+    <Weather />
+  {/if}
 </div>
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />

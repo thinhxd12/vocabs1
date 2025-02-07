@@ -26,7 +26,9 @@
     "vite": "^5.4.11"
   },
   "dependencies": {
+    "@darylserrano/kindle-clippings": "^2.2.5",
     "@supabase/supabase-js": "^2.48.0",
+    "@svelte-put/dragscroll": "^4.0.0",
     "array-shuffle": "^3.0.0",
     "bits-ui": "^0.22.0",
     "cheerio": "^1.0.0",

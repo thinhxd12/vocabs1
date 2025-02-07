@@ -305,7 +305,7 @@ export const getTotalProgressByIndex = async (index: number) => {
       .limit(5);
     return result as SelectProgress[];
   } catch (error) {
-    return 0;
+    return [];
   }
 };
 

@@ -34,11 +34,8 @@ export const load: PageServerLoad = async ({ cookies }) => {
   }, []);
 
   const progressLength = await getTotalProgress();
-  let index =
-    progressLength % 5 === 0
-      ? progressLength / 5 - 1
-      : Math.floor(progressLength / 5);
-  const progress = await getTotalProgressByIndex(index);
+  let index = Math.ceil(progressLength / 5);
+  const progress = await getTotalProgressByIndex(index - 1);
   const diary = await getDiary();
 
   return {

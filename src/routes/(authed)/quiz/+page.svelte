@@ -101,6 +101,11 @@
   }
 </script>
 
+<svelte:head>
+  <title>🤔</title>
+  <meta name="Quiz" content="Some Quiz" />
+</svelte:head>
+🤔
 <audio {src} bind:paused></audio>
 
 {#if $quizRender}

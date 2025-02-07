@@ -9,7 +9,11 @@ import type {
 
 async function fetchGetText(url: string) {
   try {
-    let response = await fetch(url);
+    let response = await fetch(url, {
+      headers: {
+        "cache-control": "no-cache",
+      },
+    });
     let text = await response.text();
     return text;
   } catch (error) {

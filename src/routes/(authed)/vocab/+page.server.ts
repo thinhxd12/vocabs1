@@ -7,12 +7,16 @@ import {
 } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { supabase } from "$lib/supabase";
-import type { InsertVocab, SelectVocab } from "$lib/db/schema";
-import { insertVocab } from "$lib/db/queries/insert";
+import type { InsertBookmark, InsertVocab, SelectVocab } from "$lib/db/schema";
+import { insertBookmark, insertVocab } from "$lib/db/queries/insert";
 import {
   updateBookmarkContentById,
   updateVocabById,
 } from "$lib/db/queries/update";
+import {
+  parseKindleEntries,
+  readKindleClipping,
+} from "@darylserrano/kindle-clippings";
 
 export const actions = {
   insertNewVocab: async ({ cookies, request }) => {
@@ -109,5 +113,36 @@ export const actions = {
     } else {
       return fail(422, { error: result.data.message });
     }
+  },
+  insertBookmark: async ({ cookies, request }) => {
+    const formData = await request.formData();
+    const content = formData.get("content") as string;
+
+    if (content.length === 0) return fail(422, { error: "Invalid data" });
+
+    let entries = readKindleClipping(content);
+    let parsedEntries = parseKindleEntries(entries);
+
+    for (let i = 0; i < parsedEntries.length; i++) {
+      const row: InsertBookmark = {
+        authors: parsedEntries[i].authors,
+        bookTile: parsedEntries[i].bookTile,
+        page: parsedEntries[i].page,
+        location: parsedEntries[i].location,
+        dateOfCreation: parsedEntries[i].dateOfCreation,
+        content: parsedEntries[i].content,
+        type: parsedEntries[i].type,
+      };
+      const res = await insertBookmark(row);
+      if (res) return fail(422, { error: "Error" });
+    }
+
+    return {
+      type: "success",
+      status: 200,
+      data: {
+        message: "Insert successfully",
+      },
+    } as ActionResult;
   },
 } satisfies Actions;

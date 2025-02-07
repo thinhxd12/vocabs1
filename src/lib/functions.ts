@@ -1,5 +1,9 @@
 // import { rgbaToThumbHash } from "thumbhash";
-import type { CurrentlyWeatherType, LoginImageType } from "./types";
+import type {
+  CurrentlyWeatherType,
+  HourlyWeatherType,
+  LoginImageType,
+} from "./types";
 // import sharp from "sharp";
 import {
   currentSchedule,
@@ -80,4 +84,42 @@ export const getCurrentWeatherData = async ({
     windSpeed: data.current.wind_speed_10m,
   };
   return result;
+};
+
+export const getHourlyWeatherData = async ({
+  lat: lat,
+  lon: lon,
+}: {
+  lat: string;
+  lon: string;
+}) => {
+  "use server";
+  const params = {
+    latitude: String(lat),
+    longitude: String(lon),
+    hourly: [
+      "temperature_2m",
+      "precipitation_probability",
+      "weather_code",
+      "is_day",
+    ].join(","),
+    forecast_hours: String(24),
+    models: "best_match",
+    timezone: "auto",
+  };
+
+  const url = "https://api.open-meteo.com/v1/forecast?";
+  const paramsString = new URLSearchParams(params).toString();
+  const responses = await fetch(url + paramsString);
+  if (responses.status !== 200) return;
+  const data = await responses.json();
+
+  const result = data.hourly.time.map((item: string, index: number) => ({
+    time: item,
+    temperature: data.hourly.temperature_2m[index],
+    icon: data.hourly.weather_code[index],
+    probability: data.hourly.precipitation_probability[index],
+    isDayTime: data.hourly.is_day[index],
+  }));
+  return result as HourlyWeatherType[];
 };

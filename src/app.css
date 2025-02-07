@@ -25,13 +25,19 @@ body {
 }
 
 .layout-white {
-  @apply bg-white/35 shadow-sm shadow-black/45 backdrop-blur-xl;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(21px);
+  @apply shadow-sm shadow-black/45;
 }
 
 .layout-light {
-  @apply border-y border-b-white/15 border-t-white/25 bg-black/15 shadow-md shadow-black/45 backdrop-blur-xl;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(21px);
+  @apply border-y border-b-white/15 border-t-white/25  shadow-md shadow-black/45;
 }
 
 .layout-dark {
-  @apply border-y border-b-white/10 border-t-white/15 bg-black/45 shadow-md shadow-black/45 backdrop-blur-xl;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(21px);
+  @apply border-y border-b-white/10 border-t-white/15  shadow-md shadow-black/45;
 }
