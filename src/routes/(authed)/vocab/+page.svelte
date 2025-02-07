@@ -13,18 +13,9 @@
   import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
   import { showWeather, totalMemories } from "$lib/store/navstore";
-  import { fade, fly, slide } from "svelte/transition";
+  import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import Weather from "$lib/components/Weather.svelte";
-  import {
-    bounceIn,
-    linear,
-    quadIn,
-    quartIn,
-    quintIn,
-    quintOut,
-    sineIn,
-  } from "svelte/easing";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;

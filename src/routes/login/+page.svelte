@@ -6,6 +6,11 @@
   let creating = $state(false);
 </script>
 
+<svelte:head>
+  <title>login</title>
+  <meta name="login" content="login" />
+</svelte:head>
+
 <div class="w-full h-full flex justify-center items-center">
   <form
     action="?/login"

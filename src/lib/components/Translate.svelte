@@ -23,7 +23,7 @@
   let translationText = $state<string>();
 
   async function getTranslateData(text: string) {
-    const url = `https://mywebapp.abcworker.workers.dev/https://vocabs3.vercel.app/trans?text=${text}&from=auto&to=vi`;
+    const url = `https://vocabs3.vercel.app/trans?text=${text}&from=auto&to=vi`;
     const response = await fetch(url);
     const data = await response.json();
     if (data) return data as TranslateType;
