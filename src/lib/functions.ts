@@ -1,10 +1,8 @@
-// import { rgbaToThumbHash } from "thumbhash";
 import type {
   CurrentlyWeatherType,
   HourlyWeatherType,
   LoginImageType,
 } from "./types";
-// import sharp from "sharp";
 import {
   currentSchedule,
   isAutoPlay,
