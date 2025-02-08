@@ -1,16 +1,4 @@
 <script lang="ts">
-  import Definition from "$lib/components/Definition.svelte";
-  import Flipcard from "$lib/components/Flipcard.svelte";
-  import Translate from "$lib/components/Translate.svelte";
-  import Edit from "$lib/components/Edit.svelte";
-  import type { SelectVocab } from "$lib/db/schema";
-  import {
-    renderWord,
-    searchTerm,
-    searchResults,
-    showEdit,
-  } from "$lib/store/vocabstore";
-  import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
   import {
     listContent,
@@ -21,8 +9,6 @@
     currentSchedule,
     startCountdown,
   } from "$lib/store/navstore";
-  import { fade, fly, slide } from "svelte/transition";
-  import { toast } from "svelte-sonner";
   import arrayShuffle from "array-shuffle";
 
   let src = $state<string>("");
@@ -42,7 +28,7 @@
   });
 
   function createOptions() {
-    if ($listContent.length === 0) return;
+    if ($listContent.length === 0 || !$quizRender) return;
     const filterdOptions = $listContent.filter(
       (choice) => choice.id !== $quizRender!.id
     );
@@ -105,7 +91,6 @@
   <title>🤔</title>
   <meta name="Quiz" content="Some Quiz" />
 </svelte:head>
-🤔
 <audio {src} bind:paused></audio>
 
 {#if $quizRender}
@@ -148,7 +133,7 @@
 
 <style>
   .quiz-choice {
-    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg transition duration-100 hover:bg-black/15;
+    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg hover:bg-black/15 transition-all hover:text-18;
     text-shadow: 0 1px 3px black;
   }
 

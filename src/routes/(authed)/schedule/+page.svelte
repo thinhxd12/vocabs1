@@ -1,15 +1,7 @@
 <script lang="ts">
   import { format } from "date-fns";
-  import {
-    Calendar,
-    Pagination,
-    Popover,
-    Separator,
-    Toggle,
-    type PageItem,
-  } from "bits-ui";
+  import { Calendar, Pagination } from "bits-ui";
   import Icon from "@iconify/svelte";
-  import { onMount } from "svelte";
   import type { SelectProgress } from "$lib/db/schema.js";
   import { fly } from "svelte/transition";
   import { enhance } from "$app/forms";
@@ -109,6 +101,7 @@
 
               {#if $todaySchedule}
                 <form
+                  name="editprogress"
                   action="?/setProgress"
                   method="post"
                   class="w-full flex items-center justify-between gap-3 p-6"
@@ -185,6 +178,7 @@
               </div>
 
               <form
+                name="createschedule"
                 action="?/setSchedule"
                 method="post"
                 class="w-full flex items-center justify-center gap-30 p-4"

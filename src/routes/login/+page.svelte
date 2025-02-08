@@ -13,6 +13,7 @@
 
 <div class="w-full h-full flex justify-center items-center">
   <form
+    name="login"
     action="?/login"
     method="post"
     class="w-[210px]"

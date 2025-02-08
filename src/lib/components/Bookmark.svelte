@@ -289,6 +289,7 @@
     >
       {#if bookmark}
         <form
+          name="editbookmark"
           action="?/editBookmark"
           method="post"
           class="w-full p-18"
@@ -339,6 +340,7 @@
       class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
     >
       <form
+        name="insertbookmark"
         action="?/insertBookmark"
         method="post"
         class="w-full p-18"

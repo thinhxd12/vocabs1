@@ -1,17 +1,15 @@
 <script lang="ts">
-  import { applyAction, enhance } from "$app/forms";
+  import { enhance } from "$app/forms";
   import type { InsertVocab } from "$lib/db/schema";
   import { showLayout } from "$lib/store/layoutstore";
   import { showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { Dialog } from "bits-ui";
-  import { onMount } from "svelte";
-  import { fade, fly } from "svelte/transition";
-  import { Toaster, toast } from "svelte-sonner";
+  import { fly } from "svelte/transition";
+  import { toast } from "svelte-sonner";
   import type { TranslateType, VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/functions";
   import Definition from "./Definition.svelte";
-  import { innerWidth } from "svelte/reactivity/window";
 
   let translateWord = $state<InsertVocab>({
     word: "",
@@ -103,6 +101,7 @@
         : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
     >
       <form
+        name="insertvocab"
         action="?/insertNewVocab"
         method="post"
         class="w-full mb-6"

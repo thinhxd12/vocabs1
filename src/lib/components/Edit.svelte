@@ -105,6 +105,7 @@
         : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
     >
       <form
+        name="editvocab"
         action="?/editVocab"
         method="post"
         class="w-full mb-6"

@@ -171,7 +171,7 @@
 </script>
 
 <svelte:head>
-  <title>{$renderWord ? `${$renderWord.word}` : "Vocab"}</title>
+  <title>{$renderWord ? `${$renderWord.word}` : "vocab"}</title>
   <meta name="Vocab" content="Some Vocab" />
 </svelte:head>
 

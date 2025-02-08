@@ -1,28 +1,19 @@
 <script lang="ts">
   import {
     handleChangeLayoutImage,
-    layoutImage,
     showBookmark,
     showLayout,
   } from "$lib/store/layoutstore";
-  import { modal, showEdit, showTranslate } from "$lib/store/vocabstore";
+  import { showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
-  import Translate from "$lib/components/Translate.svelte";
-  import { AlertDialog } from "bits-ui";
   import {
     countdown,
     currentSchedule,
     handleGetListContent,
-    isAutoPlay,
-    listContent,
-    quizRender,
     startCountdown,
     stopCountdown,
     todaySchedule,
-    updateTodayScheduleLocal,
   } from "$lib/store/navstore";
-  import { page } from "$app/state";
-  import arrayShuffle from "array-shuffle";
   import { innerWidth } from "svelte/reactivity/window";
   import { enhance } from "$app/forms";
 
@@ -120,13 +111,13 @@
 
 <style>
   .btn-menu {
-    @apply outline-none my-2 flex h-27 w-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-100 hover:shadow;
+    @apply outline-none my-3 flex size-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-100 hover:shadow;
   }
   .btn-menu span {
-    @apply text-9;
+    @apply text-9 leading-27;
   }
 
   .btn-menu.active {
-    @apply bg-green-400/90;
+    @apply bg-green-400/60;
   }
 </style>

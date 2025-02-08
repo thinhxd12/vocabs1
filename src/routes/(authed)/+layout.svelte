@@ -3,7 +3,6 @@
   import Bookmark from "$lib/components/Bookmark.svelte";
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
-  import { getCurrentWeatherData } from "$lib/functions.js";
   import { showBookmark, showLayout } from "$lib/store/layoutstore";
   import {
     todaySchedule,
@@ -11,8 +10,7 @@
     locationList,
   } from "$lib/store/navstore.js";
   import { format } from "date-fns";
-  import { Toaster, toast } from "svelte-sonner";
-  import { fade } from "svelte/transition";
+  import { Toaster } from "svelte-sonner";
 
   let { data, children } = $props();
   const todayDate = format(new Date(), "yyyy-MM-dd");
