@@ -224,6 +224,7 @@
       onfocus={() => (inputVal = "")}
       onblur={() => {
         if ($renderWord) inputVal = $renderWord.word;
+        $searchResults = [];
       }}
     />
   {/if}
