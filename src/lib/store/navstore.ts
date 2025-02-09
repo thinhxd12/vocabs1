@@ -154,7 +154,7 @@ const startAutoplay = async () => {
     } else {
       endAutoplay();
     }
-  }, 7000);
+  }, 6000);
 };
 
 const pauseAutoplay = () => {
