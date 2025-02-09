@@ -221,10 +221,12 @@
       type="text"
       bind:value={inputVal}
       oninput={handleSearchInput}
-      onfocus={() => (inputVal = "")}
+      onfocus={() => {
+        inputVal = "";
+        $searchResults = [];
+      }}
       onblur={() => {
         if ($renderWord) inputVal = $renderWord.word;
-        $searchResults = [];
       }}
     />
   {/if}
