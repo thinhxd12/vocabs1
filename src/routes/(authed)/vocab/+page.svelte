@@ -192,8 +192,8 @@
 ></audio>
 
 <div class="w-content h-[48px] flex justify-center items-center gap-6">
-  {#if $renderWord}
-    {#if innerWidth.current && innerWidth.current > 450}
+  {#if innerWidth.current && innerWidth.current > 450}
+    {#if $renderWord}
       <Flipcard number={flipNumber} />
       <p
         style="color: {searchTermFounded ? 'white' : 'black'}"
@@ -207,25 +207,25 @@
         </small>
       </p>
     {:else}
-      <input
+      <p
         style="color: {searchTermFounded ? 'white' : 'black'}"
-        class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
-        type="text"
-        bind:value={inputVal}
-        oninput={handleSearchInput}
-        onfocus={() => (inputVal = "")}
-        onblur={() => {
-          if ($renderWord) inputVal = $renderWord.word;
-        }}
-      />
+        class="layout-white rounded-3 h-36 w-full pt-2 truncate text-center font-constantine text-21 font-700 uppercase leading-36 text-white"
+      >
+        {$searchTerm}
+      </p>
     {/if}
   {:else}
-    <p
+    <input
       style="color: {searchTermFounded ? 'white' : 'black'}"
-      class="layout-white rounded-3 h-36 w-full pt-2 truncate text-center font-constantine text-21 font-700 uppercase leading-36 text-white"
-    >
-      {$searchTerm}
-    </p>
+      class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
+      type="text"
+      bind:value={inputVal}
+      oninput={handleSearchInput}
+      onfocus={() => (inputVal = "")}
+      onblur={() => {
+        if ($renderWord) inputVal = $renderWord.word;
+      }}
+    />
   {/if}
 </div>
 <div class="relative w-content h-[calc(100%-54px)] overflow-hidden">
