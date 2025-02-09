@@ -16,6 +16,7 @@
   import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import Weather from "$lib/components/Weather.svelte";
+  import { innerWidth } from "svelte/reactivity/window";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
@@ -28,6 +29,7 @@
         deleteSearchTimeout = setTimeout(() => {
           searchTermFounded = true;
           $searchTerm = "";
+          inputVal = "";
           $searchResults = [];
           deleteIndex = 9;
         }, 1500);
@@ -103,6 +105,7 @@
     if (response.status === 200) {
       const wordData = (await response.json()) as SelectVocab;
       $renderWord = wordData;
+      inputVal = wordData.word;
       if (wordData.number > 1) {
         fetch(`/server/checkword?id=${id}`);
       } else {
@@ -168,6 +171,15 @@
     $showEdit = true;
     editId = $renderWord!.id;
   }
+
+  let inputVal = $state<string>("");
+
+  function handleSearchInput() {
+    clearTimeout(debouncetimeout);
+    if (inputVal.length > 2) {
+      trigger(inputVal.toLowerCase());
+    }
+  }
 </script>
 
 <svelte:head>
@@ -181,18 +193,32 @@
 
 <div class="w-content h-[48px] flex justify-center items-center gap-6">
   {#if $renderWord}
-    <Flipcard number={flipNumber} />
-    <p
-      style="color: {searchTermFounded ? 'white' : 'black'}"
-      class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
-    >
-      {$searchTerm || $renderWord.word}
-      <small
-        class="pl-3 pt-9 font-opensans text-center align-baseline text-9 font-600 !lowercase leading-12 text-secondary-white"
+    {#if innerWidth.current && innerWidth.current > 450}
+      <Flipcard number={flipNumber} />
+      <p
+        style="color: {searchTermFounded ? 'white' : 'black'}"
+        class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
       >
-        {$renderWord.phonetics}
-      </small>
-    </p>
+        {$searchTerm || $renderWord.word}
+        <small
+          class="pl-3 pt-9 font-opensans text-center align-baseline text-9 font-600 !lowercase leading-12 text-secondary-white"
+        >
+          {$renderWord.phonetics}
+        </small>
+      </p>
+    {:else}
+      <input
+        style="color: {searchTermFounded ? 'white' : 'black'}"
+        class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
+        type="text"
+        bind:value={inputVal}
+        oninput={handleSearchInput}
+        onfocus={() => (inputVal = "")}
+        onblur={() => {
+          if ($renderWord) inputVal = $renderWord.word;
+        }}
+      />
+    {/if}
   {:else}
     <p
       style="color: {searchTermFounded ? 'white' : 'black'}"

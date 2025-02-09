@@ -14,7 +14,7 @@
 </script>
 
 <main class="h-screen w-screen relative bg-cover">
-  {#if innerWidth.current && innerWidth.current > 600}
+  {#if innerWidth.current && innerWidth.current > 450}
     {#if $layoutImage}
       <img
         src={$layoutImage.image_L}

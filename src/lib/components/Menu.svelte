@@ -70,7 +70,7 @@
     </button>
   {/if}
 
-  {#if innerWidth.current && innerWidth.current > 600}
+  {#if innerWidth.current && innerWidth.current > 450}
     {#if $showLayout}
       <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}
         ><Icon icon="ri:layout-right-line" width="15" height="15" /></button
