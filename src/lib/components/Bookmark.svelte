@@ -194,7 +194,7 @@
           transition:fade={{ duration: 300 }}
         >
           <div
-            class="float-right w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
+            class="float-right ml-6 w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
           >
             <div
               class="bg-[#fe0000] h-18 text-12 pt-3 uppercase leading-14 text-center w-full font-rubik font-500 text-white px-3"
