@@ -28,6 +28,7 @@ export const countdown = writable({
   timeLeft: 0,
   isRunning: false,
 });
+export const vocabInput = writable<string>("");
 
 let interval: ReturnType<typeof setInterval>;
 const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -126,6 +127,7 @@ const handleRenderWord = async () => {
     const value = listContentValue[n];
     handleCheckWord(value);
     renderWord.set(value);
+    vocabInput.set(value.word);
     return n + 1;
   });
 };

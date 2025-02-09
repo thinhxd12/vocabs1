@@ -12,7 +12,7 @@
   } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
-  import { showWeather, totalMemories } from "$lib/store/navstore";
+  import { showWeather, totalMemories, vocabInput } from "$lib/store/navstore";
   import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import Weather from "$lib/components/Weather.svelte";
@@ -29,7 +29,7 @@
         deleteSearchTimeout = setTimeout(() => {
           searchTermFounded = true;
           $searchTerm = "";
-          inputVal = "";
+          $vocabInput = "";
           $searchResults = [];
           deleteIndex = 9;
         }, 1500);
@@ -105,7 +105,7 @@
     if (response.status === 200) {
       const wordData = (await response.json()) as SelectVocab;
       $renderWord = wordData;
-      inputVal = wordData.word;
+      $vocabInput = wordData.word;
       if (wordData.number > 1) {
         fetch(`/server/checkword?id=${id}`);
       } else {
@@ -172,12 +172,10 @@
     editId = $renderWord!.id;
   }
 
-  let inputVal = $state<string>("");
-
   function handleSearchInput() {
     clearTimeout(debouncetimeout);
-    if (inputVal.length > 2) {
-      trigger(inputVal.toLowerCase());
+    if ($vocabInput.length > 2) {
+      trigger($vocabInput.toLowerCase());
     }
   }
 </script>
@@ -222,14 +220,14 @@
       style="color: {searchTermFounded ? 'white' : 'black'}"
       class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
       type="text"
-      bind:value={inputVal}
+      bind:value={$vocabInput}
       oninput={handleSearchInput}
       onfocus={() => {
-        inputVal = "";
+        $vocabInput = "";
         $searchResults = [];
       }}
       onblur={() => {
-        if ($renderWord) inputVal = $renderWord.word;
+        if ($renderWord) $vocabInput = $renderWord.word;
       }}
     />
   {/if}
