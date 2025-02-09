@@ -40,24 +40,28 @@
 
 <audio {src} bind:paused></audio>
 <main
-  class="w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col justify-start items-center gap-6"
+  class="w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col justify-start items-center gap-3"
 >
   <div
-    class="relative w-full h-[360px] mt-6 layout-white flex items-end justify-end bg-cover bg-left-bottom"
-    style="background-image: url('/images/{format(new Date(), 'M')}.webp');"
+    class="relative w-full min-h-[360px] mt-3"
+    style="background: url('/images/{format(
+      new Date(),
+      'M'
+    )}.webp');background-size: 100%;"
   >
     <div
-      class="absolute left-2 top-2 cursor-default px-3 py-1 bg-black/30 shadow-xl shadow-black/30 backdrop-blur-xl"
+      class="absolute left-3 top-3 cursor-default px-3 pt-2 pb-1 bg-white/45 layout-white !shadow-none"
     >
       {#each data.diary as item}
-        <p class="text-7 font-400 leading-10 text-white">
+        <p class="text-7 font-400 leading-8 text-black/70 font-rubik">
           {format(new Date(item.date), "yyyy-MM-dd")}
           {item.count}
         </p>
       {/each}
     </div>
+
     <Calendar.Root
-      class="bg-white/45 backdrop-blur-[3px] w-full"
+      class="bg-white/45 layout-white w-full absolute bottom-0 left-0"
       let:months
       let:weekdays
       {isDateUnavailable}
@@ -333,7 +337,7 @@
             class="w-content font-rubik text-12 leading-24 h-24 flex items-center layout-white mb-3 select-none"
           >
             <div
-              class="bg-black/30 min-w-[120px] text-center text-secondary-white"
+              class="bg-black/60 min-w-[120px] text-center text-secondary-white"
             >
               {item.index + 1} - {item.index + 200}
             </div>

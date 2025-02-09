@@ -33,11 +33,11 @@ body {
 .layout-light {
   background: rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(21px);
-  @apply border-y border-b-white/15 border-t-white/25  shadow-md shadow-black/45;
+  @apply border-y border-b-white/15 border-t-white/25 shadow-md shadow-black/45;
 }
 
 .layout-dark {
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(21px);
-  @apply border-y border-b-white/10 border-t-white/15  shadow-md shadow-black/45;
+  @apply border-y border-b-white/10 border-t-white/15 shadow-md shadow-black/45;
 }
