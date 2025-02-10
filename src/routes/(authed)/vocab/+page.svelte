@@ -144,8 +144,10 @@
       .join(", ");
 
     src0 = `https://vocabs3.vercel.app/speech?text=${translations}`;
-    paused0 = false;
-    flipNumber = $renderWord!.number - 1;
+    setTimeout(() => {
+      paused0 = false;
+      flipNumber = $renderWord!.number - 1;
+    }, 1000);
   }
 
   async function confirmDelete(id: string) {
