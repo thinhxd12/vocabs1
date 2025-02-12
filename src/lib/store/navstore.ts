@@ -83,8 +83,9 @@ function notificationAlert() {
 }
 
 export function handleGetListContent() {
-  const index = get(currentSchedule)?.index;
-  if (!index) return;
+  const schedule = get(currentSchedule);
+  if (!schedule) return;
+  const index = schedule.index;
   if (page.url.pathname === "/vocab") {
     handleGetListContentVocab(index);
     return;

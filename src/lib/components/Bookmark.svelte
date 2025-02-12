@@ -197,12 +197,16 @@
             class="float-right ml-6 w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
           >
             <div
-              class="bg-[#fe0000] h-18 text-12 pt-3 uppercase leading-14 text-center w-full font-rubik font-500 text-white px-3"
+              class="bg-[#fe0000] h-18 w-full text-white px-3 flex items-end"
             >
-              <small>
-                {format(new Date(bookmark.dateOfCreation), "MMM")}
+              <small
+                class="text-8 font-rubik font-500 uppercase leading-13 mr-2"
+              >
+                {format(new Date(bookmark.dateOfCreation), "E")}
               </small>
-              {format(new Date(bookmark.dateOfCreation), "yyyy")}
+              <span class="text-11 font-rubik font-500 uppercase leading-14">
+                {format(new Date(bookmark.dateOfCreation), "MM/yy")}
+              </span>
             </div>
             <div
               class="flex-1 w-full font-rubik text-[36px] leading-[27px] mt-6 text-center"
