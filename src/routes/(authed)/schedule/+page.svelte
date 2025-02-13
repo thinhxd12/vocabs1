@@ -40,15 +40,9 @@
 
 <audio {src} bind:paused></audio>
 <main
-  class="w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col justify-start items-center gap-3"
+  class="w-content h-[calc(100vh-42px)] no-scrollbar overflow-y-scroll flex flex-col gap-3"
 >
-  <div
-    class="relative w-full min-h-[360px] mt-3"
-    style="background: url('/images/{format(
-      new Date(),
-      'M'
-    )}.webp');background-size: 100%;"
-  >
+  <div class="relative w-full mt-3 flex flex-col layout-white">
     <div
       class="absolute left-3 top-3 cursor-default px-3 pt-2 pb-1 bg-white/45 layout-white !shadow-none"
     >
@@ -60,8 +54,14 @@
       {/each}
     </div>
 
+    <img
+      src="/images/{format(new Date(), 'M')}.webp"
+      alt="calendar-bg"
+      class="w-full h-[202px] object-cover"
+    />
+
     <Calendar.Root
-      class="bg-white/45 layout-white w-full absolute bottom-0 left-0"
+      class="bg-white/45 w-full"
       let:months
       let:weekdays
       {isDateUnavailable}
@@ -311,18 +311,16 @@
     </Calendar.Root>
   </div>
 
-  <div
-    class="layout-white relative overflow-hidden !bg-green-400/15 p-6 select-none"
+  <p
+    class="font-garamond text-12 font-500 leading-14 layout-white !bg-green-400/15 p-6 select-none"
   >
-    <p class="font-garamond text-12 font-500 leading-14">
-      The tree that is supposed to grow to a proud height can dispense with bad
-      weather and storms. Whether misfortune and external resistance, some kinds
-      of hatred, jealousy, stubbornness, mistrust, hardness, avarice, and
-      violence do not belong among the favorable conditions without which any
-      great growth. The poison of which weaker natures perish strengthens the
-      strong — nor do they call it poison.
-    </p>
-  </div>
+    The tree that is supposed to grow to a proud height can dispense with bad
+    weather and storms. Whether misfortune and external resistance, some kinds
+    of hatred, jealousy, stubbornness, mistrust, hardness, avarice, and violence
+    do not belong among the favorable conditions without which any great growth.
+    The poison of which weaker natures perish strengthens the strong — nor do
+    they call it poison.
+  </p>
 
   <Pagination.Root
     count={data.progressLength}
@@ -334,17 +332,17 @@
       {#if progressItems.length}
         {#each progressItems as item}
           <div
-            class="w-content font-rubik text-12 leading-24 h-24 flex items-center layout-white mb-3 select-none"
+            class="w-content gap-1 font-rubik text-12 h-24 flex items-center mb-3 select-none"
           >
             <div
-              class="bg-black/60 min-w-[120px] text-center text-secondary-white"
+              class="border-none layout-dark min-w-[120px] text-center text-secondary-white leading-22 pt-2"
             >
               {item.index + 1} - {item.index + 200}
             </div>
-            <div class="flex-1 text-center">
+            <div class="flex-1 text-center leading-22 pt-2 layout-white">
               {format(new Date(item.start_date), "yyyy-MM-dd")}
             </div>
-            <div class="flex-1 text-center">
+            <div class="flex-1 text-center leading-22 pt-2 layout-white">
               {format(new Date(item.end_date), "yyyy-MM-dd")}
             </div>
           </div>
@@ -354,11 +352,11 @@
 
     <div class="my-3 flex items-center justify-between mx-auto w-2/3">
       <Pagination.PrevButton
-        class="hover:bg-black/10 text-[#363636] cursor-pointer rounded-3 size-24 flex items-center justify-center disabled:cursor-not-allowed disabled:text-[#636363] hover:disabled:bg-transparent"
+        class="hover:bg-black/10 text-white cursor-pointer rounded-3 size-24 flex items-center justify-center disabled:cursor-not-allowed disabled:text-white/30 hover:disabled:bg-transparent"
       >
         <Icon icon="flowbite:angle-left-outline" width="18" height="18" />
       </Pagination.PrevButton>
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-6 text-secondary-white">
         {#each pages as page (page.key)}
           {#if page.type === "ellipsis"}
             <div class="text-15 font-500">...</div>
@@ -373,7 +371,7 @@
         {/each}
       </div>
       <Pagination.NextButton
-        class="hover:bg-black/10 text-[#363636] cursor-pointer rounded-3 size-24 flex items-center justify-center disabled:cursor-not-allowed disabled:text-[#636363] hover:disabled:bg-transparent"
+        class="hover:bg-black/10 text-white cursor-pointer rounded-3 size-24 flex items-center justify-center disabled:cursor-not-allowed disabled:text-white/30 hover:disabled:bg-transparent"
       >
         <Icon icon="flowbite:angle-right-outline" width="18" height="18" />
       </Pagination.NextButton>
