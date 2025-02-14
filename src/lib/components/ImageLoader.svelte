@@ -23,8 +23,8 @@
 
   $effect(() => {
     const v = imageSrc;
+    placeholderData = "";
     untrack(async () => {
-      placeholderData = "";
       if (hash) {
         const thumbHashFromBase64 = base64ToUint8Array(hash);
         placeholderData = thumbHashToDataURL(thumbHashFromBase64);

@@ -10,6 +10,7 @@
     startCountdown,
   } from "$lib/store/navstore";
   import arrayShuffle from "array-shuffle";
+  import ImageLoader from "$lib/components/ImageLoader.svelte";
 
   let src = $state<string>("");
   let paused = $state<boolean>(true);
@@ -94,9 +95,11 @@
 <audio {src} bind:paused></audio>
 
 {#if $quizRender}
-  <main class="w-content h-[calc(100%-42px)] flex flex-col">
+  <main
+    class="w-content h-[calc(100vh-42px)] flex flex-col overflow-y-scroll no-scrollbar"
+  >
     <div
-      class="mx-auto mb-18 mt-27 h-[120px] w-2/3 relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
+      class="mx-auto mb-18 mt-27 min-h-[120px] w-2/3 relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
     >
       <h1
         class="absolute left-1/2 -translate-x-1/2 -top-9 bg-transparent text-center text-[168px] leading-[115px] text-white/20"
@@ -122,10 +125,30 @@
                 ? "quiz-choice-true"
                 : "quiz-choice"
             : "quiz-choice"}
+          disabled={submitted}
           onclick={() => submitAnswer(item)}
         >
           {item}
         </button>
+      {/each}
+    </div>
+
+    <div class="flex flex-col mx-auto mt-9">
+      {#each $quizRender.meanings as entry}
+        {#each entry.definitions as el}
+          {#if el.image}
+            {#if el.image}
+              <ImageLoader
+                width={252}
+                height={142}
+                imageSrc={el.image}
+                hash={el.hash}
+                word={$quizRender}
+                className="mb-9 shadow-sm shadow-black/45"
+              />
+            {/if}
+          {/if}
+        {/each}
       {/each}
     </div>
   </main>
@@ -133,7 +156,7 @@
 
 <style>
   .quiz-choice {
-    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg hover:bg-black/15 transition-all sm:hover:text-18 hover:text-15;
+    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg hover:bg-black/15 transition-all sm:hover:text-16 hover:text-15;
     text-shadow: 0 1px 3px black;
   }
 

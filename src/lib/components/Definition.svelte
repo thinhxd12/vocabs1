@@ -36,15 +36,15 @@
             {#if isEdit}
               <img
                 alt="..."
-                width={388}
-                height={218}
+                width={378}
+                height={212}
                 src={el.image}
                 class="!absolute !h-full !w-full object-cover brightness-75"
               />
             {:else}
               <ImageLoader
-                width={388}
-                height={218}
+                width={378}
+                height={212}
                 imageSrc={el.image}
                 hash={el.hash}
                 word={item}
