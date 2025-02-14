@@ -54,14 +54,14 @@
 
 <nav class="w-content h-[42px] flex">
   <div
-    class="flex h-36 w-12 flex-col items-center justify-between rounded-3 bg-black/60 shadow-md shadow-black/45 backdrop-blur-md"
+    class="flex h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md"
   >
     <div class="flex flex-col justify-center text-center">
       {#if $todaySchedule}
-        <span class="text-9 leading-10 text-white">
+        <span class="text-9 leading-11 text-white">
           {$todaySchedule.start.count}
         </span>
-        <span class="text-9 leading-10 text-white">
+        <span class="text-9 leading-11 text-white">
           {$todaySchedule.end.count}
         </span>
       {:else}
@@ -69,11 +69,11 @@
         <span class="text-9 leading-10 text-white"> N </span>
       {/if}
     </div>
-    <span
-      class="px-2 -translate-y-3 -rotate-90 rounded-3 bg-white/15 text-center text-8 leading-10 text-white"
+    <div
+      class="-rotate-90 bg-white/15 px-6 w-16 h-12 text-8 leading-10 text-white"
     >
       {format(todayDate, "eeeeee")}
-    </span>
+    </div>
   </div>
 
   <a
@@ -96,14 +96,14 @@
   <a href="/quiz" class="btn-nav">Memento mori.Rem'ber you will die.</a>
 
   <div
-    class="ml-3 flex h-36 flex-col items-center justify-center rounded-3 bg-black/60 px-1 text-white shadow-sm shadow-black/45 backdrop-blur-md"
+    class="ml-3 flex h-36 flex-col items-center px-1 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >
-    <span class="font-tupa text-18 font-600 leading-15">
+    <span class="font-tupa text-18 font-600 leading-17">
       {Math.floor($totalMemories / 100) < 10
         ? "0" + Math.floor($totalMemories / 100)
         : Math.floor($totalMemories / 100)}
     </span>
-    <span class="font-tupa text-18 font-600 leading-18">
+    <span class="font-tupa text-18 font-600 leading-17">
       {$totalMemories % 100 < 10
         ? "0" + ($totalMemories % 100)
         : $totalMemories % 100}
@@ -166,22 +166,23 @@
 
 <style>
   .btn-nav {
-    @apply ml-3 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden rounded-3 text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/45 backdrop-blur-md transition hover:bg-black/20;
+    @apply ml-3 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/45 backdrop-blur-md transition hover:bg-black/20;
   }
+
   .btn-nav.active {
     @apply bg-black/20;
   }
 
   .btn-weather {
-    @apply relative outline-none ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-cover;
+    @apply relative outline-none ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-cover;
   }
 
   .btn-play {
-    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
+    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
   }
 
   .btn-pause {
-    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden rounded-3 shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
+    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
   }
 
   .marquee-container {
