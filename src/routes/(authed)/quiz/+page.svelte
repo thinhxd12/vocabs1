@@ -68,7 +68,7 @@
         submitted = false;
         updateTodayScheduleLocal();
         if ($currentSchedule && $currentSchedule.count < 11) {
-          startCountdown(5);
+          startCountdown(6);
         }
       }, 1000);
     }

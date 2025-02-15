@@ -171,7 +171,7 @@ const endAutoplay = async () => {
   await updateTodayScheduleLocal();
   const currentScheduleValue = get(currentSchedule);
   if (currentScheduleValue && currentScheduleValue.count < 9) {
-    startCountdown(5);
+    startCountdown(6);
   }
 };
 

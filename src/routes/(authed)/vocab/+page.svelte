@@ -12,11 +12,17 @@
   } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
-  import { showWeather, totalMemories, vocabInput } from "$lib/store/navstore";
+  import {
+    countdown,
+    showWeather,
+    totalMemories,
+    vocabInput,
+  } from "$lib/store/navstore";
   import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import Weather from "$lib/components/Weather.svelte";
   import { innerWidth } from "svelte/reactivity/window";
+  import { format } from "date-fns";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
@@ -183,7 +189,11 @@
 </script>
 
 <svelte:head>
-  <title>{$renderWord ? `${$renderWord.word}` : "vocab"}</title>
+  {#if $countdown.isRunning}
+    <title>{$countdown.timeLeft}:00</title>
+  {:else}
+    <title>{$renderWord ? `${$renderWord.word}` : "vocab"}</title>
+  {/if}
   <meta name="Vocab" content="Some Vocab" />
 </svelte:head>
 
