@@ -18,7 +18,7 @@
   import { enhance } from "$app/forms";
 
   function startOrStopCountdown() {
-    $countdown.isRunning ? stopCountdown() : startCountdown(5);
+    $countdown.isRunning ? stopCountdown() : startCountdown(6);
   }
 
   function handleGetList(numb: number) {
@@ -118,6 +118,6 @@
   }
 
   .btn-menu.active {
-    @apply bg-green-400/60;
+    @apply bg-green-400/90;
   }
 </style>

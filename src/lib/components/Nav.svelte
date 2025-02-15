@@ -54,7 +54,7 @@
 
 <nav class="w-content h-[42px] flex">
   <div
-    class="flex h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md"
+    class="flex h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md overflow-hidden"
   >
     <div class="flex flex-col justify-center text-center">
       {#if $todaySchedule}
@@ -65,12 +65,12 @@
           {$todaySchedule.end.count}
         </span>
       {:else}
-        <span class="text-9 leading-10 text-white"> N </span>
-        <span class="text-9 leading-10 text-white"> N </span>
+        <span class="text-9 leading-10 text-white">N</span>
+        <span class="text-9 leading-10 text-white">N</span>
       {/if}
     </div>
     <div
-      class="-rotate-90 bg-white/15 px-6 w-16 h-12 text-8 leading-10 text-white"
+      class="-rotate-90 bg-white/15 text-center w-14 h-14 text-8 leading-12 text-white"
     >
       {format(todayDate, "eeeeee")}
     </div>
