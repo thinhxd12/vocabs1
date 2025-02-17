@@ -2,6 +2,7 @@ import type {
   CurrentlyWeatherType,
   HourlyWeatherType,
   LoginImageType,
+  TomorrowWeatherCurrentType,
 } from "./types";
 import {
   currentSchedule,
@@ -120,4 +121,44 @@ export const getHourlyWeatherData = async ({
     isDayTime: data.hourly.is_day[index],
   }));
   return result as HourlyWeatherType[];
+};
+
+export const getCurrentWeatherTomorrowData = async (
+  lat: string,
+  lon: string
+) => {
+  const url = `https://api.tomorrow.io/v4/weather/realtime?location=${lat}, ${lon}&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "accept-encoding": "deflate, gzip, br",
+    },
+  };
+
+  const response = await fetch(url, options);
+  if (response.status == 200) {
+    const result = await response.json();
+    return result.data;
+  }
+};
+
+export const getHourlyWeatherTomorrowData = async (
+  lat: string,
+  lon: string
+) => {
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=${lat}, ${lon}&timesteps=1h&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "accept-encoding": "deflate, gzip, br",
+    },
+  };
+
+  const response = await fetch(url, options);
+  if (response.status == 200) {
+    const result = await response.json();
+    return result.timelines;
+  }
 };

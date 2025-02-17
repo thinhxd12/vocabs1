@@ -3,34 +3,72 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import Tick from "$lib/components/Tick.svelte";
 
-  let state = $state(123);
+  let currentDummy = {
+    data: {
+      time: "2023-01-26T07:48:00Z",
+      values: {
+        cloudBase: 0.07,
+        cloudCeiling: 0.07,
+        cloudCover: 100,
+        dewPoint: 0.88,
+        freezingRainIntensity: 0,
+        humidity: 96,
+        precipitationProbability: 0,
+        pressureSurfaceLevel: 984.57,
+        rainIntensity: 0,
+        sleetIntensity: 0,
+        snowIntensity: 0,
+        temperature: 1.88,
+        temperatureApparent: -0.69,
+        uvHealthConcern: 0,
+        uvIndex: 0,
+        visibility: 9.9,
+        weatherCode: 1001,
+        windDirection: 10,
+        windGust: 3.38,
+        windSpeed: 2.38,
+      },
+    },
+    location: {
+      lat: 43.653480529785156,
+      lon: -79.3839340209961,
+      name: "Old Toronto, Toronto, Golden Horseshoe, Ontario, Canada",
+      type: "administrative",
+    },
+  };
+
+  let current = $state(currentDummy);
+
+  function name() {
+    const url =
+      "https://api.tomorrow.io/v4/weather/realtime?location=10.65639, 106.3458&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi";
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        "accept-encoding": "deflate, gzip, br",
+      },
+    };
+
+    fetch(url, options)
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json);
+        current = json;
+      })
+      .catch((err) => console.error(err));
+  }
 </script>
 
-<main class="flex items-center justify-center flex-col">
+<main class="flex items-center justify-center flex-col relative z-50">
   <div class="flex">
-    <button onclick={() => (state = 1714)} class="mr-2 rounded-1 border px-1">
-      1714
-    </button>
-    <button onclick={() => (state = 127)} class="mr-2 rounded-1 border px-1">
-      127
-    </button>
-    <button onclick={() => (state = 1)} class="mr-2 rounded-1 border px-1">
-      1
-    </button>
-    <button onclick={() => (state = 0)} class="mr-2 rounded-1 border px-1">
-      0
-    </button>
-  </div>
-  <!-- <Flipcard number={state} /> -->
-
-  <div class="font-tupa text-18 font-600 leading-15">
-    <Tick number={state} />
+    <button onclick={name} class="mr-2 rounded-1 border px-1"> RUN </button>
   </div>
 
-  <!-- <ImageLoader
-    width={360}
-    height={208}
-    hash="qggKDYKKnUh/dpiEiImJhyfF/6XI"
-    imageSrc="https://media.gettyimages.com/id/2157231571/photo/a-senior-couple-embracing-on-a-public-bench-in-a-park.jpg?s=612x612&w=0&k=20&c=mr4D1DEukt60L44QJC5IeQqXKnnLbdaP_lcNRljy3tI="
-  /> -->
+  <img
+    src={`/tomorrow/${current.data.values.weatherCode}0.png`}
+    alt=""
+    width={50}
+    height={50}
+  />
 </main>

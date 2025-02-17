@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { WMOCODE } from "$lib/constants";
+  import { TOMORROW_CONDITIONS } from "$lib/constants";
   import {
     handleAutoplay,
     isAutoPlay,
@@ -11,32 +11,55 @@
     todaySchedule,
     totalMemories,
   } from "$lib/store/navstore";
-  import type { CurrentlyWeatherType } from "$lib/types";
+  import type { TomorrowWeatherCurrentType } from "$lib/types";
   import { format } from "date-fns";
-  import { getCurrentWeatherData } from "$lib/functions";
+  import { getCurrentWeatherTomorrowData } from "$lib/functions";
   import { onDestroy } from "svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
 
-  let navWeatherData = $state<CurrentlyWeatherType>({
-    apparentTemperature: 0,
-    isDayTime: false,
-    humidity: 0,
-    temperature: 0,
+  interface CurrentWeatherType extends TomorrowWeatherCurrentType {
+    isDay: 0 | 1;
+  }
+
+  let navWeatherData = $state<CurrentWeatherType>({
+    cloudBase: 0.07,
+    cloudCeiling: 0.07,
+    cloudCover: 100,
+    dewPoint: 0.88,
+    freezingRainIntensity: 0,
+    humidity: 96,
+    precipitationProbability: 0,
+    pressureSurfaceLevel: 984.57,
+    rainIntensity: 0,
+    sleetIntensity: 0,
+    snowIntensity: 0,
+    temperature: 1.88,
+    temperatureApparent: -0.69,
+    uvHealthConcern: 0,
     uvIndex: 0,
-    icon: 96,
-    windDirection: 0,
-    windSpeed: 0,
+    visibility: 9.9,
+    weatherCode: 1001,
+    windDirection: 10,
+    windGust: 3.38,
+    windSpeed: 2.38,
+    isDay: 0,
   });
+
   let interval: ReturnType<typeof setInterval>;
 
   async function getNavWeatherData() {
     const defaultLocation = $locationList[0];
-    const data = await getCurrentWeatherData({
-      lat: defaultLocation.lat,
-      lon: defaultLocation.lon,
-    });
-    if (data) navWeatherData = data;
+    const data = await getCurrentWeatherTomorrowData(
+      defaultLocation.lat,
+      defaultLocation.lon
+    );
+
+    if (data) {
+      const currenttime = format(data.time, "k");
+      let isDay = Number(currenttime) >= 18 ? 1 : 0;
+      navWeatherData = { ...data.values, isDay };
+    }
   }
 
   getNavWeatherData();
@@ -110,40 +133,36 @@
     </span>
   </div>
   <button
-    class="btn-weather"
-    style="background-image: url({WMOCODE[navWeatherData.icon]
-      .textdescription});"
+    class="btn-weather relative"
+    style="background-image: {navWeatherData.isDay
+      ? `url(${TOMORROW_CONDITIONS[navWeatherData.weatherCode].background})`
+      : `url(${TOMORROW_CONDITIONS[navWeatherData.weatherCode].backgroundNight})`}"
     onclick={() => ($showWeather = !$showWeather)}
   >
-    <img
-      src={navWeatherData.isDayTime
-        ? WMOCODE[navWeatherData.icon].day.image
-        : WMOCODE[navWeatherData.icon].night.image}
-      alt="Weather Icon"
-      width={21}
-      height={21}
-      class="absolute right-12 top-1 z-10 brightness-90"
-      style="filter: drop-shadow(0px 2px 2px #000000)"
-    />
-    <span
-      style="text-shadow: 0px 0px 6px #000000"
-      class="absolute right-1 top-1 z-10 text-8 font-600 leading-8 text-white"
-    >
-      {Math.round(navWeatherData.temperature)}°
-    </span>
+    <div class="flex absolute top-1 right-1 justify-center items-center gap-3">
+      <img
+        src={`/tomorrow/${navWeatherData.weatherCode}${navWeatherData.isDay}.png`}
+        alt="weather-icon"
+        width={21}
+        height={21}
+        style="filter: drop-shadow(0px 2px 2px #000000)"
+      />
+      <span
+        class="text-12 font-500 leading-18 text-white"
+        style="text-shadow: 0px 0px 6px #000000"
+      >
+        {Math.round(navWeatherData.temperature)}°
+      </span>
+    </div>
     <div class="flex absolute bottom-0 left-0 z-10 w-full">
       <div class="marquee-container">
         <div class="marquee-content">
-          {navWeatherData.isDayTime
-            ? WMOCODE[navWeatherData.icon].day.description
-            : WMOCODE[navWeatherData.icon].night.description}
+          {TOMORROW_CONDITIONS[navWeatherData.weatherCode].name}
         </div>
       </div>
       <div class="marquee-container">
         <div class="marquee-content">
-          {navWeatherData.isDayTime
-            ? WMOCODE[navWeatherData.icon].day.description
-            : WMOCODE[navWeatherData.icon].night.description}
+          {TOMORROW_CONDITIONS[navWeatherData.weatherCode].name}
         </div>
       </div>
     </div>
