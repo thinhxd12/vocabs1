@@ -116,7 +116,9 @@
     Pecunia non olet.Money does not stink.
   </a>
 
-  <a href="/quiz" class="btn-nav">Memento mori.Rem'ber you will die.</a>
+  <a href="/quiz" class="btn-nav" class:active={page.url.pathname === "/quiz"}>
+    Memento mori.Rem'ber you will die.
+  </a>
 
   <div
     class="ml-3 flex h-36 flex-col items-center px-1 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
@@ -139,7 +141,7 @@
       : `url(${TOMORROW_CONDITIONS[navWeatherData.weatherCode].backgroundNight})`}"
     onclick={() => ($showWeather = !$showWeather)}
   >
-    <div class="flex absolute top-1 right-1 justify-center items-center gap-3">
+    <div class="flex absolute top-0 right-3 justify-center items-center gap-3">
       <img
         src={`/tomorrow/${navWeatherData.weatherCode}${navWeatherData.isDay}.png`}
         alt="weather-icon"
@@ -148,7 +150,7 @@
         style="filter: drop-shadow(0px 2px 2px #000000)"
       />
       <span
-        class="text-12 font-500 leading-18 text-white"
+        class="text-9 font-500 leading-18 text-white"
         style="text-shadow: 0px 0px 6px #000000"
       >
         {Math.round(navWeatherData.temperature)}°
@@ -185,11 +187,11 @@
 
 <style>
   .btn-nav {
-    @apply ml-3 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden text-center text-8 font-400 leading-8 text-white shadow-sm shadow-black/45 backdrop-blur-md transition hover:bg-black/20;
+    @apply ml-3 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden text-center text-8 font-400 leading-8 text-transparent shadow-sm shadow-black/45 backdrop-blur-md transition-all hover:bg-black/20 hover:text-white;
   }
 
   .btn-nav.active {
-    @apply bg-black/20;
+    @apply text-white bg-black/20;
   }
 
   .btn-weather {

@@ -301,10 +301,6 @@
 
   <Translate />
   <Edit id={editId} />
-
-  {#if $showWeather}
-    <Weather />
-  {/if}
 </div>
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />

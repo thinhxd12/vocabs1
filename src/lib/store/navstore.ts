@@ -113,6 +113,7 @@ const handleGetListContentQuiz = async (index: number) => {
     const data = (await response.json()) as SelectVocab[];
     const content = arrayShuffle(data);
     listContent.set(content);
+    isAutoPlay.set(false);
     quizRender.set(content[0]);
   }
 };

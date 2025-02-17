@@ -3,11 +3,13 @@
   import Bookmark from "$lib/components/Bookmark.svelte";
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
+  import Weather from "$lib/components/Weather.svelte";
   import { showBookmark, showLayout } from "$lib/store/layoutstore";
   import {
     todaySchedule,
     totalMemories,
     locationList,
+    showWeather,
   } from "$lib/store/navstore.js";
   import { format } from "date-fns";
   import { Toaster } from "svelte-sonner";
@@ -47,6 +49,11 @@
   <div class={$showLayout ? "menu-bar-right" : "menu-bar-center"}>
     <Menu />
   </div>
+
+  {#if $showWeather}
+    <Weather />
+  {/if}
+
   {#if $showLayout}
     {#if $showBookmark}
       <Bookmark />
