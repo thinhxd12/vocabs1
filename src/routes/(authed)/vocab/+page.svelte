@@ -206,20 +206,20 @@
     {#if $renderWord}
       <Flipcard number={flipNumber} />
       <p
-        style="color: {searchTermFounded ? 'white' : 'black'}"
-        class="layout-main rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
+        style="color: {searchTermFounded ? 'black' : 'white'}"
+        class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
       >
         {$searchTerm || $renderWord.word}
         <small
-          class="pl-3 pt-9 font-opensans text-center align-baseline text-9 font-600 !lowercase leading-12 text-secondary-white"
+          class="pl-3 pt-9 font-opensans text-center align-baseline text-9 font-600 !lowercase leading-12"
         >
           {$renderWord.phonetics}
         </small>
       </p>
     {:else}
       <p
-        style="color: {searchTermFounded ? 'white' : 'black'}"
-        class="layout-main rounded-3 h-36 w-full pt-2 truncate text-center font-constantine text-21 font-700 uppercase leading-36 text-white"
+        style="color: {searchTermFounded ? 'black' : 'white'}"
+        class="layout-white rounded-3 h-36 w-full pt-2 truncate text-center font-constantine text-21 font-700 uppercase leading-36 text-white"
       >
         {$searchTerm}
       </p>
@@ -230,7 +230,7 @@
     {/if}
     <input
       style="color: {searchTermFounded ? 'white' : 'black'}"
-      class="layout-main rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
+      class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
       type="text"
       bind:value={$vocabInput}
       oninput={handleSearchInput}
@@ -253,7 +253,7 @@
   {#if $searchResults.length}
     <div
       transition:expand={{ duration: 150 }}
-      class="layout-main p-6 rounded-3 absolute flex flex-col w-full h-full z-20 no-scrollbar overflow-y-scroll"
+      class="layout-white p-6 rounded-3 absolute flex flex-col w-full h-full z-20 no-scrollbar overflow-y-scroll"
     >
       {#each $searchResults as item, i}
         {#if i === deleteIndex}

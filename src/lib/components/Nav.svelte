@@ -141,7 +141,7 @@
       : `url(${TOMORROW_CONDITIONS[navWeatherData.weatherCode].backgroundNight})`}"
     onclick={() => ($showWeather = !$showWeather)}
   >
-    <div class="flex absolute top-0 right-3 justify-center items-center gap-3">
+    <div class="flex absolute top-1 right-3 justify-center items-center gap-3">
       <img
         src={`/tomorrow/${navWeatherData.weatherCode}${navWeatherData.isDay}.png`}
         alt="weather-icon"
@@ -187,23 +187,23 @@
 
 <style>
   .btn-nav {
-    @apply ml-3 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden text-center text-8 font-400 leading-8 text-transparent shadow-sm shadow-black/45 backdrop-blur-md transition-all hover:bg-black/20 hover:text-white;
+    @apply ml-3 rounded-2 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden text-center text-8 font-400 leading-8 text-transparent shadow-sm shadow-black/45 bg-black/20 backdrop-blur-md hover:text-white;
   }
 
   .btn-nav.active {
-    @apply text-white bg-black/20;
+    @apply text-white;
   }
 
   .btn-weather {
-    @apply relative outline-none ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-cover;
+    @apply relative rounded-2 outline-none ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-cover;
   }
 
   .btn-play {
-    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
+    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
   }
 
   .btn-pause {
-    @apply cursor-pointer outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
+    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
   }
 
   .marquee-container {

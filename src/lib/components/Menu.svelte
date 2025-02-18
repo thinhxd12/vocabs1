@@ -111,7 +111,7 @@
 
 <style>
   .btn-menu {
-    @apply outline-none my-3 flex size-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-100 hover:shadow;
+    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 text-white shadow shadow-black/30 backdrop-blur-md transition duration-100 hover:shadow;
   }
   .btn-menu span {
     @apply text-9 leading-27;
