@@ -98,7 +98,21 @@
   <main
     class="w-content h-[calc(100vh-42px)] flex flex-col overflow-y-scroll no-scrollbar"
   >
-    <div class="flex flex-col mx-auto mt-9">
+    <div
+      class="my-9 min-h-[120px] w-2/3 mx-auto relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
+    >
+      <h1
+        class="absolute left-1/2 -translate-x-1/2 -top-9 bg-transparent text-center text-[168px] leading-[115px] text-white/20"
+      >
+        {$quizRender.number}
+      </h1>
+      <p
+        class=" text-white bg-black/60 shadow-lg pb-3 shadow-black/60 backdrop-blur-xl w-full text-center"
+      >
+        {$quizRender.meanings.flatMap((item) => item.translation).join(", ")}
+      </p>
+    </div>
+    <div class="flex flex-1 flex-col mx-auto overflow-y-scroll no-scrollbar">
       {#each $quizRender.meanings as entry}
         {#each entry.definitions as el}
           {#if el.image}
@@ -115,21 +129,6 @@
           {/if}
         {/each}
       {/each}
-    </div>
-
-    <div
-      class="mx-auto mb-18 mt-27 min-h-[120px] w-2/3 relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
-    >
-      <h1
-        class="absolute left-1/2 -translate-x-1/2 -top-9 bg-transparent text-center text-[168px] leading-[115px] text-white/20"
-      >
-        {$quizRender.number}
-      </h1>
-      <p
-        class=" text-white bg-black/60 shadow-lg pb-3 shadow-black/60 backdrop-blur-xl w-full text-center"
-      >
-        {$quizRender.meanings.flatMap((item) => item.translation).join(", ")}
-      </p>
     </div>
 
     <div class="bg-transparent no-scrollbar w-2/3 outline-none mx-auto">
