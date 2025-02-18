@@ -19,6 +19,7 @@
   import { format } from "date-fns";
   import { getCurrentWeatherTomorrowData } from "$lib/functions";
   import { onDestroy } from "svelte";
+  import Icon from "@iconify/svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   type WeatherDataType = {
@@ -147,7 +148,23 @@
     )})"
     onclick={() => ($showWeather = !$showWeather)}
   >
-    <div class="flex absolute top-1 right-3 justify-center items-center gap-3">
+    <div class="flex absolute top-1 right-3 justify-center items-start gap-3">
+      {#if navWeatherData.values.precipitationProbability}
+        <Icon
+          icon="akar-icons:umbrella"
+          width="12"
+          height="12"
+          style="filter: drop-shadow(0px 2px 2px #000000)"
+          class="text-white mt-3"
+        />
+        <span
+          class="text-9 font-500 leading-15 mt-3 text-blue-400"
+          style="text-shadow: 0px 0px 6px #000000"
+        >
+          {navWeatherData.values.precipitationProbability}%
+        </span>
+      {/if}
+
       <img
         src={getConditionIconImage(
           navWeatherData.values.weatherCode,
@@ -160,7 +177,7 @@
         style="filter: drop-shadow(0px 2px 2px #000000)"
       />
       <span
-        class="text-9 font-500 leading-18 text-white"
+        class="text-9 font-500 leading-15 mt-3 text-white"
         style="text-shadow: 0px 0px 6px #000000"
       >
         {Math.round(navWeatherData.values.temperature)}°
