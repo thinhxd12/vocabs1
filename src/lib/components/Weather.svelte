@@ -2,7 +2,7 @@
   import { locationList, showWeather } from "$lib/store/navstore";
   import type { SelectWeather } from "$lib/db/schema";
   import { getHourlyWeatherTomorrowData } from "$lib/functions";
-  import { TOMORROW_CONDITIONS } from "$lib/constants";
+  import { getConditionIconImage, TOMORROW_CONDITIONS } from "$lib/constants";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import { format } from "date-fns";
@@ -19,10 +19,6 @@
     hourlyData = data.hourly;
   }
 
-  function getDayTime(time: string) {
-    const currenttime = format(time, "k");
-    return Number(currenttime) >= 18 ? 1 : 0;
-  }
   onMount(() => {
     const defaultLocation = $locationList[0];
     getWeatherData(defaultLocation.lat, defaultLocation.lon);
@@ -68,7 +64,11 @@
               {TOMORROW_CONDITIONS[hourlyData[0].values.weatherCode].name}
             </span>
             <img
-              src={`/tomorrow/${hourlyData[0].values.weatherCode}${getDayTime(hourlyData[0].time)}.png`}
+              src={getConditionIconImage(
+                hourlyData[0].values.weatherCode,
+                "large",
+                hourlyData[0].time
+              )}
               width={30}
               class="ml-3"
               style="filter: drop-shadow(0 1px 3px black)"
@@ -135,7 +135,11 @@
                   width={36}
                   style="filter: drop-shadow(0 1px 3px black)"
                   alt="hourly-icon"
-                  src={`/tomorrow/${item.values.weatherCode}${getDayTime(item.time)}.png`}
+                  src={getConditionIconImage(
+                    item.values.weatherCode,
+                    "large",
+                    item.time
+                  )}
                 />
                 <p class="text-13 font-400 leading-24 text-white">
                   {Math.round(item.values.temperature)}°

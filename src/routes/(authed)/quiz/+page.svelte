@@ -98,6 +98,25 @@
   <main
     class="w-content h-[calc(100vh-42px)] flex flex-col overflow-y-scroll no-scrollbar"
   >
+    <div class="flex flex-col mx-auto mt-9">
+      {#each $quizRender.meanings as entry}
+        {#each entry.definitions as el}
+          {#if el.image}
+            {#if el.image}
+              <ImageLoader
+                width={252}
+                height={142}
+                imageSrc={el.image}
+                hash={el.hash}
+                word={$quizRender}
+                className="mb-9 shadow-sm shadow-black/45"
+              />
+            {/if}
+          {/if}
+        {/each}
+      {/each}
+    </div>
+
     <div
       class="mx-auto mb-18 mt-27 min-h-[120px] w-2/3 relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
     >
@@ -130,25 +149,6 @@
         >
           {item}
         </button>
-      {/each}
-    </div>
-
-    <div class="flex flex-col mx-auto mt-9">
-      {#each $quizRender.meanings as entry}
-        {#each entry.definitions as el}
-          {#if el.image}
-            {#if el.image}
-              <ImageLoader
-                width={252}
-                height={142}
-                imageSrc={el.image}
-                hash={el.hash}
-                word={$quizRender}
-                className="mb-9 shadow-sm shadow-black/45"
-              />
-            {/if}
-          {/if}
-        {/each}
       {/each}
     </div>
   </main>

@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { WeatherCodeData } from "./types";
 
 export function getElText(doc: any, query: string, defaultText: string) {
@@ -459,8 +460,9 @@ type TomorrowConditionsType = {
   [key: string]: {
     name: string;
     iconName: string;
-    background: string;
+    backgroundDay: string;
     backgroundNight: string;
+    hasNightIcon: boolean;
   };
 };
 
@@ -468,140 +470,201 @@ export const TOMORROW_CONDITIONS: TomorrowConditionsType = {
   "0": {
     name: "Unknown",
     iconName: "unknown",
+    hasNightIcon: false,
+    backgroundDay: "",
     backgroundNight: "",
-    background: "",
   },
   "1000": {
     name: "Clear",
     iconName: "clear",
-    background: "/navweather/clear-day.webp",
+    hasNightIcon: true,
+    backgroundDay: "/navweather/clear-day.webp",
     backgroundNight: "/navweather/clear-night.webp",
   },
   "1100": {
     name: "Mostly Clear",
     iconName: "mostly_clear",
-    background: "/navweather/clear-day.webp",
+    hasNightIcon: true,
+    backgroundDay: "/navweather/clear-day.webp",
     backgroundNight: "/navweather/clear-night.webp",
   },
   "1101": {
     name: "Partly Cloudy",
     iconName: "partly_cloudy",
-    background: "/navweather/partly-cloudy.webp",
+    hasNightIcon: true,
+    backgroundDay: "/navweather/partly-cloudy.webp",
     backgroundNight: "/navweather/partly-cloudy.webp",
   },
   "1102": {
     name: "Mostly Cloudy",
     iconName: "mostly_cloudy",
-    background: "/navweather/cloudy.webp",
+    hasNightIcon: true,
+    backgroundDay: "/navweather/cloudy.webp",
     backgroundNight: "/navweather/cloudy.webp",
   },
   "1001": {
     name: "Cloudy",
     iconName: "cloudy",
-    background: "/navweather/cloudy.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/cloudy.webp",
     backgroundNight: "/navweather/cloudy.webp",
   },
-  "2000": { name: "Fog", iconName: "fog", backgroundNight: "", background: "" },
+  "2000": {
+    name: "Fog",
+    iconName: "fog",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/foggy.webp",
+    backgroundNight: "/navweather/foggy.webp",
+  },
   "2100": {
     name: "Light Fog",
     iconName: "fog_light",
-    background: "/navweather/foggy.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/foggy.webp",
     backgroundNight: "/navweather/foggy.webp",
   },
   "4000": {
     name: "Drizzle",
     iconName: "drizzle",
-    background: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/rain.webp",
     backgroundNight: "/navweather/rain.webp",
   },
   "4001": {
     name: "Rain",
     iconName: "rain",
-    background: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/rain.webp",
     backgroundNight: "/navweather/rain.webp",
   },
   "4200": {
     name: "Light Rain",
     iconName: "rain_light",
-    background: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/rain.webp",
     backgroundNight: "/navweather/rain.webp",
   },
   "4201": {
     name: "Heavy Rain",
     iconName: "rain_heavy",
-    background: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/rain.webp",
     backgroundNight: "/navweather/rain.webp",
   },
   "5000": {
     name: "Snow",
     iconName: "snow",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "5001": {
     name: "Flurries",
     iconName: "flurries",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "5100": {
     name: "Light Snow",
     iconName: "snow_light",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "5101": {
     name: "Heavy Snow",
     iconName: "snow_heavy",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "6000": {
     name: "Freezing Drizzle",
     iconName: "freezing_rain_drizzle",
-    background: "/navweather/rain.webp",
-    backgroundNight: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
+    backgroundNight: "/navweather/snow.webp",
   },
   "6001": {
     name: "Freezing Rain",
     iconName: "freezing_rain",
-    background: "/navweather/rain.webp",
-    backgroundNight: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
+    backgroundNight: "/navweather/snow.webp",
   },
   "6200": {
     name: "Light Freezing Rain",
     iconName: "freezing_rain_light",
-    background: "/navweather/rain.webp",
-    backgroundNight: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
+    backgroundNight: "/navweather/snow.webp",
   },
   "6201": {
     name: "Heavy Freezing Rain",
     iconName: "freezing_rain_heavy",
-    background: "/navweather/rain.webp",
-    backgroundNight: "/navweather/rain.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
+    backgroundNight: "/navweather/snow.webp",
   },
   "7000": {
     name: "Ice Pellets",
     iconName: "ice_pellets",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "7101": {
     name: "Heavy Ice Pellets",
     iconName: "ice_pellets_heavy",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "7102": {
     name: "Light Ice Pellets",
     iconName: "ice_pellets_light",
-    background: "/navweather/snow.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/snow.webp",
     backgroundNight: "/navweather/snow.webp",
   },
   "8000": {
     name: "Thunderstorm",
     iconName: "tstorm",
-    background: "/navweather/thunderstorm.webp",
+    hasNightIcon: false,
+    backgroundDay: "/navweather/thunderstorm.webp",
     backgroundNight: "/navweather/thunderstorm.webp",
   },
 };
+
+export function getConditionIconImage(
+  weatherCode: number,
+  size: "large" | "small",
+  time: string
+) {
+  const iconName = TOMORROW_CONDITIONS[weatherCode].iconName;
+  let dayNightCode = "0";
+  const now = format(time, "k");
+  const isBeforeDawn = Number(now) < 6;
+  const isAfterDusk = Number(now) > 18;
+
+  if (
+    TOMORROW_CONDITIONS[weatherCode].hasNightIcon &&
+    (isBeforeDawn || isAfterDusk)
+  ) {
+    dayNightCode = "1";
+  }
+  const imageUrl = `https://raw.githubusercontent.com/Tomorrow-IO-API/tomorrow-weather-codes/master/V2_icons/${size}/png/${weatherCode}${dayNightCode}_${iconName}_${size}.png`;
+  return imageUrl;
+}
+
+export function getConditionBackground(weatherCode: number, time: string) {
+  const now = format(time, "k");
+  const isBeforeDawn = Number(now) < 6;
+  const isAfterDusk = Number(now) > 18;
+
+  if (isBeforeDawn || isAfterDusk) {
+    TOMORROW_CONDITIONS[weatherCode].backgroundNight;
+  }
+  return TOMORROW_CONDITIONS[weatherCode].backgroundDay;
+}

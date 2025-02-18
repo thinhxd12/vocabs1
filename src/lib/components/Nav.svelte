@@ -1,6 +1,10 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { TOMORROW_CONDITIONS } from "$lib/constants";
+  import {
+    getConditionBackground,
+    getConditionIconImage,
+    TOMORROW_CONDITIONS,
+  } from "$lib/constants";
   import {
     handleAutoplay,
     isAutoPlay,
@@ -17,33 +21,38 @@
   import { onDestroy } from "svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
+  type WeatherDataType = {
+    time: string;
+    values: TomorrowWeatherCurrentType;
+  };
 
-  interface CurrentWeatherType extends TomorrowWeatherCurrentType {
-    isDay: 0 | 1;
-  }
-
-  let navWeatherData = $state<CurrentWeatherType>({
-    cloudBase: 0.07,
-    cloudCeiling: 0.07,
-    cloudCover: 100,
-    dewPoint: 0.88,
-    freezingRainIntensity: 0,
-    humidity: 96,
-    precipitationProbability: 0,
-    pressureSurfaceLevel: 984.57,
-    rainIntensity: 0,
-    sleetIntensity: 0,
-    snowIntensity: 0,
-    temperature: 1.88,
-    temperatureApparent: -0.69,
-    uvHealthConcern: 0,
-    uvIndex: 0,
-    visibility: 9.9,
-    weatherCode: 1001,
-    windDirection: 10,
-    windGust: 3.38,
-    windSpeed: 2.38,
-    isDay: 0,
+  let navWeatherData = $state<WeatherDataType>({
+    time: "2025-02-18T04:43:00Z",
+    values: {
+      cloudBase: 1.2,
+      cloudCeiling: 1.2,
+      cloudCover: 100,
+      dewPoint: 21.8,
+      freezingRainIntensity: 0,
+      hailProbability: 44.5,
+      hailSize: 6,
+      humidity: 59,
+      precipitationProbability: 0,
+      pressureSeaLevel: 1013,
+      pressureSurfaceLevel: 1013,
+      rainIntensity: 0,
+      sleetIntensity: 0,
+      snowIntensity: 0,
+      temperature: 30.8,
+      temperatureApparent: 34.2,
+      uvHealthConcern: 3,
+      uvIndex: 10,
+      visibility: 12.5,
+      weatherCode: 1001,
+      windDirection: 10,
+      windGust: 5.1,
+      windSpeed: 1.7,
+    },
   });
 
   let interval: ReturnType<typeof setInterval>;
@@ -54,12 +63,7 @@
       defaultLocation.lat,
       defaultLocation.lon
     );
-
-    if (data) {
-      const currenttime = format(data.time, "k");
-      let isDay = Number(currenttime) >= 18 ? 1 : 0;
-      navWeatherData = { ...data.values, isDay };
-    }
+    if (data) navWeatherData = data;
   }
 
   getNavWeatherData();
@@ -134,16 +138,22 @@
         : $totalMemories % 100}
     </span>
   </div>
+
   <button
     class="btn-weather relative"
-    style="background-image: {navWeatherData.isDay
-      ? `url(${TOMORROW_CONDITIONS[navWeatherData.weatherCode].background})`
-      : `url(${TOMORROW_CONDITIONS[navWeatherData.weatherCode].backgroundNight})`}"
+    style="background-image: url({getConditionBackground(
+      navWeatherData.values.weatherCode,
+      navWeatherData.time
+    )})"
     onclick={() => ($showWeather = !$showWeather)}
   >
     <div class="flex absolute top-1 right-3 justify-center items-center gap-3">
       <img
-        src={`/tomorrow/${navWeatherData.weatherCode}${navWeatherData.isDay}.png`}
+        src={getConditionIconImage(
+          navWeatherData.values.weatherCode,
+          "large",
+          navWeatherData.time
+        )}
         alt="weather-icon"
         width={21}
         height={21}
@@ -153,18 +163,18 @@
         class="text-9 font-500 leading-18 text-white"
         style="text-shadow: 0px 0px 6px #000000"
       >
-        {Math.round(navWeatherData.temperature)}°
+        {Math.round(navWeatherData.values.temperature)}°
       </span>
     </div>
     <div class="flex absolute bottom-0 left-0 z-10 w-full">
       <div class="marquee-container">
         <div class="marquee-content">
-          {TOMORROW_CONDITIONS[navWeatherData.weatherCode].name}
+          {TOMORROW_CONDITIONS[navWeatherData.values.weatherCode].name}
         </div>
       </div>
       <div class="marquee-container">
         <div class="marquee-content">
-          {TOMORROW_CONDITIONS[navWeatherData.weatherCode].name}
+          {TOMORROW_CONDITIONS[navWeatherData.values.weatherCode].name}
         </div>
       </div>
     </div>

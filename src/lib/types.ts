@@ -158,6 +158,9 @@ export type TomorrowWeatherCurrentType = {
   precipitationProbability: number;
   pressureSurfaceLevel: number;
   rainIntensity: number;
+  hailProbability: number;
+  pressureSeaLevel: number;
+  hailSize: number;
   sleetIntensity: number;
   snowIntensity: number;
   temperature: number;

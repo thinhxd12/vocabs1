@@ -229,7 +229,7 @@
       <Flipcard number={flipNumber} />
     {/if}
     <input
-      style="color: {searchTermFounded ? 'white' : 'black'}"
+      style="color: {searchTermFounded ? 'black' : 'white'}"
       class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
       type="text"
       bind:value={$vocabInput}
