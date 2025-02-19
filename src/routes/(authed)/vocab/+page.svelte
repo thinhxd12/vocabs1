@@ -205,17 +205,21 @@
   {#if innerWidth.current && innerWidth.current > 450}
     {#if $renderWord}
       <Flipcard number={flipNumber} />
-      <p
+      <div
         style="color: {searchTermFounded ? 'black' : 'white'}"
-        class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36"
+        class="relative layout-white rounded-3 h-36 flex-1"
       >
-        {$searchTerm || $renderWord.word}
-        <small
-          class="pl-3 pt-9 font-opensans text-center align-baseline text-9 font-600 !lowercase leading-12"
+        <div
+          class="absolute top-0 left-0 z-30 w-full h-full truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-33"
+        >
+          {$searchTerm || $renderWord.word}
+        </div>
+        <span
+          class="absolute z-10 font-sfpro left-0 bottom-0 w-full text-center text-9 opacity-50 leading-12 font-400 !lowercase"
         >
           {$renderWord.phonetics}
-        </small>
-      </p>
+        </span>
+      </div>
     {:else}
       <p
         style="color: {searchTermFounded ? 'black' : 'white'}"
@@ -228,20 +232,29 @@
     {#if $renderWord}
       <Flipcard number={flipNumber} />
     {/if}
-    <input
-      style="color: {searchTermFounded ? 'black' : 'white'}"
-      class="layout-white rounded-3 h-36 flex-1 pt-2 truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
-      type="text"
-      bind:value={$vocabInput}
-      oninput={handleSearchInput}
-      onfocus={() => {
-        $vocabInput = "";
-        $searchResults = [];
-      }}
-      onblur={() => {
-        if ($renderWord) $vocabInput = $renderWord.word;
-      }}
-    />
+    <div class="relative layout-white rounded-3 h-36 flex-1 overflow-hidden">
+      <input
+        style="color: {searchTermFounded ? 'black' : 'white'}"
+        class="absolute top-0 left-0 z-30 w-full h-full bg-transparent truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
+        type="text"
+        bind:value={$vocabInput}
+        oninput={handleSearchInput}
+        onfocus={() => {
+          $vocabInput = "";
+          $searchResults = [];
+        }}
+        onblur={() => {
+          if ($renderWord) $vocabInput = $renderWord.word;
+        }}
+      />
+      {#if $renderWord}
+        <span
+          class="absolute z-10 font-sfpro left-0 bottom-0 w-full text-center text-9 opacity-50 leading-12 font-400 !lowercase"
+        >
+          {$renderWord.phonetics}
+        </span>
+      {/if}
+    </div>
   {/if}
 </div>
 <div class="relative w-content h-[calc(100%-54px)]">
