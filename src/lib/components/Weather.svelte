@@ -53,64 +53,114 @@
         </select>
 
         {#if hourlyData}
-          <h1
-            class="text-[99px] font-100 leading-[99px] text-white pl-33 text-center"
-          >
-            {Math.round(hourlyData[0].values.temperature || 0)}°
-          </h1>
-
-          <div class="flex w-full items-center justify-center">
-            <span class="text-14 font-400 leading-16 text-white">
-              {TOMORROW_CONDITIONS[hourlyData[0].values.weatherCode].name}
-            </span>
-            <img
-              src={getConditionIconImage(
-                hourlyData[0].values.weatherCode,
-                "large",
-                hourlyData[0].time
-              )}
-              width={30}
-              class="ml-3"
-              style="filter: drop-shadow(0 1px 3px black)"
-              alt="current-icon"
-            />
+          <div class="flex items-center justify-center px-[60px] mb-15">
+            <div class="flex-1 flex flex-col items-start justify-center gap-3">
+              {#if hourlyData[0].values.precipitationProbability}
+                <div class="mx-3 flex items-center justify-center text-white">
+                  <Icon
+                    icon="akar-icons:umbrella"
+                    width="15"
+                    height="15"
+                    class="text-[#0062bf]"
+                  />
+                  <span class="ml-3 text-12 leading-15">
+                    {hourlyData[0].values.precipitationProbability}
+                    <small class="mt-3 leading-12">%</small>
+                  </span>
+                </div>
+                <div class="mx-3 flex items-center justify-center text-white">
+                  <Icon
+                    icon="hugeicons:cloud-angled-rain"
+                    width="15"
+                    height="15"
+                    class="text-[#0062bf]"
+                  />
+                  <span class="ml-3 text-12 leading-15">
+                    {hourlyData[0].values.rainIntensity}
+                    <small class="mt-3 leading-12">mm/hr</small>
+                  </span>
+                </div>
+              {/if}
+              <div class="mx-3 flex items-center justify-center text-white">
+                <Icon icon="hugeicons:cloud" width="15" height="15" />
+                <span class="ml-3 text-12 leading-15">
+                  {Math.round(hourlyData[0].values.cloudCover)}
+                  <small class="mt-3 leading-12">%</small>
+                </span>
+              </div>
+              <div class="mx-3 flex items-center justify-center text-white">
+                <Icon
+                  icon="hugeicons:thermometer-warm"
+                  width="15"
+                  height="15"
+                />
+                <span class="ml-3 text-12 leading-15">
+                  {Math.round(hourlyData[0].values.temperatureApparent || 0)}°
+                </span>
+              </div>
+              <div class="mx-3 flex items-center justify-center text-white">
+                <Icon icon="hugeicons:droplet" width="14" height="14" />
+                <span class="ml-4 text-12 leading-15">
+                  {hourlyData[0].values.humidity}
+                  <small class="mt-3 leading-12">%</small>
+                </span>
+              </div>
+              <div class="mx-3 flex items-end justify-center text-white">
+                <Icon
+                  icon="hugeicons:arrow-up-02"
+                  width="15"
+                  height="15"
+                  style="transform: rotate({hourlyData[0].values.windDirection -
+                    45}deg);"
+                  class="overflow-hidden rounded-full"
+                />
+                <span class="ml-3 text-12 leading-15">
+                  {Math.round(hourlyData[0].values.windGust || 0)}
+                  <small class="mt-3 leading-12">km/h</small>
+                </span>
+              </div>
+              <div class="mx-3 flex items-center justify-center text-white">
+                <Icon icon="tabler:uv-index" width="15" height="15" />
+                <span class="ml-3 text-12 leading-15">
+                  {hourlyData[0].values.uvIndex}
+                  {#if hourlyData[0].values.uvIndex <= 2}
+                    <small class="mt-3 leading-12">Low</small>
+                  {:else if hourlyData[0].values.uvIndex <= 5}
+                    <small class="mt-3 leading-12">Moderate</small>
+                  {:else if hourlyData[0].values.uvIndex <= 7}
+                    <small class="mt-3 leading-12">High</small>
+                  {:else if hourlyData[0].values.uvIndex <= 10}
+                    <small class="mt-3 leading-12">Very High</small>
+                  {:else}
+                    <small class="mt-3 leading-12">Extreme</small>
+                  {/if}
+                </span>
+              </div>
+            </div>
+            <div class="flex-1">
+              <h1
+                class="text-[99px] font-100 leading-[99px] text-white pl-33 text-center"
+              >
+                {Math.round(hourlyData[0].values.temperature || 0)}°
+              </h1>
+              <div class="flex w-full items-center justify-center">
+                <span class="text-14 font-400 leading-16 text-white">
+                  {TOMORROW_CONDITIONS[hourlyData[0].values.weatherCode].name}
+                </span>
+                <img
+                  src={getConditionIconImage(
+                    hourlyData[0].values.weatherCode,
+                    "large",
+                    hourlyData[0].time
+                  )}
+                  width={30}
+                  class="ml-6"
+                  style="filter: drop-shadow(0 1px 3px black)"
+                  alt="current-icon"
+                />
+              </div>
+            </div>
           </div>
-
-          <div class="flex w-full items-center justify-center mb-6">
-            <div class="mx-3 flex items-center justify-center text-white">
-              <Icon icon="hugeicons:thermometer-warm" width="15" height="15" />
-              <span class="ml-3 text-12 leading-15">
-                {Math.round(hourlyData[0].values.temperatureApparent || 0)}°
-              </span>
-            </div>
-            <div class="mx-3 flex items-center justify-center text-white">
-              <Icon icon="hugeicons:droplet" width="15" height="15" />
-              <span class="ml-3 text-12 leading-15">
-                {hourlyData[0].values.humidity}%
-              </span>
-            </div>
-            <div class="mx-3 flex items-end justify-center text-white">
-              <Icon
-                icon="hugeicons:arrow-up-02"
-                width="15"
-                height="15"
-                style="transform: rotate({hourlyData[0].values.windDirection -
-                  45}deg);"
-                class="overflow-hidden rounded-full"
-              />
-              <span class="ml-3 text-12 leading-15">
-                {Math.round(hourlyData[0].values.windGust || 0)}
-                <small class="mt-3 leading-12">km/h</small>
-              </span>
-            </div>
-            <div class="mx-3 flex items-center justify-center text-white">
-              <Icon icon="tabler:uv-index" width="15" height="15" />
-              <span class="ml-3 text-12 leading-15">
-                {hourlyData[0].values.uvIndex}
-              </span>
-            </div>
-          </div>
-
           <div
             use:dragscroll
             class="no-scrollbar select-none w-full flex snap-x snap-mandatory overflow-y-hidden overflow-x-scroll"
