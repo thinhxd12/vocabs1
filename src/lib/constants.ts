@@ -664,7 +664,7 @@ export function getConditionBackground(weatherCode: number, time: string) {
   const isAfterDusk = Number(now) > 18;
 
   if (isBeforeDawn || isAfterDusk) {
-    TOMORROW_CONDITIONS[weatherCode].backgroundNight;
+    return TOMORROW_CONDITIONS[weatherCode].backgroundNight;
   }
   return TOMORROW_CONDITIONS[weatherCode].backgroundDay;
 }

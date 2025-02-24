@@ -17,13 +17,8 @@
   let { imageSrc, hash, width, height, className, word }: Props = $props();
   let placeholderData = $state<string>("");
 
-  const handleLoad = () => {
-    placeholderData = "";
-  };
-
   $effect(() => {
     const v = imageSrc;
-    placeholderData = "";
     untrack(async () => {
       if (hash) {
         const thumbHashFromBase64 = base64ToUint8Array(hash);
@@ -31,7 +26,7 @@
       } else {
         const response = await fetch("/server/thumbhash", {
           method: "POST",
-          body: JSON.stringify({ imageSrc }),
+          body: JSON.stringify({ imageSrc: v }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -45,7 +40,7 @@
             const updatedDefinitions = item.definitions.map((el) => {
               return {
                 ...el,
-                hash: el.image === imageSrc ? thumbhash : "",
+                hash: el.image === v ? thumbhash : "",
               };
             });
             return { ...item, definitions: updatedDefinitions };
@@ -65,25 +60,20 @@
 
 <div
   class={className}
-  style="width: {width}px;
-  height: {height}px;
-  position: relative;
-  overflow: hidden"
+  style="width: {width}px; height: {height}px; overflow: hidden; position: relative;"
 >
   {#if placeholderData}
     <img
       transition:fade={{ duration: 50 }}
-      class="absolute left-0 top-0 z-20 h-full w-full object-cover"
+      class="absolute top-0 left-0 z-10 h-full w-full object-cover"
       src={placeholderData}
-      alt="thumbnail"
+      alt={"thumb" + imageSrc}
     />
   {/if}
-
   <img
-    class="absolute left-0 top-0 z-10 h-full w-full object-cover"
-    alt="fullimage"
+    class="h-full w-full object-cover"
+    alt={imageSrc}
     src={imageSrc}
-    onload={handleLoad}
-    loading="eager"
+    onload={() => (placeholderData = "")}
   />
 </div>

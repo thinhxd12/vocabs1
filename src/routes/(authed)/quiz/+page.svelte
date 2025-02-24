@@ -8,6 +8,7 @@
     updateTodayScheduleLocal,
     currentSchedule,
     startCountdown,
+    countdown,
   } from "$lib/store/navstore";
   import arrayShuffle from "array-shuffle";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
@@ -89,7 +90,11 @@
 </script>
 
 <svelte:head>
-  <title>🤔</title>
+  {#if $countdown.isRunning}
+    <title>🤔 {$countdown.timeLeft}:00</title>
+  {:else}
+    <title>🤔</title>
+  {/if}
   <meta name="Quiz" content="Some Quiz" />
 </svelte:head>
 <audio {src} bind:paused></audio>
