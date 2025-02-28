@@ -19,6 +19,7 @@
 
   $effect(() => {
     const v = imageSrc;
+    placeholderData = "";
     untrack(async () => {
       if (hash) {
         const thumbHashFromBase64 = base64ToUint8Array(hash);
@@ -32,16 +33,17 @@
           },
         });
         const thumbhash = await response.text();
-        const thumbHashFromBase64 = base64ToUint8Array(thumbhash);
-        placeholderData = thumbHashToDataURL(thumbHashFromBase64);
 
         if (word) {
           let newMeanings = [...word.meanings].map((item) => {
             const updatedDefinitions = item.definitions.map((el) => {
-              return {
-                ...el,
-                hash: el.image === v ? thumbhash : "",
-              };
+              if (el.image === v) {
+                return {
+                  ...el,
+                  hash: thumbhash,
+                };
+              }
+              return el;
             });
             return { ...item, definitions: updatedDefinitions };
           });
@@ -67,12 +69,12 @@
       transition:fade={{ duration: 50 }}
       class="absolute top-0 left-0 z-10 h-full w-full object-cover"
       src={placeholderData}
-      alt={"thumb" + imageSrc}
+      alt="thumbImg"
     />
   {/if}
   <img
     class="h-full w-full object-cover"
-    alt={imageSrc}
+    alt="imgSRC"
     src={imageSrc}
     onload={() => (placeholderData = "")}
   />
