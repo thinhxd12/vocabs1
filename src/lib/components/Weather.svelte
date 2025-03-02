@@ -56,7 +56,7 @@
         {#if hourlyData}
           <div class="flex items-center justify-center px-[60px] mb-15">
             <div
-              class="flex-1 flex flex-col items-start justify-center gap-3 text-black/60"
+              class="flex-1 flex flex-col items-start justify-center gap-3 text-black/80"
             >
               {#if hourlyData[0].values.precipitationProbability}
                 <div class="mx-3 flex items-center justify-center">
@@ -169,8 +169,8 @@
               <div
                 class="flex flex-col items-center justify-center min-w-[63px] snap-start"
               >
-                <h3 class="text-12 font-400 leading-21">
-                  {i == 0 ? "Now" : format(item.time, "Ka")}
+                <h3 class="text-12 font-400 leading-21 text-black/80">
+                  {i == 0 ? "Now" : format(item.time, "H:00")}
                 </h3>
 
                 {#if item.values.precipitationProbability > 0}
@@ -190,12 +190,18 @@
                     item.time
                   )}
                 />
-                <p class="text-13 font-400 leading-24">
+                <p class="text-13 font-400 leading-24 text-black/80">
                   {Math.round(item.values.temperature)}°
                 </p>
-                <h3 class="text-12 font-400 leading-21">
-                  {format(item.time, "dd/MM")}
-                </h3>
+                <div class="w-full h-21 text-center">
+                  {#if Number(format(item.time, "H")) % 4 == 0}
+                    <h3
+                      class="text-12 font-500 text-black/80 leading-21 bg-[#e5f1fe] rounded-6"
+                    >
+                      {format(item.time, "EEEEEE dd")}
+                    </h3>
+                  {/if}
+                </div>
               </div>
             {/each}
           </div>
