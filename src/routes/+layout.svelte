@@ -27,7 +27,9 @@
         >
           <p
             style="text-shadow: 0 0 3px black;"
-            class="absolute left-0 top-0 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white opacity-100 transition group-hover:opacity-0"
+            class="absolute left-0 top-0 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white opacity-100 transition {$layoutImage.hs2_title
+              ? 'group-hover:opacity-0'
+              : ''}"
           >
             {@html $layoutImage.hs1_title}
           </p>
