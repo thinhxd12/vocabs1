@@ -171,7 +171,7 @@
         />
 
         <textarea
-          class="mt-24 w-full rounded-6 border-0 bg-transparent p-6 text-12 font-400 leading-15 text-white outline-none ring-1 ring-white/30"
+          class="mt-24 w-full style-1 rounded-6 border-0 bg-transparent p-6 text-12 font-400 leading-15 text-white outline-none ring-1 ring-white/30"
           name="meanings"
           autocomplete="off"
           onkeydown={(e) => e.stopPropagation()}

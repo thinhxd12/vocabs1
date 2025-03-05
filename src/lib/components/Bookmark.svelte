@@ -159,7 +159,7 @@
         {/if}
       </div>
       <div
-        class="flex-1 h-full no-scrollbar relative overflow-y-scroll {bookmark.like
+        class="flex-1 h-full style-1 relative overflow-y-scroll {bookmark.like
           ? "bg-[url('/images/paper.webp')]"
           : 'bg-[#dcd8d1]'} bg-cover bg-local"
       >
@@ -309,7 +309,7 @@
         >
           <input hidden name="id" autocomplete="off" value={bookmark.id} />
           <textarea
-            class="p-9 w-full rounded-6 border-0 font-garamond text-18 font-400 leading-21 bg-[#dcd8d1] outline-none ring-1 ring-white/30"
+            class="p-9 w-full style-1 rounded-6 border-0 font-garamond text-18 font-400 leading-21 bg-[#dcd8d1] outline-none ring-1 ring-white/30"
             name="content"
             autocomplete="off"
             onkeydown={(e) => e.stopPropagation()}
@@ -359,7 +359,7 @@
         }}
       >
         <textarea
-          class="p-9 w-full rounded-6 border-0 font-garamond text-18 font-400 leading-21 bg-[#dcd8d1] outline-none ring-1 ring-white/30"
+          class="p-9 w-full style-1 rounded-6 border-0 font-garamond text-18 font-400 leading-21 bg-[#dcd8d1] outline-none ring-1 ring-white/30"
           name="content"
           autocomplete="off"
           onkeydown={(e) => e.stopPropagation()}
