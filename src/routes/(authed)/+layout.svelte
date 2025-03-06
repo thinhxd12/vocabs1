@@ -3,14 +3,16 @@
   import Bookmark from "$lib/components/Bookmark.svelte";
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
+  import Timer from "$lib/components/Timer.svelte";
   import Weather from "$lib/components/Weather.svelte";
   import { showBookmark, showLayout } from "$lib/store/layoutstore";
   import {
-    todaySchedule,
-    totalMemories,
     locationList,
     showWeather,
-  } from "$lib/store/navstore.js";
+    todaySchedule,
+    totalMemories,
+    showTimer,
+  } from "$lib/store/navstore";
   import { format } from "date-fns";
   import { Toaster } from "svelte-sonner";
 
@@ -46,13 +48,10 @@
     </div>
     <Nav />
   </div>
+
   <div class={$showLayout ? "menu-bar-right" : "menu-bar-center"}>
     <Menu />
   </div>
-
-  {#if $showWeather}
-    <Weather />
-  {/if}
 
   {#if $showLayout}
     {#if $showBookmark}
@@ -61,7 +60,15 @@
       <Art />
     {/if}
   {/if}
+
+  {#if $showWeather}
+    <Weather />
+  {/if}
+  {#if $showTimer}
+    <Timer />
+  {/if}
 </section>
+
 <Toaster position="top-right" richColors />
 
 <style>
@@ -79,7 +86,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: end;
-    z-index: 10;
+    z-index: 20;
   }
 
   .menu-bar-right {
@@ -90,6 +97,6 @@
     display: flex;
     align-items: flex-end;
     justify-content: end;
-    z-index: 10;
+    z-index: 20;
   }
 </style>

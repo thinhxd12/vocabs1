@@ -7,19 +7,13 @@
   import { showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import {
-    countdown,
     currentSchedule,
     handleGetListContent,
-    startCountdown,
-    stopCountdown,
     todaySchedule,
+    showTimer,
   } from "$lib/store/navstore";
   import { innerWidth } from "svelte/reactivity/window";
   import { enhance } from "$app/forms";
-
-  function startOrStopCountdown() {
-    $countdown.isRunning ? stopCountdown() : startCountdown(6);
-  }
 
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
@@ -91,15 +85,9 @@
   </button>
 
   <button
-    class="btn-menu relative overflow-hidden"
-    onclick={startOrStopCountdown}
+    class="btn-menu {$showTimer ? 'bg-blue-600/90' : ''}"
+    onclick={() => ($showTimer = !$showTimer)}
   >
-    {#if $countdown.isRunning}
-      <span
-        class="absolute bottom-0 z-10 w-full bg-blue-600/90"
-        style="height: {($countdown.timeLeft / 5) * 100}%"
-      ></span>
-    {/if}
     <Icon
       icon="ri:hourglass-2-line"
       width="15"

@@ -80,7 +80,7 @@
   });
 </script>
 
-<nav class="w-content h-[42px] flex">
+<nav class="w-content h-[42px] flex z-20">
   <div
     class="flex h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md overflow-hidden"
   >

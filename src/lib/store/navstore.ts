@@ -11,6 +11,7 @@ import { renderWord } from "$lib/store/vocabstore";
 
 export const isAutoPlay = writable<boolean>(false);
 export const showWeather = writable<boolean>(false);
+export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const todaySchedule = writable<
   | {
@@ -24,37 +25,11 @@ export const listContent = writable<SelectVocab[]>([]);
 export const currentSchedule = writable<SelectSchedule | undefined>(undefined);
 export const listCount = writable<number>(0);
 export const quizRender = writable<SelectVocab | undefined>(undefined);
-export const countdown = writable({
-  timeLeft: 0,
-  isRunning: false,
-});
 export const vocabInput = writable<string>("");
 
-let interval: ReturnType<typeof setInterval>;
 const todayDate = format(new Date(), "yyyy-MM-dd");
 
-export function startCountdown(duration: number) {
-  countdown.set({ timeLeft: duration, isRunning: true });
-  clearInterval(interval);
-  interval = setInterval(() => {
-    countdown.update((state) => {
-      if (state.timeLeft <= 1) {
-        handleGetListContent();
-        sendNotification();
-        clearInterval(interval);
-        return { timeLeft: 0, isRunning: false };
-      }
-      return { ...state, timeLeft: state.timeLeft - 1 };
-    });
-  }, 60000);
-}
-
-export function stopCountdown() {
-  clearInterval(interval);
-  countdown.set({ timeLeft: 0, isRunning: false });
-}
-
-function sendNotification() {
+export function sendNotification() {
   if (typeof window !== "undefined" && "Notification" in window) {
     if (Notification.permission === "granted") {
       notificationAlert();
@@ -172,7 +147,7 @@ const endAutoplay = async () => {
   await updateTodayScheduleLocal();
   const currentScheduleValue = get(currentSchedule);
   if (currentScheduleValue && currentScheduleValue.count < 9) {
-    startCountdown(6);
+    showTimer.set(true);
   }
 };
 

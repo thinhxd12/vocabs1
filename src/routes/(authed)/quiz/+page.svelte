@@ -7,11 +7,11 @@
     totalMemories,
     updateTodayScheduleLocal,
     currentSchedule,
-    startCountdown,
-    countdown,
+    showTimer,
   } from "$lib/store/navstore";
   import arrayShuffle from "array-shuffle";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
+  import { timerString } from "$lib/store/layoutstore";
 
   let src = $state<string>("");
   let paused = $state<boolean>(true);
@@ -69,7 +69,7 @@
         submitted = false;
         updateTodayScheduleLocal();
         if ($currentSchedule && $currentSchedule.count < 11) {
-          startCountdown(6);
+          $showTimer = true;
         }
       }, 1000);
     }
@@ -90,11 +90,12 @@
 </script>
 
 <svelte:head>
-  {#if $countdown.isRunning}
-    <title>🤔 {$countdown.timeLeft}:00</title>
+  {#if $showTimer}
+    <title>🤔 {$timerString}</title>
   {:else}
     <title>🤔</title>
   {/if}
+
   <meta name="Quiz" content="Some Quiz" />
 </svelte:head>
 <audio {src} bind:paused></audio>

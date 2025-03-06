@@ -4,6 +4,7 @@ import type { LoginImageType } from "../types";
 export const layoutImage = writable<LoginImageType | undefined>(undefined);
 export const showLayout = writable<boolean>(false);
 export const showBookmark = writable<boolean>(true);
+export const timerString = writable<string>("");
 
 export async function handleChangeLayoutImage() {
   const apiKey = "EAEQdLT0Wze4Lhf_Xn2O-IAuow2Z-Rh2sHIEu7pTXms";
