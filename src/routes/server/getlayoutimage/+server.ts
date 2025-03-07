@@ -4,12 +4,8 @@ import { error } from "@sveltejs/kit";
 export async function GET({ fetch }) {
   try {
     const url =
-      "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=1&country=DK&locale=en-US&fmt=json";
-    const response = await fetch(url, {
-      headers: {
-        "cache-control": "no-cache",
-      },
-    });
+      "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=1&country=US&locale=en-US&fmt=json";
+    const response = await fetch(url);
     const data = await response.json();
     const obj = data["batchrsp"]["items"][0]["item"];
     const result = JSON.parse(obj)["ad"];

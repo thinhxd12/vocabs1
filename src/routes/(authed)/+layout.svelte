@@ -64,6 +64,7 @@
   {#if $showWeather}
     <Weather />
   {/if}
+
   {#if $showTimer}
     <Timer />
   {/if}

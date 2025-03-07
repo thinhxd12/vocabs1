@@ -23,7 +23,7 @@
     now = Date.now();
     count = Math.round((end - now) / 1000);
     $timerString = minute() + ":" + second();
-    if (count === 0) {
+    if (now >= end) {
       handleGetListContent();
       sendNotification();
       $showTimer = false;
@@ -83,10 +83,10 @@
   class="fixed z-10 w-screen h-screen flex flex-col items-center justify-center"
 >
   <div
-    class="my-9 min-h-[105px] w-content mx-auto relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3"
+    class="my-9 min-h-[105px] w-content mx-auto relative flex no-scrollbar timer-layout select-none items-center overflow-hidden rounded-3"
   >
     <h1
-      class="absolute w-full left-1/2 -translate-x-1/2 -top-9 flex justify-between items-center bg-transparent text-center text-[135px] leading-[105px] text-white/30"
+      class="absolute font-300 w-full left-1/2 -translate-x-1/2 flex justify-between items-center bg-transparent text-center text-[135px] leading-[105px] text-white/30"
     >
       <span class="w-[170px] text-center">{minute()}</span>
       <span class="leading-[90px] -mt-30">:</span>
@@ -113,6 +113,11 @@
 
 <style>
   .btn-timer {
-    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 text-white shadow shadow-black/30 backdrop-blur-md transition duration-100 hover:shadow;
+    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 text-white shadow-sm shadow-black/45 backdrop-blur-md transition duration-100 hover:shadow;
+  }
+
+  .timer-layout {
+    @apply shadow-md shadow-black/45 bg-black/15 backdrop-blur-lg;
+    transform: translate3d(0, 0, 0);
   }
 </style>

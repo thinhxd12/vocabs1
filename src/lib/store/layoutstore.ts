@@ -8,9 +8,14 @@ export const timerString = writable<string>("");
 
 export async function handleChangeLayoutImage() {
   const apiKey = "EAEQdLT0Wze4Lhf_Xn2O-IAuow2Z-Rh2sHIEu7pTXms";
-  const keyword = "landscapes";
+  const keyword = "beautiful";
   const response = await fetch(
-    `https://api.unsplash.com/photos/random?query=${keyword}&count=1&orientation=landscape&client_id=${apiKey}`
+    `https://api.unsplash.com/photos/random?client_id=${apiKey}&query=${keyword}&count=1&orientation=landscape`,
+    {
+      headers: {
+        "Accept-Version": "v1",
+      },
+    }
   );
   if (response.status == 200) {
     const data = await response.json();
