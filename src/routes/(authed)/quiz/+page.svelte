@@ -161,7 +161,7 @@
 
 <style>
   .quiz-choice {
-    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg hover:bg-black/15 transition-all sm:hover:text-16 hover:text-15;
+    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg hover:bg-black/15 transition-all;
     text-shadow: 0 1px 3px black;
   }
 

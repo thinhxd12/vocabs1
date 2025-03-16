@@ -13,6 +13,7 @@
   let bookInfo = $state<BookSearchType | undefined>(undefined);
 
   let isReset = $state<boolean>(false);
+  let isLoading = $state<boolean>(false);
 
   onMount(async () => {
     const response = await fetch(`/server/getbookmark?select=true`);
@@ -32,9 +33,11 @@
 
   async function handleGetNextBookmark() {
     isReset = false;
+    isLoading = true;
     const response = await fetch(`/server/getbookmark?nextid=${bookmark!.id}`);
     const data = await response.json();
     isReset = true;
+    isLoading = false;
 
     if (data) {
       if (data.bookTile !== bookmark?.bookTile) {
@@ -46,9 +49,11 @@
 
   async function handleGetPrevBookmark() {
     isReset = false;
+    isLoading = true;
     const response = await fetch(`/server/getbookmark?previd=${bookmark!.id}`);
     const data = await response.json();
     isReset = true;
+    isLoading = false;
 
     if (data) {
       if (data.bookTile !== bookmark?.bookTile) {
@@ -60,15 +65,17 @@
 
   async function handleCheckBookmark() {
     if (!bookmark) return;
+    isLoading = true;
     if (isReset) {
       bookmark = { ...bookmark, like: (bookmark.like += 1) };
       fetch(`/server/getbookmark?like=${bookmark.id}`);
       isReset = !isReset;
-      // show like effect
+      isLoading = false;
     } else {
       bookmark = { ...bookmark, like: (bookmark.like += -1) };
       fetch(`/server/getbookmark?unlike=${bookmark.id}`);
       isReset = !isReset;
+      isLoading = false;
     }
   }
 
@@ -134,12 +141,17 @@
           <p class="mb-3 text-12 leading-14 text-secondary-white/60">
             {bookInfo.authors.join(", ")}
           </p>
+          {#if bookInfo.publishedYear}
+            <p class="mb-3 text-11 leading-12 text-secondary-white/60">
+              First published {bookInfo.publishedYear}
+            </p>
+          {/if}
           {#if bookInfo.numberOfRatings}
             <div class="mb-3 flex items-center">
               <Icon
                 icon="mage:star-fill"
-                width="13"
-                height="13"
+                width="18"
+                height="18"
                 color="#f1ce42"
               />
               <span class="ml-3 text-11 leading-12 text-secondary-white/60">
@@ -151,13 +163,28 @@
               </span>
             </div>
           {/if}
-          {#if bookInfo.publishedYear}
-            <p class="text-11 leading-12 text-secondary-white/60">
-              First published {bookInfo.publishedYear}
-            </p>
-          {/if}
         {/if}
+
+        <div class="flex items-center w-full mt-3">
+          <button class="btn-heart ml-3 mr-6" onclick={handleCheckBookmark}>
+            <Icon
+              icon="bi:heart-fill"
+              width="13"
+              height="13"
+              color={bookmark.like
+                ? isReset
+                  ? "#f08399"
+                  : "#fd2c55"
+                : "white"}
+            />
+          </button>
+
+          <span class="text-11 leading-12 text-secondary-white/60">
+            {bookmark.like}
+          </span>
+        </div>
       </div>
+
       <div
         class="flex-1 h-full style-1 relative overflow-y-scroll {bookmark.like
           ? "bg-[url('/images/paper.webp')]"
@@ -189,57 +216,52 @@
             </div>
           </div>
         {/if}
-        <div
-          class="bookmarkText p-9 pl-21 font-garamond text-20 font-400 leading-30"
-          transition:fade={{ duration: 300 }}
-        >
+
+        {#if isLoading}
+          <img
+            src="/svg/loader.svg"
+            alt="loading"
+            width={45}
+            class="absolute left-1/2 top-1/2 -translate-x-1/2"
+          />
+        {:else}
           <div
-            class="float-right ml-6 w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
+            class="bookmarkText p-9 pl-21 font-garamond text-20 font-400 leading-30"
+            transition:fade={{ duration: 300 }}
           >
             <div
-              class="bg-[#fe0000] h-18 w-full text-white px-3 flex items-end"
+              class="float-right ml-6 w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
             >
-              <small
-                class="text-8 font-rubik font-500 uppercase leading-13 mr-2"
+              <div
+                class="bg-[#fe0000] h-18 w-full text-white px-3 flex items-end"
               >
-                {format(new Date(bookmark.dateOfCreation), "E")}
-              </small>
-              <span class="text-11 font-rubik font-500 uppercase leading-14">
-                {format(new Date(bookmark.dateOfCreation), "MM/yy")}
-              </span>
+                <small
+                  class="text-8 font-rubik font-500 uppercase leading-13 mr-2"
+                >
+                  {format(new Date(bookmark.dateOfCreation), "E")}
+                </small>
+                <span class="text-11 font-rubik font-500 uppercase leading-14">
+                  {format(new Date(bookmark.dateOfCreation), "MM/yy")}
+                </span>
+              </div>
+              <div
+                class="flex-1 w-full font-rubik text-[36px] leading-[27px] mt-6 text-center"
+              >
+                {format(new Date(bookmark.dateOfCreation), "dd")}
+              </div>
+              <p
+                class="text-black font-rubik text-9 leading-10 text-center font-500"
+              >
+                {format(new Date(bookmark.dateOfCreation), "p")}
+              </p>
             </div>
-            <div
-              class="flex-1 w-full font-rubik text-[36px] leading-[27px] mt-6 text-center"
-            >
-              {format(new Date(bookmark.dateOfCreation), "dd")}
-            </div>
-            <p
-              class="text-black font-rubik text-9 leading-10 text-center font-500"
-            >
-              {format(new Date(bookmark.dateOfCreation), "p")}
-            </p>
+            {bookmark.content}
           </div>
-          {bookmark.content}
-        </div>
+        {/if}
       </div>
     </div>
 
     <div class="h-[48px] flex justify-center items-baseline p-9">
-      <div class=" flex flex-col items-center justify-center mr-6 relative">
-        <button class="btn-heart text-black" onclick={handleCheckBookmark}>
-          <Icon
-            icon="bi:heart-fill"
-            width="18"
-            height="18"
-            color={bookmark.like ? (isReset ? "#f08399" : "#fd2c55") : "white"}
-          />
-        </button>
-
-        <span class="text-9 leading-9 w-full text-center text-white">
-          {bookmark.like}
-        </span>
-      </div>
-
       <button class="btn-menu" onclick={copyBookMarkToClipboard}>
         <Icon icon="solar:copy-outline" width="15" height="15" />
       </button>
