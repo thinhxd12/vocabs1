@@ -175,7 +175,7 @@
                 ? isReset
                   ? "#f08399"
                   : "#fd2c55"
-                : "white"}
+                : "#f1f1f199"}
             />
           </button>
 
