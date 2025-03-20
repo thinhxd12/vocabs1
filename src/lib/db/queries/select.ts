@@ -68,7 +68,7 @@ export const getMemoriesByWord = async (text: SelectMemories["word"]) => {
     if (result.length > 0) {
       return {
         status: true,
-        message: `Memorized "${text}"!`,
+        message: `Memorized "${result[0].word}"!`,
       };
     }
     return {
