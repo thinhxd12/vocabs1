@@ -20,6 +20,7 @@
   import { getCurrentWeatherTomorrowData } from "$lib/functions";
   import { onDestroy } from "svelte";
   import Icon from "@iconify/svelte";
+  import { goto } from "$app/navigation";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   type WeatherDataType = {
@@ -78,11 +79,33 @@
   onDestroy(() => {
     clearInterval(interval);
   });
+
+  const urls = ["/vocab", "/schedule", "/quiz"];
+  let currentTab = $state<number>(0);
+
+  function navigateLeft() {
+    if (currentTab == 0) {
+      currentTab = urls.length - 1;
+    } else currentTab = (currentTab - 1) % urls.length;
+    goto(urls[currentTab]);
+  }
+
+  $effect(() => {
+    if (page.url.pathname !== urls[currentTab]) {
+      const index = urls.findIndex((item) => item === page.url.pathname);
+      currentTab = index;
+    }
+  });
+
+  function navigateRight() {
+    currentTab = (currentTab + 1) % urls.length;
+    goto(urls[currentTab]);
+  }
 </script>
 
 <nav class="w-content h-[42px] flex z-20">
   <div
-    class="flex h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md overflow-hidden"
+    class="flex rounded-1 mr-3 h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md overflow-hidden"
   >
     <div class="flex flex-col justify-center text-center">
       {#if $todaySchedule}
@@ -104,7 +127,7 @@
     </div>
   </div>
 
-  <a
+  <!-- <a
     href="/vocab"
     class:active={page.url.pathname === "/vocab"}
     class="btn-nav"
@@ -123,10 +146,34 @@
 
   <a href="/quiz" class="btn-nav" class:active={page.url.pathname === "/quiz"}>
     Memento mori.Rem'ber you will die.
-  </a>
+  </a> -->
 
   <div
-    class="ml-3 flex h-36 flex-col items-center px-1 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
+    class="h-36 flex-1 outline-none overflow-hidden shadow-sm shadow-black/45 bg-black/20 backdrop-blur-md rounded-1 flex justify-between items-center"
+  >
+    <button
+      onclick={navigateLeft}
+      class="w-30 h-full flex justify-start items-center"
+      aria-label="left-tab"
+    >
+    </button>
+
+    <span
+      class="uppercase text-center text-13 leading-18 select-none text-white"
+      style="text-shadow: 0px 0px 6px #000000"
+    >
+      {urls[currentTab].slice(1)}
+    </span>
+
+    <button
+      onclick={navigateRight}
+      class="w-30 h-full flex justify-end items-center"
+      aria-label="right-tab"
+    ></button>
+  </div>
+
+  <div
+    class="ml-3 flex rounded-1 h-36 flex-col items-center px-1 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >
     <span class="font-tupa text-18 font-600 leading-17">
       {Math.floor($totalMemories / 100) < 10
@@ -141,7 +188,7 @@
   </div>
 
   <button
-    class="btn-weather relative"
+    class="btn-weather relative before:bg-black/15 before:absolute before:inset-0 before:content-['']"
     style="background-image: url({getConditionBackground(
       navWeatherData.values.weatherCode,
       navWeatherData.time
@@ -152,10 +199,10 @@
       {#if navWeatherData.values.precipitationProbability}
         <Icon
           icon="akar-icons:umbrella"
-          width="12"
-          height="12"
+          width={15}
+          height={15}
           style="filter: drop-shadow(0px 2px 2px #000000)"
-          class="text-white mt-3"
+          class="text-white mt-2"
         />
         <span
           class="text-9 font-500 leading-15 mt-3 text-blue-400"
@@ -176,12 +223,20 @@
         height={21}
         style="filter: drop-shadow(0px 2px 2px #000000)"
       />
-      <span
-        class="text-9 font-500 leading-15 mt-3 text-white"
+      <div
+        class="flex flex-col items-end justify-center font-500 text-white"
         style="text-shadow: 0px 0px 6px #000000"
       >
-        {Math.round(navWeatherData.values.temperature)}°
-      </span>
+        <span class="text-8 leading-8">
+          {Math.round(navWeatherData.values.temperature)}°
+        </span>
+        <span class="text-9 leading-9">
+          {Math.round(navWeatherData.values.temperatureApparent)}°
+        </span>
+        <span class="text-8 leading-8">
+          {navWeatherData.values.cloudCover}<small>%</small>
+        </span>
+      </div>
     </div>
     <div class="flex absolute bottom-0 left-0 z-10 w-full">
       <div class="marquee-container">
