@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    handleChangeLayoutImage,
+    layoutImage,
     showBookmark,
     showLayout,
   } from "$lib/store/layoutstore";
@@ -18,6 +18,16 @@
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
     handleGetListContent();
+  }
+
+  async function handleChangeLayoutImage() {
+    const url =
+      "https://bing.biturl.top/?resolution=UHD&format=json&index=random&mkt=en-IN";
+    const response = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0" },
+    });
+    const data = await response.json();
+    layoutImage.set(data);
   }
 </script>
 

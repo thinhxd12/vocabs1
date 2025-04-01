@@ -114,13 +114,12 @@ export interface WeatherCodeData {
   };
 }
 
-export type LoginImageType = {
-  title: string;
-  hs1_title: string;
-  hs2_title: string;
-  image_L: string;
-  image_P: string;
-  hash: string;
+export type BingImageType = {
+  start_date: string;
+  end_date: string;
+  url: string;
+  copyright: string;
+  copyright_link: string;
 };
 
 export type BookDetailType = {

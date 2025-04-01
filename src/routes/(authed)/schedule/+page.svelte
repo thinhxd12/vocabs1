@@ -54,12 +54,6 @@
       {/each}
     </div>
 
-    <img
-      src="/images/{format(new Date(), 'M')}.webp"
-      alt="calendar-bg"
-      class="w-full h-[202px] object-cover"
-    />
-
     <Calendar.Root
       class="bg-white/45 w-full"
       let:months
@@ -67,6 +61,13 @@
       {isDateUnavailable}
       weekdayFormat="short"
     >
+      {#each months as month}
+        <img
+          src="/images/{format(new Date(String(month.value)), 'M')}.webp"
+          alt="calendar-bg"
+          class="w-full h-[210px] object-cover"
+        />
+      {/each}
       <Calendar.Header class="flex items-center justify-between p-3">
         <Calendar.PrevButton
           class="hover:bg-black/20 rounded-3 size-24 flex items-center justify-center mr-[48px]"
