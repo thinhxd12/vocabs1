@@ -22,7 +22,7 @@
     {#if !$showLayout}
       <p
         style="text-shadow: 0 0 3px black;"
-        class="absolute w-[calc(50vw-215px)] left-0 top-0 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white"
+        class="absolute w-[calc(50vw-215px)] hidden md:block left-0 top-0 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white"
       >
         {@html $layoutImage.copyright}
       </p>
