@@ -267,37 +267,27 @@
       </button>
 
       <button class="btn-menu" onclick={getRandomBookmark}>
-        <Icon icon="meteor-icons:dice" width="15" height="15" />
+        <Icon icon="solar:refresh-outline" width="15" height="15" />
       </button>
 
       <button class="btn-menu" onclick={() => (showEdit = !showEdit)}>
-        <Icon icon="hugeicons:book-edit" width="15" height="15" />
+        <Icon icon="solar:document-add-linear" width="15" height="15" />
       </button>
 
       <button class="btn-menu" onclick={() => (showInsert = !showInsert)}>
-        <Icon icon="hugeicons:row-insert" width="15" height="15" />
+        <Icon icon="solar:library-linear" width="15" height="15" />
       </button>
 
       <button class="btn-menu" onclick={() => (showDelete = !showDelete)}>
-        <Icon icon="hugeicons:delete-throw" width="15" height="15" />
+        <Icon icon="solar:trash-bin-trash-outline" width="15" height="15" />
       </button>
 
-      <button class="btn-menu">
-        <Icon
-          icon="icon-park-outline:left"
-          width="15"
-          height="15"
-          onclick={handleGetPrevBookmark}
-        />
+      <button class="btn-menu" onclick={handleGetPrevBookmark}>
+        <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
       </button>
 
-      <button class="btn-menu">
-        <Icon
-          icon="icon-park-outline:right"
-          width="15"
-          height="15"
-          onclick={handleGetNextBookmark}
-        />
+      <button class="btn-menu" onclick={handleGetNextBookmark}>
+        <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
       </button>
     </div>
   {/if}

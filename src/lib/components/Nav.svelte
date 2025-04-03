@@ -20,7 +20,6 @@
   import { getCurrentWeatherTomorrowData } from "$lib/functions";
   import { onDestroy } from "svelte";
   import Icon from "@iconify/svelte";
-  import { goto } from "$app/navigation";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   type WeatherDataType = {
@@ -79,28 +78,6 @@
   onDestroy(() => {
     clearInterval(interval);
   });
-
-  const urls = ["/vocab", "/schedule", "/quiz"];
-  let currentTab = $state<number>(0);
-
-  function navigateLeft() {
-    if (currentTab == 0) {
-      currentTab = urls.length - 1;
-    } else currentTab = (currentTab - 1) % urls.length;
-    goto(urls[currentTab]);
-  }
-
-  $effect(() => {
-    if (page.url.pathname !== urls[currentTab]) {
-      const index = urls.findIndex((item) => item === page.url.pathname);
-      currentTab = index;
-    }
-  });
-
-  function navigateRight() {
-    currentTab = (currentTab + 1) % urls.length;
-    goto(urls[currentTab]);
-  }
 </script>
 
 <nav class="w-content h-[42px] flex z-20">
@@ -127,49 +104,33 @@
     </div>
   </div>
 
-  <!-- <a
-    href="/vocab"
-    class:active={page.url.pathname === "/vocab"}
-    class="btn-nav"
-  >
-    Danger is sweet.Dulce periculum.
-  </a>
-
-  <a
-    href="/schedule"
-    class:active={page.url.pathname === "/schedule"}
-    class="btn-nav"
-    data-sveltekit-preload-data="tap"
-  >
-    Pecunia non olet.Money does not stink.
-  </a>
-
-  <a href="/quiz" class="btn-nav" class:active={page.url.pathname === "/quiz"}>
-    Memento mori.Rem'ber you will die.
-  </a> -->
-
   <div
-    class="h-36 flex-1 outline-none overflow-hidden shadow-sm shadow-black/45 bg-black/20 backdrop-blur-md rounded-1 flex justify-between items-center"
+    class="h-36 flex-1 outline-none overflow-hidden shadow-sm shadow-black/45 bg-black/20 backdrop-blur-md rounded-1 flex justify-center items-center"
   >
-    <button
-      onclick={navigateLeft}
-      class="w-30 h-full flex justify-start items-center"
-      aria-label="left-tab"
+    <a
+      href="/vocab"
+      class:active={page.url.pathname === "/vocab"}
+      class="btn-nav"
     >
-    </button>
+      <Icon icon="solar:compass-square-linear" width="15" height="15" />
+    </a>
 
-    <span
-      class="uppercase text-center text-13 leading-18 select-none text-white"
-      style="text-shadow: 0px 0px 6px #000000"
+    <a
+      href="/schedule"
+      class:active={page.url.pathname === "/schedule"}
+      class="btn-nav"
+      data-sveltekit-preload-data="tap"
     >
-      {urls[currentTab].slice(1)}
-    </span>
+      <Icon icon="solar:calendar-linear" width="15" height="15" />
+    </a>
 
-    <button
-      onclick={navigateRight}
-      class="w-30 h-full flex justify-end items-center"
-      aria-label="right-tab"
-    ></button>
+    <a
+      href="/quiz"
+      class="btn-nav"
+      class:active={page.url.pathname === "/quiz"}
+    >
+      <Icon icon="solar:file-check-linear" width="15" height="15" />
+    </a>
   </div>
 
   <div
@@ -269,7 +230,7 @@
 
 <style>
   .btn-nav {
-    @apply ml-3 rounded-2 outline-none flex h-36 flex-1 items-center justify-center overflow-hidden text-center text-8 font-400 leading-8 text-transparent shadow-sm shadow-black/45 bg-black/20 backdrop-blur-md hover:text-white;
+    @apply outline-none size-27 mx-3 flex items-center justify-center text-white/45 hover:text-white;
   }
 
   .btn-nav.active {

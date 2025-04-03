@@ -34,7 +34,7 @@
 <div class="flex flex-col items-center justify-center w-30">
   <form method="POST" action="/login?/logout" use:enhance>
     <button class="btn-menu">
-      <Icon icon="garden:exit-stroke-16" width="15" height="15" />
+      <Icon icon="solar:exit-outline" width="15" height="15" />
     </button>
   </form>
 
@@ -67,21 +67,25 @@
   {#if $showLayout}
     <button class="btn-menu" onclick={() => ($showBookmark = !$showBookmark)}>
       {#if $showBookmark}
-        <Icon icon="mdi:paint-outline" width="15" height="15" />
+        <Icon icon="solar:pallete-2-linear" width="15" height="15" />
       {:else}
-        <Icon icon="ion:book-outline" width="15" height="15" />
+        <Icon icon="solar:bookmark-linear" width="15" height="15" />
       {/if}
     </button>
   {/if}
 
   {#if innerWidth.current && innerWidth.current > 450}
     {#if $showLayout}
-      <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}
-        ><Icon icon="ri:layout-right-line" width="15" height="15" /></button
-      >
+      <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}>
+        <Icon
+          icon="solar:sidebar-minimalistic-outline"
+          width="15"
+          height="15"
+        />
+      </button>
     {:else}
       <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}>
-        <Icon icon="ri:layout-left-line" width="15" height="15" />
+        <Icon icon="solar:siderbar-outline" width="15" height="15" />
       </button>
     {/if}
   {/if}
@@ -91,7 +95,7 @@
   </button>
 
   <button class="btn-menu" onclick={handleChangeLayoutImage}>
-    <Icon icon="cuida:image-outline" width="15" height="15" />
+    <Icon icon="solar:gallery-broken" width="15" height="15" />
   </button>
 
   <button
@@ -99,7 +103,7 @@
     onclick={() => ($showTimer = !$showTimer)}
   >
     <Icon
-      icon="ri:hourglass-2-line"
+      icon="solar:alarm-sleep-outline"
       width="15"
       height="15"
       class="relative z-20"

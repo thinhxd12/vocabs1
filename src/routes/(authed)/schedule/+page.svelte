@@ -70,17 +70,17 @@
       {/each}
       <Calendar.Header class="flex items-center justify-between p-3">
         <Calendar.PrevButton
-          class="hover:bg-black/20 rounded-3 size-24 flex items-center justify-center mr-[48px]"
+          class="hover:bg-black/20 rounded-3 size-25 flex items-center justify-center mr-[48px]"
         >
           <Icon
             icon="flowbite:angle-left-outline"
-            width="16"
-            height="16"
+            width="15"
+            height="15"
             class="text-[#363636]"
           />
         </Calendar.PrevButton>
         <Calendar.Heading
-          class="text-18  leading-12 mt-4 uppercase font-rubik font-400 text-[#363636] select-none"
+          class="text-18 leading-12 mt-4 uppercase font-rubik font-400 text-[#363636] select-none"
         />
         <div class="flex justify-center items-center relative">
           {#if showReset}
@@ -218,26 +218,26 @@
           <button
             class="hover:bg-black/20 {showReset
               ? 'bg-black/20'
-              : ''} text-[#363636] rounded-3 size-24 flex items-center justify-center"
+              : ''} text-[#363636] rounded-3 size-25 flex items-center justify-center"
             onclick={() => (showReset = !showReset)}
           >
-            <Icon icon="ri:reset-right-line" width="14" height="14" />
+            <Icon icon="ri:reset-right-line" width="15" height="15" />
           </button>
           <button
             class="hover:bg-black/20 {showCreate
               ? 'bg-black/20'
-              : ''} text-[#363636] rounded-3 size-24 flex items-center justify-center"
+              : ''}  rounded-3 size-25 flex items-center justify-center"
             onclick={() => (showCreate = !showCreate)}
           >
-            <Icon icon="ri:calendar-2-line" width="14" height="14" />
+            <Icon icon="solar:calendar-linear" width="15" height="15" />
           </button>
           <Calendar.NextButton
-            class="hover:bg-black/20 rounded-3 size-24 flex items-center justify-center"
+            class="hover:bg-black/20 rounded-3 size-25 flex items-center justify-center"
           >
             <Icon
               icon="flowbite:angle-right-outline"
-              width="16"
-              height="16"
+              width="15"
+              height="15"
               class="text-[#363636]"
             />
           </Calendar.NextButton>
