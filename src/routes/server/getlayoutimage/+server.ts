@@ -1,27 +1,36 @@
-import type { LoginImageType } from "$lib/types";
-import { error } from "@sveltejs/kit";
-
 export async function GET({ fetch }) {
-  try {
-    const url =
-      "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=1&country=US&locale=en-US&fmt=json";
-    const response = await fetch(url);
-    const data = await response.json();
-    const obj = data["batchrsp"]["items"][0]["item"];
-    const result = JSON.parse(obj)["ad"];
-    const urlP = result.portraitImage.asset;
-    const hs1 = result.iconHoverText.split("\r\n©");
+  const endpoint = "https://fd.api.iris.microsoft.com/v4/api/selection";
+  const params = new URLSearchParams({
+    placement: "88000820",
+    bcnt: "1",
+    locale: "de-DE",
+    country: "DE",
+    fmt: "json",
+  });
 
-    const img = {
-      title: result.title,
-      hs1_title: hs1[0],
-      hs2_title: result.description,
-      image_L: result.landscapeImage.asset,
-      image_P: urlP,
-      hash: "",
-    } as LoginImageType;
-    return new Response(JSON.stringify(img));
-  } catch (e) {
-    error(404);
+  try {
+    const response = await fetch(`${endpoint}?${params}`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch images");
+
+    const data = await response.json();
+    const item = JSON.parse(data.batchrsp.items[0].item).ad;
+    const images = {
+      title: item.title,
+      description: item.description,
+      landscapeImageUrl: item.landscapeImage.asset,
+      portraitImageUrl: item.portraitImage.asset,
+      copyright: item.copyright,
+      ctaText: item.ctaText,
+      ctaUri: item.ctaUri,
+    };
+
+    return new Response(JSON.stringify(images));
+  } catch (error) {
+    console.error("Error fetching Spotlight images:", error);
+    return new Response(JSON.stringify([]));
   }
 }

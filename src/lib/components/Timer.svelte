@@ -97,16 +97,16 @@
   <div class="flex items-center justify-center gap-6">
     {#if isPaused}
       <button class="btn-timer" onclick={handleStart}>
-        <Icon icon="uil:play" width="15" height="15" />
+        <Icon icon="solar:play-outline" width="15" height="15" />
       </button>
     {:else}
       <button class="btn-timer" onclick={handlePause}>
-        <Icon icon="hugeicons:pause" width="15" height="15" />
+        <Icon icon="solar:pause-outline" width="15" height="15" />
       </button>
     {/if}
 
     <button class="btn-timer" onclick={handleReset}>
-      <Icon icon="grommet-icons:power-reset" width="13" height="13" />
+      <Icon icon="ri:reset-right-line" width="15" height="15" />
     </button>
   </div>
 </section>

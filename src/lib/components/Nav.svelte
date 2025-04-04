@@ -38,7 +38,7 @@
       hailProbability: 44.5,
       hailSize: 6,
       humidity: 59,
-      precipitationProbability: 0,
+      precipitationProbability: 100,
       pressureSeaLevel: 1013,
       pressureSurfaceLevel: 1013,
       rainIntensity: 0,
@@ -134,7 +134,7 @@
   </div>
 
   <div
-    class="ml-3 flex rounded-1 h-36 flex-col items-center px-1 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
+    class="ml-3 flex rounded-1 h-36 flex-col items-center px-2 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
   >
     <span class="font-tupa text-18 font-600 leading-17">
       {Math.floor($totalMemories / 100) < 10
@@ -157,22 +157,6 @@
     onclick={() => ($showWeather = !$showWeather)}
   >
     <div class="flex absolute top-1 right-3 justify-center items-start gap-3">
-      {#if navWeatherData.values.precipitationProbability}
-        <Icon
-          icon="akar-icons:umbrella"
-          width={15}
-          height={15}
-          style="filter: drop-shadow(0px 2px 2px #000000)"
-          class="text-white mt-2"
-        />
-        <span
-          class="text-9 font-500 leading-15 mt-3 text-blue-400"
-          style="text-shadow: 0px 0px 6px #000000"
-        >
-          {navWeatherData.values.precipitationProbability}%
-        </span>
-      {/if}
-
       <img
         src={getConditionIconImage(
           navWeatherData.values.weatherCode,
@@ -191,10 +175,19 @@
         <span class="text-8 leading-8">
           {Math.round(navWeatherData.values.temperature)}°
         </span>
-        <span class="text-9 leading-9">
+        <span class="text-8 leading-8">
           {Math.round(navWeatherData.values.temperatureApparent)}°
         </span>
-        <span class="text-8 leading-8">
+        <span class="text-8 leading-8 flex gap-1 items-center">
+          {#if navWeatherData.values.precipitationProbability}
+            <Icon icon="solar:umbrella-bold" width="9" height="9" />
+            <span
+              class=" text-8 leading-8 mr-1"
+              style="text-shadow: 0px 0px 6px #fff"
+              >{navWeatherData.values.precipitationProbability}%</span
+            >
+          {/if}
+          <Icon icon="solar:cloud-bold" width="9" height="9" />
           {navWeatherData.values.cloudCover}<small>%</small>
         </span>
       </div>

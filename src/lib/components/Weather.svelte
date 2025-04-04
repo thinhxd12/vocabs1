@@ -35,7 +35,7 @@
     >
       <div
         class="w-content h-full rounded-3 overflow-hidden py-6 absolute bottom-0 left-0"
-        style="background: linear-gradient(0deg, rgb(244, 244, 244) 0%, rgb(171, 203, 222) 100%) 0% 0% no-repeat padding-box padding-box transparent;"
+        style="background: linear-gradient(0deg, rgb(244 244 244 / 30%) 0%, rgb(171 203 222 / 90%) 100%) 0% 0% no-repeat padding-box padding-box transparent;backdrop-filter: blur(21px);"
       >
         <select
           name="location"
@@ -61,7 +61,7 @@
               {#if hourlyData[0].values.precipitationProbability}
                 <div class="mx-3 flex items-center justify-center">
                   <Icon
-                    icon="akar-icons:umbrella"
+                    icon="solar:umbrella-outline"
                     width="15"
                     height="15"
                     class="text-[#0062bf]"
@@ -73,7 +73,7 @@
                 </div>
                 <div class="mx-3 flex items-center justify-center">
                   <Icon
-                    icon="hugeicons:cloud-angled-rain"
+                    icon="solar:cloud-rain-outline"
                     width="15"
                     height="15"
                     class="text-[#0062bf]"
@@ -85,24 +85,20 @@
                 </div>
               {/if}
               <div class="mx-3 flex items-center justify-center">
-                <Icon icon="hugeicons:cloud" width="15" height="15" />
+                <Icon icon="solar:cloud-outline" width="15" height="15" />
                 <span class="ml-3 text-12 leading-15">
                   {Math.round(hourlyData[0].values.cloudCover)}
                   <small class="mt-3 leading-12">%</small>
                 </span>
               </div>
               <div class="mx-3 flex items-center justify-center">
-                <Icon
-                  icon="hugeicons:thermometer-warm"
-                  width="15"
-                  height="15"
-                />
+                <Icon icon="solar:temperature-outline" width="15" height="15" />
                 <span class="ml-3 text-12 leading-15">
                   {Math.round(hourlyData[0].values.temperatureApparent || 0)}°
                 </span>
               </div>
               <div class="mx-3 flex items-center justify-center">
-                <Icon icon="hugeicons:droplet" width="14" height="14" />
+                <Icon icon="solar:waterdrop-outline" width="15" height="15" />
                 <span class="ml-4 text-12 leading-15">
                   {hourlyData[0].values.humidity}
                   <small class="mt-3 leading-12">%</small>
@@ -110,7 +106,7 @@
               </div>
               <div class="mx-3 flex items-end justify-center">
                 <Icon
-                  icon="hugeicons:arrow-up-02"
+                  icon="solar:arrow-up-outline"
                   width="15"
                   height="15"
                   style="transform: rotate({hourlyData[0].values.windDirection -
@@ -193,12 +189,12 @@
                 <p class="text-13 font-400 leading-24 text-black/80">
                   {Math.round(item.values.temperature)}°
                 </p>
-                <div class="w-full h-21 text-center">
+                <div class="w-4/5 h-21 text-center">
                   {#if Number(format(item.time, "H")) % 4 == 0}
                     <h3
-                      class="text-12 font-500 text-black/80 leading-21 bg-[#e5f1fe] rounded-6"
+                      class="text-12 font-500 text-black/80 leading-21 bg-[rgba(229,241,254,0.5)] rounded-3"
                     >
-                      {format(item.time, "EEEEEE dd")}
+                      {format(item.time, "eee dd")}
                     </h3>
                   {/if}
                 </div>

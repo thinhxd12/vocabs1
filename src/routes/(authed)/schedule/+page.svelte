@@ -72,12 +72,7 @@
         <Calendar.PrevButton
           class="hover:bg-black/20 rounded-3 size-25 flex items-center justify-center mr-[48px]"
         >
-          <Icon
-            icon="flowbite:angle-left-outline"
-            width="15"
-            height="15"
-            class="text-[#363636]"
-          />
+          <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
         </Calendar.PrevButton>
         <Calendar.Heading
           class="text-18 leading-12 mt-4 uppercase font-rubik font-400 text-[#363636] select-none"
@@ -127,7 +122,7 @@
                     type="number"
                     min="0"
                     bind:value={$todaySchedule.start.count}
-                    class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                    class="text-13 font-rubik leading-15 pt-3 h-25 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
                   />
                   <input
                     hidden
@@ -142,7 +137,7 @@
                     type="number"
                     min="0"
                     bind:value={$todaySchedule.end.count}
-                    class="text-12 font-rubik leading-22 pt-3 h-24 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+                    class="text-13 font-rubik leading-15 pt-3 h-25 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
                   />
                   <input
                     hidden
@@ -152,9 +147,13 @@
                   />
                   <button
                     type="submit"
-                    class="size-24 hover:bg-black/20 flex justify-center items-center rounded-3"
+                    class="size-25 hover:bg-black/20 flex justify-center items-center rounded-3"
                   >
-                    <Icon icon="ri:link" width="16" height="16" />
+                    <Icon
+                      icon="solar:alt-arrow-right-linear"
+                      width="15"
+                      height="15"
+                    />
                   </button>
                 </form>
               {/if}
@@ -234,12 +233,7 @@
           <Calendar.NextButton
             class="hover:bg-black/20 rounded-3 size-25 flex items-center justify-center"
           >
-            <Icon
-              icon="flowbite:angle-right-outline"
-              width="15"
-              height="15"
-              class="text-[#363636]"
-            />
+            <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
           </Calendar.NextButton>
         </div>
       </Calendar.Header>
@@ -355,7 +349,7 @@
       <Pagination.PrevButton
         class="hover:bg-black/10 text-white cursor-pointer rounded-3 size-24 flex items-center justify-center disabled:cursor-not-allowed disabled:text-white/30 hover:disabled:bg-transparent"
       >
-        <Icon icon="flowbite:angle-left-outline" width="18" height="18" />
+        <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
       </Pagination.PrevButton>
       <div class="flex items-center gap-6 text-secondary-white">
         {#each pages as page (page.key)}
@@ -374,7 +368,7 @@
       <Pagination.NextButton
         class="hover:bg-black/10 text-white cursor-pointer rounded-3 size-24 flex items-center justify-center disabled:cursor-not-allowed disabled:text-white/30 hover:disabled:bg-transparent"
       >
-        <Icon icon="flowbite:angle-right-outline" width="18" height="18" />
+        <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
       </Pagination.NextButton>
     </div>
   </Pagination.Root>

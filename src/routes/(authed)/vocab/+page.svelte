@@ -299,7 +299,11 @@
               onclick={() => (deleteIndex = i)}
               class="text-secondary-white text-10 leading-10 w-27 h-full"
             >
-              <Icon icon="hugeicons:delete-throw" width="14" height="14" />
+              <Icon
+                icon="solar:trash-bin-trash-outline"
+                width="15"
+                height="15"
+              />
             </button>
           </div>
         {/if}

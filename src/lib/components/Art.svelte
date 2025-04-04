@@ -91,7 +91,7 @@
         class="btn-menu absolute bottom-6 right-0 z-10"
         onclick={() => getImageData(imageData!.nextImageUrl)}
       >
-        <Icon icon="hugeicons:next" width="15" height="15" />
+        <Icon icon="solar:skip-next-linear" width="13" height="13" />
       </button>
     {/if}
   </div>

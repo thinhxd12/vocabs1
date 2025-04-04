@@ -146,12 +146,9 @@
               getTextDataWebster();
             }}
             class="w-28 h-28 text-white/30 hover:text-white transition duration-100 absolute top-1 right-1"
-            ><Icon
-              icon="material-symbols:search-rounded"
-              width="22"
-              height="22"
-            /></button
           >
+            <Icon icon="solar:magnifer-outline" width="15" height="15" />
+          </button>
         </div>
 
         <input

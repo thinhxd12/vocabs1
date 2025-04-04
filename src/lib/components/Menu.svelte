@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    layoutImage,
+    handleChangeLayoutImage,
     showBookmark,
     showLayout,
   } from "$lib/store/layoutstore";
@@ -18,16 +18,6 @@
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
     handleGetListContent();
-  }
-
-  async function handleChangeLayoutImage() {
-    const url =
-      "https://bing.biturl.top/?resolution=UHD&format=json&index=random&mkt=en-IN";
-    const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0" },
-    });
-    const data = await response.json();
-    layoutImage.set(data);
   }
 </script>
 
@@ -47,7 +37,7 @@
     {#if $todaySchedule}
       <span>{$todaySchedule.start.index}</span>
     {:else}
-      <Icon icon="prime:question" width="15" height="15" />
+      <Icon icon="solar:question-circle-linear" width="15" height="15" />
     {/if}
   </button>
 
@@ -60,7 +50,7 @@
     {#if $todaySchedule}
       <span>{$todaySchedule.end.index}</span>
     {:else}
-      <Icon icon="prime:question" width="15" height="15" />
+      <Icon icon="solar:question-circle-linear" width="15" height="15" />
     {/if}
   </button>
 

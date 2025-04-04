@@ -149,9 +149,9 @@
           {#if bookInfo.numberOfRatings}
             <div class="mb-3 flex items-center">
               <Icon
-                icon="mage:star-fill"
-                width="18"
-                height="18"
+                icon="solar:star-bold"
+                width="15"
+                height="15"
                 color="#f1ce42"
               />
               <span class="ml-3 text-11 leading-12 text-secondary-white/60">
@@ -166,11 +166,11 @@
         {/if}
 
         <div class="flex items-center w-full mt-3">
-          <button class="btn-heart ml-3 mr-6" onclick={handleCheckBookmark}>
+          <button class="btn-heart" onclick={handleCheckBookmark}>
             <Icon
-              icon="bi:heart-fill"
-              width="13"
-              height="13"
+              icon="solar:heart-bold"
+              width="15"
+              height="15"
               color={bookmark.like
                 ? isReset
                   ? "#f08399"
@@ -179,7 +179,7 @@
             />
           </button>
 
-          <span class="text-11 leading-12 text-secondary-white/60">
+          <span class="text-11 ml-3 leading-12 text-secondary-white/60">
             {bookmark.like}
           </span>
         </div>
