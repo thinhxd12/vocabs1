@@ -19,25 +19,21 @@ export const load: PageServerLoad = async ({ cookies }) => {
     const dateObj = new Date(curr.date!);
     const day = dateObj.getDate();
     const month = dateObj.getMonth();
-
+    const year = dateObj.getFullYear();
     const existing = acc.find(
       (item: any) => item.date === day && item.month === month
     );
-
     if (existing) {
       existing.count += curr.count;
     } else {
-      acc.push({ date: day, month: month, count: curr.count });
+      acc.push({ date: day, month, year, count: curr.count });
     }
-
     return acc;
   }, []);
-
   const progressLength = await getTotalProgress();
   let index = Math.ceil(progressLength / 5);
   const progress = await getTotalProgressByIndex(index - 1);
   const diary = await getDiary();
-
   return {
     schedule: transformed,
     progressLength: index,

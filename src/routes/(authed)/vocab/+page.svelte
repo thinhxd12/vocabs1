@@ -315,4 +315,4 @@
   <Edit id={editId} />
 </div>
 
-<svelte:window on:keydown|preventDefault={onKeyDown} />
+<svelte:window on:keydown={onKeyDown} />
