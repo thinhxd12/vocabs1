@@ -1,4 +1,4 @@
-import type { SelectVocab } from "$lib/db/schema";
+import type { SelectDiary, SelectVocab } from "$lib/db/schema";
 import { writable } from "svelte/store";
 import type { VocabularySearchType } from "../types";
 
@@ -9,3 +9,5 @@ export const searchResults = writable<VocabularySearchType[]>([]);
 export const modal = writable<any>(null);
 export const showTranslate = writable<boolean>(false);
 export const showEdit = writable<boolean>(false);
+export const cachedProgressLength = writable<number | null>(null);
+export const cachedDiary = writable<SelectDiary[] | null>(null);

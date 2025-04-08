@@ -39,9 +39,10 @@ export interface VocabExampleType {
   year: string;
 }
 
-export interface CalendarType {
+export interface CalendarDayType {
   date: number;
   month: number;
+  year: number;
   count: number;
 }
 

@@ -1,43 +1,42 @@
 <script lang="ts">
-  import { format } from "date-fns";
-  import Icon from "@iconify/svelte";
-  import type { SelectProgress } from "$lib/db/schema.js";
-  import { fly } from "svelte/transition";
   import { enhance } from "$app/forms";
-  import { toast } from "svelte-sonner";
-  import { todaySchedule } from "$lib/store/navstore.js";
   import Calendar from "$lib/components/Calendar.svelte";
+  import type { SelectProgress } from "$lib/db/schema";
+  import { todaySchedule } from "$lib/store/navstore";
+  import { cachedDiary, cachedProgressLength } from "$lib/store/vocabstore";
+  import Icon from "@iconify/svelte";
+  import { format } from "date-fns";
+  import { onMount } from "svelte";
+  import { toast } from "svelte-sonner";
+  import { fly } from "svelte/transition";
 
   let { data } = $props();
   let src = $state<string>("");
   let paused = $state<boolean>(true);
-
-  let progressItems = $state<SelectProgress[]>(data.progress);
+  let showReset = $state<boolean>(false);
+  let showCreate = $state<boolean>(false);
+  let progressItems = $state<SelectProgress[] | null>(null);
+  let currentPage = $state<number>(1);
+  let pages = $state<(string | number)[]>([]);
 
   async function getProgressByIndex(index: number) {
     const response = await fetch(`/server/getprogress?index=${index}`);
     progressItems = await response.json();
   }
 
-  let showReset = $state<boolean>(false);
-  let showCreate = $state<boolean>(false);
-
-  let totalPages = data.progressLength;
-  let currentPage = $state<number>(1);
-  let pages = $state<(string | number)[]>([]);
-
-  function getPages(current: number, total: number) {
+  async function getPages(current: number) {
+    let totalPages = $cachedProgressLength;
+    if (!totalPages) return;
     currentPage = current;
-    getProgressByIndex(data.progressLength - current);
     const delta = 1;
     const range = [];
     const rangeWithDots = [];
     let l;
 
-    for (let i = 1; i <= total; i++) {
+    for (let i = 1; i <= totalPages; i++) {
       if (
         i === 1 ||
-        i === total ||
+        i === totalPages ||
         (i >= current - delta && i <= current + delta)
       ) {
         range.push(i);
@@ -57,9 +56,18 @@
     }
 
     pages = rangeWithDots;
+    getProgressByIndex(totalPages - current);
   }
 
-  getPages(1, totalPages);
+  onMount(async () => {
+    if (!$cachedProgressLength) {
+      const response = await fetch(`/server/getschedule`);
+      const data = await response.json();
+      cachedProgressLength.set(data.progressLength);
+      cachedDiary.set(data.diary);
+      getPages(1);
+    } else getPages(1);
+  });
 </script>
 
 <svelte:head>
@@ -76,17 +84,19 @@
     <div
       class="absolute left-3 top-3 cursor-default px-3 pt-2 pb-1 bg-white/45 layout-white !shadow-none"
     >
-      {#each data.diary as item}
-        <p class="text-7 font-400 leading-8 text-black/80 font-rubik">
-          {format(new Date(item.date), "yyyy-MM-dd")}
-          {item.count}
-        </p>
-      {/each}
+      {#if $cachedDiary}
+        {#each $cachedDiary as item}
+          <p class="text-7 font-400 leading-8 text-black/80 font-rubik">
+            {format(new Date(item.date), "yyyy-MM-dd")}
+            {item.count}
+          </p>
+        {/each}
+      {/if}
     </div>
 
     {#if showReset}
       <div
-        class="absolute top-1/4 left-[20%] w-3/5 layout-white"
+        class="absolute top-[50px] left-[64px] w-[250px] layout-white"
         transition:fly={{ y: -15, duration: 150 }}
       >
         <div class="flex items-center justify-between bg-black">
@@ -168,7 +178,7 @@
 
     {#if showCreate}
       <div
-        class="absolute top-1/4 left-[20%] w-3/5 layout-white"
+        class="absolute top-[50px] left-[64px] w-[250px] layout-white"
         transition:fly={{ y: -15, duration: 150 }}
       >
         <div class="flex items-center justify-between bg-black">
@@ -191,7 +201,7 @@
           name="createschedule"
           action="?/setSchedule"
           method="post"
-          class="w-full flex items-center justify-center gap-30 p-4"
+          class="w-full flex items-center justify-center gap-[60px] p-4"
           use:enhance={({ formElement, formData, action, cancel }) => {
             return async ({ result }) => {
               if (result.type === "failure") {
@@ -251,7 +261,7 @@
   </p>
 
   <div class="w-full flex flex-col items-center min-h-[135px]">
-    {#if progressItems.length}
+    {#if progressItems}
       {#each progressItems as item}
         <div
           class="w-content gap-1 font-rubik text-12 h-24 flex items-center mb-3 select-none"
@@ -275,7 +285,7 @@
   <div class="flex justify-center items-center">
     <button
       class="size-24 select-none rounded-9 layout-white flex items-center justify-center text-black/80 disabled:cursor-not-allowed disabled:text-black/10"
-      onclick={() => getPages(currentPage - 1, totalPages)}
+      onclick={() => getPages(currentPage - 1)}
       disabled={currentPage === 1}
     >
       <Icon icon="solar:alt-arrow-left-linear" width="14" height="14" />
@@ -291,7 +301,7 @@
           <button
             class:active={page === currentPage}
             class="page-button select-none text-center size-24 font-rubik text-12 leading-21 pt-3"
-            onclick={() => getPages(page as number, totalPages)}
+            onclick={() => getPages(page as number)}
           >
             {page}
           </button>
@@ -301,8 +311,8 @@
 
     <button
       class="size-24 rounded-9 select-none layout-white flex items-center justify-center text-black/80 disabled:cursor-not-allowed disabled:text-black/10"
-      onclick={() => getPages(currentPage + 1, totalPages)}
-      disabled={currentPage === totalPages}
+      onclick={() => getPages(currentPage + 1)}
+      disabled={currentPage === $cachedProgressLength}
     >
       <Icon icon="solar:alt-arrow-right-linear" width="14" height="14" />
     </button>

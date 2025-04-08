@@ -1,19 +1,36 @@
 import {
-  getAllScheduleHaveDate,
-  getDiary,
-  getTotalProgress,
-  getTotalProgressByIndex,
-} from "$lib/db/queries/select";
-import {
   progressTable,
   scheduleTable,
   vocabTable,
   type InsertSchedule,
-  type SelectProgress,
   type SelectSchedule,
 } from "$lib/db/schema";
+import {
+  getAllScheduleHaveDate,
+  getTotalProgress,
+} from "$lib/db/queries/select";
+import { fail, type ActionResult } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
+import { updateCountScheduleById } from "$lib/db/queries/update";
+import { db } from "$lib/db";
+import { count, desc } from "drizzle-orm";
+import { REPETITION_PATTERN } from "$lib/constants";
+import { insertSchedule } from "$lib/db/queries/insert";
+import type { CalendarDayType } from "$lib/types";
 
 export const load: PageServerLoad = async ({ cookies }) => {
+  // let length;
+  // cachedProgressLength.subscribe((value) => (length = value))();
+  // const cachedProgressLengthData = get(cachedProgressLength);
+  // if (!length) {
+  //   const progressLength = await getTotalProgress();
+  //   let index = Math.ceil(progressLength / 5);
+  //   cachedProgressLength.set(index);
+  //   const progress = await getTotalProgressByIndex(index - 1);
+  //   cachedProgress.set(progress);
+  //   const diary = await getDiary();
+  //   cachedDiary.set(diary);
+  // }
   const data = await getAllScheduleHaveDate();
   const transformed = data.reduce((acc: any, curr: SelectSchedule) => {
     const dateObj = new Date(curr.date!);
@@ -30,25 +47,10 @@ export const load: PageServerLoad = async ({ cookies }) => {
     }
     return acc;
   }, []);
-  const progressLength = await getTotalProgress();
-  let index = Math.ceil(progressLength / 5);
-  const progress = await getTotalProgressByIndex(index - 1);
-  const diary = await getDiary();
   return {
-    schedule: transformed,
-    progressLength: index,
-    progress: progress as SelectProgress[],
-    diary: diary,
+    schedule: transformed as CalendarDayType[],
   };
 };
-
-import { fail, type ActionResult } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
-import { updateCountScheduleById } from "$lib/db/queries/update";
-import { db } from "$lib/db";
-import { count, asc, eq, desc, DrizzleError } from "drizzle-orm";
-import { REPETITION_PATTERN } from "$lib/constants";
-import { insertSchedule } from "$lib/db/queries/insert";
 
 export const actions = {
   setProgress: async ({ cookies, request }) => {

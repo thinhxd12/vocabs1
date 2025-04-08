@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { CalendarDayType } from "$lib/types";
   import Icon from "@iconify/svelte";
   type DayType = {
     enabled: boolean;
@@ -9,7 +10,7 @@
   };
 
   interface Props {
-    schedule: { date: number; month: number; year: number; count: number }[];
+    schedule: CalendarDayType[];
   }
 
   let { schedule }: Props = $props();
