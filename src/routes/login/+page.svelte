@@ -1,6 +1,5 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import { goto } from "$app/navigation";
   let password = $state("");
   let { form } = $props();
   let creating = $state(false);
@@ -22,6 +21,8 @@
       return async ({ result, update }) => {
         await update();
         creating = false;
+        if (result.status === 303)
+          localStorage.setItem("login_time", JSON.stringify({ t: Date.now() }));
       };
     }}
   >
@@ -48,15 +49,12 @@
           height={15}
         />
       </button>
+      {#if form?.error}
+        <p class="text-[#de0000] leading-12 text-12 font-500 text-center mt-9">
+          {form.error}
+        </p>
+      {/if}
     </div>
-    {#if form?.error}
-      <p
-        class="text-[#de0000] leading-12 text-12 font-600 text-center mt-9"
-        style="text-shadow: 0 0 1px white;"
-      >
-        {form.error}
-      </p>
-    {/if}
   </form>
 </div>
 

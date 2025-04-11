@@ -28,14 +28,9 @@ export const actions = {
       throw redirect(303, "/vocab");
     }
   },
-  logout: async ({ cookies }) => {
-    const { error } = await supabase.auth.signOut();
-    cookies.delete("logged_in", { path: "/" });
-    throw redirect(303, "/login");
-  },
 } satisfies Actions;
 
-export function load({ cookies }) {
+export function load({ cookies, params }) {
   if (cookies.get("logged_in")) {
     redirect(308, `/vocab`);
   }

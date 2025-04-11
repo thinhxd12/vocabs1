@@ -3,7 +3,7 @@ export async function GET({ fetch }) {
   const params = new URLSearchParams({
     placement: "88000820",
     bcnt: "1",
-    locale: "de-DE",
+    locale: "en-DE",
     country: "DE",
     fmt: "json",
   });

@@ -1,16 +1,5 @@
-import type {
-  CurrentlyWeatherType,
-  HourlyWeatherType,
-  LoginImageType,
-  TomorrowWeatherCurrentType,
-} from "./types";
-import {
-  currentSchedule,
-  isAutoPlay,
-  listContent,
-  quizRender,
-  todaySchedule,
-} from "$lib/store/navstore";
+import { goto } from "$app/navigation";
+import type { CurrentlyWeatherType, HourlyWeatherType } from "./types";
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
@@ -162,3 +151,12 @@ export const getHourlyWeatherTomorrowData = async (
     return result.timelines;
   }
 };
+
+export async function logout() {
+  const res = await fetch("/server/logout", { method: "POST" });
+  const data = await res.json();
+  if (data.redirectTo) {
+    localStorage.removeItem("login_time");
+    goto(data.redirectTo);
+  }
+}

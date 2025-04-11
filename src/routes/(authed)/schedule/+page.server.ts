@@ -19,18 +19,6 @@ import { insertSchedule } from "$lib/db/queries/insert";
 import type { CalendarDayType } from "$lib/types";
 
 export const load: PageServerLoad = async ({ cookies }) => {
-  // let length;
-  // cachedProgressLength.subscribe((value) => (length = value))();
-  // const cachedProgressLengthData = get(cachedProgressLength);
-  // if (!length) {
-  //   const progressLength = await getTotalProgress();
-  //   let index = Math.ceil(progressLength / 5);
-  //   cachedProgressLength.set(index);
-  //   const progress = await getTotalProgressByIndex(index - 1);
-  //   cachedProgress.set(progress);
-  //   const diary = await getDiary();
-  //   cachedDiary.set(diary);
-  // }
   const data = await getAllScheduleHaveDate();
   const transformed = data.reduce((acc: any, curr: SelectSchedule) => {
     const dateObj = new Date(curr.date!);

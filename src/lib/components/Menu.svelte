@@ -13,7 +13,7 @@
     showTimer,
   } from "$lib/store/navstore";
   import { innerWidth } from "svelte/reactivity/window";
-  import { enhance } from "$app/forms";
+  import { logout } from "$lib/functions";
 
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
@@ -22,11 +22,9 @@
 </script>
 
 <div class="flex flex-col items-center justify-center w-30">
-  <form method="POST" action="/login?/logout" use:enhance>
-    <button class="btn-menu">
-      <Icon icon="solar:exit-outline" width="15" height="15" />
-    </button>
-  </form>
+  <button class="btn-menu" onclick={logout}>
+    <Icon icon="solar:exit-outline" width="15" height="15" />
+  </button>
 
   <button
     class="btn-menu"
