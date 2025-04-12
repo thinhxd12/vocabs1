@@ -18,7 +18,7 @@
   import type { TomorrowWeatherCurrentType } from "$lib/types";
   import { format } from "date-fns";
   import { getCurrentWeatherTomorrowData } from "$lib/functions";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import Icon from "@iconify/svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -67,13 +67,15 @@
     if (data) navWeatherData = data;
   }
 
-  getNavWeatherData();
-  interval = setInterval(
-    () => {
-      getNavWeatherData();
-    },
-    1000 * 15 * 60
-  );
+  onMount(() => {
+    getNavWeatherData();
+    interval = setInterval(
+      () => {
+        getNavWeatherData();
+      },
+      1000 * 15 * 60
+    );
+  });
 
   onDestroy(() => {
     clearInterval(interval);
