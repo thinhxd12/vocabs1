@@ -2,6 +2,7 @@ import { fail, redirect, type ActionResult } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { supabase } from "$lib/supabase";
 import { dev } from "$app/environment";
+import type { LayoutServerLoad } from "../$types";
 
 export const actions = {
   default: async ({ cookies, request }) => {
@@ -37,8 +38,8 @@ export const actions = {
   },
 } satisfies Actions;
 
-export function load({ cookies, params, locals }) {
+export const load: LayoutServerLoad = async ({ locals, cookies }) => {
   if (locals.user) {
     throw redirect(308, cookies.get("redirect_to") || "/vocab");
   }
-}
+};
