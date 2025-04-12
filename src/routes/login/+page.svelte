@@ -20,8 +20,6 @@
       return async ({ result, update }) => {
         await update();
         creating = false;
-        if (result.status === 303)
-          localStorage.setItem("login_time", JSON.stringify({ t: Date.now() }));
       };
     }}
   >

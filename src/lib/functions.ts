@@ -156,7 +156,6 @@ export async function logout() {
   const res = await fetch("/server/logout", { method: "POST" });
   const data = await res.json();
   if (data.redirectTo) {
-    localStorage.removeItem("login_time");
     goto(data.redirectTo);
   }
 }
