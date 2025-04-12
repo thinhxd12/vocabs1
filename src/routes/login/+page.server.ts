@@ -1,9 +1,10 @@
 import { fail, redirect, type ActionResult } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { supabase } from "$lib/supabase";
+import { dev } from "$app/environment";
 
 export const actions = {
-  login: async ({ cookies, request }) => {
+  default: async ({ cookies, request }) => {
     const formData = await request.formData();
     const email = import.meta.env.VITE_LOGIN_EMAIL;
     const password = formData.get("password") as string;
@@ -24,14 +25,20 @@ export const actions = {
         error: error.message,
       });
     } else {
-      cookies.set("logged_in", "true", { path: "/" });
+      cookies.set("session_id", email, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict",
+        secure: !dev,
+        maxAge: 60 * 60 * 24 * 7,
+      });
       throw redirect(303, "/vocab");
     }
   },
 } satisfies Actions;
 
-export function load({ cookies, params }) {
-  if (cookies.get("logged_in")) {
-    redirect(308, `/vocab`);
+export function load({ cookies, params, locals }) {
+  if (locals.user) {
+    throw redirect(308, cookies.get("redirect_to") || "/vocab");
   }
 }

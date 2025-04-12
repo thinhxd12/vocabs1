@@ -7,22 +7,8 @@
   } from "$lib/store/layoutstore";
   let { children } = $props();
   import { onMount } from "svelte";
-  import { logout } from "$lib/functions";
   onMount(async () => {
     handleChangeLayoutImage();
-    const loginTime = localStorage.getItem("login_time");
-    if (!loginTime) {
-      logout();
-      return;
-    }
-    const t = JSON.parse(loginTime).t;
-    const now = Date.now();
-    const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
-    if (now - t >= SEVEN_DAYS) {
-      logout();
-    } else {
-      fetch("/server/setcookie", { method: "POST" });
-    }
   });
 </script>
 
