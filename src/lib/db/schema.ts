@@ -69,6 +69,11 @@ export const weatherTable = pgTable("weather_table", {
   default: boolean("default").notNull().default(false),
 });
 
+export const bookmarkProgress = pgTable("bookmark_progress", {
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  currentId: uuid("id").notNull().primaryKey(),
+});
+
 export type InsertVocab = typeof vocabTable.$inferInsert;
 export type SelectVocab = typeof vocabTable.$inferSelect;
 
@@ -89,3 +94,6 @@ export type SelectDiary = typeof diaryTable.$inferSelect;
 
 export type InsertWeather = typeof weatherTable.$inferInsert;
 export type SelectWeather = typeof weatherTable.$inferSelect;
+
+export type InsertBookmarkProgress = typeof bookmarkProgress.$inferInsert;
+export type SelectBookmarkProgress = typeof bookmarkProgress.$inferSelect;

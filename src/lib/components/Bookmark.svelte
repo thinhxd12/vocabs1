@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { SelectBookmark } from "$lib/db/schema";
+  import type { SelectBookmark, SelectBookmarkProgress } from "$lib/db/schema";
+  import { supabase } from "$lib/supabase";
   import type { BookSearchType } from "$lib/types";
   import Icon from "@iconify/svelte";
   import { Dialog } from "bits-ui";
@@ -16,51 +17,100 @@
   let isLoading = $state<boolean>(false);
 
   onMount(async () => {
-    const response = await fetch(`/server/getbookmark?select=true`);
-    bookmark = await response.json();
-    if (bookmark) {
+    isReset = false;
+    isLoading = true;
+    const data = await handleGetCurrentBookmark();
+    if (data) {
       isReset = true;
+      isLoading = false;
+      bookmark = data;
       handleGetBookInfo(bookmark);
     }
   });
 
-  async function handleGetBookInfo(data: SelectBookmark) {
-    const response = await fetch(
-      `/server/getbookinfo?query=${data.bookTile.split(":")[0]}&author=${data.authors.split(";")[0]}`
-    );
-    bookInfo = await response.json();
+  async function handleGetCurrentId() {
+    const { data } = await supabase
+      .from("bookmark_progress")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (data) return data[0] as SelectBookmarkProgress;
   }
 
+  async function handleGetCurrentBookmark() {
+    const idData = await handleGetCurrentId();
+    if (!idData) return;
+    const { data } = await supabase
+      .from("bookmark_table")
+      .select("*")
+      .eq("id", idData.currentId)
+      .limit(1);
+    if (data) return data[0] as SelectBookmark;
+  }
   async function handleGetNextBookmark() {
     isReset = false;
     isLoading = true;
-    const response = await fetch(`/server/getbookmark?nextid=${bookmark!.id}`);
-    const data = await response.json();
-    isReset = true;
-    isLoading = false;
-
-    if (data) {
-      if (data.bookTile !== bookmark?.bookTile) {
-        handleGetBookInfo(data);
+    const { data } = await supabase
+      .from("bookmark_table")
+      .select()
+      .order("id", { ascending: true })
+      .gt("id", bookmark?.id)
+      .limit(1);
+    if (data && data.length) {
+      handleSetBookmark(data[0]);
+    } else {
+      const { data } = await supabase
+        .from("bookmark_table")
+        .select()
+        .order("id", { ascending: true })
+        .limit(1);
+      if (data) {
+        handleSetBookmark(data[0]);
       }
-      bookmark = data;
     }
   }
 
   async function handleGetPrevBookmark() {
     isReset = false;
     isLoading = true;
-    const response = await fetch(`/server/getbookmark?previd=${bookmark!.id}`);
-    const data = await response.json();
+    const { data } = await supabase
+      .from("bookmark_table")
+      .select()
+      .order("id", { ascending: false })
+      .lt("id", bookmark?.id)
+      .limit(1);
+    if (data && data.length) {
+      handleSetBookmark(data[0]);
+    } else {
+      const { data } = await supabase
+        .from("bookmark_table")
+        .select()
+        .order("id", { ascending: false })
+        .limit(1);
+      if (data) {
+        handleSetBookmark(data[0]);
+      }
+    }
+  }
+
+  async function handleSetBookmark(data: SelectBookmark) {
+    const { error } = await supabase
+      .from("bookmark_progress")
+      .update({ currentId: data.id })
+      .eq("created_at", "2025-04-13 00:29:28.801084+00");
     isReset = true;
     isLoading = false;
-
-    if (data) {
-      if (data.bookTile !== bookmark?.bookTile) {
-        handleGetBookInfo(data);
-      }
-      bookmark = data;
+    if (data.bookTile !== bookmark?.bookTile) {
+      handleGetBookInfo(data);
     }
+    bookmark = data;
+  }
+
+  async function handleGetBookInfo(data: SelectBookmark) {
+    const response = await fetch(
+      `/server/getbookinfo?query=${data.bookTile.split(":")[0]}&author=${data.authors.split(";")[0]}`
+    );
+    bookInfo = await response.json();
   }
 
   async function handleCheckBookmark() {
@@ -227,30 +277,22 @@
         {:else}
           <div
             class="bookmarkText p-9 pl-21 font-garamond text-20 font-400 leading-30"
-            transition:fade={{ duration: 300 }}
           >
             <div
-              class="float-right ml-6 w-[60px] h-[60px] overflow-hidden bg-[#f0f0f0] flex flex-col shadow-md shadow-black/30 rounded-7"
+              class="float-right ml-6 w-[66px] h-[66px] overflow-hidden bg-[#f0f0f0] flex flex-col justify-center shadow-md shadow-black/30 rounded-6"
             >
-              <div
-                class="bg-[#fe0000] h-18 w-full text-white px-3 flex items-end"
+              <p
+                class="bg-[#fe0000] text-9 font-500 font-rubik leading-20 h-18 w-full text-white px-3 text-center"
               >
-                <small
-                  class="text-8 font-rubik font-500 uppercase leading-13 mr-2"
-                >
-                  {format(new Date(bookmark.dateOfCreation), "E")}
-                </small>
-                <span class="text-11 font-rubik font-500 uppercase leading-14">
-                  {format(new Date(bookmark.dateOfCreation), "MM/yy")}
-                </span>
-              </div>
-              <div
-                class="flex-1 w-full font-rubik text-[36px] leading-[27px] mt-6 text-center"
+                {format(new Date(bookmark.dateOfCreation), "EEE MM/yyyy")}
+              </p>
+              <p
+                class="w-full font-rubik text-[40px] leading-[30px] pt-6 text-center"
               >
                 {format(new Date(bookmark.dateOfCreation), "dd")}
-              </div>
+              </p>
               <p
-                class="text-black font-rubik text-9 leading-10 text-center font-500"
+                class="text-black font-rubik text-9 leading-12 w-full text-center font-500"
               >
                 {format(new Date(bookmark.dateOfCreation), "p")}
               </p>
