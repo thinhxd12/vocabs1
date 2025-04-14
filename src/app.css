@@ -34,21 +34,11 @@ input.layout-main {
 }
 
 .layout-white {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(21px);
-  @apply shadow-sm shadow-black/45;
+  @apply bg-white/15 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 border border-white/15 shadow-md shadow-black/30 ring-1 ring-gray-800/[.075] backdrop-blur-xl;
 }
 
-.layout-light {
-  background: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(21px);
-  @apply border-y border-b-white/15 border-t-white/25 shadow-md shadow-black/45;
-}
-
-.layout-dark {
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(21px);
-  @apply border-y border-b-white/10 border-t-white/15 shadow-md shadow-black/45;
+.layout-black {
+  @apply bg-black/60 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 border border-white/5 shadow-md shadow-black/30 ring-1 ring-gray-800/[.075] backdrop-blur-xl;
 }
 
 .style-1 {

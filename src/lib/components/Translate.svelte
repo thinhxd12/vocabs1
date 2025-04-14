@@ -98,7 +98,7 @@
     <Dialog.Content
       class="fixed w-content {$showLayout
         ? 'inset-[48px_12px_48px_calc(100vw-390px)]'
-        : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
+        : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-black"
     >
       <form
         name="insertvocab"

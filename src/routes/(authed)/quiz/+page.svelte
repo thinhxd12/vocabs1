@@ -105,7 +105,7 @@
     class="w-content h-[calc(100vh-42px)] flex flex-col overflow-y-scroll no-scrollbar"
   >
     <div
-      class="my-9 min-h-[120px] w-2/3 mx-auto relative flex no-scrollbar layout-light select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
+      class="my-9 min-h-[120px] w-2/3 mx-auto relative flex no-scrollbar layout-black select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
     >
       <h1
         class="absolute left-1/2 -translate-x-1/2 -top-9 bg-transparent text-center text-[168px] leading-[115px] text-white/20"

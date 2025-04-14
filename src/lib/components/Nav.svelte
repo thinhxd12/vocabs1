@@ -84,7 +84,7 @@
 
 <nav class="w-content h-[42px] flex z-20">
   <div
-    class="flex rounded-1 mr-3 h-36 w-12 flex-col items-center justify-between bg-black/60 shadow-md shadow-black/45 backdrop-blur-md overflow-hidden"
+    class="flex rounded-1 mr-3 h-36 w-12 flex-col items-center justify-between overflow-hidden layout-black !bg-black/90"
   >
     <div class="flex flex-col justify-center text-center">
       {#if $todaySchedule}
@@ -107,7 +107,7 @@
   </div>
 
   <div
-    class="h-36 flex-1 outline-none overflow-hidden shadow-sm shadow-black/45 bg-black/20 backdrop-blur-md rounded-1 flex justify-center items-center"
+    class="layout-white h-36 flex-1 overflow-hidden rounded-1 flex justify-center items-center"
   >
     <a
       href="/vocab"
@@ -135,7 +135,7 @@
   </div>
 
   <div
-    class="ml-3 flex rounded-1 h-36 flex-col items-center px-2 justify-center bg-black/60 text-white shadow-sm shadow-black/45 backdrop-blur-md"
+    class="ml-3 flex rounded-1 h-36 flex-col items-center px-2 justify-center text-white layout-black !bg-black/90"
   >
     <span class="font-tupa text-18 font-600 leading-17">
       {Math.floor($totalMemories / 100) < 10
@@ -224,11 +224,11 @@
 
 <style>
   .btn-nav {
-    @apply outline-none size-27 mx-3 flex items-center justify-center text-white/45 hover:text-white;
+    @apply outline-none size-27 mx-3 flex items-center justify-center text-black/50 hover:text-black transition duration-300;
   }
 
   .btn-nav.active {
-    @apply text-white;
+    @apply text-black;
   }
 
   .btn-weather {

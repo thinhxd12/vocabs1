@@ -14,7 +14,7 @@
 </script>
 
 {#each item.meanings as entry}
-  <div class="w-full mb-6 overflow-hidden rounded-3 py-3 layout-white">
+  <div class="w-full mb-6 overflow-hidden rounded-3 py-3 layout-white !shadow">
     <div class="flex justify-between px-9">
       <button
         class="cursor-pointer font-roslindale text-24 leading-28 font-500"

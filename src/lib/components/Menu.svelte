@@ -22,12 +22,12 @@
 </script>
 
 <div class="flex flex-col items-center justify-center w-30">
-  <button class="btn-menu" onclick={logout}>
+  <button class="btn-menu layout-white" onclick={logout}>
     <Icon icon="solar:exit-outline" width="15" height="15" />
   </button>
 
   <button
-    class="btn-menu"
+    class="btn-menu layout-white"
     class:active={$todaySchedule &&
       $todaySchedule.start.id === $currentSchedule?.id}
     onclick={() => handleGetList(0)}
@@ -40,7 +40,7 @@
   </button>
 
   <button
-    class="btn-menu"
+    class="btn-menu layout-white"
     class:active={$todaySchedule &&
       $todaySchedule.end.id === $currentSchedule?.id}
     onclick={() => handleGetList(1)}
@@ -53,7 +53,10 @@
   </button>
 
   {#if $showLayout}
-    <button class="btn-menu" onclick={() => ($showBookmark = !$showBookmark)}>
+    <button
+      class="btn-menu layout-white"
+      onclick={() => ($showBookmark = !$showBookmark)}
+    >
       {#if $showBookmark}
         <Icon icon="solar:pallete-2-linear" width="15" height="15" />
       {:else}
@@ -64,7 +67,10 @@
 
   {#if innerWidth.current && innerWidth.current > 450}
     {#if $showLayout}
-      <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}>
+      <button
+        class="btn-menu layout-white"
+        onclick={() => ($showLayout = !$showLayout)}
+      >
         <Icon
           icon="solar:sidebar-minimalistic-outline"
           width="15"
@@ -72,22 +78,25 @@
         />
       </button>
     {:else}
-      <button class="btn-menu" onclick={() => ($showLayout = !$showLayout)}>
+      <button
+        class="btn-menu layout-white"
+        onclick={() => ($showLayout = !$showLayout)}
+      >
         <Icon icon="solar:siderbar-outline" width="15" height="15" />
       </button>
     {/if}
   {/if}
 
-  <button class="btn-menu" onclick={() => ($showTranslate = true)}>
-    <Icon icon="ri:translate" width="15" height="15" />
+  <button class="btn-menu layout-white" onclick={() => ($showTranslate = true)}>
+    <Icon icon="ph:translate" width="15" height="15" />
   </button>
 
-  <button class="btn-menu" onclick={handleChangeLayoutImage}>
+  <button class="btn-menu layout-white" onclick={handleChangeLayoutImage}>
     <Icon icon="solar:gallery-broken" width="15" height="15" />
   </button>
 
   <button
-    class="btn-menu {$showTimer ? 'bg-blue-600/90' : ''}"
+    class="btn-menu layout-white {$showTimer ? 'timer' : ''}"
     onclick={() => ($showTimer = !$showTimer)}
   >
     <Icon
@@ -101,13 +110,17 @@
 
 <style>
   .btn-menu {
-    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 text-white shadow shadow-black/30 backdrop-blur-md transition duration-100 hover:shadow;
+    @apply my-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90;
   }
   .btn-menu span {
     @apply text-9 leading-27;
   }
 
   .btn-menu.active {
-    @apply bg-green-400/90;
+    @apply !bg-green-400/90;
+  }
+
+  .btn-menu.timer {
+    @apply !bg-blue-600/90;
   }
 </style>

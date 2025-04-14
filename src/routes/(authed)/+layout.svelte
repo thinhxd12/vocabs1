@@ -83,7 +83,7 @@
     position: fixed;
     width: 30px;
     height: 300px;
-    inset: auto auto 60px calc(50vw + 200px);
+    inset: auto auto 45px calc(50vw + 200px);
     display: flex;
     align-items: flex-end;
     justify-content: end;
@@ -94,7 +94,7 @@
     position: fixed;
     width: 30px;
     height: 300px;
-    inset: auto 12px 60px auto;
+    inset: auto 12px 45px auto;
     display: flex;
     align-items: flex-end;
     justify-content: end;

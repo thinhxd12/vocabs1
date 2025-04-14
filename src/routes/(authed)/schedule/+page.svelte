@@ -267,7 +267,7 @@
           class="w-content gap-1 font-rubik text-12 h-24 flex items-center mb-3 select-none"
         >
           <div
-            class="border-none layout-dark min-w-[120px] text-center text-secondary-white leading-22 pt-2"
+            class="layout-black min-w-[120px] text-center text-secondary-white leading-22 pt-2"
           >
             {item.index + 1} - {item.index + 200}
           </div>

@@ -177,8 +177,8 @@
 
 <section class="flex-1 h-full pt-[48px] px-[48px] flex flex-col">
   {#if bookmark}
-    <div class="w-full flex-1 layout-light rounded-6 flex overflow-hidden">
-      <div class="bg-black/15 w-[240px] h-full flex flex-col px-9">
+    <div class="w-full flex-1 layout-black rounded-6 flex overflow-hidden">
+      <div class="w-[240px] h-full flex flex-col px-9">
         {#if bookInfo}
           <img
             src={bookInfo.coverImage}
@@ -246,7 +246,7 @@
             transition:fly={{ y: "-100%", duration: 100 }}
           >
             <div
-              class="layout-light flex flex-col items-center justify-center rounded-3 p-6"
+              class="layout-black flex flex-col items-center justify-center rounded-3 p-6"
             >
               <p class="mb-6 text-12 text-white">Delete this bookmark?</p>
               <div class="flex items-center justify-center">
@@ -343,7 +343,7 @@
       class="fixed inset-0 z-30 bg-black/60"
     />
     <Dialog.Content
-      class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
+      class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-black"
     >
       {#if bookmark}
         <form
@@ -395,7 +395,7 @@
       class="fixed inset-0 z-30 bg-black/60"
     />
     <Dialog.Content
-      class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-light"
+      class="fixed inset-[48px_450px_48px_288px] z-50 overflow-y-scroll no-scrollbar rounded-6 p-6 outline-none layout-black"
     >
       <form
         name="insertbookmark"

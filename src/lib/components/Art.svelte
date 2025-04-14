@@ -30,10 +30,10 @@
 
 <section class="flex-1 h-full p-[48px] overflow-hidden">
   <div
-    class="w-full h-full layout-light rounded-6 flex overflow-hidden relative"
+    class="w-full h-full layout-white rounded-6 flex overflow-hidden relative"
   >
     {#if imageData}
-      <div class="bg-black/30 w-[240px] h-full flex flex-col p-15">
+      <div class="bg-black/60 w-[240px] h-full flex flex-col p-15">
         <div class="w-full">
           <p class="text-12 font-500 leading-15 text-secondary-white">
             {imageData.shareDate}

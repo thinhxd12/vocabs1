@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { timerString } from "$lib/store/layoutstore";
+  import { showLayout, timerString } from "$lib/store/layoutstore";
   import {
     handleGetListContent,
     sendNotification,
@@ -80,7 +80,9 @@
 </script>
 
 <section
-  class="fixed z-10 w-screen h-screen flex flex-col items-center justify-center"
+  class="fixed no-scrollbar w-content {$showLayout
+    ? 'inset-[48px_12px_48px_calc(100vw-390px)]'
+    : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-10 flex flex-col items-center justify-center"
 >
   <div
     class="my-9 min-h-[105px] w-content mx-auto relative flex no-scrollbar timer-layout select-none items-center overflow-hidden rounded-3"
