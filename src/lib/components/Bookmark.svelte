@@ -276,10 +276,10 @@
 
         {#if isLoading}
           <img
-            src="/svg/loader.svg"
+            src="/gif/whisperoftheheart.gif"
             alt="loading"
-            width={45}
-            class="absolute left-1/2 top-1/2 -translate-x-1/2"
+            width={300}
+            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           />
         {:else}
           <div
@@ -457,11 +457,6 @@
 
   .btn-menu:active :global svg {
     transform: scale(1.1);
-  }
-
-  .btn-heart:active {
-    transform: scale(1.1);
-    transition-duration: 300ms ease;
   }
 
   .btn-bookmark-delete {
