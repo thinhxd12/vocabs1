@@ -155,11 +155,16 @@
     const result = await response.json();
 
     if (result.status) {
-      toast.success(result.message);
+      toast.success(result.message, {
+        class: "my-toast",
+      });
       searchTermFounded = true;
       $searchTerm = "";
       $searchResults = [];
-    } else toast.error(result.message);
+    } else
+      toast.error(result.message, {
+        class: "my-toast",
+      });
   }
 
   let editId = $state<string>("");

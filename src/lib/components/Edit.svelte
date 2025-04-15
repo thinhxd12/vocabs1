@@ -112,9 +112,13 @@
         use:enhance={({ formElement, formData, action, cancel }) => {
           return async ({ result }) => {
             if (result.type === "failure") {
-              toast.error(result.data?.error as string);
+              toast.error(result.data?.error as string, {
+                class: "my-toast",
+              });
             } else {
-              toast.success("Edit successfully");
+              toast.success("Edit successfully", {
+                class: "my-toast",
+              });
               if ($renderWord && $renderWord.id === editWord.id) {
                 $renderWord = editWord;
               }

@@ -70,7 +70,7 @@
   {/if}
 </section>
 
-<Toaster position="top-right" richColors />
+<Toaster position="top-center" richColors />
 
 <style>
   @media only screen and (max-width: 405px) {

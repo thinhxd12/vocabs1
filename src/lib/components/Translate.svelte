@@ -38,7 +38,10 @@
       `/server/searchmemories?word=${translateWord.word}`
     );
     const result = await response.json();
-    if (result.status) toast.error(result.message);
+    if (result.status)
+      toast.error(result.message, {
+        class: "my-toast",
+      });
     const data = await Promise.all([
       getTextDataWebster(translateWord.word),
       getTranslateData(translateWord.word),
@@ -108,9 +111,13 @@
         use:enhance={({ formElement, formData, action, cancel }) => {
           return async ({ result }) => {
             if (result.type === "failure") {
-              toast.error(result.data?.error as string);
+              toast.error(result.data?.error as string, {
+                class: "my-toast",
+              });
             } else {
-              toast.success("Vocab inserted successfully");
+              toast.success("Vocab inserted successfully", {
+                class: "my-toast",
+              });
             }
           };
         }}

@@ -124,9 +124,13 @@
             use:enhance={({ formElement, formData, action, cancel }) => {
               return async ({ result }) => {
                 if (result.type === "failure") {
-                  toast.error(result.data?.error as string);
+                  toast.error(result.data?.error as string, {
+                    class: "my-toast",
+                  });
                 } else {
-                  toast.success("Update successfully");
+                  toast.success("Update successfully", {
+                    class: "my-toast",
+                  });
                   showReset = false;
                 }
               };
@@ -205,9 +209,13 @@
           use:enhance={({ formElement, formData, action, cancel }) => {
             return async ({ result }) => {
               if (result.type === "failure") {
-                toast.error(result.data?.error as string);
+                toast.error(result.data?.error as string, {
+                  class: "my-toast",
+                });
               } else {
-                toast.success("Create successfully");
+                toast.success("Create successfully", {
+                  class: "my-toast",
+                });
                 location.reload();
               }
             };

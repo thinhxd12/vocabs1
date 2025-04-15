@@ -143,12 +143,12 @@
           class={submitted
             ? item == value
               ? item === $quizRender.word
-                ? "quiz-choice-true"
-                : "quiz-choice-false"
+                ? "layout-white quiz-choice-true"
+                : "layout-white quiz-choice-false"
               : item === $quizRender.word
-                ? "quiz-choice-true"
-                : "quiz-choice"
-            : "quiz-choice"}
+                ? "layout-white quiz-choice-true"
+                : "layout-white quiz-choice"
+            : "layout-white quiz-choice"}
           disabled={submitted}
           onclick={() => submitAnswer(item)}
         >
@@ -161,17 +161,14 @@
 
 <style>
   .quiz-choice {
-    @apply relative mb-9 cursor-pointer w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 bg-black/10 py-3 text-center text-15 leading-21 text-white shadow-md shadow-black/30 backdrop-blur-lg hover:bg-black/15 transition-all;
-    text-shadow: 0 1px 3px black;
+    @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-white/5 hover:!bg-white/15 transition-all;
   }
 
   .quiz-choice-true {
-    @apply relative mb-9 cursor-default w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 !bg-green-400 py-3 text-center text-15 leading-21 text-white shadow-sm shadow-black/45 backdrop-blur-lg transition;
-    text-shadow: 0 1px 3px black;
+    @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-green-400;
   }
 
   .quiz-choice-false {
-    @apply relative mb-9 cursor-default w-full select-none overflow-hidden rounded-6 border-y border-b-white/10 border-t-white/15 !bg-red-500 py-3 text-center text-15 leading-21 text-white shadow-sm shadow-black/45 backdrop-blur-lg transition;
-    text-shadow: 0 1px 3px black;
+    @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-red-500;
   }
 </style>

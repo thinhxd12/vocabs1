@@ -84,9 +84,11 @@
 
 <nav class="w-content h-[42px] flex z-20">
   <div
-    class="flex rounded-1 mr-3 h-36 w-12 flex-col items-center justify-between overflow-hidden layout-black !bg-black/90"
+    class="flex rounded-1 mr-3 h-36 w-12 flex-col items-center justify-between overflow-hidden"
   >
-    <div class="flex flex-col justify-center text-center">
+    <div
+      class="flex flex-col justify-center text-center layout-black !bg-black/90"
+    >
       {#if $todaySchedule}
         <span class="text-9 leading-11 text-white">
           {$todaySchedule.start.count}
@@ -100,7 +102,7 @@
       {/if}
     </div>
     <div
-      class="-rotate-90 bg-white/15 text-center w-14 h-14 text-8 leading-12 text-white"
+      class="-rotate-90 layout-white text-center w-14 h-14 text-8 leading-12 font-500"
     >
       {format(todayDate, "eeeeee")}
     </div>

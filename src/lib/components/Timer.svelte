@@ -85,10 +85,10 @@
     : 'inset-[48px_calc(50vw-189px)_48px_calc(50vw-189px)]'} z-10 flex flex-col items-center justify-center"
 >
   <div
-    class="my-9 min-h-[105px] w-content mx-auto relative flex no-scrollbar timer-layout select-none items-center overflow-hidden rounded-3"
+    class="my-9 min-h-[105px] w-content mx-auto relative flex no-scrollbar layout-white select-none items-center overflow-hidden rounded-3"
   >
     <h1
-      class="absolute font-300 w-full left-1/2 -translate-x-1/2 flex justify-between items-center bg-transparent text-center text-[135px] leading-[105px] text-white/30"
+      class="absolute font-300 w-full left-1/2 -translate-x-1/2 flex justify-between items-center bg-transparent text-center text-[135px] leading-[105px] text-white/15"
     >
       <span class="w-[170px] text-center">{minute()}</span>
       <span class="leading-[90px] -mt-30">:</span>
@@ -98,16 +98,16 @@
 
   <div class="flex items-center justify-center gap-6">
     {#if isPaused}
-      <button class="btn-timer" onclick={handleStart}>
+      <button class="layout-white btn-timer" onclick={handleStart}>
         <Icon icon="solar:play-outline" width="15" height="15" />
       </button>
     {:else}
-      <button class="btn-timer" onclick={handlePause}>
+      <button class="layout-white btn-timer" onclick={handlePause}>
         <Icon icon="solar:pause-outline" width="15" height="15" />
       </button>
     {/if}
 
-    <button class="btn-timer" onclick={handleReset}>
+    <button class="layout-white btn-timer" onclick={handleReset}>
       <Icon icon="ri:reset-right-line" width="15" height="15" />
     </button>
   </div>
@@ -115,11 +115,6 @@
 
 <style>
   .btn-timer {
-    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 text-white shadow-sm shadow-black/45 backdrop-blur-md transition duration-100 hover:shadow;
-  }
-
-  .timer-layout {
-    @apply shadow-md shadow-black/45 bg-black/15 backdrop-blur-lg;
-    transform: translate3d(0, 0, 0);
+    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-100 text-white/50;
   }
 </style>

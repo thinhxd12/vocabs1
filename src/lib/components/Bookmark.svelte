@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import { fade, fly } from "svelte/transition";
+  import StarRating from "./StarRating.svelte";
 
   let bookmark = $state<SelectBookmark | undefined>(undefined);
   let bookInfo = $state<BookSearchType | undefined>(undefined);
@@ -115,17 +116,22 @@
 
   async function handleCheckBookmark() {
     if (!bookmark) return;
-    isLoading = true;
     if (isReset) {
-      bookmark = { ...bookmark, like: (bookmark.like += 1) };
-      fetch(`/server/getbookmark?like=${bookmark.id}`);
+      const newLike = bookmark.like + 1;
+      bookmark = { ...bookmark, like: newLike };
+      const { error } = await supabase
+        .from("bookmark_table")
+        .update({ like: newLike })
+        .eq("id", bookmark.id);
       isReset = !isReset;
-      isLoading = false;
     } else {
-      bookmark = { ...bookmark, like: (bookmark.like += -1) };
-      fetch(`/server/getbookmark?unlike=${bookmark.id}`);
+      const newLike = bookmark.like - 1;
+      bookmark = { ...bookmark, like: newLike };
+      const { error } = await supabase
+        .from("bookmark_table")
+        .update({ like: newLike })
+        .eq("id", bookmark.id);
       isReset = !isReset;
-      isLoading = false;
     }
   }
 
@@ -157,9 +163,13 @@
     if (!bookmark) return;
     const response = await fetch(`/server/deletebookmark?id=${bookmark.id}`);
     if (response.status === 200) {
-      toast.success("Delete bookmark successfully");
+      toast.success("Delete bookmark successfully", {
+        class: "my-toast",
+      });
     } else {
-      toast.error("Error");
+      toast.error("Error", {
+        class: "my-toast",
+      });
     }
     handleGetNextBookmark();
     showDelete = !showDelete;
@@ -167,11 +177,9 @@
 </script>
 
 <svelte:head>
-  <title
-    >{bookmark
-      ? `${bookmark.bookTile} by ${bookmark.authors}`
-      : "Bookmark"}</title
-  >
+  <title>
+    {bookmark ? `${bookmark.bookTile} by ${bookmark.authors}` : "Bookmark"}
+  </title>
   <meta name="bookmark" content="Some bookmark" />
 </svelte:head>
 
@@ -183,56 +191,55 @@
           <img
             src={bookInfo.coverImage}
             alt="book-cover"
-            class="mx-auto my-18 w-3/4 shadow-xl shadow-black/90"
+            class="mx-auto my-21 shadow-xl shadow-black/90"
+            width="121"
           />
-          <h3 class="mb-3 text-15 font-400 leading-18 text-white">
+          {#if bookInfo.authors}
+            <p
+              class="mb-6 text-16 leading-16 text-white/50 text-center font-garamond font-400"
+            >
+              {bookInfo.authors.join(", ")}
+            </p>
+          {/if}
+          <h3
+            class="mb-3 text-18 font-garamond text-white font-600 leading-21 text-center"
+          >
             {bookInfo.title}
           </h3>
-          <p class="mb-3 text-12 leading-14 text-secondary-white/60">
-            {bookInfo.authors.join(", ")}
-          </p>
           {#if bookInfo.publishedYear}
-            <p class="mb-3 text-11 leading-12 text-secondary-white/60">
+            <p
+              class="mb-6 text-11 leading-12 text-secondary-white/60 text-center"
+            >
               First published {bookInfo.publishedYear}
             </p>
           {/if}
           {#if bookInfo.numberOfRatings}
-            <div class="mb-3 flex items-center">
-              <Icon
-                icon="solar:star-bold"
-                width="15"
-                height="15"
-                color="#f1ce42"
-              />
-              <span class="ml-3 text-11 leading-12 text-secondary-white/60">
+            <div class="mb-6 flex items-center justify-center">
+              <span class="scale-75">
+                <StarRating rating={Number(bookInfo.averageRating)} />
+              </span>
+              <p class="text-16 pt-6 font-garamond leading-18 text-white/50">
                 {bookInfo.averageRating}
-              </span>
-              <span class="ml-3 text-11 leading-12 text-secondary-white/60">
-                ({Number(bookInfo.numberOfRatings).toLocaleString()}{" "}
-                ratings)
-              </span>
+              </p>
             </div>
           {/if}
+          <div class="mb-3 flex items-center justify-center">
+            {#if bookInfo.numberOfRatings}
+              <span
+                class="text-11 leading-12 text-white/50 after:content-['·'] after:mx-3"
+              >
+                {Number(bookInfo.numberOfRatings).toLocaleString()} ratings
+              </span>
+            {/if}
+            <button
+              class="text-11 leading-12 text-white/50"
+              onclick={handleCheckBookmark}
+            >
+              {bookmark.like}
+              {bookmark.like > 1 ? "likes" : "like"}
+            </button>
+          </div>
         {/if}
-
-        <div class="flex items-center w-full mt-3">
-          <button class="btn-heart" onclick={handleCheckBookmark}>
-            <Icon
-              icon="solar:heart-bold"
-              width="15"
-              height="15"
-              color={bookmark.like
-                ? isReset
-                  ? "#f08399"
-                  : "#fd2c55"
-                : "#f1f1f199"}
-            />
-          </button>
-
-          <span class="text-11 ml-3 leading-12 text-secondary-white/60">
-            {bookmark.like}
-          </span>
-        </div>
       </div>
 
       <div
@@ -354,9 +361,13 @@
           use:enhance={({ formElement, formData, action, cancel }) => {
             return async ({ result }) => {
               if (result.status === 200) {
-                toast.success("Update bookmark successfully");
+                toast.success("Update bookmark successfully", {
+                  class: "my-toast",
+                });
               } else {
-                toast.error("Error");
+                toast.error("Error", {
+                  class: "my-toast",
+                });
               }
             };
           }}
@@ -405,9 +416,13 @@
         use:enhance={({ formElement, formData, action, cancel }) => {
           return async ({ result }) => {
             if (result.status === 200) {
-              toast.success("Insert items successfully");
+              toast.success("Insert items successfully", {
+                class: "my-toast",
+              });
             } else {
-              toast.error("Error");
+              toast.error("Error", {
+                class: "my-toast",
+              });
             }
           };
         }}
