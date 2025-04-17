@@ -30,10 +30,12 @@
 
 <section class="flex-1 h-full p-[48px] overflow-hidden">
   <div
-    class="w-full h-full layout-white rounded-6 flex overflow-hidden relative"
+    class="w-full h-full rounded-6 flex overflow-hidden relative shadow-lg shadow-black/45"
   >
     {#if imageData}
-      <div class="bg-black/60 w-[240px] h-full flex flex-col p-15">
+      <div
+        class="layout-black !bg-black/90 w-[240px] h-full flex flex-col p-15"
+      >
         <div class="w-full">
           <p class="text-12 font-500 leading-15 text-secondary-white">
             {imageData.shareDate}
@@ -67,7 +69,7 @@
         </div>
       </div>
       <div
-        class="flex-1 bg-black/15 h-full no-scrollbar relative overflow-y-scroll"
+        class="layout-black flex-1 h-full no-scrollbar relative overflow-y-scroll"
       >
         <div
           class="flex h-full w-full flex-col items-center px-[10%] pb-[10%] pt-[5%]"
@@ -75,7 +77,7 @@
           <img
             src={imageData.mainImage}
             alt="main"
-            class="max-h-full max-w-full rounded-12 object-cover shadow-xl shadow-black/80"
+            class="max-h-full max-w-full rounded-6 object-cover shadow-xl shadow-black/80"
           />
           <div class="relative z-50 mt-15 flex w-full justify-between px-27">
             <p class="text-12 font-400 leading-15 text-white">

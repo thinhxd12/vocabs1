@@ -113,7 +113,7 @@
     @apply my-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90;
   }
   .btn-menu span {
-    @apply text-9 leading-27;
+    @apply text-9 leading-27 font-500;
   }
 
   .btn-menu.active {

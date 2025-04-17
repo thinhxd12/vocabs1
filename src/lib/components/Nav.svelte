@@ -84,10 +84,10 @@
 
 <nav class="w-content h-[42px] flex z-20">
   <div
-    class="flex rounded-1 mr-3 h-36 w-12 flex-col items-center justify-between overflow-hidden"
+    class="w-12 h-36 rounded-1 mr-3 flex flex-col items-center justify-between overflow-hidden"
   >
     <div
-      class="flex flex-col justify-center text-center layout-black !bg-black/90"
+      class="w-full h-22 layout-black !bg-black/90 flex flex-col justify-center text-center"
     >
       {#if $todaySchedule}
         <span class="text-9 leading-11 text-white">
@@ -97,17 +97,17 @@
           {$todaySchedule.end.count}
         </span>
       {:else}
-        <span class="text-9 leading-10 text-white">N</span>
-        <span class="text-9 leading-10 text-white">N</span>
+        <span class="text-9 leading-11 text-white">N</span>
+        <span class="text-9 leading-11 text-white">N</span>
       {/if}
     </div>
-    <div
-      class="-rotate-90 layout-white text-center w-14 h-14 text-8 leading-12 font-500"
-    >
-      {format(todayDate, "eeeeee")}
+
+    <div class="w-full h-14 flex items-center justify-center layout-white">
+      <span class="transform -rotate-90 origin-center text-8 font-500"
+        >{format(todayDate, "eeeeee")}</span
+      >
     </div>
   </div>
-
   <div
     class="layout-white h-36 flex-1 overflow-hidden rounded-1 flex justify-center items-center"
   >
@@ -123,6 +123,7 @@
       href="/schedule"
       class:active={page.url.pathname === "/schedule"}
       class="btn-nav"
+      data-sveltekit-preload-data="hover"
     >
       <Icon icon="solar:calendar-linear" width="15" height="15" />
     </a>

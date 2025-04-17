@@ -119,19 +119,19 @@
     if (isReset) {
       const newLike = bookmark.like + 1;
       bookmark = { ...bookmark, like: newLike };
+      isReset = !isReset;
       const { error } = await supabase
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", bookmark.id);
-      isReset = !isReset;
     } else {
       const newLike = bookmark.like - 1;
       bookmark = { ...bookmark, like: newLike };
+      isReset = !isReset;
       const { error } = await supabase
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", bookmark.id);
-      isReset = !isReset;
     }
   }
 
@@ -186,7 +186,7 @@
 <section class="flex-1 h-full pt-[48px] px-[48px] flex flex-col">
   {#if bookmark}
     <div class="w-full flex-1 layout-black rounded-6 flex overflow-hidden">
-      <div class="w-[240px] h-full flex flex-col px-9">
+      <div class="w-[240px] h-full bg-black/30 flex flex-col px-9">
         {#if bookInfo}
           <img
             src={bookInfo.coverImage}
@@ -232,7 +232,9 @@
               </span>
             {/if}
             <button
-              class="text-11 leading-12 text-white/50"
+              class="text-11 leading-12 {isReset
+                ? 'text-white/20'
+                : 'text-white/50'}"
               onclick={handleCheckBookmark}
             >
               {bookmark.like}
@@ -311,31 +313,40 @@
     </div>
 
     <div class="h-[48px] flex justify-center items-baseline p-9">
-      <button class="btn-menu" onclick={copyBookMarkToClipboard}>
+      <button class="layout-white btn-menu" onclick={copyBookMarkToClipboard}>
         <Icon icon="solar:copy-outline" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={getRandomBookmark}>
+      <button class="layout-white btn-menu" onclick={getRandomBookmark}>
         <Icon icon="solar:refresh-outline" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={() => (showEdit = !showEdit)}>
+      <button
+        class="layout-white btn-menu"
+        onclick={() => (showEdit = !showEdit)}
+      >
         <Icon icon="solar:document-add-linear" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={() => (showInsert = !showInsert)}>
+      <button
+        class="layout-white btn-menu"
+        onclick={() => (showInsert = !showInsert)}
+      >
         <Icon icon="solar:library-linear" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={() => (showDelete = !showDelete)}>
+      <button
+        class="layout-white btn-menu"
+        onclick={() => (showDelete = !showDelete)}
+      >
         <Icon icon="solar:trash-bin-trash-outline" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={handleGetPrevBookmark}>
+      <button class="layout-white btn-menu" onclick={handleGetPrevBookmark}>
         <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={handleGetNextBookmark}>
+      <button class="layout-white btn-menu" onclick={handleGetNextBookmark}>
         <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
       </button>
     </div>
@@ -452,7 +463,7 @@
 
 <style>
   .btn-menu {
-    @apply mr-6 flex size-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-150;
+    @apply mx-3 flex size-27 items-center justify-center  rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90;
   }
 
   .btn-menu:active :global svg {
