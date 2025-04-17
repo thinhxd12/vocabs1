@@ -217,9 +217,9 @@
     {#if $listCount}
       <div
         class={`absolute left-0 top-0 z-30 h-full bg-[url('/images/sunrise.webp')] bg-cover transition-all duration-300`}
-        style="box-shadow: rgba(0, 0, 0, 0.6) 2px 0px 6px; border-right: 0.5px solid rgb(0, 0, 0); background-size: 90px 36px; width: {Math.floor(
-          (($listCount + 1) / $listContent.length) * 90
-        )}px;"
+        style="box-shadow: rgba(0, 0, 0, 0.6) 2px 0px 6px; border-right: 0.5px solid rgb(0, 0, 0); background-size: 90px 36px; width: {($listCount /
+          $listContent.length) *
+          90}px;"
       ></div>
     {/if}
   </button>

@@ -215,10 +215,14 @@
           {/if}
           {#if bookInfo.numberOfRatings}
             <div class="mb-6 flex items-center justify-center">
-              <span class="scale-75">
-                <StarRating rating={Number(bookInfo.averageRating)} />
-              </span>
-              <p class="text-16 pt-6 font-garamond leading-18 text-white/50">
+              <StarRating
+                rating={Number(bookInfo.averageRating)}
+                size={18}
+                gap={3}
+              />
+              <p
+                class="ml-6 text-16 pt-6 font-garamond leading-18 text-white/50"
+              >
                 {bookInfo.averageRating}
               </p>
             </div>
