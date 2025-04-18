@@ -7,14 +7,14 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (!sessionId && !unProtectedRoutes.includes(event.url.pathname)) {
     throw redirect(303, "/login");
   }
-  //alternative get supabase user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  if (user && sessionId === user.email) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session && sessionId === session.user.email) {
     event.locals.user = {
-      email: user.email!,
+      email: session.user.email!,
     };
   } else {
     if (!unProtectedRoutes.includes(event.url.pathname)) {
