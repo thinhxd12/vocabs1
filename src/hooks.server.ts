@@ -1,3 +1,4 @@
+import { supabase } from "$lib/supabase";
 import { redirect, type Handle } from "@sveltejs/kit";
 const unProtectedRoutes = ["/", "/login"];
 
@@ -7,10 +8,13 @@ export const handle: Handle = async ({ event, resolve }) => {
     throw redirect(303, "/login");
   }
   //alternative get supabase user
-  const email = import.meta.env.VITE_LOGIN_EMAIL;
-  if (sessionId === email) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
     event.locals.user = {
-      email: email,
+      email: user.email!,
     };
   } else {
     if (!unProtectedRoutes.includes(event.url.pathname)) {
