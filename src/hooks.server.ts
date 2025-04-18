@@ -12,13 +12,13 @@ export const handle: Handle = async ({ event, resolve }) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
+  if (user && sessionId === user.email) {
     event.locals.user = {
       email: user.email!,
     };
   } else {
     if (!unProtectedRoutes.includes(event.url.pathname)) {
-      throw redirect(303, "/login");
+      return redirect(303, "/login");
     }
   }
   return await resolve(event, {
