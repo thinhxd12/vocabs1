@@ -151,11 +151,3 @@ export const getHourlyWeatherTomorrowData = async (
     return result.timelines;
   }
 };
-
-export async function logout() {
-  const res = await fetch("/server/logout", { method: "POST" });
-  const data = await res.json();
-  if (data.redirectTo) {
-    goto(data.redirectTo);
-  }
-}

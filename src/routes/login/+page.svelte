@@ -12,7 +12,8 @@
 
 <div class="w-full h-full flex justify-center items-center">
   <form
-    name="login"
+    name="signin"
+    action="?/signin"
     method="post"
     class="w-[210px]"
     use:enhance={({ formElement, formData, action, cancel }) => {

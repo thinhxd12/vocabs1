@@ -1,12 +1,5 @@
-import {
-  error,
-  fail,
-  redirect,
-  type ActionFailure,
-  type ActionResult,
-} from "@sveltejs/kit";
+import { fail, type ActionResult } from "@sveltejs/kit";
 import type { Actions } from "./$types";
-import { supabase } from "$lib/supabase";
 import type { InsertBookmark, InsertVocab, SelectVocab } from "$lib/db/schema";
 import { insertBookmark, insertVocab } from "$lib/db/queries/insert";
 import {
@@ -19,7 +12,7 @@ import {
 } from "@darylserrano/kindle-clippings";
 
 export const actions = {
-  insertNewVocab: async ({ cookies, request }) => {
+  insertNewVocab: async ({ cookies, request, locals }) => {
     const formData = await request.formData();
     const word = formData.get("word") as string;
     const audio = formData.get("audio") as string;

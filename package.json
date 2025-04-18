@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@darylserrano/kindle-clippings": "^2.2.5",
+    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.48.0",
     "@svelte-put/dragscroll": "^4.0.0",
     "array-shuffle": "^3.0.0",
