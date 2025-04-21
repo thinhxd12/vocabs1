@@ -67,25 +67,20 @@
   {/if}
 
   {#if innerWidth.current && innerWidth.current > 450}
-    {#if $showLayout}
-      <button
-        class="btn-menu layout-white"
-        onclick={() => ($showLayout = !$showLayout)}
-      >
+    <button
+      class="btn-menu layout-white"
+      onclick={() => ($showLayout = !$showLayout)}
+    >
+      {#if $showLayout}
         <Icon
           icon="solar:sidebar-minimalistic-outline"
           width="15"
           height="15"
         />
-      </button>
-    {:else}
-      <button
-        class="btn-menu layout-white"
-        onclick={() => ($showLayout = !$showLayout)}
-      >
+      {:else}
         <Icon icon="solar:siderbar-outline" width="15" height="15" />
-      </button>
-    {/if}
+      {/if}
+    </button>
   {/if}
 
   <button class="btn-menu layout-white" onclick={() => ($showTranslate = true)}>

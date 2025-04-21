@@ -1,17 +1,21 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { InsertVocab } from "$lib/db/schema";
   import { showLayout } from "$lib/store/layoutstore";
   import { showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { Dialog } from "bits-ui";
   import { fly } from "svelte/transition";
   import { toast } from "svelte-sonner";
-  import type { TranslateType, VocabMeaningType } from "$lib/types";
+  import type { DBInsert, TranslateType, VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/functions";
   import Definition from "./Definition.svelte";
+  import { v7 as uuidv7 } from "uuid";
+  import { page } from "$app/state";
 
-  let translateWord = $state<InsertVocab>({
+  const { supabase } = page.data;
+
+  let translateWord = $state<DBInsert["vocab_table"]>({
+    id: uuidv7(),
     word: "",
     audio: "",
     phonetics: "",
@@ -30,16 +34,18 @@
   async function getTextDataWebster(text: string) {
     const response = await fetch(`/server/getwebster?word=${text}`);
     const data = await response.json();
-    if (data) return data as InsertVocab;
+    if (data) return data as DBInsert["vocab_table"];
   }
 
   async function handleGetTranslateWord() {
-    const response = await fetch(
-      `/server/searchmemories?word=${translateWord.word}`
-    );
-    const result = await response.json();
-    if (result.status)
-      toast.error(result.message, {
+    const { data: dataMemories } = await supabase
+      .from("memories_table")
+      .select("*")
+      .like("word", `${translateWord.word}%`)
+      .limit(1);
+
+    if (dataMemories.length)
+      toast.error(`Memorized "${dataMemories[0].word}"!`, {
         class: "my-toast",
       });
     const data = await Promise.all([
@@ -114,7 +120,7 @@
               toast.error(result.data?.error as string, {
                 class: "my-toast",
               });
-            } else {
+            } else if (result.type === "success") {
               toast.success("Vocab inserted successfully", {
                 class: "my-toast",
               });

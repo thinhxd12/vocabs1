@@ -1,8 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { SelectBookmark, SelectBookmarkProgress } from "$lib/db/schema";
-  import { supabase } from "$lib/supabase";
-  import type { BookSearchType } from "$lib/types";
+  import type { BookSearchType, DBSelect } from "$lib/types";
   import Icon from "@iconify/svelte";
   import { Dialog } from "bits-ui";
   import { format } from "date-fns";
@@ -10,23 +8,16 @@
   import { toast } from "svelte-sonner";
   import { fade, fly } from "svelte/transition";
   import StarRating from "./StarRating.svelte";
+  import { page } from "$app/state";
 
-  let bookmark = $state<SelectBookmark | undefined>(undefined);
+  const { supabase } = page.data;
+  let bookmark = $state<DBSelect["bookmark_table"] | undefined>(undefined);
   let bookInfo = $state<BookSearchType | undefined>(undefined);
-
   let isReset = $state<boolean>(false);
   let isLoading = $state<boolean>(false);
 
-  onMount(async () => {
-    isReset = false;
-    isLoading = true;
-    const data = await handleGetCurrentBookmark();
-    if (data) {
-      isReset = true;
-      isLoading = false;
-      bookmark = data;
-      handleGetBookInfo(bookmark);
-    }
+  onMount(() => {
+    handleGetCurrentBookmark();
   });
 
   async function handleGetCurrentId() {
@@ -35,10 +26,12 @@
       .select("*")
       .order("created_at", { ascending: false })
       .limit(1);
-    if (data) return data[0] as SelectBookmarkProgress;
+    if (data) return data[0] as DBSelect["bookmark_progress"];
   }
 
   async function handleGetCurrentBookmark() {
+    isReset = false;
+    isLoading = true;
     const idData = await handleGetCurrentId();
     if (!idData) return;
     const { data } = await supabase
@@ -46,7 +39,12 @@
       .select("*")
       .eq("id", idData.currentId)
       .limit(1);
-    if (data) return data[0] as SelectBookmark;
+    if (data && data.length) {
+      isReset = true;
+      isLoading = false;
+      bookmark = data[0];
+      handleGetBookInfo(data[0]);
+    }
   }
   async function handleGetNextBookmark() {
     isReset = false;
@@ -94,11 +92,12 @@
     }
   }
 
-  async function handleSetBookmark(data: SelectBookmark) {
+  async function handleSetBookmark(data: DBSelect["bookmark_table"]) {
     const { error } = await supabase
       .from("bookmark_progress")
       .update({ currentId: data.id })
       .eq("created_at", "2025-04-13 00:29:28.801084+00");
+
     isReset = true;
     isLoading = false;
     if (data.bookTile !== bookmark?.bookTile) {
@@ -107,7 +106,7 @@
     bookmark = data;
   }
 
-  async function handleGetBookInfo(data: SelectBookmark) {
+  async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
     const response = await fetch(
       `/server/getbookinfo?query=${data.bookTile.split(":")[0]}&author=${data.authors.split(";")[0]}`
     );
@@ -145,13 +144,12 @@
 
   async function getRandomBookmark() {
     isReset = true;
-    const response = await fetch(`/server/getbookmark?random=true`);
-    const data = await response.json();
-    if (data) {
-      if (data.bookTile !== bookmark?.bookTile) {
-        handleGetBookInfo(data);
+    const { data, error } = await supabase.rpc("get_random_bookmark");
+    if (data && data.length) {
+      if (data[0].bookTile !== bookmark?.bookTile) {
+        handleGetBookInfo(data[0]);
       }
-      bookmark = data;
+      bookmark = data[0];
     }
   }
 
@@ -161,13 +159,16 @@
 
   async function handleDeleteBookmark() {
     if (!bookmark) return;
-    const response = await fetch(`/server/deletebookmark?id=${bookmark.id}`);
-    if (response.status === 200) {
-      toast.success("Delete bookmark successfully", {
+    const { error } = await supabase
+      .from("bookmark_table")
+      .delete()
+      .eq("id", bookmark.id);
+    if (error) {
+      toast.error("Error", {
         class: "my-toast",
       });
     } else {
-      toast.error("Error", {
+      toast.success("Delete bookmark successfully", {
         class: "my-toast",
       });
     }

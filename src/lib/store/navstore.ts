@@ -1,13 +1,11 @@
 import { page } from "$app/state";
-import type {
-  SelectSchedule,
-  SelectVocab,
-  SelectWeather,
-} from "$lib/db/schema";
 import arrayShuffle from "array-shuffle";
 import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
+import type { DBInsert, DBSelect } from "$lib/types";
+import { archiveVocab } from "$lib/functions";
+import { v7 as uuidv7 } from "uuid";
 
 export const isAutoPlay = writable<boolean>(false);
 export const showWeather = writable<boolean>(false);
@@ -15,16 +13,20 @@ export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const todaySchedule = writable<
   | {
-      start: SelectSchedule;
-      end: SelectSchedule;
+      start: DBSelect["schedule_table"];
+      end: DBSelect["schedule_table"];
     }
   | undefined
 >(undefined);
-export const locationList = writable<SelectWeather[]>([]);
-export const listContent = writable<SelectVocab[]>([]);
-export const currentSchedule = writable<SelectSchedule | undefined>(undefined);
+export const locationList = writable<DBSelect["weather_table"][]>([]);
+export const listContent = writable<DBSelect["vocab_table"][]>([]);
+export const currentSchedule = writable<DBSelect["schedule_table"] | undefined>(
+  undefined
+);
 export const listCount = writable<number>(0);
-export const quizRender = writable<SelectVocab | undefined>(undefined);
+export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
+  undefined
+);
 export const vocabInput = writable<string>("");
 
 const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -74,19 +76,27 @@ export function handleGetListContent() {
 }
 
 const handleGetListContentVocab = async (index: number) => {
-  const response = await fetch(`/server/getwordlist?index=${index}`);
-  if (response.status === 200) {
-    listContent.set(await response.json());
+  const { data } = await page.data.supabase
+    .from("vocab_table")
+    .select("*")
+    .order("id", { ascending: true })
+    .range(index, index + 49);
+  if (data.length) {
+    listContent.set(data);
     isAutoPlay.set(true);
   }
 };
 
 const handleGetListContentQuiz = async (index: number) => {
   quizRender.set(undefined);
-  const response = await fetch(`/server/getwordlist?index=${index}`);
-  if (response.status === 200) {
-    const data = (await response.json()) as SelectVocab[];
-    const content = arrayShuffle(data);
+  const { data } = await page.data.supabase
+    .from("vocab_table")
+    .select("*")
+    .order("id", { ascending: true })
+    .range(index, index + 49);
+
+  if (data.length) {
+    const content = arrayShuffle(data) as DBSelect["vocab_table"][];
     listContent.set(content);
     isAutoPlay.set(false);
     quizRender.set(content[0]);
@@ -110,14 +120,15 @@ const handleRenderWord = async () => {
 };
 
 // handlecheck
-const handleCheckWord = async (word: SelectVocab) => {
+const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
   if (word.number > 1) {
-    fetch(`/server/checkword?id=${word.id}`);
+    const { error } = await page.data.supabase
+      .from("vocab_table")
+      .update({ number: word.number - 1 })
+      .eq("id", word.id);
   } else {
-    const response = await fetch(
-      `/server/archiveword?word=${word.word}&id=${word.id}`
-    );
-    if (response.status == 201) totalMemories.update((n) => n + 1);
+    const response = await archiveVocab(word.id, word.word, page.data.supabase);
+    if (!response) totalMemories.update((n) => n + 1);
   }
 };
 
@@ -145,10 +156,10 @@ const endAutoplay = async () => {
   listCount.set(0);
   renderWord.set(undefined);
   await updateTodayScheduleLocal();
-  const currentScheduleValue = get(currentSchedule);
-  if (currentScheduleValue && currentScheduleValue.count < 9) {
-    showTimer.set(true);
-  }
+  // const currentScheduleValue = get(currentSchedule);
+  // if (currentScheduleValue && currentScheduleValue.count < 9) {
+  //   showTimer.set(true);
+  // }
 };
 
 export const handleAutoplay = () => {
@@ -167,20 +178,89 @@ export const handleAutoplay = () => {
 };
 
 export const updateTodayScheduleLocal = async () => {
-  const currentScheduleValue = get(currentSchedule);
+  let currentScheduleValue = get(currentSchedule);
   const todayScheduleValue = get(todaySchedule);
   if (!currentScheduleValue || !todayScheduleValue) return;
-  const response = await fetch(
-    `/server/updateschedule?id=${currentScheduleValue.id}&date=${todayDate}`
-  );
-  const data = await response.json();
-  currentSchedule.set(data);
-  if (todayScheduleValue.start.id === currentScheduleValue.id) {
-    todaySchedule.set({ ...todayScheduleValue, start: data });
+
+  const { data: currentData } = await page.data.supabase
+    .from("schedule_table")
+    .select()
+    .eq("id", currentScheduleValue.id);
+  if (currentData.length == 0) return;
+  if (!currentData[0].date) {
+    const { data } = await page.data.supabase
+      .from("schedule_table")
+      .update({ date: new Date(todayDate), count: currentData[0].count + 1 })
+      .eq("id", currentScheduleValue.id)
+      .select();
+    currentSchedule.set(data[0]);
   } else {
-    todaySchedule.set({ ...todayScheduleValue, end: data });
-    fetch(`/server/checkschedule`);
+    const { data } = await page.data.supabase
+      .from("schedule_table")
+      .update({ count: currentData[0].count + 1 })
+      .eq("id", currentScheduleValue.id)
+      .select();
+    currentSchedule.set(data[0]);
+  }
+
+  if (todayScheduleValue.start.id === currentScheduleValue.id) {
+    todaySchedule.set({ ...todayScheduleValue, start: get(currentSchedule)! });
+  } else {
+    todaySchedule.set({ ...todayScheduleValue, end: get(currentSchedule)! });
+  }
+
+  currentScheduleValue = get(currentSchedule);
+  if (currentScheduleValue) {
+    if (currentScheduleValue.count < 12) showTimer.set(true);
+    if (currentScheduleValue.count >= 9) checkSchedule();
   }
 };
+
+async function checkSchedule() {
+  const { data: schedule } = await page.data.supabase
+    .from("schedule_table")
+    .select("*")
+    .order("id", { ascending: true });
+  if (!schedule[schedule.length - 1].date) return;
+
+  const { data: lastProgress } = await page.data.supabase
+    .from("progress_table")
+    .select("*")
+    .order("id", { ascending: false })
+    .limit(1);
+  type ResultType = {
+    index: number;
+    start: Date | null;
+    end: Date | null;
+  };
+  let result: ResultType = {
+    index: -1,
+    start: null,
+    end: null,
+  };
+  const allDone = schedule.every(
+    (item: DBSelect["schedule_table"]) => item.date !== null
+  );
+  if (allDone && lastProgress.length) {
+    result = {
+      index: schedule[0].index,
+      start: schedule[0].date,
+      end: schedule[schedule.length - 1].date,
+    };
+
+    if (String(result.start) !== String(lastProgress[0].start_date)) {
+      const insertData: DBInsert["progress_table"] = {
+        id: uuidv7(),
+        index: result.index,
+        start_date: new Date(result.start!),
+        end_date: new Date(result.end!),
+      };
+
+      const { error } = await page.data.supabase
+        .from("progress_table")
+        .insert(insertData);
+    }
+  }
+}
 
 // -------------------AUTOPLAY END-------------------- //

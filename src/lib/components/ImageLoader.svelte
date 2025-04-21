@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { InsertVocab, SelectVocab } from "$lib/db/schema";
   import { base64ToUint8Array } from "$lib/functions";
+  import type { DBInsert, DBSelect } from "$lib/types";
   import { untrack } from "svelte";
   import { fade } from "svelte/transition";
   import { thumbHashToDataURL } from "thumbhash";
+  import { page } from "$app/state";
 
   interface Props {
-    word?: SelectVocab | InsertVocab;
+    word?: DBSelect["vocab_table"] | DBInsert["vocab_table"];
     imageSrc: string;
     width: number;
     height: number;
@@ -47,13 +48,13 @@
             });
             return { ...item, definitions: updatedDefinitions };
           });
-          fetch("/server/updateword", {
-            method: "POST",
-            body: JSON.stringify({ vocab: { ...word, meanings: newMeanings } }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+
+          await page.data.supabase
+            .from("vocab_table")
+            .update({
+              meanings: newMeanings,
+            })
+            .eq("id", word.id);
         }
       }
     });

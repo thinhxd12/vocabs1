@@ -6,12 +6,15 @@
     listCount,
     totalMemories,
     updateTodayScheduleLocal,
-    currentSchedule,
     showTimer,
   } from "$lib/store/navstore";
   import arrayShuffle from "array-shuffle";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { timerString } from "$lib/store/layoutstore";
+  import { archiveVocab } from "$lib/functions";
+  import type { PageProps } from "./$types";
+  let { data: layoutData }: PageProps = $props();
+  const { supabase } = layoutData;
 
   let src = $state<string>("");
   let paused = $state<boolean>(true);
@@ -68,9 +71,6 @@
         $listCount = 0;
         submitted = false;
         updateTodayScheduleLocal();
-        if ($currentSchedule && $currentSchedule.count < 11) {
-          $showTimer = true;
-        }
       }, 1000);
     }
   }
@@ -79,12 +79,17 @@
   async function handleCheckQuizWord() {
     if (!$quizRender) return;
     if ($quizRender.number > 1) {
-      fetch(`/server/checkword?id=${$quizRender.id}`);
+      await supabase
+        .from("vocab_table")
+        .update({ number: $quizRender.number - 1 })
+        .eq("id", $quizRender.id);
     } else {
-      const response = await fetch(
-        `/server/archiveword?word=${$quizRender.word}&id=${$quizRender.id}`
+      const response = await archiveVocab(
+        $quizRender.id,
+        $quizRender.word,
+        layoutData
       );
-      if (response.status == 201) $totalMemories += 1;
+      if (!response) $totalMemories += 1;
     }
   }
 </script>
@@ -92,6 +97,8 @@
 <svelte:head>
   {#if $showTimer}
     <title>🤔 {$timerString}</title>
+  {:else if $listCount}
+    <title>🤔 {Math.floor(($listCount / $listContent.length) * 100)}%</title>
   {:else}
     <title>🤔</title>
   {/if}
@@ -108,7 +115,7 @@
       class="my-9 min-h-[120px] w-2/3 mx-auto relative flex no-scrollbar layout-black select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
     >
       <h1
-        class="absolute left-1/2 -translate-x-1/2 -top-9 bg-transparent text-center text-[168px] leading-[115px] text-white/20"
+        class="absolute left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/20 font-200"
       >
         {$quizRender.number}
       </h1>

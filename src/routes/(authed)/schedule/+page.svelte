@@ -1,27 +1,39 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import Calendar from "$lib/components/Calendar.svelte";
-  import type { SelectProgress } from "$lib/db/schema";
   import { todaySchedule } from "$lib/store/navstore";
   import { cachedDiary, cachedProgressLength } from "$lib/store/vocabstore";
+  import type { CalendarDayType, DBSelect } from "$lib/types.js";
   import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import { fly } from "svelte/transition";
+  import type { PageProps } from "./$types";
 
-  let { data } = $props();
+  let { data: layoutData }: PageProps = $props();
+  const { supabase } = layoutData;
+
+  let calendarData = $state<CalendarDayType[]>([]);
+  calendarData = layoutData.schedule;
+
   let src = $state<string>("");
   let paused = $state<boolean>(true);
   let showReset = $state<boolean>(false);
   let showCreate = $state<boolean>(false);
-  let progressItems = $state<SelectProgress[] | null>(null);
+  let progressItems = $state<DBSelect["progress_table"][] | null>(null);
   let currentPage = $state<number>(1);
   let pages = $state<(string | number)[]>([]);
 
   async function getProgressByIndex(index: number) {
-    const response = await fetch(`/server/getprogress?index=${index}`);
-    progressItems = await response.json();
+    const { data } = await supabase
+      .from("progress_table")
+      .select("*")
+      .order("id", { ascending: true })
+      .range(index * 5, index * 5 + 4);
+    if (data && data.length) {
+      progressItems = data;
+    }
   }
 
   async function getPages(current: number) {
@@ -61,13 +73,60 @@
 
   onMount(async () => {
     if (!$cachedProgressLength) {
-      const response = await fetch(`/server/getschedule`);
-      const data = await response.json();
-      cachedProgressLength.set(data.progressLength);
-      cachedDiary.set(data.diary);
-      getPages(1);
+      if (layoutData.totalProgress) {
+        $cachedProgressLength = Math.ceil(layoutData.totalProgress / 5);
+        const { data } = await supabase
+          .from("diary_table")
+          .select("*")
+          .order("id", { ascending: true });
+        if (data) {
+          $cachedDiary = data;
+        }
+        getPages(1);
+      }
     } else getPages(1);
   });
+
+  async function reloadScheduleData() {
+    const todayDate = format(new Date(), "yyyy-MM-dd");
+    const { data: schedule } = await supabase
+      .from("schedule_table")
+      .select("*")
+      .order("id", { ascending: true });
+
+    if (schedule) {
+      let index = schedule.findIndex(
+        (item) =>
+          format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null
+      );
+
+      if (index > -1) {
+        $todaySchedule = {
+          start: schedule[index],
+          end: schedule[index + 1],
+        };
+      } else $todaySchedule = undefined;
+
+      calendarData = schedule.reduce(
+        (acc: any, curr: DBSelect["schedule_table"]) => {
+          const dateObj = new Date(curr.date!);
+          const day = dateObj.getDate();
+          const month = dateObj.getMonth();
+          const year = dateObj.getFullYear();
+          const existing = acc.find(
+            (item: any) => item.date === day && item.month === month
+          );
+          if (existing) {
+            existing.count += curr.count;
+          } else {
+            acc.push({ date: day, month, year, count: curr.count });
+          }
+          return acc;
+        },
+        []
+      );
+    }
+  }
 </script>
 
 <svelte:head>
@@ -216,7 +275,7 @@
                 toast.success("Create successfully", {
                   class: "my-toast",
                 });
-                location.reload();
+                reloadScheduleData();
               }
             };
           }}
@@ -255,7 +314,7 @@
     </div>
   </div>
 
-  <Calendar schedule={data.schedule} />
+  <Calendar schedule={calendarData} />
 
   <p
     class="font-garamond text-12 font-500 leading-14 layout-white !bg-green-400/15 p-6 select-none"

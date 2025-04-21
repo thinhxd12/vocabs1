@@ -1,3 +1,15 @@
+import type { Database } from "./supabase";
+
+export type DBSelect = {
+  [P in keyof Database["public"]["Tables"]]: Database["public"]["Tables"][P]["Row"];
+} & {
+  [P in keyof Database["public"]["Views"]]: Database["public"]["Views"][P]["Row"];
+};
+
+export type DBInsert = {
+  [P in keyof Database["public"]["Tables"]]: Database["public"]["Tables"][P]["Insert"];
+};
+
 export interface VocabularySearchType {
   id: string;
   word: string;

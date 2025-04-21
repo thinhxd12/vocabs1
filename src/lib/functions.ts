@@ -1,5 +1,6 @@
-import { goto } from "$app/navigation";
+import type { LayoutData } from "../routes/$types";
 import type { CurrentlyWeatherType, HourlyWeatherType } from "./types";
+import { v7 as uuidv7 } from "uuid";
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
@@ -113,8 +114,8 @@ export const getHourlyWeatherData = async ({
 };
 
 export const getCurrentWeatherTomorrowData = async (
-  lat: string,
-  lon: string
+  lat: number,
+  lon: number
 ) => {
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${lat}, ${lon}&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi`;
   const options = {
@@ -133,8 +134,8 @@ export const getCurrentWeatherTomorrowData = async (
 };
 
 export const getHourlyWeatherTomorrowData = async (
-  lat: string,
-  lon: string
+  lat: number,
+  lon: number
 ) => {
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${lat}, ${lon}&timesteps=1h&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi`;
   const options = {
@@ -150,4 +151,39 @@ export const getHourlyWeatherTomorrowData = async (
     const result = await response.json();
     return result.timelines;
   }
+};
+
+export const archiveVocab = async (
+  id: string,
+  word: string,
+  layoutData: LayoutData
+) => {
+  await layoutData.supabase
+    .from("memories_table")
+    .insert({ id: uuidv7(), word: word });
+  await layoutData.supabase.from("vocab_table").delete().eq("id", id);
+  const { count: lengthVocabTable } = await layoutData.supabase
+    .from("vocab_table")
+    .select("*", { count: "exact", head: true });
+  if (!lengthVocabTable || lengthVocabTable % 200 === 0) return;
+
+  const endOfIndex = Math.floor(lengthVocabTable / 200) * 200;
+  const { data: rangeResults } = await layoutData.supabase
+    .from("vocab_table")
+    .select("id,number")
+    .order("id", { ascending: true })
+    .range(endOfIndex, endOfIndex + lengthVocabTable - 1);
+
+  if (!rangeResults) return;
+  const smallestRow = rangeResults.reduce(
+    (min, row) => (row.number < min.number ? row : min),
+    rangeResults[0]
+  );
+
+  const { error } = await layoutData.supabase
+    .from("vocab_table")
+    .update({ id: id })
+    .eq("id", smallestRow.id);
+
+  return error;
 };

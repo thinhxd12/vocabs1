@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { InsertVocab, SelectVocab } from "$lib/db/schema";
   import Icon from "@iconify/svelte";
   import ImageLoader from "./ImageLoader.svelte";
+  import type { DBSelect, DBInsert } from "$lib/types";
 
   interface Props {
-    item: SelectVocab | InsertVocab;
+    item: DBSelect["vocab_table"] | DBInsert["vocab_table"];
     onEdit?: () => void;
     onCheck?: () => void;
     isEdit?: boolean;

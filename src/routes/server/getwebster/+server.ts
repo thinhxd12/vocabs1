@@ -1,11 +1,12 @@
-import type { InsertVocab } from "$lib/db/schema";
 import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
 import type {
+  DBInsert,
   VocabDefinitionsType,
   VocabExampleType,
   VocabMeaningType,
 } from "$lib/types";
+import { v7 as uuidv7 } from "uuid";
 
 async function fetchGetText(url: string) {
   try {
@@ -44,7 +45,8 @@ export async function GET({ url }) {
   if (!text) error(404);
   const urlWebter = `https://www.merriam-webster.com/dictionary/${text}`;
 
-  const result: InsertVocab = {
+  const result: DBInsert["vocab_table"] = {
+    id: uuidv7(),
     word: "",
     audio: "",
     phonetics: "",

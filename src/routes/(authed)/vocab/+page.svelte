@@ -3,7 +3,6 @@
   import Flipcard from "$lib/components/Flipcard.svelte";
   import Translate from "$lib/components/Translate.svelte";
   import Edit from "$lib/components/Edit.svelte";
-  import type { SelectVocab } from "$lib/db/schema";
   import {
     renderWord,
     searchTerm,
@@ -17,13 +16,23 @@
   import { toast } from "svelte-sonner";
   import { innerWidth } from "svelte/reactivity/window";
   import { timerString } from "$lib/store/layoutstore";
+  import type { PageProps } from "./$types";
+  import { archiveVocab } from "$lib/functions";
+  let { data: layoutData }: PageProps = $props();
+  const { supabase } = layoutData;
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
-  const trigger = debounce(async (str: string) => {
-    const response = await fetch(`/server/searchword?word=${str}`);
-    const result = await response.json();
-    switch (result.length) {
+  const trigger = debounce(async (text: string) => {
+    const { data } = await supabase
+      .from("vocab_table")
+      .select("id,word")
+      .like("word", `${text}%`)
+      .order("id", { ascending: true })
+      .limit(9);
+
+    if (!data) return;
+    switch (data.length) {
       case 0:
         searchTermFounded = false;
         deleteSearchTimeout = setTimeout(() => {
@@ -38,17 +47,17 @@
         break;
       case 1:
         searchTermFounded = true;
-        $searchResults = result;
+        $searchResults = data;
         deleteIndex = 9;
-        if (str.length > 4) {
+        if (text.length > 4) {
           checkTimeout = setTimeout(() => {
-            handleSelectWordFromSearch(result[0].id);
+            handleSelectWordFromSearch(data[0].id);
           }, 1500);
         }
         break;
       default:
         searchTermFounded = true;
-        $searchResults = result;
+        $searchResults = data;
         deleteIndex = 9;
         break;
     }
@@ -101,18 +110,27 @@
   }
   // handlecheck
   async function handleSelectWordFromSearch(id: string) {
-    const response = await fetch(`/server/getword?id=${id}`);
-    if (response.status === 200) {
-      const wordData = (await response.json()) as SelectVocab;
-      $renderWord = wordData;
-      $vocabInput = wordData.word;
-      if (wordData.number > 1) {
-        fetch(`/server/checkword?id=${id}`);
+    const { data } = await supabase
+      .from("vocab_table")
+      .select("*")
+      .eq("id", id)
+      .limit(1);
+
+    if (data) {
+      $renderWord = data[0];
+      $vocabInput = data[0].word;
+      if (data[0].number > 1) {
+        await supabase
+          .from("vocab_table")
+          .update({ number: data[0].number - 1 })
+          .eq("id", id);
       } else {
-        const response = await fetch(
-          `/server/archiveword?word=${wordData.word}&id=${id}`
+        const response = await archiveVocab(
+          data[0].id,
+          data[0].word,
+          layoutData
         );
-        if (response.status == 201) $totalMemories += 1;
+        if (!response) $totalMemories += 1;
       }
     }
     $searchTerm = "";
@@ -139,10 +157,9 @@
   });
 
   function handlePlaySoundMeanings() {
-    const translations = $renderWord?.meanings
-      .flatMap((item) => item.translation)
-      .join(", ");
-
+    const translations = Array.isArray($renderWord?.meanings)
+      ? $renderWord.meanings.flatMap((item: any) => item.translation).join(", ")
+      : "";
     src0 = `https://vocabs3.vercel.app/speech?text=${translations}`;
     setTimeout(() => {
       paused0 = false;
@@ -151,20 +168,19 @@
   }
 
   async function confirmDelete(id: string) {
-    const response = await fetch(`/server/deleteword?id=${id}`);
-    const result = await response.json();
+    const { error } = await supabase.from("vocab_table").delete().eq("id", id);
 
-    if (result.status) {
-      toast.success(result.message, {
+    if (error) {
+      toast.error("Error!", {
         class: "my-toast",
       });
-      searchTermFounded = true;
-      $searchTerm = "";
-      $searchResults = [];
     } else
-      toast.error(result.message, {
+      toast.success("Delete action was successful!", {
         class: "my-toast",
       });
+    searchTermFounded = true;
+    $searchTerm = "";
+    $searchResults = [];
   }
 
   let editId = $state<string>("");
@@ -198,8 +214,8 @@
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0}></audio>
-<audio src={src1} bind:paused={paused1} onended={handlePlaySoundMeanings}
-></audio>
+<audio src={src1} bind:paused={paused1} onended={handlePlaySoundMeanings}>
+</audio>
 
 <div class="w-content h-[48px] flex justify-center items-center gap-6">
   {#if innerWidth.current && innerWidth.current > 450}

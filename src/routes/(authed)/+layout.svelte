@@ -18,7 +18,7 @@
 
   let { data, children } = $props();
   const todayDate = format(new Date(), "yyyy-MM-dd");
-  $totalMemories = data.totalMemories;
+  $totalMemories = data.totalMemories || 0;
 
   if (data.schedule) {
     let index = data.schedule.findIndex(
@@ -34,7 +34,7 @@
     } else $todaySchedule = undefined;
   }
 
-  $locationList = data.weather;
+  $locationList = data.weatherList || [];
 </script>
 
 <section

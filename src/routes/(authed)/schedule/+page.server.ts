@@ -1,47 +1,44 @@
-import {
-  progressTable,
-  scheduleTable,
-  vocabTable,
-  type InsertSchedule,
-  type SelectSchedule,
-} from "$lib/db/schema";
-import {
-  getAllScheduleHaveDate,
-  getTotalProgress,
-} from "$lib/db/queries/select";
 import { fail, type ActionResult } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { updateCountScheduleById } from "$lib/db/queries/update";
-import { db } from "$lib/db";
-import { count, desc } from "drizzle-orm";
 import { REPETITION_PATTERN } from "$lib/constants";
-import { insertSchedule } from "$lib/db/queries/insert";
-import type { CalendarDayType } from "$lib/types";
+import type { CalendarDayType, DBInsert, DBSelect } from "$lib/types";
+import { v7 as uuidv7 } from "uuid";
 
-export const load: PageServerLoad = async ({ cookies }) => {
-  const data = await getAllScheduleHaveDate();
-  const transformed = data.reduce((acc: any, curr: SelectSchedule) => {
-    const dateObj = new Date(curr.date!);
-    const day = dateObj.getDate();
-    const month = dateObj.getMonth();
-    const year = dateObj.getFullYear();
-    const existing = acc.find(
-      (item: any) => item.date === day && item.month === month
-    );
-    if (existing) {
-      existing.count += curr.count;
-    } else {
-      acc.push({ date: day, month, year, count: curr.count });
-    }
-    return acc;
-  }, []);
+export const load: PageServerLoad = async ({
+  cookies,
+  locals: { supabase },
+}) => {
+  const { data } = await supabase
+    .from("schedule_table")
+    .select("*")
+    .order("id", { ascending: true })
+    .not("date", "is", null);
+
+  const transformed = data.reduce(
+    (acc: any, curr: DBSelect["schedule_table"]) => {
+      const dateObj = new Date(curr.date!);
+      const day = dateObj.getDate();
+      const month = dateObj.getMonth();
+      const year = dateObj.getFullYear();
+      const existing = acc.find(
+        (item: any) => item.date === day && item.month === month
+      );
+      if (existing) {
+        existing.count += curr.count;
+      } else {
+        acc.push({ date: day, month, year, count: curr.count });
+      }
+      return acc;
+    },
+    []
+  );
   return {
     schedule: transformed as CalendarDayType[],
   };
 };
 
 export const actions = {
-  setProgress: async ({ cookies, request }) => {
+  setProgress: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const count0 = formData.get("count0") as string;
     const count1 = formData.get("count1") as string;
@@ -55,8 +52,14 @@ export const actions = {
     }
 
     try {
-      await updateCountScheduleById(id0, Number(count0));
-      await updateCountScheduleById(id1, Number(count1));
+      await supabase
+        .from("schedule_table")
+        .update({ count0: Number(count0) })
+        .ep("id", id0);
+      await supabase
+        .from("schedule_table")
+        .update({ count0: Number(count1) })
+        .ep("id", id1);
     } catch (error) {
       return fail(422, { error: "Update error" });
     }
@@ -68,23 +71,20 @@ export const actions = {
       },
     } as ActionResult;
   },
-  setSchedule: async ({ request }) => {
-    const lastProgress = await db
-      .select()
-      .from(progressTable)
-      .orderBy(desc(progressTable.id))
+  setSchedule: async ({ request, locals: { supabase } }) => {
+    const { data: lastProgress } = await supabase
+      .from("progress_table")
+      .select("*")
+      .order("id", { ascending: false })
       .limit(1);
-
     const lastWeekIndex = lastProgress[0].index;
+    const { count: lengthVocabTable } = await supabase
+      .from("vocab_table")
+      .select("*", { count: "exact", head: true });
 
-    const lengthVocabTable = await db
-      .select({ count: count() })
-      .from(vocabTable);
+    await supabase.from("schedule_table").delete().gte("count", 0);
 
-    // delete table
-    await db.delete(scheduleTable);
-
-    const limitStartIndex = Math.floor(lengthVocabTable[0].count / 200);
+    const limitStartIndex = Math.floor(lengthVocabTable / 200);
 
     const currentPatternArr = REPETITION_PATTERN.filter(
       (item) => item < limitStartIndex * 200
@@ -97,21 +97,18 @@ export const actions = {
     }
 
     let thisWeekIndex = 0;
-    if (lengthVocabTable[0].count >= 200)
+    if (lengthVocabTable >= 200)
       thisWeekIndex = findNextElement(currentPatternArr, lastWeekIndex);
 
     const pattern = [0, 100, 50, 150];
 
     for (let i = 0; i < 12; i++) {
-      const row: InsertSchedule = {
+      const row: DBInsert["schedule_table"] = {
+        id: uuidv7(),
         index: thisWeekIndex + pattern[i % pattern.length],
       };
-      try {
-        await insertSchedule(row);
-      } catch (error) {
-        return fail(422, { error: "Create error" });
-      }
-      console.log(row);
+      const { error } = await supabase.from("schedule_table").insert(row);
+      if (error) throw fail(422, { error: "Error" });
     }
     return {
       type: "success",

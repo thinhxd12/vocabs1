@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Bookmark from "$lib/components/Bookmark.svelte";
   import Flipcard from "$lib/components/Flipcard.svelte";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import Tick from "$lib/components/Tick.svelte";
@@ -38,25 +39,33 @@
   };
 
   let current = $state(currentDummy);
+  import type { PageProps } from "./$types";
+  let { data, form }: PageProps = $props();
 
-  function name() {
-    const url =
-      "https://api.tomorrow.io/v4/weather/realtime?location=10.65639, 106.3458&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi";
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        "accept-encoding": "deflate, gzip, br",
-      },
-    };
+  async function name() {
+    // const url =
+    //   "https://api.tomorrow.io/v4/weather/realtime?location=10.65639, 106.3458&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi";
+    // const options = {
+    //   method: "GET",
+    //   headers: {
+    //     accept: "application/json",
+    //     "accept-encoding": "deflate, gzip, br",
+    //   },
+    // };
+    // fetch(url, options)
+    //   .then((res) => res.json())
+    //   .then((json) => {
+    //     console.log(json);
+    //     current = json;
+    //   })
+    //   .catch((err) => console.error(err));
+    // const { data: vocab } = await data.supabase
+    //   .from("bookmark_progress")
+    //   .select();
 
-    fetch(url, options)
-      .then((res) => res.json())
-      .then((json) => {
-        console.log(json);
-        current = json;
-      })
-      .catch((err) => console.error(err));
+    const { data: res, error } = await data.supabase.rpc("get_random_bookmark");
+
+    console.log(res);
   }
 </script>
 
@@ -65,10 +74,11 @@
     <button onclick={name} class="mr-2 rounded-1 border px-1"> RUN </button>
   </div>
 
-  <img
+  <!-- <img
     src={`/tomorrow/${current.data.values.weatherCode}0.png`}
     alt=""
     width={50}
     height={50}
-  />
+  /> -->
+  <!-- <Bookmark supabase={data.supabase} /> -->
 </main>

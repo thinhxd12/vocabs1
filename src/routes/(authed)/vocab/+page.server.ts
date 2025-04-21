@@ -1,18 +1,22 @@
 import { fail, type ActionResult } from "@sveltejs/kit";
 import type { Actions } from "./$types";
-import type { InsertBookmark, InsertVocab, SelectVocab } from "$lib/db/schema";
-import { insertBookmark, insertVocab } from "$lib/db/queries/insert";
-import {
-  updateBookmarkContentById,
-  updateVocabById,
-} from "$lib/db/queries/update";
 import {
   parseKindleEntries,
   readKindleClipping,
 } from "@darylserrano/kindle-clippings";
+import { v7 as uuidv7 } from "uuid";
+import type { DBInsert, VocabMeaningType } from "$lib/types";
+
+function makeTranslationText(arr: VocabMeaningType[]) {
+  return arr
+    .map((item) => {
+      return item.translation.join("");
+    })
+    .join("") as string;
+}
 
 export const actions = {
-  insertNewVocab: async ({ cookies, request, locals }) => {
+  insertNewVocab: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const word = formData.get("word") as string;
     const audio = formData.get("audio") as string;
@@ -26,15 +30,22 @@ export const actions = {
     )
       return fail(422, { error: "Invalid data" });
 
-    const insertWord: InsertVocab = {
+    const translation = makeTranslationText(JSON.parse(meanings));
+    if (translation.length == 0) return fail(422, { error: "Invalid data" });
+
+    const insertWord: DBInsert["vocab_table"] = {
+      id: uuidv7(),
       word: word,
       audio: audio,
       phonetics: phonetics,
       meanings: JSON.parse(meanings),
     };
 
-    const result = await insertVocab(insertWord);
-    if (result.status) {
+    const { error } = await supabase.from("vocab_table").insert(insertWord);
+
+    if (error) {
+      return fail(422, { error: error.message });
+    } else {
       return {
         type: "success",
         status: 200,
@@ -42,11 +53,9 @@ export const actions = {
           message: "Vocab inserted successfully",
         },
       } as ActionResult;
-    } else {
-      return fail(422, { error: result.data.message });
     }
   },
-  editVocab: async ({ cookies, request }) => {
+  editVocab: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const word = formData.get("word") as string;
     const audio = formData.get("audio") as string;
@@ -63,17 +72,20 @@ export const actions = {
     )
       return fail(422, { error: "Invalid data" });
 
-    const editedWord: SelectVocab = {
-      word: word,
-      audio: audio,
-      phonetics: phonetics,
-      meanings: JSON.parse(meanings),
-      number: Number(number),
-      id: id,
-    };
+    const { error } = await supabase
+      .from("vocab_table")
+      .update({
+        word: word,
+        audio: audio,
+        phonetics: phonetics,
+        number: Number(number),
+        meanings: JSON.parse(meanings),
+      })
+      .eq("id", id);
 
-    const result = await updateVocabById(editedWord);
-    if (result.status) {
+    if (error) {
+      return fail(422, { error: error.data.message });
+    } else {
       return {
         type: "success",
         status: 200,
@@ -81,12 +93,10 @@ export const actions = {
           message: "Edit successfully",
         },
       } as ActionResult;
-    } else {
-      return fail(422, { error: result.data.message });
     }
   },
 
-  editBookmark: async ({ cookies, request }) => {
+  editBookmark: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const id = formData.get("id") as string;
     const content = formData.get("content") as string;
@@ -94,8 +104,14 @@ export const actions = {
     if (id.length === 0 || content.length === 0)
       return fail(422, { error: "Invalid data" });
 
-    const result = await updateBookmarkContentById(id, content);
-    if (result.status) {
+    const { error } = await supabase
+      .from("bookmark_table")
+      .update({ content: content })
+      .eq("id", id);
+
+    if (error) {
+      return fail(422, { error: error.data.message });
+    } else
       return {
         type: "success",
         status: 200,
@@ -103,11 +119,8 @@ export const actions = {
           message: "Edit successfully",
         },
       } as ActionResult;
-    } else {
-      return fail(422, { error: result.data.message });
-    }
   },
-  insertBookmark: async ({ cookies, request }) => {
+  insertBookmark: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const content = formData.get("content") as string;
 
@@ -117,7 +130,7 @@ export const actions = {
     let parsedEntries = parseKindleEntries(entries);
 
     for (let i = 0; i < parsedEntries.length; i++) {
-      const row: InsertBookmark = {
+      const row = {
         authors: parsedEntries[i].authors,
         bookTile: parsedEntries[i].bookTile,
         page: parsedEntries[i].page,
@@ -125,9 +138,11 @@ export const actions = {
         dateOfCreation: parsedEntries[i].dateOfCreation,
         content: parsedEntries[i].content,
         type: parsedEntries[i].type,
+        id: uuidv7(),
       };
-      const res = await insertBookmark(row);
-      if (res) return fail(422, { error: "Error" });
+
+      const { error } = await supabase.from("bookmark_table").insert(row);
+      if (error) throw fail(422, { error: "Error" });
     }
 
     return {

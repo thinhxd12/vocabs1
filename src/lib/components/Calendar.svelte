@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { CalendarDayType } from "$lib/types";
   import Icon from "@iconify/svelte";
+  import { untrack } from "svelte";
   type DayType = {
     enabled: boolean;
     date: number;
@@ -84,7 +85,12 @@
     });
   }
 
-  initMonth();
+  $effect(() => {
+    const v = schedule;
+    untrack(async () => {
+      initMonth();
+    });
+  });
 
   function next() {
     month++;

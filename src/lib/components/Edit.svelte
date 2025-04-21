@@ -1,6 +1,5 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { InsertVocab, SelectVocab } from "$lib/db/schema";
   import { showLayout } from "$lib/store/layoutstore";
   import { renderWord, showEdit } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
@@ -8,11 +7,14 @@
   import { untrack } from "svelte";
   import { fly } from "svelte/transition";
   import { toast } from "svelte-sonner";
-  import type { VocabMeaningType } from "$lib/types";
+  import type { DBSelect, VocabMeaningType, VocabType } from "$lib/types";
   import { getTranslationArr } from "$lib/functions";
   import Definition from "./Definition.svelte";
+  import { page } from "$app/state";
 
-  let editWord = $state<SelectVocab>({
+  const { supabase } = page.data;
+
+  let editWord = $state<DBSelect["vocab_table"]>({
     id: "",
     number: 0,
     word: "",
@@ -21,7 +23,9 @@
     meanings: [],
   });
 
-  let editRenderWord = $state<InsertVocab>({
+  let editRenderWord = $state<DBSelect["vocab_table"]>({
+    id: "",
+    number: 0,
     word: "",
     audio: "",
     phonetics: "",
@@ -34,11 +38,17 @@
     const v = $showEdit;
     untrack(async () => {
       if (id && $showEdit) {
-        const response = await fetch(`/server/getword?id=${id}`);
-        editWord = (await response.json()) as SelectVocab;
-        meaningsText = JSON.stringify(editWord.meanings, null, "     ");
-        translationText = makeTranslationText(editWord.meanings);
-        getTextDataWebster();
+        const { data } = await supabase
+          .from("vocab_table")
+          .select("*")
+          .eq("id", id)
+          .limit(1);
+        if (data) {
+          editWord = data[0];
+          meaningsText = JSON.stringify(editWord.meanings, null, "     ");
+          translationText = makeTranslationText(editWord.meanings);
+          getTextDataWebster();
+        }
       }
     });
   });

@@ -235,15 +235,15 @@
   }
 
   .btn-weather {
-    @apply relative rounded-2 outline-none ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-cover;
+    @apply relative rounded-2 outline-none ml-3 block h-36 min-w-[90px] overflow-hidden  shadow-md shadow-black/30 ring-1 ring-white/15 bg-cover;
   }
 
   .btn-play {
-    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunrise.webp)] bg-cover;
+    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden bg-[url(/images/sunrise.webp)] bg-cover shadow-md shadow-black/30 ring-1 ring-white/15;
   }
 
   .btn-pause {
-    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden shadow-sm shadow-black/45 bg-[url(/images/sunset.webp)] bg-cover;
+    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden bg-[url(/images/sunset.webp)] bg-cover shadow-md shadow-black/30 ring-1 ring-white/15;
   }
 
   .marquee-container {

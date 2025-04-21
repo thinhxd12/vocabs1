@@ -1,6 +1,5 @@
 <script lang="ts">
   import { locationList, showWeather } from "$lib/store/navstore";
-  import type { SelectWeather } from "$lib/db/schema";
   import { getHourlyWeatherTomorrowData } from "$lib/functions";
   import { getConditionIconImage, TOMORROW_CONDITIONS } from "$lib/constants";
   import Icon from "@iconify/svelte";
@@ -9,11 +8,12 @@
   import { dragscroll } from "@svelte-put/dragscroll";
   import { Dialog } from "bits-ui";
   import { showLayout } from "$lib/store/layoutstore";
+  import type { DBSelect } from "$lib/types";
 
-  let location = $state<SelectWeather | undefined>(undefined);
+  let location = $state<DBSelect["weather_table"] | undefined>(undefined);
   let hourlyData = $state<any[] | undefined>(undefined);
 
-  async function getWeatherData(lat: string, lon: string) {
+  async function getWeatherData(lat: number, lon: number) {
     if (!location) return;
     const data = await getHourlyWeatherTomorrowData(lat, lon);
     hourlyData = data.hourly;
