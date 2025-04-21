@@ -62,6 +62,8 @@ function notificationAlert() {
 export function handleGetListContent() {
   const schedule = get(currentSchedule);
   if (!schedule) return;
+  listCount.set(0);
+  isAutoPlay.set(false);
   const index = schedule.index;
   if (page.url.pathname === "/vocab") {
     handleGetListContentVocab(index);
