@@ -125,12 +125,7 @@
           .update({ number: data[0].number - 1 })
           .eq("id", id);
       } else {
-        const response = await archiveVocab(
-          data[0].id,
-          data[0].word,
-          layoutData
-        );
-        if (!response) $totalMemories += 1;
+        await archiveVocab(data[0].id, data[0].word, layoutData);
       }
     }
     $searchTerm = "";

@@ -84,12 +84,7 @@
         .update({ number: $quizRender.number - 1 })
         .eq("id", $quizRender.id);
     } else {
-      const response = await archiveVocab(
-        $quizRender.id,
-        $quizRender.word,
-        layoutData
-      );
-      if (!response) $totalMemories += 1;
+      await archiveVocab($quizRender.id, $quizRender.word, layoutData);
     }
   }
 </script>

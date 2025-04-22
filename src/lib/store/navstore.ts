@@ -129,8 +129,7 @@ const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
       .update({ number: word.number - 1 })
       .eq("id", word.id);
   } else {
-    const response = await archiveVocab(word.id, word.word, page.data.supabase);
-    if (!response) totalMemories.update((n) => n + 1);
+    await archiveVocab(word.id, word.word, page.data.supabase);
   }
 };
 

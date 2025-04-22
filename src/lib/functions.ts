@@ -1,6 +1,8 @@
+import { toast } from "svelte-sonner";
 import type { LayoutData } from "../routes/$types";
 import type { CurrentlyWeatherType, HourlyWeatherType } from "./types";
 import { v7 as uuidv7 } from "uuid";
+import { totalMemories } from "$lib/store/navstore";
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
@@ -158,10 +160,28 @@ export const archiveVocab = async (
   word: string,
   layoutData: LayoutData
 ) => {
-  await layoutData.supabase
+  const { error: errorMemories } = await layoutData.supabase
     .from("memories_table")
     .insert({ id: uuidv7(), word: word });
-  await layoutData.supabase.from("vocab_table").delete().eq("id", id);
+
+  if (errorMemories) {
+    toast.error(errorMemories.details as string, {
+      class: "my-toast",
+    });
+    return;
+  }
+
+  const { error: errorDeleteVocab } = await layoutData.supabase
+    .from("vocab_table")
+    .delete()
+    .eq("id", id);
+
+  if (errorDeleteVocab) {
+    toast.error(errorDeleteVocab.details as string, {
+      class: "my-toast",
+    });
+    return;
+  }
   const { count: lengthVocabTable } = await layoutData.supabase
     .from("vocab_table")
     .select("*", { count: "exact", head: true });
@@ -180,10 +200,10 @@ export const archiveVocab = async (
     rangeResults[0]
   );
 
-  const { error } = await layoutData.supabase
+  const { error: lastError } = await layoutData.supabase
     .from("vocab_table")
     .update({ id: id })
     .eq("id", smallestRow.id);
 
-  return error;
+  if (!lastError) totalMemories.update((n) => n + 1);
 };
