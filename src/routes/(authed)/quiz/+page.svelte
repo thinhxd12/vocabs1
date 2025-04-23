@@ -13,8 +13,7 @@
   import { timerString } from "$lib/store/layoutstore";
   import { archiveVocab } from "$lib/functions";
   import type { PageProps } from "./$types";
-  let { data: layoutData }: PageProps = $props();
-  const { supabase } = layoutData;
+  import { page } from "$app/state";
 
   let src = $state<string>("");
   let paused = $state<boolean>(true);
@@ -79,12 +78,12 @@
   async function handleCheckQuizWord() {
     if (!$quizRender) return;
     if ($quizRender.number > 1) {
-      await supabase
+      await page.data.supabase
         .from("vocab_table")
         .update({ number: $quizRender.number - 1 })
         .eq("id", $quizRender.id);
     } else {
-      await archiveVocab($quizRender.id, $quizRender.word, layoutData);
+      await archiveVocab($quizRender.id, $quizRender.word, page.data.supabase);
     }
   }
 </script>

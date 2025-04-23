@@ -138,15 +138,13 @@
       <Icon icon="solar:file-check-linear" width="15" height="15" />
     </a>
 
-    {#if innerWidth.current && innerWidth.current > 450}
-      <button class="btn-nav" onclick={() => ($showLayout = !$showLayout)}>
-        {#if $showLayout}
-          <Icon icon="solar:close-square-linear" width="15" height="15" />
-        {:else}
-          <Icon icon="solar:bookmark-linear" width="15" height="15" />
-        {/if}
-      </button>
-    {/if}
+    <a
+      href="/quotes"
+      class="btn-nav"
+      class:active={page.url.pathname === "/quotes"}
+    >
+      <Icon icon="solar:bookmark-linear" width="15" height="15" />
+    </a>
   </div>
 
   <div

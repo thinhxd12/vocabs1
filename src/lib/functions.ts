@@ -3,6 +3,7 @@ import type { LayoutData } from "../routes/$types";
 import type { CurrentlyWeatherType, HourlyWeatherType } from "./types";
 import { v7 as uuidv7 } from "uuid";
 import { totalMemories } from "$lib/store/navstore";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
@@ -158,9 +159,9 @@ export const getHourlyWeatherTomorrowData = async (
 export const archiveVocab = async (
   id: string,
   word: string,
-  layoutData: LayoutData
+  supabase: SupabaseClient
 ) => {
-  const { error: errorMemories } = await layoutData.supabase
+  const { error: errorMemories } = await supabase
     .from("memories_table")
     .insert({ id: uuidv7(), word: word });
 
@@ -171,7 +172,7 @@ export const archiveVocab = async (
     return;
   }
 
-  const { error: errorDeleteVocab } = await layoutData.supabase
+  const { error: errorDeleteVocab } = await supabase
     .from("vocab_table")
     .delete()
     .eq("id", id);
@@ -182,13 +183,13 @@ export const archiveVocab = async (
     });
     return;
   }
-  const { count: lengthVocabTable } = await layoutData.supabase
+  const { count: lengthVocabTable } = await supabase
     .from("vocab_table")
     .select("*", { count: "exact", head: true });
   if (!lengthVocabTable || lengthVocabTable % 200 === 0) return;
 
   const endOfIndex = Math.floor(lengthVocabTable / 200) * 200;
-  const { data: rangeResults } = await layoutData.supabase
+  const { data: rangeResults } = await supabase
     .from("vocab_table")
     .select("id,number")
     .order("id", { ascending: true })
@@ -200,7 +201,7 @@ export const archiveVocab = async (
     rangeResults[0]
   );
 
-  const { error: lastError } = await layoutData.supabase
+  const { error: lastError } = await supabase
     .from("vocab_table")
     .update({ id: id })
     .eq("id", smallestRow.id);

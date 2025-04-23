@@ -18,13 +18,12 @@
   import { timerString } from "$lib/store/layoutstore";
   import type { PageProps } from "./$types";
   import { archiveVocab } from "$lib/functions";
-  let { data: layoutData }: PageProps = $props();
-  const { supabase } = layoutData;
+  import { page } from "$app/state";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
   const trigger = debounce(async (text: string) => {
-    const { data } = await supabase
+    const { data } = await page.data.supabase
       .from("vocab_table")
       .select("id,word")
       .like("word", `${text}%`)
@@ -110,7 +109,7 @@
   }
   // handlecheck
   async function handleSelectWordFromSearch(id: string) {
-    const { data } = await supabase
+    const { data } = await page.data.supabase
       .from("vocab_table")
       .select("*")
       .eq("id", id)
@@ -120,12 +119,12 @@
       $renderWord = data[0];
       $vocabInput = data[0].word;
       if (data[0].number > 1) {
-        await supabase
+        await page.data.supabase
           .from("vocab_table")
           .update({ number: data[0].number - 1 })
           .eq("id", id);
       } else {
-        await archiveVocab(data[0].id, data[0].word, layoutData);
+        await archiveVocab(data[0].id, data[0].word, page.data.supabase);
       }
     }
     $searchTerm = "";
@@ -163,7 +162,10 @@
   }
 
   async function confirmDelete(id: string) {
-    const { error } = await supabase.from("vocab_table").delete().eq("id", id);
+    const { error } = await page.data.supabase
+      .from("vocab_table")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       toast.error("Error!", {

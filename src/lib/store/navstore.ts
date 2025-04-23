@@ -6,7 +6,6 @@ import { renderWord } from "$lib/store/vocabstore";
 import type { DBInsert, DBSelect } from "$lib/types";
 import { archiveVocab } from "$lib/functions";
 import { v7 as uuidv7 } from "uuid";
-import type { LayoutData } from "../../routes/$types";
 
 export const isAutoPlay = writable<boolean>(false);
 export const showWeather = writable<boolean>(false);
@@ -130,7 +129,7 @@ const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
       .update({ number: word.number - 1 })
       .eq("id", word.id);
   } else {
-    await archiveVocab(word.id, word.word, page.data as LayoutData);
+    await archiveVocab(word.id, word.word, page.data.supabase);
   }
 };
 

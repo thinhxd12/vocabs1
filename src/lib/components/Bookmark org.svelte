@@ -7,8 +7,8 @@
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import { fade, fly } from "svelte/transition";
+  import StarRating from "./StarRating.svelte";
   import { page } from "$app/state";
-  import StarRating from "$lib/components/StarRating.svelte";
 
   const { supabase } = page.data;
   let bookmark = $state<DBSelect["bookmark_table"] | undefined>(undefined);
@@ -184,7 +184,7 @@
   <meta name="bookmark" content="Some bookmark" />
 </svelte:head>
 
-<section class="w-screen h-full pt-[48px] px-[48px] flex flex-col">
+<section class="flex-1 h-full pt-[48px] px-[48px] flex flex-col">
   {#if bookmark}
     <div class="w-full flex-1 layout-black rounded-6 flex overflow-hidden">
       <div class="w-[240px] h-full bg-black/30 flex flex-col px-9">

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Art from "$lib/components/Art.svelte";
-  import Bookmark from "$lib/components/Bookmarkcopy.svelte";
+  import Bookmark from "$lib/components/Bookmark.svelte";
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
   import Timer from "$lib/components/Timer.svelte";
