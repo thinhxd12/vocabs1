@@ -20,6 +20,8 @@
   import { getCurrentWeatherTomorrowData } from "$lib/functions";
   import { onDestroy, onMount } from "svelte";
   import Icon from "@iconify/svelte";
+  import { innerWidth } from "svelte/reactivity/window";
+  import { showLayout } from "$lib/store/layoutstore";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   type WeatherDataType = {
@@ -135,6 +137,16 @@
     >
       <Icon icon="solar:file-check-linear" width="15" height="15" />
     </a>
+
+    {#if innerWidth.current && innerWidth.current > 450}
+      <button class="btn-nav" onclick={() => ($showLayout = !$showLayout)}>
+        {#if $showLayout}
+          <Icon icon="solar:close-square-linear" width="15" height="15" />
+        {:else}
+          <Icon icon="solar:bookmark-linear" width="15" height="15" />
+        {/if}
+      </button>
+    {/if}
   </div>
 
   <div

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Art from "$lib/components/Art.svelte";
-  import Bookmark from "$lib/components/Bookmark.svelte";
+  import Bookmark from "$lib/components/Bookmarkcopy.svelte";
   import Menu from "$lib/components/Menu.svelte";
   import Nav from "$lib/components/Nav.svelte";
   import Timer from "$lib/components/Timer.svelte";
@@ -15,6 +15,7 @@
   } from "$lib/store/navstore";
   import { format } from "date-fns";
   import { Toaster } from "svelte-sonner";
+  import { page } from "$app/state";
 
   let { data, children } = $props();
   const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -49,9 +50,11 @@
     <Nav />
   </div>
 
-  <div class={$showLayout ? "menu-bar-right" : "menu-bar-center"}>
-    <Menu />
-  </div>
+  {#if page.url.pathname !== "/quotes"}
+    <div class={$showLayout ? "menu-bar-right" : "menu-bar-center"}>
+      <Menu />
+    </div>
+  {/if}
 
   {#if $showLayout}
     {#if $showBookmark}

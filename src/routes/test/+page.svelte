@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Bookmark from "$lib/components/Bookmark.svelte";
+  import Bookmark from "$lib/components/Bookmarkcopy.svelte";
   import Flipcard from "$lib/components/Flipcard.svelte";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import Tick from "$lib/components/Tick.svelte";
