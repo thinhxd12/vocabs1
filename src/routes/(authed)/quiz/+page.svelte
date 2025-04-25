@@ -163,13 +163,16 @@
 <style>
   .quiz-choice {
     @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-white/5 hover:!bg-white/15 transition-all;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
   }
 
   .quiz-choice-true {
     @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-green-400;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
   }
 
   .quiz-choice-false {
     @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-red-500;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
   }
 </style>

@@ -137,14 +137,6 @@
     >
       <Icon icon="solar:file-check-linear" width="15" height="15" />
     </a>
-
-    <a
-      href="/quotes"
-      class="btn-nav"
-      class:active={page.url.pathname === "/quotes"}
-    >
-      <Icon icon="solar:bookmark-linear" width="15" height="15" />
-    </a>
   </div>
 
   <div

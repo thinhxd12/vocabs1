@@ -40,14 +40,17 @@ export type Database = {
         Row: {
           created_at: string;
           currentId: string;
+          id: number;
         };
         Insert: {
           created_at?: string;
           currentId: string;
+          id: number;
         };
         Update: {
           created_at?: string;
           currentId?: string;
+          id: number;
         };
         Relationships: [];
       };

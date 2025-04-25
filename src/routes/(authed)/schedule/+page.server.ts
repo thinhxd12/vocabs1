@@ -54,12 +54,13 @@ export const actions = {
     try {
       await supabase
         .from("schedule_table")
-        .update({ count0: Number(count0) })
-        .ep("id", id0);
+        .update({ count: Number(count0) })
+        .eq("id", id0);
+
       await supabase
         .from("schedule_table")
-        .update({ count0: Number(count1) })
-        .ep("id", id1);
+        .update({ count: Number(count1) })
+        .eq("id", id1);
     } catch (error) {
       return fail(422, { error: "Update error" });
     }

@@ -186,7 +186,15 @@ export const archiveVocab = async (
   const { count: lengthVocabTable } = await supabase
     .from("vocab_table")
     .select("*", { count: "exact", head: true });
-  if (!lengthVocabTable || lengthVocabTable % 200 === 0) return;
+  if (!lengthVocabTable || lengthVocabTable % 200 === 0) {
+    totalMemories.update((n) => n + 1);
+    return;
+  }
+
+  if (lengthVocabTable < 200) {
+    totalMemories.update((n) => n + 1);
+    return;
+  }
 
   const endOfIndex = Math.floor(lengthVocabTable / 200) * 200;
   const { data: rangeResults } = await supabase
