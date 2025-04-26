@@ -64,6 +64,7 @@ export function handleGetListContent() {
   if (!schedule) return;
   listCount.set(0);
   isAutoPlay.set(false);
+  listContent.set([]);
   const index = schedule.index;
   if (page.url.pathname === "/vocab") {
     handleGetListContentVocab(index);
@@ -157,10 +158,6 @@ const endAutoplay = async () => {
   listCount.set(0);
   renderWord.set(undefined);
   await updateTodayScheduleLocal();
-  // const currentScheduleValue = get(currentSchedule);
-  // if (currentScheduleValue && currentScheduleValue.count < 9) {
-  //   showTimer.set(true);
-  // }
 };
 
 export const handleAutoplay = () => {

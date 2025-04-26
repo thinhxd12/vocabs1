@@ -69,19 +69,19 @@
     if (data) navWeatherData = data;
   }
 
-  onMount(() => {
-    getNavWeatherData();
-    interval = setInterval(
-      () => {
-        getNavWeatherData();
-      },
-      1000 * 15 * 60
-    );
-  });
+  // onMount(() => {
+  //   getNavWeatherData();
+  //   interval = setInterval(
+  //     () => {
+  //       getNavWeatherData();
+  //     },
+  //     1000 * 15 * 60
+  //   );
+  // });
 
-  onDestroy(() => {
-    clearInterval(interval);
-  });
+  // onDestroy(() => {
+  //   clearInterval(interval);
+  // });
 </script>
 
 <nav class="w-content h-[42px] flex z-20">

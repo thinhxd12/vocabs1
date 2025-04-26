@@ -362,9 +362,7 @@
       </div>
       {#if bookmark && bookmark.like}
         <button
-          class="ribbon {isReset
-            ? 'text-white/80'
-            : 'text-white shadow-md shadow-black/30'}"
+          class="ribbon {isReset ? 'text-white/80' : 'text-white'}"
           onclick={handleCheckBookmark}
         >
           {bookmark?.like}
@@ -719,7 +717,7 @@
     line-height: 28px;
     padding: 50px 45px;
     overflow: hidden;
-    text-align: justify;
+    text-align: left;
   }
 
   .cover-front .book-content::first-letter {
@@ -745,7 +743,7 @@
 
   .ribbon {
     width: 40px;
-    height: 72px;
+    height: 90px;
     position: absolute;
     padding-top: 6px;
     top: -6px;
@@ -754,7 +752,7 @@
     border-top-left-radius: 3px;
     background: #f8463f;
     font-family: "Rubik", sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 18px;
     user-select: none;
     background: linear-gradient(
@@ -764,6 +762,11 @@
       rgba(164, 5, 2, 1) 40%,
       rgb(229, 10, 0) 100%
     );
+    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.45);
+  }
+
+  .ribbon:active {
+    box-shadow: none;
   }
   .ribbon:before {
     height: 0;
@@ -782,7 +785,7 @@
   .ribbon:after {
     height: 0;
     width: 0;
-    top: 72px;
+    top: 90px;
     left: 0;
     border-left: 20px solid #e50a00;
     border-right: 20px solid #e50a00;
