@@ -18,10 +18,11 @@
   import type { TomorrowWeatherCurrentType } from "$lib/types";
   import { format } from "date-fns";
   import { getCurrentWeatherTomorrowData } from "$lib/functions";
-  import { onDestroy, onMount } from "svelte";
   import Icon from "@iconify/svelte";
+  import { onDestroy, onMount } from "svelte";
   import { innerWidth } from "svelte/reactivity/window";
   import { showLayout } from "$lib/store/layoutstore";
+  import { dev } from "$app/environment";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   type WeatherDataType = {
@@ -69,19 +70,20 @@
     if (data) navWeatherData = data;
   }
 
-  // onMount(() => {
-  //   getNavWeatherData();
-  //   interval = setInterval(
-  //     () => {
-  //       getNavWeatherData();
-  //     },
-  //     1000 * 15 * 60
-  //   );
-  // });
-
-  // onDestroy(() => {
-  //   clearInterval(interval);
-  // });
+  if (!dev) {
+    onMount(() => {
+      getNavWeatherData();
+      interval = setInterval(
+        () => {
+          getNavWeatherData();
+        },
+        1000 * 15 * 60
+      );
+    });
+    onDestroy(() => {
+      clearInterval(interval);
+    });
+  }
 </script>
 
 <nav class="w-content h-[42px] flex z-20">

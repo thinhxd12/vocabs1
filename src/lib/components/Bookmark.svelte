@@ -185,19 +185,50 @@
     showDelete = !showDelete;
   }
 
-  function splitIntoBlocks(text: string, firstLen = 600, maxLen = 600) {
+  function getWidth(
+    pText: string,
+    pFontFam: string,
+    pFontSize: number,
+    pFontHeight: number
+  ) {
+    let lDiv = document.createElement("div");
+    document.body.appendChild(lDiv);
+
+    lDiv.style.fontSize = "" + pFontSize + "px";
+    lDiv.style.lineHeight = "" + pFontHeight + "px";
+    lDiv.style.fontFamily = pFontFam;
+    lDiv.style.position = "absolute";
+    lDiv.style.left = "-1000";
+    lDiv.style.top = "-1000";
+    lDiv.style.textWrap = "nowrap";
+
+    lDiv.innerHTML = pText;
+    const width = lDiv.clientWidth;
+    document.body.removeChild(lDiv);
+
+    return width;
+  }
+
+  function splitIntoBlocks(
+    text: string,
+    firstHeight: number,
+    otherHeight: number
+  ) {
     const words = text.split(" ");
-    let currentLen = firstLen;
+    let currentLen = firstHeight;
 
     const result = words.reduce(
       (blocks, word) => {
         const last = blocks[blocks.length - 1];
 
-        if ((last + " " + word).length <= currentLen) {
+        if (
+          getWidth(last + " " + word, "GaramondPro, sans-serif", 18, 28) <
+          currentLen
+        ) {
           blocks[blocks.length - 1] = (last + " " + word).trim();
         } else {
           blocks.push(word);
-          currentLen = maxLen;
+          currentLen = otherHeight;
         }
 
         return blocks;
@@ -213,7 +244,7 @@
   let flipPages = $state<PageContent[]>([]);
 
   function setBookContent(content: string) {
-    pages = splitIntoBlocks(content, 550, 630);
+    pages = splitIntoBlocks(content, 3800, 4250);
     let result: PageContent[] = [];
     const middle = pages.slice(1, -1);
     for (let i = 0; i < middle.length; i += 2) {
@@ -340,82 +371,91 @@
       </button>
     </div>
   </div>
-  <div class="flex-1 h-full flex justify-center items-center">
-    <div class="book">
-      <div class="cover-front">
-        {#if isLoading}
-          <img
-            src="/gif/whisperoftheheart.gif"
-            alt="loading"
-            width={300}
-            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          />
-        {:else}
-          <p class="book-content">{pages[0]}</p>
+
+  {#if bookmark}
+    <div class="flex-1 h-full flex justify-center items-center">
+      <div class="book">
+        <div class="cover-front">
+          {#if isLoading}
+            <img
+              src="/gif/whisperoftheheart.gif"
+              alt="loading"
+              width={300}
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            />
+          {:else}
+            <p class="book-content">{pages[0]}</p>
+            <button
+              onclick={handleGetPrevBookmark}
+              class="btn-prev"
+              aria-label="left"
+            >
+            </button>
+          {/if}
+        </div>
+        {#if bookmark.like}
           <button
-            onclick={handleGetPrevBookmark}
-            class="btn-prev"
-            aria-label="left"
+            class="ribbon {isReset ? 'text-white/80' : 'text-white'}"
+            onclick={handleCheckBookmark}
           >
+            {bookmark?.like}
           </button>
+        {:else}
+          <button
+            class="ribbon-zero"
+            onclick={handleCheckBookmark}
+            aria-label="zero"
+          ></button>
+        {/if}
+
+        {#if isLoading}
+          <div class="flip-book"><div class="cover-back"></div></div>
+        {:else}
+          <div class="flip-book">
+            {#each flipPages as page, i}
+              <button
+                class="flip"
+                class:flipped={page.flipped}
+                style="z-index: {i == currentPage
+                  ? 999
+                  : page.flipped
+                    ? i + 1
+                    : flipPages.length - i};"
+                onclick={() => {
+                  currentPage = i;
+                  flipPages[i].flipped = !flipPages[i].flipped;
+                  setTimeout(() => {
+                    currentPage = 999;
+                  }, 300);
+                }}
+              >
+                <div class="front">
+                  <p class="book-content">{page.front}</p>
+                  <div class="page-fold-right" aria-label="right"></div>
+                </div>
+                <div class="back">
+                  <p class="book-content">{page.back}</p>
+                  <div class="page-fold-left" aria-label="left"></div>
+                </div>
+              </button>
+            {/each}
+
+            <div class="cover-back">
+              <p class="book-content">
+                {pages[pages.length - 1]}
+              </p>
+              <button
+                onclick={handleGetNextBookmark}
+                class="btn-next"
+                aria-label="right"
+              >
+              </button>
+            </div>
+          </div>
         {/if}
       </div>
-      {#if bookmark && bookmark.like}
-        <button
-          class="ribbon {isReset ? 'text-white/80' : 'text-white'}"
-          onclick={handleCheckBookmark}
-        >
-          {bookmark?.like}
-        </button>
-      {/if}
-
-      {#if isLoading}
-        <div class="flip-book"><div class="cover-back"></div></div>
-      {:else}
-        <div class="flip-book">
-          {#each flipPages as page, i}
-            <button
-              class="flip"
-              class:flipped={page.flipped}
-              style="z-index: {i == currentPage
-                ? 999
-                : page.flipped
-                  ? i + 1
-                  : flipPages.length - i};"
-              onclick={() => {
-                currentPage = i;
-                flipPages[i].flipped = !flipPages[i].flipped;
-                setTimeout(() => {
-                  currentPage = 999;
-                }, 300);
-              }}
-            >
-              <div class="front">
-                <p class="book-content">{page.front}</p>
-                <div class="page-fold-right" aria-label="right"></div>
-              </div>
-              <div class="back">
-                <p class="book-content">{page.back}</p>
-                <div class="page-fold-left" aria-label="left"></div>
-              </div>
-            </button>
-          {/each}
-
-          <div class="cover-back">
-            <p class="book-content">
-              {pages[pages.length - 1]}
-            </p>
-            <button
-              onclick={handleGetNextBookmark}
-              class="btn-next"
-              aria-label="right"
-            >
-            </button>
-          </div>
-        </div>
-      {/if}
     </div>
-  </div>
+  {/if}
 
   {#if showEdit}
     <div
@@ -540,11 +580,12 @@
 <style>
   .book {
     display: flex;
-    background-color: rgb(213 213 213);
-    padding: 1px 5px 0;
-    box-shadow: 0 30px 18px rgba(0, 0, 0, 0.3);
+    padding: 1px 6px 0;
+    box-shadow: 0 30px 21px rgba(0, 0, 0, 0.6);
     border-radius: 2px;
     position: relative;
+    background-image: url("/images/paper.webp");
+    background-size: cover;
   }
 
   .cover-front {
@@ -553,10 +594,12 @@
     height: 550px;
     background-color: #f5f5f5;
     background-image: linear-gradient(
-      90deg,
-      #e3e3e3 0%,
-      rgba(247, 247, 247, 0) 18%
-    );
+        90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 18%
+      ),
+      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
     cursor: pointer;
     border-right: 1px solid rgba(204, 204, 204, 0.7);
   }
@@ -569,10 +612,12 @@
     left: 0;
     background-color: #f5f5f5;
     background-image: linear-gradient(
-      -90deg,
-      #e3e3e3 0%,
-      rgba(247, 247, 247, 0) 18%
-    );
+        -90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 18%
+      ),
+      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
     cursor: pointer;
   }
   .flip-book {
@@ -610,10 +655,12 @@
     box-sizing: border-box;
     background-color: #f5f5f5;
     background-image: linear-gradient(
-      -90deg,
-      #e3e3e3 0%,
-      rgba(247, 247, 247, 0) 18%
-    );
+        -90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 18%
+      ),
+      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
   }
   .back {
     position: absolute;
@@ -626,10 +673,12 @@
     backface-visibility: hidden;
     background-color: #f5f5f5;
     background-image: linear-gradient(
-      90deg,
-      #e3e3e3 0%,
-      rgba(247, 247, 247, 0) 18%
-    );
+        90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 18%
+      ),
+      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
   }
 
   .page-fold-right {
@@ -641,8 +690,8 @@
     z-index: 999;
     background-image: linear-gradient(
       45deg,
-      #fefefe 0%,
-      #f2f2f2 49%,
+      #f7f7f7 0%,
+      rgba(247, 247, 247, 0.3) 49%,
       transparent 50%,
       transparent 100%
     );
@@ -665,9 +714,9 @@
     background-image: linear-gradient(
       135deg,
       transparent 0%,
-      transparent 50%,
-      #f2f2f2 51%,
-      #fefefe 100%
+      transparent 49%,
+      #f7f7f7 50%,
+      rgba(222, 222, 222, 0.7) 100%
     );
     z-index: 999;
     border-right-width: 1px;
@@ -741,19 +790,42 @@
       rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   }
 
+  .ribbon-zero {
+    width: 40px;
+    height: 6px;
+    position: absolute;
+    top: -6px;
+    left: 336px;
+    border-top-left-radius: 3px;
+    user-select: none;
+    background: rgb(169, 9, 9);
+  }
+
+  .ribbon-zero:before {
+    height: 0;
+    width: 0;
+    right: -4px;
+    top: 0.1px;
+    border-bottom: 6px solid #c02031;
+    border-right: 4px solid transparent;
+  }
+  .ribbon-zero:before {
+    content: "";
+    position: absolute;
+  }
+
   .ribbon {
     width: 40px;
     height: 90px;
     position: absolute;
     padding-top: 6px;
     top: -6px;
-    left: 339px;
+    left: 336px;
     text-align: center;
     border-top-left-radius: 3px;
-    background: #f8463f;
-    font-family: "Rubik", sans-serif;
-    font-size: 15px;
-    line-height: 18px;
+    font-family: "GaramondPro", sans-serif;
+    font-size: 25px;
+    line-height: 30px;
     user-select: none;
     background: linear-gradient(
       180deg,
@@ -763,6 +835,7 @@
       rgb(229, 10, 0) 100%
     );
     box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.45);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 
   .ribbon:active {
