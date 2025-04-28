@@ -42,6 +42,8 @@ export const actions = {
     const formData = await request.formData();
     const count0 = formData.get("count0") as string;
     const count1 = formData.get("count1") as string;
+    const date0 = formData.get("date0") as string;
+    const date1 = formData.get("date1") as string;
     const id0 = formData.get("id0") as string;
     const id1 = formData.get("id1") as string;
 
@@ -54,12 +56,12 @@ export const actions = {
     try {
       await supabase
         .from("schedule_table")
-        .update({ count: Number(count0) })
+        .update({ date: date0 ? new Date(date0) : null, count: Number(count0) })
         .eq("id", id0);
 
       await supabase
         .from("schedule_table")
-        .update({ count: Number(count1) })
+        .update({ date: date1 ? new Date(date1) : null, count: Number(count1) })
         .eq("id", id1);
     } catch (error) {
       return fail(422, { error: "Update error" });

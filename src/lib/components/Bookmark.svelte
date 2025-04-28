@@ -611,7 +611,7 @@
   }
 
   .cover-front {
-    width: 375px;
+    width: 376px;
     height: 550px;
     position: relative;
     background-color: #f5f5f5;
@@ -623,6 +623,7 @@
       linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
     cursor: default;
+    border-right: 1px solid rgba(204, 204, 204, 0.7);
   }
 
   .cover-back {

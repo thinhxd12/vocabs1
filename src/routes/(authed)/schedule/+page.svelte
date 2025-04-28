@@ -160,7 +160,7 @@
       >
         <div class="flex items-center justify-between bg-black">
           <p class="text-12 font-rubik text-white leading-21 pl-6">
-            Set current task
+            Set today task
           </p>
           <button
             onclick={() => (showReset = !showReset)}
@@ -179,7 +179,7 @@
             name="editprogress"
             action="?/setProgress"
             method="post"
-            class="w-full flex items-center justify-between gap-3 p-6"
+            class="w-full grid grid-cols-3 grid-rows-3 gap-3 p-3"
             use:enhance={({ formElement, formData, action, cancel }) => {
               return async ({ result }) => {
                 if (result.type === "failure") {
@@ -196,18 +196,40 @@
             }}
           >
             <input
+              hidden
+              name="id0"
+              autocomplete="off"
+              value={$todaySchedule.start.id}
+            />
+            <input
+              hidden
+              name="id1"
+              autocomplete="off"
+              value={$todaySchedule.end.id}
+            />
+
+            <input
+              name="date0"
+              autocomplete="off"
+              type="date"
+              bind:value={$todaySchedule.start.date}
+              class="form-date"
+            />
+            <input
               name="count0"
               autocomplete="off"
               type="number"
               min="0"
               bind:value={$todaySchedule.start.count}
-              class="text-13 font-rubik leading-15 pt-3 h-25 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
+              class="form-number"
             />
+
             <input
-              hidden
-              name="id0"
+              name="date1"
               autocomplete="off"
-              value={$todaySchedule.start.id}
+              type="date"
+              bind:value={$todaySchedule.end.date}
+              class="form-date"
             />
 
             <input
@@ -216,23 +238,21 @@
               type="number"
               min="0"
               bind:value={$todaySchedule.end.count}
-              class="text-13 font-rubik leading-15 pt-3 h-25 pl-6 max-w-[90px] rounded-3 bg-transparent text-center border border-black/15 focus:border-black/30 outline-none"
-            />
-            <input
-              hidden
-              name="id1"
-              autocomplete="off"
-              value={$todaySchedule.end.id}
+              class="form-number"
             />
             <button
-              type="submit"
-              class="size-25 hover:bg-black/20 flex justify-center items-center rounded-3"
+              type="button"
+              class="text-12 font-rubik hover:bg-black/20 rounded-3 px-4"
+              onclick={() => (showReset = !showReset)}
             >
-              <Icon
-                icon="solar:alt-arrow-right-linear"
-                width="15"
-                height="15"
-              />
+              Cancle
+            </button>
+
+            <button
+              type="submit"
+              class="text-12 font-rubik hover:bg-black/20 rounded-3 px-4"
+            >
+              Submit
             </button>
           </form>
         {/if}
@@ -389,5 +409,13 @@
 <style>
   .page-button.active {
     @apply bg-green-400/30 rounded-full text-white;
+  }
+
+  .form-date {
+    @apply col-span-2 text-12 font-rubik leading-12 p-2 pl-6 w-full rounded-3 bg-transparent border border-black/15 focus:border-black/30 outline-none;
+  }
+
+  .form-number {
+    @apply text-center text-12 font-rubik leading-12 p-2 pl-6 w-full rounded-3 bg-transparent border border-black/15 focus:border-black/30 outline-none;
   }
 </style>
