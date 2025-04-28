@@ -8,6 +8,7 @@
   import { fly } from "svelte/transition";
   import StarRating from "./StarRating.svelte";
   import { page } from "$app/state";
+  import { showBookmark } from "$lib/store/layoutstore";
 
   type PageContent = {
     flipped: boolean;
@@ -187,26 +188,23 @@
 
   function getWidth(
     pText: string,
-    pFontFam: string,
-    pFontSize: number,
-    pFontHeight: number
+    pFont: string,
+    pSize: number,
+    pLine: number,
+    pWidth: number
   ) {
     let lDiv = document.createElement("div");
     document.body.appendChild(lDiv);
 
-    lDiv.style.fontSize = "" + pFontSize + "px";
-    lDiv.style.lineHeight = "" + pFontHeight + "px";
-    lDiv.style.fontFamily = pFontFam;
-    lDiv.style.position = "absolute";
-    lDiv.style.left = "-1000";
-    lDiv.style.top = "-1000";
-    lDiv.style.textWrap = "nowrap";
-
     lDiv.innerHTML = pText;
-    const width = lDiv.clientWidth;
-    document.body.removeChild(lDiv);
+    lDiv.style.fontFamily = pFont;
+    lDiv.style.fontSize = "" + pSize + "px";
+    lDiv.style.lineHeight = "" + pLine + "px";
+    lDiv.style.width = "" + pWidth + "px";
 
-    return width;
+    const height = lDiv.clientHeight;
+    document.body.removeChild(lDiv);
+    return height;
   }
 
   function splitIntoBlocks(
@@ -218,20 +216,19 @@
     let currentLen = firstHeight;
 
     const result = words.reduce(
-      (blocks, word) => {
-        const last = blocks[blocks.length - 1];
-
+      (acc, curr) => {
+        const last = acc[acc.length - 1];
         if (
-          getWidth(last + " " + word, "GaramondPro, sans-serif", 18, 28) <
+          getWidth(last + " " + curr, "GaramondPro, sans-serif", 18, 28, 285) <
           currentLen
         ) {
-          blocks[blocks.length - 1] = (last + " " + word).trim();
+          acc[acc.length - 1] = (last + " " + curr).trim();
         } else {
-          blocks.push(word);
+          acc.push(curr);
           currentLen = otherHeight;
         }
 
-        return blocks;
+        return acc;
       },
       [""]
     );
@@ -244,7 +241,7 @@
   let flipPages = $state<PageContent[]>([]);
 
   function setBookContent(content: string) {
-    pages = splitIntoBlocks(content, 3800, 4250);
+    pages = splitIntoBlocks(content, 420, 450);
     let result: PageContent[] = [];
     const middle = pages.slice(1, -1);
     for (let i = 0; i < middle.length; i += 2) {
@@ -258,94 +255,99 @@
   }
 </script>
 
+<svelte:head>
+  <title>
+    {bookmark ? `${bookmark.bookTile}` : "Bookmark"}
+  </title>
+  <meta name="bookmark" content="Some bookmark" />
+</svelte:head>
+
 <div class="flex items-center justify-between flex-1 h-full relative">
   <div
     class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/70 via-70% to-black/15 border-r border-black/10 shadow-lg shadow-black/30"
   >
     <div class="flex flex-col items-center">
       {#if bookmark}
-        <p
-          class="text-white text-14 leading-18 font-500 text-left w-[240px] pl-6 mt-3"
-        >
-          {format(new Date(bookmark.dateOfCreation), "cccc p")}
-        </p>
-        <p
-          class="text-white text-12 leading-18 font-500 text-left w-[240px] pl-6"
-        >
-          {format(new Date(bookmark.dateOfCreation), "do MMMM yyyy")}
-        </p>
-      {/if}
-      {#if bookInfo && bookInfo.coverImage}
-        <img
-          src={bookInfo.coverImage}
-          alt="book-cover"
-          class="mb-9 mt-[40px] shadow-lg shadow-black/60"
-          width="120"
-        />
-      {/if}
-
-      {#if bookmark}
-        <div class="w-[120px] flex justify-end items-center mb-9">
-          <button
-            class="size-15 flex items-center justify-center {isReset
-              ? 'text-white/40'
-              : 'text-[#f8463f]'} hover:text-[#f8463f] transition-all"
-            onclick={handleCheckBookmark}
-          >
-            <Icon icon="solar:heart-bold" width="15" height="15" />
-          </button>
-          <span
-            class="text-10 leading-15 font-500 mx-3 text-white/40 select-none"
-          >
-            {bookmark.like}
+        <div class="grid grid-cols-2 gap-3 w-full px-3 py-6">
+          <span class="text-white text-12 leading-18 font-500 text-left">
+            {format(new Date(bookmark.dateOfCreation), "p cccc")}
           </span>
+          <span class="text-white text-12 leading-18 font-500 text-right">
+            {format(new Date(bookmark.dateOfCreation), "do MMMM yyyy")}
+          </span>
+        </div>
+      {/if}
+      {#if bookInfo}
+        {#if bookInfo.coverImage}
+          <img
+            src={bookInfo.coverImage}
+            alt="book-cover"
+            class="mb-9 mt-[40px] shadow-lg shadow-black/60"
+            width="120"
+          />
 
-          {#if bookInfo && bookInfo.numberOfRatings}
-            <Icon
-              icon="solar:eye-bold"
-              width="15"
-              height="15"
-              class="text-white/40 ml-6"
-            />
+          <div class="w-[120px] flex justify-end items-center mb-9">
+            <button
+              class="size-15 flex items-center justify-center {isReset
+                ? 'text-white/40'
+                : 'text-[#a90909]'} hover:text-[#a90909] transition-all"
+              onclick={handleCheckBookmark}
+            >
+              <Icon icon="solar:heart-bold" width="15" height="15" />
+            </button>
             <span
               class="text-10 leading-15 font-500 mx-3 text-white/40 select-none"
             >
-              {Number(bookInfo.numberOfRatings).toLocaleString()}
+              {bookmark?.like}
             </span>
-          {/if}
-        </div>
-      {/if}
 
-      {#if bookInfo && bookInfo.title}
-        <p class="mb-3 text-14 text-white font-500 leading-18 text-center">
-          {bookInfo.title}
-        </p>
-      {/if}
+            {#if bookInfo && bookInfo.numberOfRatings}
+              <Icon
+                icon="solar:eye-bold"
+                width="15"
+                height="15"
+                class="text-white/40 ml-6"
+              />
+              <span
+                class="text-10 leading-15 font-500 mx-3 text-white/40 select-none"
+              >
+                {Number(bookInfo.numberOfRatings).toLocaleString()}
+              </span>
+            {/if}
+          </div>
+        {/if}
 
-      {#if bookInfo && bookInfo.authors}
-        <p class="mb-3 text-12 leading-18 text-white/70 text-center font-500">
-          {bookInfo.authors.join(", ")}
-        </p>
-      {/if}
+        {#if bookInfo.title}
+          <p class="mb-3 text-14 text-white font-500 leading-18 text-center">
+            {bookInfo.title}
+          </p>
+        {/if}
 
-      {#if bookInfo && bookInfo.publishedYear}
-        <p class="mb-3 text-11 leading-18 text-white/60 text-center">
-          First published {bookInfo.publishedYear}
-        </p>
-      {/if}
-      {#if bookInfo && bookInfo.numberOfRatings}
-        <div class="mb-3 flex items-center justify-center pl-33">
-          <StarRating
-            rating={Number(bookInfo.averageRating)}
-            size={15}
-            gap={3}
-          />
-          <span
-            class="ml-3 w-30 text-center text-12 pt-3 leading-15 text-white/70"
-          >
-            {bookInfo.averageRating}
-          </span>
-        </div>
+        {#if bookInfo.authors}
+          <p class="mb-3 text-12 leading-18 text-white/70 text-center font-500">
+            {bookInfo.authors.join(", ")}
+          </p>
+        {/if}
+
+        {#if bookInfo.publishedYear}
+          <p class="mb-3 text-11 leading-18 text-white/60 text-center">
+            First published {bookInfo.publishedYear}
+          </p>
+        {/if}
+        {#if bookInfo.numberOfRatings}
+          <div class="mb-3 flex items-center justify-center pl-33">
+            <StarRating
+              rating={Number(bookInfo.averageRating)}
+              size={15}
+              gap={3}
+            />
+            <span
+              class="ml-3 w-30 text-center text-12 pt-3 leading-15 text-white/70"
+            >
+              ({bookInfo.averageRating})
+            </span>
+          </div>
+        {/if}
       {/if}
     </div>
 
@@ -368,6 +370,10 @@
 
       <button class="btn-menu" onclick={() => (showDelete = !showDelete)}>
         <Icon icon="solar:trash-bin-trash-outline" width="15" height="15" />
+      </button>
+
+      <button class="btn-menu" onclick={() => ($showBookmark = !$showBookmark)}>
+        <Icon icon="solar:pallete-2-linear" width="15" height="15" />
       </button>
     </div>
   </div>
@@ -460,7 +466,7 @@
   {#if showEdit}
     <div
       class="w-[calc(100%-240px)] h-full absolute left-[240px] top-0 z-40 backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/60 via-70% to-black/15"
-      transition:fly={{ x: "-100%", duration: 100 }}
+      transition:fly={{ y: "-100%", duration: 300 }}
     >
       {#if bookmark}
         <form
@@ -492,6 +498,25 @@
             rows="12"
             bind:value={bookmark.content}
           ></textarea>
+
+          <div class="relative rounded-3 overflow-hidden">
+            <div
+              class="absolute flex items-center justify-center inset-y-0 start-3 {bookmark.like
+                ? 'text-[#a90909]'
+                : ''}"
+            >
+              <Icon icon="solar:heart-bold" width="15" height="15" />
+            </div>
+            <input
+              class="block w-full py-3 outline-none pl-20 font-garamond text-18 leading-21 font-500"
+              name="like"
+              type="number"
+              min="0"
+              autocomplete="off"
+              onkeydown={(e) => e.stopPropagation()}
+              bind:value={bookmark.like}
+            />
+          </div>
           <div class="flex w-full items-center justify-center gap-24 mt-6">
             <button
               class="btn-form"
@@ -510,7 +535,7 @@
   {#if showInsert}
     <div
       class="w-[calc(100%-240px)] h-full absolute left-[240px] top-0 z-40 backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/60 via-70% to-black/15"
-      transition:fly={{ x: "-100%", duration: 100 }}
+      transition:fly={{ y: "-100%", duration: 300 }}
     >
       <form
         name="insertbookmark"
@@ -590,7 +615,7 @@
 
   .cover-front {
     position: relative;
-    width: 375px;
+    width: 376px;
     height: 550px;
     background-color: #f5f5f5;
     background-image: linear-gradient(
@@ -600,7 +625,7 @@
       ),
       linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
-    cursor: pointer;
+    cursor: default;
     border-right: 1px solid rgba(204, 204, 204, 0.7);
   }
 
@@ -618,14 +643,16 @@
       ),
       linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
-    cursor: pointer;
+    cursor: default;
   }
+
   .flip-book {
     width: 375px;
     height: 550px;
     position: relative;
     perspective: 2000px;
   }
+
   .flip {
     width: 100%;
     height: 100%;
@@ -695,13 +722,9 @@
       transparent 50%,
       transparent 100%
     );
-    border-left-width: 1px;
-    border-left-color: #dddddd;
-    border-left-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: #dddddd;
-    border-bottom-style: solid;
-    box-shadow: -5px 5px 10px #dddddd;
+    border-left: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    box-shadow: -3px 3px 9px rgba(0, 0, 0, 0.45);
     transition: all 0.15s ease-out;
   }
 
@@ -715,28 +738,24 @@
       135deg,
       transparent 0%,
       transparent 49%,
-      #f7f7f7 50%,
-      rgba(222, 222, 222, 0.7) 100%
+      #e9e8e8 50%,
+      #dadada 100%
     );
     z-index: 999;
-    border-right-width: 1px;
-    border-right-color: #dddddd;
-    border-right-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: #dddddd;
-    border-bottom-style: solid;
-    box-shadow: 5px 5px 10px #dddddd;
+    border-right: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.45);
     transition: all 0.15s ease-out;
   }
 
   .front:hover .page-fold-right {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
   }
 
   .back:hover .page-fold-left {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
   }
 
   .btn-prev {
@@ -746,6 +765,7 @@
     top: 0;
     left: 0;
     z-index: 0;
+    cursor: pointer;
   }
 
   .btn-next {
@@ -755,6 +775,7 @@
     top: 0;
     right: 0;
     z-index: 0;
+    cursor: pointer;
   }
 
   .book-content {
@@ -798,7 +819,7 @@
     left: 336px;
     border-top-left-radius: 3px;
     user-select: none;
-    background: rgb(169, 9, 9);
+    background: #a90909;
   }
 
   .ribbon-zero:before {
@@ -836,6 +857,7 @@
     );
     box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.45);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 12;
   }
 
   .ribbon:active {

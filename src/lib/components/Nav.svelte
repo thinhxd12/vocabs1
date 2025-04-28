@@ -21,7 +21,7 @@
   import Icon from "@iconify/svelte";
   import { onDestroy, onMount } from "svelte";
   import { innerWidth } from "svelte/reactivity/window";
-  import { showLayout } from "$lib/store/layoutstore";
+  import { showBookmark, showLayout } from "$lib/store/layoutstore";
   import { dev } from "$app/environment";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -107,9 +107,9 @@
     </div>
 
     <div class="w-full h-14 flex items-center justify-center layout-white">
-      <span class="transform -rotate-90 origin-center text-8 font-500"
-        >{format(todayDate, "eeeeee")}</span
-      >
+      <span class="transform -rotate-90 origin-center text-8 font-600">
+        {format(todayDate, "eeeeee")}
+      </span>
     </div>
   </div>
   <div
@@ -137,8 +137,31 @@
       class="btn-nav"
       class:active={page.url.pathname === "/quiz"}
     >
-      <Icon icon="solar:file-check-linear" width="15" height="15" />
+      <Icon icon="solar:bill-check-linear" width="15" height="15" />
     </a>
+
+    {#if innerWidth.current && innerWidth.current > 1500}
+      {#if $showLayout}
+        <button
+          class="btn-nav"
+          class:active={$showLayout}
+          onclick={() => ($showLayout = !$showLayout)}
+        >
+          <Icon icon="solar:undo-left-square-linear" width="15" height="15" />
+        </button>
+      {:else}
+        <button
+          class="btn-nav"
+          class:active={$showLayout}
+          onclick={() => {
+            $showBookmark = true;
+            $showLayout = true;
+          }}
+        >
+          <Icon icon="solar:notebook-linear" width="15" height="15" />
+        </button>
+      {/if}
+    {/if}
   </div>
 
   <div
@@ -231,7 +254,7 @@
 
 <style>
   .btn-nav {
-    @apply outline-none size-27 mx-3 flex items-center justify-center text-black/50 hover:text-black transition duration-300;
+    @apply outline-none size-27 mx-3 flex items-center justify-center text-black/30 hover:text-black transition duration-300;
   }
 
   .btn-nav.active {

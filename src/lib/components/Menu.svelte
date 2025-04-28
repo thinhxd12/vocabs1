@@ -1,9 +1,5 @@
 <script lang="ts">
-  import {
-    handleChangeLayoutImage,
-    showBookmark,
-    showLayout,
-  } from "$lib/store/layoutstore";
+  import { handleChangeLayoutImage } from "$lib/store/layoutstore";
   import { showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import {
@@ -12,7 +8,6 @@
     todaySchedule,
     showTimer,
   } from "$lib/store/navstore";
-  import { innerWidth } from "svelte/reactivity/window";
 
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
@@ -23,7 +18,11 @@
 <div class="flex flex-col items-center justify-center w-30">
   <form method="post" action="/login?/signout">
     <button class="btn-menu layout-white">
-      <Icon icon="solar:exit-outline" width="15" height="15" />
+      <Icon
+        icon="solar:lock-password-unlocked-outline"
+        width="15"
+        height="15"
+      />
     </button>
   </form>
 
@@ -53,42 +52,12 @@
     {/if}
   </button>
 
-  {#if $showLayout}
-    <button
-      class="btn-menu layout-white"
-      onclick={() => ($showBookmark = !$showBookmark)}
-    >
-      {#if $showBookmark}
-        <Icon icon="solar:pallete-2-linear" width="15" height="15" />
-      {:else}
-        <Icon icon="solar:bookmark-linear" width="15" height="15" />
-      {/if}
-    </button>
-  {/if}
-
-  {#if innerWidth.current && innerWidth.current > 450}
-    <button
-      class="btn-menu layout-white"
-      onclick={() => ($showLayout = !$showLayout)}
-    >
-      {#if $showLayout}
-        <Icon
-          icon="solar:sidebar-minimalistic-outline"
-          width="15"
-          height="15"
-        />
-      {:else}
-        <Icon icon="solar:siderbar-outline" width="15" height="15" />
-      {/if}
-    </button>
-  {/if}
-
   <button class="btn-menu layout-white" onclick={() => ($showTranslate = true)}>
     <Icon icon="ph:translate" width="15" height="15" />
   </button>
 
   <button class="btn-menu layout-white" onclick={handleChangeLayoutImage}>
-    <Icon icon="solar:gallery-broken" width="15" height="15" />
+    <Icon icon="solar:gallery-linear" width="15" height="15" />
   </button>
 
   <button

@@ -100,13 +100,14 @@ export const actions = {
     const formData = await request.formData();
     const id = formData.get("id") as string;
     const content = formData.get("content") as string;
+    const like = formData.get("like") as string;
 
     if (id.length === 0 || content.length === 0)
       return fail(422, { error: "Invalid data" });
 
     const { error } = await supabase
       .from("bookmark_table")
-      .update({ content: content })
+      .update({ content: content, like: Number(like) })
       .eq("id", id);
 
     if (error) {

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { URL_IMAGE_MAIN_PAGE } from "$lib/constants";
+  import { showBookmark } from "$lib/store/layoutstore";
   import type { LayoutImageType } from "$lib/types";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
@@ -20,11 +21,7 @@
 </script>
 
 <svelte:head>
-  <title
-    >{imageData
-      ? `${imageData.title} by ${imageData.author}`
-      : "Daily Art"}</title
-  >
+  <title>{imageData ? `${imageData.title}` : "Daily Art"}</title>
   <meta name="art" content="Some painting" />
 </svelte:head>
 
@@ -93,7 +90,14 @@
         class="btn-menu absolute bottom-6 right-0 z-10"
         onclick={() => getImageData(imageData!.nextImageUrl)}
       >
-        <Icon icon="solar:skip-next-linear" width="13" height="13" />
+        <Icon icon="solar:skip-next-linear" width="15" height="15" />
+      </button>
+
+      <button
+        class="btn-menu absolute bottom-6 left-[240px] z-10"
+        onclick={() => ($showBookmark = !$showBookmark)}
+      >
+        <Icon icon="solar:notebook-linear" width="15" height="15" />
       </button>
     {/if}
   </div>
@@ -101,7 +105,7 @@
 
 <style>
   .btn-menu {
-    @apply mr-6 flex size-27 items-center justify-center rounded-full text-white shadow shadow-black/30 outline-none backdrop-blur-md transition duration-150;
+    @apply mx-6 flex size-27 items-center justify-center rounded-full text-white outline-none backdrop-blur-md transition duration-150;
   }
 
   .btn-menu:active :global svg {

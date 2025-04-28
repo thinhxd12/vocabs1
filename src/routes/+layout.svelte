@@ -1,7 +1,16 @@
 <script lang="ts">
   import "../app.css";
-  import { layoutImage, showLayout } from "$lib/store/layoutstore";
+  import {
+    handleChangeLayoutImage,
+    layoutImage,
+    showLayout,
+  } from "$lib/store/layoutstore";
+  import { onMount } from "svelte";
   let { children } = $props();
+
+  onMount(() => {
+    handleChangeLayoutImage();
+  });
 </script>
 
 <main class="h-screen w-screen relative bg-cover overflow-hidden">
