@@ -19,11 +19,7 @@
   let bookmark = $state<DBSelect["bookmark_table"] | undefined>(undefined);
   let bookInfo = $state<BookSearchType | undefined>(undefined);
   let isReset = $state<boolean>(false);
-  let isLoading = $state<boolean>(false);
-
-  onMount(() => {
-    handleGetCurrentBookmark();
-  });
+  let promise = $state(handleGetCurrentBookmark());
 
   async function handleGetCurrentId() {
     const { data } = await page.data.supabase
@@ -35,7 +31,6 @@
 
   async function handleGetCurrentBookmark() {
     isReset = false;
-    isLoading = true;
     const idData = await handleGetCurrentId();
     if (!idData) return;
     const { data } = await page.data.supabase
@@ -45,7 +40,6 @@
       .limit(1);
     if (data && data.length) {
       isReset = true;
-      isLoading = false;
       bookmark = data[0];
       handleGetBookInfo(data[0]);
       setBookContent(data[0].content);
@@ -54,7 +48,6 @@
 
   async function handleGetNextBookmark() {
     isReset = false;
-    isLoading = true;
     if (!bookmark) return;
     const { data } = await page.data.supabase
       .from("bookmark_table")
@@ -78,7 +71,6 @@
 
   async function handleGetPrevBookmark() {
     isReset = false;
-    isLoading = true;
     if (!bookmark) return;
     const { data } = await page.data.supabase
       .from("bookmark_table")
@@ -86,6 +78,7 @@
       .order("id", { ascending: false })
       .lt("id", bookmark.id)
       .limit(1);
+
     if (data && data.length) {
       handleSetBookmark(data[0]);
     } else {
@@ -107,7 +100,6 @@
       .eq("id", 1);
 
     isReset = true;
-    isLoading = false;
     if (data.bookTile !== bookmark?.bookTile) {
       handleGetBookInfo(data);
     }
@@ -201,6 +193,9 @@
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine + "px";
     lDiv.style.width = "" + pWidth + "px";
+    lDiv.style.padding = "0";
+    lDiv.style.margin = "0";
+    lDiv.style.boxSizing = "border-box";
 
     const height = lDiv.clientHeight;
     document.body.removeChild(lDiv);
@@ -356,7 +351,7 @@
         <Icon icon="solar:copy-outline" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={getRandomBookmark}>
+      <button class="btn-menu" onclick={() => (promise = getRandomBookmark())}>
         <Icon icon="solar:refresh-outline" width="15" height="15" />
       </button>
 
@@ -378,90 +373,92 @@
     </div>
   </div>
 
-  {#if bookmark}
-    <div class="flex-1 h-full flex justify-center items-center">
-      <div class="book">
-        <div class="cover-front">
-          {#if isLoading}
-            <img
-              src="/gif/whisperoftheheart.gif"
-              alt="loading"
-              width={300}
-              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-            />
-          {:else}
-            <p class="book-content">{pages[0]}</p>
+  <div class="flex-1 h-full flex justify-center items-center">
+    <div class="book">
+      <div class="cover-front">
+        {#await promise}
+          <img
+            src="/gif/whisperoftheheart.gif"
+            alt="loading"
+            width={300}
+            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          />
+        {:then data}
+          <p class="book-content">{pages[0]}</p>
+          <button
+            onclick={() => (promise = handleGetPrevBookmark())}
+            class="btn-prev"
+            aria-label="left"
+          >
+          </button>
+        {:catch error}
+          <p style="color: red">{error.message}</p>
+        {/await}
+      </div>
+
+      {#if bookmark && bookmark.like}
+        <button
+          class="ribbon {isReset ? 'text-white/80' : 'text-white'}"
+          onclick={handleCheckBookmark}
+        >
+          {bookmark?.like}
+        </button>
+      {:else}
+        <button
+          class="ribbon-zero"
+          onclick={handleCheckBookmark}
+          aria-label="zero"
+        ></button>
+      {/if}
+
+      <div class="flip-book">
+        {#await promise}
+          <div class="cover-back"></div>
+        {:then data}
+          {#each flipPages as page, i}
             <button
-              onclick={handleGetPrevBookmark}
-              class="btn-prev"
-              aria-label="left"
+              class="flip"
+              class:flipped={page.flipped}
+              style="z-index: {i == currentPage
+                ? 999
+                : page.flipped
+                  ? i + 1
+                  : flipPages.length - i};"
+              onclick={() => {
+                currentPage = i;
+                flipPages[i].flipped = !flipPages[i].flipped;
+                setTimeout(() => {
+                  currentPage = 999;
+                }, 300);
+              }}
+            >
+              <div class="front">
+                <p class="book-content">{page.front}</p>
+                <div class="page-fold-right" aria-label="right"></div>
+              </div>
+              <div class="back">
+                <p class="book-content">{page.back}</p>
+                <div class="page-fold-left" aria-label="left"></div>
+              </div>
+            </button>
+          {/each}
+          <div class="cover-back">
+            <p class="book-content">
+              {pages[pages.length - 1]}
+            </p>
+            <button
+              onclick={() => (promise = handleGetNextBookmark())}
+              class="btn-next"
+              aria-label="right"
             >
             </button>
-          {/if}
-        </div>
-        {#if bookmark.like}
-          <button
-            class="ribbon {isReset ? 'text-white/80' : 'text-white'}"
-            onclick={handleCheckBookmark}
-          >
-            {bookmark?.like}
-          </button>
-        {:else}
-          <button
-            class="ribbon-zero"
-            onclick={handleCheckBookmark}
-            aria-label="zero"
-          ></button>
-        {/if}
-
-        {#if isLoading}
-          <div class="flip-book"><div class="cover-back"></div></div>
-        {:else}
-          <div class="flip-book">
-            {#each flipPages as page, i}
-              <button
-                class="flip"
-                class:flipped={page.flipped}
-                style="z-index: {i == currentPage
-                  ? 999
-                  : page.flipped
-                    ? i + 1
-                    : flipPages.length - i};"
-                onclick={() => {
-                  currentPage = i;
-                  flipPages[i].flipped = !flipPages[i].flipped;
-                  setTimeout(() => {
-                    currentPage = 999;
-                  }, 300);
-                }}
-              >
-                <div class="front">
-                  <p class="book-content">{page.front}</p>
-                  <div class="page-fold-right" aria-label="right"></div>
-                </div>
-                <div class="back">
-                  <p class="book-content">{page.back}</p>
-                  <div class="page-fold-left" aria-label="left"></div>
-                </div>
-              </button>
-            {/each}
-
-            <div class="cover-back">
-              <p class="book-content">
-                {pages[pages.length - 1]}
-              </p>
-              <button
-                onclick={handleGetNextBookmark}
-                class="btn-next"
-                aria-label="right"
-              >
-              </button>
-            </div>
           </div>
-        {/if}
+        {:catch error}
+          <div class="cover-back"></div>
+        {/await}
       </div>
     </div>
-  {/if}
+  </div>
 
   {#if showEdit}
     <div
@@ -508,7 +505,7 @@
               <Icon icon="solar:heart-bold" width="15" height="15" />
             </div>
             <input
-              class="block w-full py-3 outline-none pl-20 font-garamond text-18 leading-21 font-500"
+              class="block w-1/12 py-3 outline-none pl-24 font-garamond text-18 leading-21 font-500"
               name="like"
               type="number"
               min="0"
@@ -592,7 +589,7 @@
           </button>
           <button
             class="btn-delete !text-red-600"
-            onclick={handleDeleteBookmark}
+            onclick={() => (promise = handleDeleteBookmark())}
           >
             Delete
           </button>
@@ -614,9 +611,9 @@
   }
 
   .cover-front {
-    position: relative;
-    width: 376px;
+    width: 375px;
     height: 550px;
+    position: relative;
     background-color: #f5f5f5;
     background-image: linear-gradient(
         90deg,
@@ -626,12 +623,11 @@
       linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
     cursor: default;
-    border-right: 1px solid rgba(204, 204, 204, 0.7);
   }
 
   .cover-back {
-    width: 100%;
-    height: 100%;
+    width: 375px;
+    height: 550px;
     position: absolute;
     top: 0;
     left: 0;
@@ -779,13 +775,13 @@
   }
 
   .book-content {
-    height: 100%;
-    width: 100%;
+    height: 450px;
+    width: 285px;
     font-family: GaramondPro, sans-serif;
     font-weight: 400;
     font-size: 18px;
     line-height: 28px;
-    padding: 50px 45px;
+    margin: 50px 45px;
     overflow: hidden;
     text-align: left;
   }

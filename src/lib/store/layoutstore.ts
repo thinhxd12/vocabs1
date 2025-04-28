@@ -1,13 +1,7 @@
 import { writable } from "svelte/store";
 import type { BingImageType } from "../types";
 
-export const layoutImage = writable<BingImageType>({
-  start_date: "",
-  end_date: "",
-  url: "https://res.public.onecdn.static.microsoft/creativeservice/e19cb8ed-daf4-5da4-eb99-71650274e625_desktop-b018_ds_dalatlandscape_gettyimages-2150523963_3840x2160.jpg",
-  copyright: "Stadt der vier Jahreszeiten",
-  copyright_link: "",
-});
+export const layoutImage = writable<BingImageType | undefined>(undefined);
 export const showLayout = writable<boolean>(false);
 export const showBookmark = writable<boolean>(true);
 export const timerString = writable<string>("");
