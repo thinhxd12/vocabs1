@@ -138,7 +138,9 @@
       {/each}
     </div>
 
-    <div class="bg-transparent no-scrollbar w-2/3 outline-none mx-auto">
+    <div
+      class="bg-transparent no-scrollbar w-2/3 mb-3 outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-3"
+    >
       {#each options as item}
         <button
           class={submitted
@@ -162,17 +164,14 @@
 
 <style>
   .quiz-choice {
-    @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-white/5 hover:!bg-white/15 transition-all;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+    @apply cursor-pointer w-full h-[72px] select-none overflow-hidden rounded-3 text-center text-15 leading-21 !bg-white/5 hover:!bg-white/15 transition-all;
   }
 
   .quiz-choice-true {
-    @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-green-400;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+    @apply cursor-pointer w-full h-[72px] select-none overflow-hidden rounded-3 text-center text-15 leading-21 !bg-green-400;
   }
 
   .quiz-choice-false {
-    @apply mb-9 cursor-pointer w-full select-none overflow-hidden rounded-3 text-white py-3 text-center text-15 leading-21 !bg-red-500;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+    @apply cursor-pointer w-full h-[72px] select-none overflow-hidden rounded-3 text-center text-15 leading-21 !bg-red-500;
   }
 </style>

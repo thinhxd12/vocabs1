@@ -237,10 +237,23 @@
     </div>
   </button>
 
-  <button
-    class={$isAutoPlay ? "btn-play" : "btn-pause"}
-    onclick={handleAutoplay}
-  >
+  <button class="btn-autoplay" onclick={handleAutoplay}>
+    {#if $isAutoPlay}
+      <img
+        src="/images/sunrise.webp"
+        alt="btn-play"
+        width="100%"
+        height="100%"
+      />
+    {:else}
+      <img
+        src="/images/sunrise.webp"
+        alt="btn-pause"
+        width="100%"
+        height="100%"
+        class="grayscale"
+      />
+    {/if}
     {#if $listCount}
       <div
         class={`absolute left-0 top-0 z-30 h-full bg-[url('/images/sunrise.webp')] bg-cover transition-all duration-300`}
@@ -265,12 +278,8 @@
     @apply relative rounded-2 outline-none ml-3 block h-36 min-w-[90px] overflow-hidden  shadow-md shadow-black/30 ring-1 ring-white/15 bg-cover;
   }
 
-  .btn-play {
-    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden bg-[url(/images/sunrise.webp)] bg-cover shadow-md shadow-black/30 ring-1 ring-white/15;
-  }
-
-  .btn-pause {
-    @apply cursor-pointer rounded-2 outline-none relative ml-3 block h-36 min-w-[90px] overflow-hidden bg-[url(/images/sunset.webp)] bg-cover shadow-md shadow-black/30 ring-1 ring-white/15;
+  .btn-autoplay {
+    @apply rounded-2 outline-none relative ml-3 h-36  min-w-[90px]  w-[90px] overflow-hidden shadow-md shadow-black/30 ring-1 ring-white/15;
   }
 
   .marquee-container {

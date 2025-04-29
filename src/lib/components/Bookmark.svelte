@@ -178,7 +178,7 @@
     showDelete = !showDelete;
   }
 
-  function getWidth(
+  function getHeight(
     pText: string,
     pFont: string,
     pSize: number,
@@ -202,28 +202,87 @@
     return height;
   }
 
-  function splitIntoBlocks(
-    text: string,
-    firstHeight: number,
-    otherHeight: number
+  function getHeightFirstPage(
+    pText: string,
+    pFont: string,
+    pSize: number,
+    pLine: number,
+    pWidth: number
   ) {
+    let firstLetter = pText.slice(0, 1);
+    let rest = pText.slice(1);
+    if (!/^[a-zA-z0-9]+$/.test(firstLetter)) {
+      firstLetter = pText.slice(0, 2);
+      rest = pText.slice(2);
+    }
+
+    let lDiv = document.createElement("div");
+    document.body.appendChild(lDiv);
+    let cText = document.createElement("span");
+    lDiv.appendChild(cText);
+    cText.textContent = firstLetter;
+    let restTextNode = document.createTextNode(rest);
+    lDiv.appendChild(restTextNode);
+
+    lDiv.style.fontFamily = pFont;
+    lDiv.style.fontSize = "" + pSize + "px";
+    lDiv.style.lineHeight = "" + pLine + "px";
+    lDiv.style.width = "" + pWidth + "px";
+    lDiv.style.padding = "0";
+    lDiv.style.margin = "0";
+    lDiv.style.boxSizing = "border-box";
+
+    cText.style.fontFamily = "Open Sans";
+    cText.style.fontSize = "125px";
+    cText.style.lineHeight = "100px";
+    cText.style.textTransform = "uppercase";
+    cText.style.float = "left";
+    cText.style.margin = "6px 6px 0 0";
+    cText.style.padding = "0 3px 3px 3px";
+    cText.style.border = "1px solid black";
+
+    const height = lDiv.clientHeight;
+    document.body.removeChild(lDiv);
+    return height;
+  }
+
+  function splitIntoBlocks(text: string, maxHeight: number) {
     const words = text.split(" ");
-    let currentLen = firstHeight;
 
     const result = words.reduce(
       (acc, curr) => {
         const last = acc[acc.length - 1];
-        if (
-          getWidth(last + " " + curr, "GaramondPro, sans-serif", 18, 28, 285) <
-          currentLen
-        ) {
-          acc[acc.length - 1] = (last + " " + curr).trim();
+        if (acc.length > 1) {
+          if (
+            getHeight(
+              last + " " + curr,
+              "GaramondPro, sans-serif",
+              18,
+              28,
+              285
+            ) < maxHeight
+          ) {
+            acc[acc.length - 1] = (last + " " + curr).trim();
+          } else {
+            acc.push(curr);
+          }
+          return acc;
         } else {
-          acc.push(curr);
-          currentLen = otherHeight;
+          if (
+            getHeightFirstPage(
+              last + " " + curr,
+              "GaramondPro, sans-serif",
+              18,
+              28,
+              285
+            ) < maxHeight
+          ) {
+            acc[acc.length - 1] = (last + " " + curr).trim();
+          } else {
+            acc.push(curr);
+          }
+          return acc;
         }
-
-        return acc;
       },
       [""]
     );
@@ -236,7 +295,7 @@
   let flipPages = $state<PageContent[]>([]);
 
   function setBookContent(content: string) {
-    pages = splitIntoBlocks(content, 420, 450);
+    pages = splitIntoBlocks(content, 450);
     let result: PageContent[] = [];
     const middle = pages.slice(1, -1);
     for (let i = 0; i < middle.length; i += 2) {
@@ -263,7 +322,7 @@
   >
     <div class="flex flex-col items-center">
       {#if bookmark}
-        <div class="grid grid-cols-2 gap-3 w-full px-3 py-6">
+        <div class="grid grid-cols-2 gap-3 w-3/4 px-3 py-6">
           <span class="text-white text-12 leading-18 font-500 text-left">
             {format(new Date(bookmark.dateOfCreation), "p cccc")}
           </span>
@@ -313,7 +372,9 @@
         {/if}
 
         {#if bookInfo.title}
-          <p class="mb-3 text-14 text-white font-500 leading-18 text-center">
+          <p
+            class="mb-3 w-3/4 text-14 text-white font-500 leading-18 text-center"
+          >
             {bookInfo.title}
           </p>
         {/if}
@@ -602,7 +663,7 @@
 <style>
   .book {
     display: flex;
-    padding: 1px 6px 0;
+    padding: 1px 12px 0;
     box-shadow: 0 30px 21px rgba(0, 0, 0, 0.6);
     border-radius: 2px;
     position: relative;
@@ -825,7 +886,7 @@
     right: -4px;
     top: 0.1px;
     border-bottom: 6px solid #c02031;
-    border-right: 4px solid transparent;
+    border-right: 5px solid transparent;
   }
   .ribbon-zero:before {
     content: "";
@@ -866,7 +927,7 @@
     right: -4px;
     top: 0.1px;
     border-bottom: 6px solid #c02031;
-    border-right: 4px solid transparent;
+    border-right: 5px solid transparent;
   }
   .ribbon:before,
   .ribbon:after {
