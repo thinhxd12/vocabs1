@@ -307,6 +307,19 @@
     }
     flipPages = result;
   }
+
+  let insertData = $state<DBSelect["bookmark_table"][] | undefined>(undefined);
+
+  async function showInsertBookmark() {
+    showInsert = !showInsert;
+    const { data } = await page.data.supabase
+      .from("bookmark_table")
+      .select("*")
+      .order("id", { ascending: false })
+      .limit(12);
+    if (data) insertData = data;
+    console.log(data);
+  }
 </script>
 
 <svelte:head>
@@ -420,7 +433,7 @@
         <Icon icon="solar:document-add-linear" width="15" height="15" />
       </button>
 
-      <button class="btn-menu" onclick={() => (showInsert = !showInsert)}>
+      <button class="btn-menu" onclick={showInsertBookmark}>
         <Icon icon="solar:library-linear" width="15" height="15" />
       </button>
 
@@ -592,14 +605,14 @@
 
   {#if showInsert}
     <div
-      class="w-[calc(100%-240px)] h-full absolute left-[240px] top-0 z-40 backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/60 via-70% to-black/15"
+      class="w-[calc(100%-240px)] flex flex-col h-full absolute left-[240px] top-0 z-40 p-18 backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/60 via-70% to-black/15"
       transition:fly={{ y: "-100%", duration: 300 }}
     >
       <form
         name="insertbookmark"
         action="?/insertBookmark"
         method="post"
-        class="w-full p-18"
+        class="w-full h-1/2"
         use:enhance={({ formElement, formData, action, cancel }) => {
           return async ({ result }) => {
             if (result.status === 200) {
@@ -632,6 +645,55 @@
           <button type="submit" class="btn-form">Insert</button>
         </div>
       </form>
+
+      {#if insertData}
+        <div class="flex-1 w-full overflow-y-scroll style-1">
+          <table class="w-full">
+            <thead>
+              <tr class="text-12 font-400 bg-gray-50">
+                <th>id</th>
+                <th>authors</th>
+                <th>bookTile</th>
+                <th>date</th>
+                <th>content</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each insertData as item}
+                <tr
+                  class="text-12 font-400 h-30 overflow-hidden w-full border-b border-gray-50/30"
+                >
+                  <td
+                    class="max-w-[40px] whitespace-nowrap text-ellipsis overflow-hidden"
+                  >
+                    {item.id}
+                  </td>
+                  <td
+                    class="max-w-[50px] whitespace-nowrap text-ellipsis overflow-hidden"
+                  >
+                    {item.authors}
+                  </td>
+                  <td
+                    class="max-w-[180px] whitespace-nowrap text-ellipsis overflow-hidden"
+                  >
+                    {item.bookTile}
+                  </td>
+                  <td
+                    class="max-w-[80px] whitespace-nowrap text-ellipsis overflow-hidden"
+                  >
+                    {format(new Date(item.dateOfCreation), "P")}
+                  </td>
+                  <td
+                    class="max-w-[350px] h-30 whitespace-nowrap text-ellipsis overflow-hidden"
+                  >
+                    {item.content}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      {/if}
     </div>
   {/if}
 
