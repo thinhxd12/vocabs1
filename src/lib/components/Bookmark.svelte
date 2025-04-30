@@ -725,9 +725,9 @@
 <style>
   .book {
     display: flex;
-    padding: 1px 12px 0;
+    padding: 0 15px 0;
     box-shadow: 0 30px 21px rgba(0, 0, 0, 0.6);
-    border-radius: 2px;
+    border-radius: 3px;
     position: relative;
     background-image: url("/images/paper.webp");
     background-size: cover;
@@ -747,6 +747,17 @@
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
     cursor: default;
     border-right: 1px solid rgba(204, 204, 204, 0.7);
+  }
+
+  .book::before {
+    content: "";
+    background-color: #bdbaad;
+    position: absolute;
+    top: 0;
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);
   }
 
   .cover-back {
@@ -932,11 +943,12 @@
   }
 
   .ribbon-zero {
-    width: 40px;
+    width: 36px;
     height: 6px;
     position: absolute;
+    padding-top: 6px;
     top: -6px;
-    left: 336px;
+    left: 345px;
     border-top-left-radius: 3px;
     user-select: none;
     background: #a90909;
@@ -956,16 +968,16 @@
   }
 
   .ribbon {
-    width: 40px;
-    height: 90px;
+    width: 36px;
+    height: 300px;
     position: absolute;
     padding-top: 6px;
     top: -6px;
-    left: 336px;
+    left: 345px;
     text-align: center;
     border-top-left-radius: 3px;
     font-family: "GaramondPro", sans-serif;
-    font-size: 25px;
+    font-size: 22px;
     line-height: 30px;
     user-select: none;
     background: linear-gradient(
@@ -983,6 +995,7 @@
   .ribbon:active {
     box-shadow: none;
   }
+
   .ribbon:before {
     height: 0;
     width: 0;
@@ -991,6 +1004,7 @@
     border-bottom: 6px solid #c02031;
     border-right: 5px solid transparent;
   }
+
   .ribbon:before,
   .ribbon:after {
     content: "";
@@ -999,12 +1013,12 @@
 
   .ribbon:after {
     height: 0;
-    width: 0;
-    top: 90px;
+    width: 36px;
+    top: 300px;
     left: 0;
-    border-left: 20px solid #e50a00;
-    border-right: 20px solid #e50a00;
-    border-bottom: 12px solid transparent;
+    border-left: 18px solid #e50a00;
+    border-right: 18px solid #e50a00;
+    border-bottom: 18px solid transparent;
   }
 
   .btn-menu {

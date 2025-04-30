@@ -351,7 +351,7 @@
     {#if progressItems}
       {#each progressItems as item}
         <div
-          class="w-content gap-1 font-rubik text-12 h-24 flex items-center mb-3 select-none"
+          class="w-content gap-3 font-rubik text-12 h-24 flex items-center mb-3 select-none"
         >
           <div
             class="layout-black min-w-[120px] text-center text-secondary-white leading-22 pt-2"

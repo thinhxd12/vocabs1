@@ -107,7 +107,9 @@
     </div>
 
     <div class="w-full h-14 flex items-center justify-center layout-white">
-      <span class="transform -rotate-90 origin-center text-8 font-600">
+      <span
+        class="uppercase transform -rotate-90 origin-center text-8 font-600"
+      >
         {format(todayDate, "eeeeee")}
       </span>
     </div>
