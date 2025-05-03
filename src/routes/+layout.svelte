@@ -25,7 +25,7 @@
         style="text-shadow: 0 0 3px black;"
         class="absolute w-[calc(50vw-215px)] hidden md:block left-0 bottom-6 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white"
       >
-        {@html $layoutImage.copyright}
+        {@html $layoutImage.title}
       </p>
     {/if}
   {/if}

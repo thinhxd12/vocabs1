@@ -1,3 +1,5 @@
+import type { BackgroundImageType } from "$lib/types.js";
+
 export async function GET({ fetch }) {
   const endpoint = "https://fd.api.iris.microsoft.com/v4/api/selection";
   const params = new URLSearchParams({
@@ -9,23 +11,12 @@ export async function GET({ fetch }) {
   });
 
   try {
-    const response = await fetch(`${endpoint}?${params}`, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-      },
-    });
-    if (!response.ok) throw new Error("Failed to fetch images");
-
+    const response = await fetch(`${endpoint}?${params}`);
     const data = await response.json();
     const item = JSON.parse(data.batchrsp.items[0].item).ad;
-    const images = {
+    const images: BackgroundImageType = {
       title: item.title,
-      description: item.description,
-      landscapeImageUrl: item.landscapeImage.asset,
-      portraitImageUrl: item.portraitImage.asset,
-      copyright: item.copyright,
-      ctaText: item.ctaText,
-      ctaUri: item.ctaUri,
+      url: item.landscapeImage.asset,
     };
 
     return new Response(JSON.stringify(images));

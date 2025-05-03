@@ -127,12 +127,9 @@ export interface WeatherCodeData {
   };
 }
 
-export type BingImageType = {
-  start_date: string;
-  end_date: string;
+export type BackgroundImageType = {
+  title: string;
   url: string;
-  copyright: string;
-  copyright_link: string;
 };
 
 export type BookDetailType = {

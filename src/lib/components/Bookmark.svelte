@@ -948,7 +948,7 @@
     position: absolute;
     padding-top: 6px;
     top: -6px;
-    left: 345px;
+    left: 352px;
     border-top-left-radius: 3px;
     user-select: none;
     background: #a90909;
@@ -973,7 +973,7 @@
     position: absolute;
     padding-top: 6px;
     top: -6px;
-    left: 345px;
+    left: 352px;
     text-align: center;
     border-top-left-radius: 3px;
     font-family: "GaramondPro", sans-serif;
