@@ -35,7 +35,7 @@
     {#if $todaySchedule}
       <span>{$todaySchedule.start.index}</span>
     {:else}
-      <Icon icon="solar:question-circle-linear" width="15" height="15" />
+      <Icon icon="solar:close-circle-linear" width="15" height="15" />
     {/if}
   </button>
 
@@ -48,7 +48,7 @@
     {#if $todaySchedule}
       <span>{$todaySchedule.end.index}</span>
     {:else}
-      <Icon icon="solar:question-circle-linear" width="15" height="15" />
+      <Icon icon="solar:close-circle-linear" width="15" height="15" />
     {/if}
   </button>
 

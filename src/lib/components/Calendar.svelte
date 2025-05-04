@@ -132,7 +132,7 @@
     </button>
   </div>
 
-  <div class="calendar no-scrollbar">
+  <div class="grid w-full grid-cols-7 mb-6 mt-3 justify-items-center">
     {#each dayNames as date}
       <span
         class="w-[50px] h-20 bg-black/20 text-center font-rubik leading-20 select-none text-12 text-black/80 uppercase font-500 first-of-type:text-[#ff3333]"
@@ -140,6 +140,9 @@
         {date}
       </span>
     {/each}
+  </div>
+
+  <div class="calendar no-scrollbar">
     {#each days as day}
       <div
         class="day {day.enabled
