@@ -318,8 +318,9 @@
       .order("id", { ascending: false })
       .limit(12);
     if (data) insertData = data;
-    console.log(data);
   }
+
+  let isSubmitting = $state<boolean>(false);
 </script>
 
 <svelte:head>
@@ -454,7 +455,7 @@
           <img
             src="/gif/whisperoftheheart.gif"
             alt="loading"
-            width={300}
+            width={270}
             class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           />
         {:then data}
@@ -546,7 +547,8 @@
           method="post"
           class="w-full p-18"
           use:enhance={({ formElement, formData, action, cancel }) => {
-            return async ({ result }) => {
+            isSubmitting = true;
+            return async ({ result, update }) => {
               if (result.status === 200) {
                 toast.success("Update bookmark successfully", {
                   class: "my-toast",
@@ -557,6 +559,7 @@
                   class: "my-toast",
                 });
               }
+              isSubmitting = false;
             };
           }}
         >
@@ -596,7 +599,13 @@
             >
               Cancel
             </button>
-            <button type="submit" class="btn-form"> Submit </button>
+            <button
+              type="submit"
+              class="btn-form disabled:cursor-not-allowed"
+              disabled={isSubmitting}
+            >
+              Submit
+            </button>
           </div>
         </form>
       {/if}
