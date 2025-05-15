@@ -54,6 +54,7 @@ export default {
         garamond: ["GaramondPro", "sans-serif"],
         rubik: ["Rubik", "sans-serif"],
         tupa: ["Tupa Nova", "sans-serif"],
+        copernicus: ["Copernicus", "sans-serif"],
       },
       fontSize: (theme) => ({
         ...theme("spacing"),

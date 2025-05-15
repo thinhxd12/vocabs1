@@ -256,9 +256,9 @@
           if (
             getHeight(
               last + " " + curr,
-              "GaramondPro, sans-serif",
-              18,
-              28,
+              "Copernicus, sans-serif",
+              14,
+              24,
               285
             ) < maxHeight
           ) {
@@ -271,9 +271,9 @@
           if (
             getHeightFirstPage(
               last + " " + curr,
-              "GaramondPro, sans-serif",
-              18,
-              28,
+              "Copernicus, sans-serif",
+              14,
+              24,
               285
             ) < maxHeight
           ) {
@@ -565,7 +565,7 @@
         >
           <input hidden name="id" autocomplete="off" value={bookmark.id} />
           <textarea
-            class="p-9 w-full style-1 rounded-3 border-0 font-garamond text-18 font-400 leading-21 bg-[#f5f5f5] outline-none ring-1 ring-white/30"
+            class="p-9 w-full style-1 rounded-3 border-0 font-copernicus text-14 font-400 leading-24 bg-[#f5f5f5] outline-none ring-1 ring-white/30"
             name="content"
             autocomplete="off"
             onkeydown={(e) => e.stopPropagation()}
@@ -582,7 +582,7 @@
               <Icon icon="solar:heart-bold" width="15" height="15" />
             </div>
             <input
-              class="block w-1/12 py-3 outline-none pl-24 font-garamond text-18 leading-21 font-500"
+              class="block w-1/12 py-3 outline-none pl-24 font-copernicus text-14 leading-12 font-500"
               name="like"
               type="number"
               min="0"
@@ -637,7 +637,7 @@
         }}
       >
         <textarea
-          class="p-9 w-full style-1 rounded-3 border-0 font-garamond text-18 font-400 leading-21 bg-[#f5f5f5] outline-none ring-1 ring-white/30"
+          class="p-9 w-full style-1 rounded-3 border-0 font-copernicus text-14 font-400 leading-24 bg-[#f5f5f5] outline-none ring-1 ring-white/30"
           name="content"
           autocomplete="off"
           onkeydown={(e) => e.stopPropagation()}
@@ -921,10 +921,10 @@
   .book-content {
     height: 450px;
     width: 285px;
-    font-family: GaramondPro, sans-serif;
+    font-family: "Copernicus", sans-serif;
     font-weight: 400;
-    font-size: 18px;
-    line-height: 28px;
+    font-size: 14px;
+    line-height: 24px;
     margin: 50px 45px;
     overflow: hidden;
     text-align: left;
@@ -985,8 +985,8 @@
     left: 352px;
     text-align: center;
     border-top-left-radius: 3px;
-    font-family: "GaramondPro", sans-serif;
-    font-size: 22px;
+    font-family: "Copernicus", sans-serif;
+    font-size: 24px;
     line-height: 30px;
     user-select: none;
     background: linear-gradient(
