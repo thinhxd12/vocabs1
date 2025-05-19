@@ -23,6 +23,10 @@ export const listContent = writable<DBSelect["vocab_table"][]>([]);
 export const currentSchedule = writable<DBSelect["schedule_table"] | undefined>(
   undefined
 );
+export const schedule = writable<DBSelect["schedule_table"][] | undefined>(
+  undefined
+);
+
 export const listCount = writable<number>(0);
 export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
   undefined
@@ -192,6 +196,10 @@ export const updateTodayScheduleLocal = async () => {
       .eq("id", currentScheduleValue.id)
       .select();
     currentSchedule.set(data[0]);
+
+    schedule.update((current) => {
+      return current?.map((item) => (item.id === data[0].id ? data[0] : item));
+    });
   } else {
     const { data } = await page.data.supabase
       .from("schedule_table")
@@ -199,6 +207,10 @@ export const updateTodayScheduleLocal = async () => {
       .eq("id", currentScheduleValue.id)
       .select();
     currentSchedule.set(data[0]);
+
+    schedule.update((current) => {
+      return current?.map((item) => (item.id === data[0].id ? data[0] : item));
+    });
   }
 
   if (todayScheduleValue.start.id === currentScheduleValue.id) {

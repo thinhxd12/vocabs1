@@ -129,7 +129,6 @@
       href="/schedule"
       class:active={page.url.pathname === "/schedule"}
       class="btn-nav"
-      data-sveltekit-preload-data="hover"
     >
       <Icon icon="solar:calendar-linear" width="15" height="15" />
     </a>

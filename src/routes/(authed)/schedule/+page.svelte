@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import Calendar from "$lib/components/Calendar.svelte";
-  import { todaySchedule } from "$lib/store/navstore";
+  import { schedule, todaySchedule } from "$lib/store/navstore";
   import { cachedDiary, cachedProgressLength } from "$lib/store/vocabstore";
   import type { CalendarDayType, DBSelect } from "$lib/types.js";
   import Icon from "@iconify/svelte";
@@ -15,7 +15,25 @@
   const { supabase } = layoutData;
 
   let calendarData = $state<CalendarDayType[]>([]);
-  calendarData = layoutData.schedule;
+
+  calendarData = $schedule?.reduce(
+    (acc: any, curr: DBSelect["schedule_table"]) => {
+      const dateObj = new Date(curr.date!);
+      const day = dateObj.getDate();
+      const month = dateObj.getMonth();
+      const year = dateObj.getFullYear();
+      const existing = acc.find(
+        (item: any) => item.date === day && item.month === month
+      );
+      if (existing) {
+        existing.count += curr.count;
+      } else {
+        acc.push({ date: day, month, year, count: curr.count });
+      }
+      return acc;
+    },
+    []
+  );
 
   let src = $state<string>("");
   let paused = $state<boolean>(true);
@@ -127,6 +145,27 @@
       );
     }
   }
+
+  type UpdateSchedule = {
+    id: any;
+    date: any;
+    count: number;
+  };
+
+  async function updateScheduleLocal(
+    start: UpdateSchedule,
+    end: UpdateSchedule
+  ) {
+    schedule.update((current) =>
+      current?.map((item) => {
+        if (item.id === start.id) {
+          return { ...item, ...start };
+        } else if (item.id === end.id) {
+          return { ...item, ...end };
+        } else return item;
+      })
+    );
+  }
 </script>
 
 <svelte:head>
@@ -190,6 +229,18 @@
                   toast.success("Update successfully", {
                     class: "my-toast",
                   });
+                  updateScheduleLocal(
+                    {
+                      id: formData.get("id0"),
+                      date: formData.get("date0"),
+                      count: Number(formData.get("count0")),
+                    },
+                    {
+                      id: formData.get("id1"),
+                      date: formData.get("date1"),
+                      count: Number(formData.get("count1")),
+                    }
+                  );
                   showReset = false;
                 }
               };

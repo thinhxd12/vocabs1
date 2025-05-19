@@ -1,41 +1,8 @@
 import { fail, type ActionResult } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
+import type { Actions } from "./$types";
 import { REPETITION_PATTERN } from "$lib/constants";
-import type { CalendarDayType, DBInsert, DBSelect } from "$lib/types";
+import type { DBInsert } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
-
-export const load: PageServerLoad = async ({
-  cookies,
-  locals: { supabase },
-}) => {
-  const { data } = await supabase
-    .from("schedule_table")
-    .select("*")
-    .order("id", { ascending: true })
-    .not("date", "is", null);
-
-  const transformed = data.reduce(
-    (acc: any, curr: DBSelect["schedule_table"]) => {
-      const dateObj = new Date(curr.date!);
-      const day = dateObj.getDate();
-      const month = dateObj.getMonth();
-      const year = dateObj.getFullYear();
-      const existing = acc.find(
-        (item: any) => item.date === day && item.month === month
-      );
-      if (existing) {
-        existing.count += curr.count;
-      } else {
-        acc.push({ date: day, month, year, count: curr.count });
-      }
-      return acc;
-    },
-    []
-  );
-  return {
-    schedule: transformed as CalendarDayType[],
-  };
-};
 
 export const actions = {
   setProgress: async ({ cookies, request, locals: { supabase } }) => {
@@ -71,6 +38,8 @@ export const actions = {
       status: 200,
       data: {
         message: "Edit successfully",
+        start: { id: id0, date: date0, count: count0 },
+        end: { id: id1, date: date1, count: count1 },
       },
     } as ActionResult;
   },

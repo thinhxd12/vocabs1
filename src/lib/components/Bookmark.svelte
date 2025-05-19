@@ -3,7 +3,6 @@
   import type { BookSearchType, DBSelect } from "$lib/types";
   import Icon from "@iconify/svelte";
   import { format } from "date-fns";
-  import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
   import { fly } from "svelte/transition";
   import StarRating from "./StarRating.svelte";

@@ -6,11 +6,16 @@
     showLayout,
   } from "$lib/store/layoutstore";
   import { onMount } from "svelte";
+  import { page } from "$app/state";
+  import { schedule } from "$lib/store/navstore";
+
   let { children } = $props();
 
   onMount(() => {
     handleChangeLayoutImage();
   });
+
+  $schedule = page.data.schedule;
 </script>
 
 <main class="h-screen w-screen relative bg-cover overflow-hidden">
