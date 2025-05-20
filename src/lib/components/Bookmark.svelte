@@ -640,7 +640,7 @@
           name="content"
           autocomplete="off"
           onkeydown={(e) => e.stopPropagation()}
-          rows="12"
+          rows="11"
         ></textarea>
         <div class="flex w-full items-center justify-center gap-24 mt-6">
           <button
