@@ -2,7 +2,7 @@
   import "../app.css";
   import { page } from "$app/state";
   import { schedule } from "$lib/store/navstore";
-  import Rainbg from "$lib/components/Rainbg.svelte";
+  import Rainvid from "$lib/components/Rainvid.svelte";
 
   let { children } = $props();
 
@@ -10,6 +10,6 @@
 </script>
 
 <main class="h-screen w-screen relative bg-cover overflow-hidden">
-  <Rainbg />
+  <Rainvid />
   {@render children()}
 </main>

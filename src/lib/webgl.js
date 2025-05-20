@@ -1,19 +1,7 @@
 export function getContext(canvas, options = {}) {
-  let contexts = ["webgl", "experimental-webgl"];
-  let context = null;
-
-  contexts.some((name) => {
-    try {
-      context = canvas.getContext(name, options);
-    } catch (e) {}
-    return context != null;
-  });
-
-  if (context == null) {
-    document.body.classList.add("no-webgl");
-  }
-
-  return context;
+  return (
+    canvas.getContext("webgl2", options) || canvas.getContext("webgl", options)
+  );
 }
 
 export function createProgram(gl, vertexScript, fragScript) {

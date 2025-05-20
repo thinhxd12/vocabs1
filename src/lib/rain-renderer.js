@@ -190,7 +190,12 @@ RainRenderer.prototype = {
   init() {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.gl = new GL(this.canvas, { alpha: false }, vertShader, fragShader);
+    this.gl = new GL(
+      this.canvas,
+      { alpha: false, powerPreference: "high-performance" },
+      vertShader,
+      fragShader
+    );
     let gl = this.gl;
     this.programWater = gl.program;
 
