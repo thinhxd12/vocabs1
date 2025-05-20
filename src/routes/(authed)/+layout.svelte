@@ -41,7 +41,7 @@
 <section
   class="w-full h-full relative flex {$showLayout
     ? 'flex-row-reverse'
-    : ''} items-end justify-center"
+    : ''} items-end justify-center z-20"
 >
   <div class="w-main h-full flex flex-col items-center">
     <div class="flex-1">

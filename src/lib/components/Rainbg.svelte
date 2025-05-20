@@ -1,33 +1,13 @@
 <script lang="ts">
-  import Flipcard from "$lib/components/Flipcard.svelte";
-  import ImageLoader from "$lib/components/ImageLoader.svelte";
-  import Tick from "$lib/components/Tick.svelte";
   import RainRenderer from "$lib/rain-renderer";
   import Raindrops from "$lib/raindrop";
   import { showLayout } from "$lib/store/layoutstore";
   import type { BackgroundImageType } from "$lib/types";
+  import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import { innerWidth, innerHeight } from "svelte/reactivity/window";
 
   onMount(async () => {
-    // let vertShader = await getShader("/openmeteo/shaders/simple.vert");
-    // let fragShader = await getShader("/openmeteo/shaders/water.frag");
-
-    // console.log(fragShader);
-
-    // const ctx = canvas?.getContext("2d");
-    // if (ctx) {
-    //   ctx.fillStyle = "red";
-    //   ctx.fillRect(0, 0, 150, 75);
-    // }
-    // const image = new Image();
-    // image.src =
-    //   "https://res.public.onecdn.static.microsoft/creativeservice/3d986751-c61b-999d-5342-7d0b980a198c_desktop-b013_ds_pamukkaleturkeysunset_gettyimages-169740852_3840x2160.jpg";
-    // image.onload = () => {
-    //   if (ctx) {
-    //     ctx.drawImage(image, 0, 0, innerWidth.current!, innerHeight.current!);
-    //   }
-    // };
     loadTextures();
   });
 
@@ -74,6 +54,7 @@
     width: innerWidth.current! || 1280,
     height: innerHeight.current! || 720,
   };
+
   let textureFgSize = {
     width: 96,
     height: 64,
@@ -242,7 +223,6 @@
     };
 
     loadTextures();
-    // renderer.updateTextures();
   }
 
   let showBg = $state<boolean>(false);
@@ -260,7 +240,7 @@
   {#if bgImage}
     <img
       src={bgImage.url}
-      class="w-full h-full object-cover z-50 relative"
+      class="w-full h-full object-cover absolute top-0 left-0"
       width={innerWidth.current}
       height={innerHeight.current}
       alt="bg"
@@ -278,17 +258,40 @@
 {:else}
   <canvas
     bind:this={canvas}
-    class="relative z-50"
     width={innerWidth.current}
     height={innerHeight.current}
+    class="absolute top-0 left-0"
   ></canvas>
 {/if}
 
-<div class="flex absolute z-50 top-0 left-0">
-  <button onclick={() => updateWeather("rain")}>rain</button>
-  <button onclick={() => updateWeather("storm")}>storm</button>
-  <button onclick={() => updateWeather("fallout")}>fallout</button>
-  <button onclick={() => updateWeather("drizzle")}>drizzle</button>
-  <button onclick={() => updateWeather("sunny")}>sunny</button>
-  <button onclick={changeBackground}>change</button>
-</div>
+{#if !$showLayout}
+  <div class=" absolute z-50 top-0 left-0 hidden sm:flex">
+    <button onclick={() => updateWeather("rain")} class="btn-menu layout-white">
+      <Icon icon="mingcute:rainstorm-line" width="15" height="15" />
+    </button>
+
+    <button
+      onclick={() => updateWeather("storm")}
+      class="btn-menu layout-white"
+    >
+      <Icon icon="mingcute:thunderstorm-line" width="15" height="15" />
+    </button>
+
+    <button
+      onclick={() => updateWeather("drizzle")}
+      class="btn-menu layout-white"
+    >
+      <Icon icon="mingcute:drizzle-line" width="15" height="15" />
+    </button>
+
+    <button onclick={changeBackground} class="btn-menu layout-white">
+      <Icon icon="mingcute:sun-line" width="15" height="15" />
+    </button>
+  </div>
+{/if}
+
+<style>
+  .btn-menu {
+    @apply m-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90;
+  }
+</style>

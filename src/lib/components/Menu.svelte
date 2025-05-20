@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { handleChangeLayoutImage } from "$lib/store/layoutstore";
   import { showTranslate } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import {
@@ -54,10 +53,6 @@
 
   <button class="btn-menu layout-white" onclick={() => ($showTranslate = true)}>
     <Icon icon="ph:translate" width="15" height="15" />
-  </button>
-
-  <button class="btn-menu layout-white" onclick={handleChangeLayoutImage}>
-    <Icon icon="solar:gallery-linear" width="15" height="15" />
   </button>
 
   <button
