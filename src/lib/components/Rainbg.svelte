@@ -7,10 +7,6 @@
   import { onMount } from "svelte";
   import { innerWidth, innerHeight } from "svelte/reactivity/window";
 
-  onMount(async () => {
-    loadTextures();
-  });
-
   function loadImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -107,15 +103,7 @@
         innerHeight.current!,
         dpi,
         dropColor,
-        dropAlpha,
-        {
-          maxR: 55,
-          rainChance: 0.4,
-          dropletsRate: 80,
-          dropletsSize: [3, 5.5],
-          trailRate: 2.5,
-          trailScaleRange: [0.25, 0.4],
-        }
+        dropAlpha
       );
 
       textureFg = createCanvas(textureFgSize.width, textureFgSize.height);
@@ -194,7 +182,7 @@
   const defaultOptions = {
     minR: 10,
     maxR: 40,
-    maxDrops: 900,
+    maxDrops: 120,
     rainChance: 0.3,
     rainLimit: 3,
     dropletsRate: 50,
@@ -215,25 +203,31 @@
 
   function updateWeather(type: string) {
     showBg = false;
-    raindrops.clearDrops();
-    raindrops.options = {
-      ...defaultOptions,
-      ...defaultRain,
-      ...weatherTypes[type as keyof typeof weatherTypes],
-    };
+    if (raindrops) {
+      raindrops.clearDrops();
+      raindrops.options = {
+        ...defaultOptions,
+        ...defaultRain,
+        ...weatherTypes[type as keyof typeof weatherTypes],
+      };
+    }
 
     loadTextures();
   }
 
-  let showBg = $state<boolean>(false);
+  let showBg = $state<boolean>(true);
   let bgImage = $state<BackgroundImageType | undefined>(undefined);
 
   async function changeBackground() {
-    raindrops.clearDrops();
+    raindrops && raindrops.clearDrops();
     const response = await fetch(`/server/getlayoutimage`);
     bgImage = await response.json();
     showBg = true;
   }
+
+  onMount(() => {
+    changeBackground();
+  });
 </script>
 
 {#if showBg}
