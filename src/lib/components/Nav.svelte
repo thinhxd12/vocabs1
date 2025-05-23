@@ -141,6 +141,10 @@
       <Icon icon="solar:bill-check-linear" width="15" height="15" />
     </a>
 
+    <a href="/sad" class="btn-nav" class:active={page.url.pathname === "/sad"}>
+      <Icon icon="solar:sad-square-linear" width="15" height="15" />
+    </a>
+
     {#if innerWidth.current && innerWidth.current > 1500}
       {#if $showLayout}
         <button
@@ -268,7 +272,7 @@
 
 <style>
   .btn-nav {
-    @apply outline-none size-27 mx-3 flex items-center justify-center text-black/30 hover:text-black transition duration-300;
+    @apply outline-none size-27 flex items-center justify-center text-black/30 hover:text-black transition duration-300;
   }
 
   .btn-nav.active {

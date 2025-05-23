@@ -90,6 +90,18 @@ export type Database = {
         };
         Relationships: [];
       };
+      saddays_table: {
+        Row: {
+          created_at: string;
+        };
+        Insert: {
+          created_at?: string;
+        };
+        Update: {
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       diary_table: {
         Row: {
           count: number;
