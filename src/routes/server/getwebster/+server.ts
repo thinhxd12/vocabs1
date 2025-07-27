@@ -149,7 +149,7 @@ export async function GET({ url }) {
           .find("li")
           .slice(0, 3)
           .each((ind, item) => {
-            content.push($(item).text());
+            content.push($(item).text().replace(/[\n\r]+|\s{2,}/g, ""));
           });
         synonymArray.push({ type, content });
       });
