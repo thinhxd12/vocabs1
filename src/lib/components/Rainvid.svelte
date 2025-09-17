@@ -6,7 +6,7 @@
 
   let showBg = $state<boolean>(false);
   let bgImage = $state<BackgroundImageType | undefined>(undefined);
-  let bgSrc = $state<string>("/gif/rain1.mp4");
+  let bgSrc = $state<string>("/gif/rain2.mp4");
 
   async function changeBackgroundImg() {
     const response = await fetch(`/server/getlayoutimage`);
@@ -20,11 +20,6 @@
       src: `/gif/rain${i + 1}.mp4`,
     })),
   ]);
-
-  onMount(() => {
-    changeBackgroundImg();
-  });
-
 </script>
 
 {#if showBg}
