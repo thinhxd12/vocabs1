@@ -29,7 +29,7 @@
     const { data } = await supabase
       .from("saddays_table")
       .select("*")
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: true })
       .range(index * 18, index * 18 + 17);
 
     if (data) {
