@@ -4,7 +4,7 @@
   import Icon from "@iconify/svelte";
   import { innerWidth, innerHeight } from "svelte/reactivity/window";
 
-  let showBg = $state<boolean>(true);
+  let showBg = $state<boolean>(false);
   let bgImage = $state<BackgroundImageType | undefined>(undefined);
   let bgSrc = $state<string>("/gif/rain1.mp4");
 
@@ -20,6 +20,11 @@
       src: `/gif/rain${i + 1}.mp4`,
     })),
   ]);
+
+  onMount(() => {
+    changeBackgroundImg();
+  });
+
 </script>
 
 {#if showBg}
