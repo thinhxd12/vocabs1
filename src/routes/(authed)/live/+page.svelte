@@ -121,13 +121,6 @@
           </button>
         {/each}
       </div>
-
-      <!-- <h3 class="px-6 mb-6 text-secondary-white text-14">Live Sports</h3>
-      <div class="flex flex-wrap gap-4 mb-6">
-        {#each sports as item}
-          <button class="btn-source">{item.text}</button>
-        {/each}
-      </div> -->
     </div>
 
     <div
