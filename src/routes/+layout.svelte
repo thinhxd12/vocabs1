@@ -10,6 +10,8 @@
 </script>
 
 <main class="h-screen w-screen relative bg-cover overflow-hidden">
-  <Rainvid />
+  {#if page.url.pathname !== "/live"}
+    <Rainvid />
+  {/if}
   {@render children()}
 </main>

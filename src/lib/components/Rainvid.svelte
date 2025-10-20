@@ -5,6 +5,7 @@
   import { innerWidth, innerHeight } from "svelte/reactivity/window";
 
   let showBg = $state<boolean>(false);
+  let isMuted = $state<boolean>(true);
   let bgImage = $state<BackgroundImageType | undefined>(undefined);
   let bgSrc = $state<string>("/gif/rain2.mp4");
 
@@ -46,7 +47,7 @@
     src={bgSrc}
     autoplay
     loop
-    muted
+    muted={isMuted}
     playsinline
     class="w-full h-full object-cover absolute top-0 left-0 brightness-75"
   >
@@ -71,11 +72,23 @@
     <button onclick={changeBackgroundImg} class="btn-menu layout-white">
       <Icon icon="mingcute:sun-line" width="15" height="15" />
     </button>
+    {#if !showBg}
+      <button
+        onclick={() => (isMuted = !isMuted)}
+        class="btn-menu layout-white"
+      >
+        {#if isMuted}
+          <Icon icon="solar:muted-outline" width="15" height="15" />
+        {:else}
+          <Icon icon="solar:volume-loud-linear" width="15" height="15" />
+        {/if}
+      </button>
+    {/if}
   </div>
 {/if}
 
 <style>
   .btn-menu {
-    @apply m-3 flex size-27 items-center justify-center  appearance-none text-center cursor-pointer rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90 text-9 leading-27 font-500 outline-none;
+    @apply m-3 flex size-27 items-center justify-center appearance-none text-center cursor-pointer rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90 text-9 leading-27 font-500 outline-none;
   }
 </style>

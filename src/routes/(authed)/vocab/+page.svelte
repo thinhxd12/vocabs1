@@ -11,12 +11,11 @@
   } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
   import { untrack } from "svelte";
-  import { showTimer, totalMemories, vocabInput } from "$lib/store/navstore";
+  import { showTimer, vocabInput } from "$lib/store/navstore";
   import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
   import { innerWidth } from "svelte/reactivity/window";
   import { timerString } from "$lib/store/layoutstore";
-  import type { PageProps } from "./$types";
   import { archiveVocab } from "$lib/functions";
   import { page } from "$app/state";
 

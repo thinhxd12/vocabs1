@@ -43,17 +43,18 @@
     ? 'flex-row-reverse'
     : ''} items-end justify-center z-20"
 >
-  <div class="w-main h-full flex flex-col items-center">
-    <div class="flex-1">
-      {@render children()}
+  {#if page.url.pathname !== "/live"}
+    <div class="w-main h-full flex flex-col items-center">
+      <div class="flex-1">
+        {@render children()}
+      </div>
+      <Nav />
     </div>
-    <Nav />
-  </div>
-
-  {#if page.url.pathname !== "/quotes"}
     <div class={$showLayout ? "menu-bar-right" : "menu-bar-center"}>
       <Menu />
     </div>
+  {:else}
+    {@render children()}
   {/if}
 
   {#if $showLayout}

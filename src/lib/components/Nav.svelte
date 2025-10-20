@@ -142,7 +142,15 @@
     </a>
 
     <a href="/sad" class="btn-nav" class:active={page.url.pathname === "/sad"}>
-      <Icon icon="solar:sad-square-linear" width="15" height="15" />
+      <Icon icon="solar:sad-circle-outline" width="15" height="15" />
+    </a>
+
+    <a
+      href="/live"
+      class:active={page.url.pathname === "/live"}
+      class="btn-nav"
+    >
+      <Icon icon="solar:tv-outline" width="16" height="16" />
     </a>
 
     {#if innerWidth.current && innerWidth.current > 1500}
@@ -163,7 +171,7 @@
             $showLayout = true;
           }}
         >
-          <Icon icon="solar:notebook-linear" width="15" height="15" />
+          <Icon icon="solar:notebook-outline" width="15" height="15" />
         </button>
       {/if}
     {/if}
