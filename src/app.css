@@ -34,11 +34,11 @@ input.layout-main {
 }
 
 .layout-white {
-  @apply bg-white/15 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 shadow-md shadow-black/30 ring-1 ring-white/15 backdrop-blur-xl;
+  @apply bg-black/40 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 shadow-sm shadow-black/45 ring-1 ring-white/15 backdrop-blur-xl;
 }
 
 .layout-black {
-  @apply bg-black/60 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 shadow-md shadow-black/30 ring-1 ring-white/15 backdrop-blur-xl;
+  @apply bg-black/60 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 shadow-sm shadow-black/45 ring-1 ring-white/15 backdrop-blur-xl;
 }
 
 .style-1 {

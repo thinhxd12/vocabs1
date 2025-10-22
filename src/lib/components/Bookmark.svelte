@@ -334,16 +334,6 @@
     class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/70 via-70% to-black/15 border-r border-black/10 shadow-lg shadow-black/30"
   >
     <div class="flex flex-col items-center">
-      {#if bookmark}
-        <div class="grid grid-cols-2 gap-3 w-3/4 px-3 py-6">
-          <span class="text-white text-12 leading-18 font-500 text-left">
-            {format(new Date(bookmark.dateOfCreation), "p cccc")}
-          </span>
-          <span class="text-white text-12 leading-18 font-500 text-right">
-            {format(new Date(bookmark.dateOfCreation), "do MMMM yyyy")}
-          </span>
-        </div>
-      {/if}
       {#if bookInfo}
         {#if bookInfo.coverImage}
           <img
@@ -395,6 +385,15 @@
         {#if bookInfo.authors}
           <p class="mb-3 text-12 leading-18 text-white/70 text-center font-500">
             {bookInfo.authors.join(", ")}
+          </p>
+        {/if}
+
+        {#if bookmark}
+          <p class="text-white/70 text-12 leading-18 font-500 text-left">
+            at {format(
+              new Date(bookmark.dateOfCreation),
+              "p cccc, do MMMM yyyy"
+            )}
           </p>
         {/if}
 

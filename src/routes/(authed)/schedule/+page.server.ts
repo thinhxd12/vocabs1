@@ -73,7 +73,8 @@ export const actions = {
       thisWeekIndex = findNextElement(currentPatternArr, lastWeekIndex);
 
     let pattern = [0, 100, 50, 150];
-    if (lengthVocabTable <= 100) pattern = [0, 0, 0, 0];
+    if (lengthVocabTable <= 100) pattern = [0, 50, 0, 50];
+    if (lengthVocabTable <= 50) pattern = [0, 0, 0, 0];
 
     for (let i = 0; i < 12; i++) {
       const row: DBInsert["schedule_table"] = {

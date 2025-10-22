@@ -47,7 +47,7 @@
           editWord = data[0];
           meaningsText = JSON.stringify(editWord.meanings, null, "     ");
           translationText = makeTranslationText(editWord.meanings);
-          getTextDataWebster();
+          getTextDataWebster(false);
         }
       }
     });
@@ -56,11 +56,13 @@
   let meaningsText = $state<string>();
   let translationText = $state<string>();
 
-  async function getTextDataWebster() {
+  async function getTextDataWebster(isChange: boolean) {
     const response = await fetch(`/server/getwebster?word=${editWord.word}`);
     editRenderWord = await response.json();
-    editWord.audio = editRenderWord.audio;
-    editWord.phonetics = editRenderWord.phonetics;
+    if (isChange) {
+      editWord.audio = editRenderWord.audio;
+      editWord.phonetics = editRenderWord.phonetics;
+    }
   }
 
   function makeTranslationText(arr: VocabMeaningType[]) {
@@ -147,7 +149,7 @@
               e.stopPropagation();
               if (e.key === "Enter") {
                 e.preventDefault();
-                getTextDataWebster();
+                getTextDataWebster(true);
               }
             }}
             bind:value={editWord.word}
@@ -157,7 +159,7 @@
             type="button"
             onclick={(e) => {
               e.stopPropagation();
-              getTextDataWebster();
+              getTextDataWebster(true);
             }}
             class="w-28 h-28 text-white/30 hover:text-white transition duration-100 absolute top-1 right-1"
           >
