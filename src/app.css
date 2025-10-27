@@ -34,11 +34,11 @@ input.layout-main {
 }
 
 .layout-white {
-  @apply bg-black/40 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 shadow-sm shadow-black/45 ring-1 ring-white/15 backdrop-blur-xl;
+  @apply bg-[color-mix(in_oklab,_white_15%,_transparent)] shadow-inner backdrop-blur-sm border border-[color-mix(in_oklab,_color-mix(in_oklab,_transparent_80%,_transparent)_90%,_white_)];
 }
 
 .layout-black {
-  @apply bg-black/60 bg-gradient-to-tr from-teal-200/15 to-zinc-100/15 shadow-sm shadow-black/45 ring-1 ring-white/15 backdrop-blur-xl;
+  @apply bg-[color-mix(in_oklab,_black_20%,_transparent)] shadow-inner backdrop-blur-sm border border-[color-mix(in_oklab,_color-mix(in_oklab,_transparent_80%,_transparent)_90%,_white_)];
 }
 
 .style-1 {

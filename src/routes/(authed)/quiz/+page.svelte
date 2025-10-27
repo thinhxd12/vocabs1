@@ -106,10 +106,10 @@
     class="w-content h-[calc(100vh-42px)] flex flex-col overflow-y-scroll no-scrollbar"
   >
     <div
-      class="my-9 min-h-[120px] w-2/3 mx-auto relative flex no-scrollbar layout-black select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
+      class="my-6 min-h-[120px] w-full mx-auto relative flex no-scrollbar layout-black select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
     >
       <h1
-        class="absolute left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/20 font-200"
+        class="absolute left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/30 font-200"
       >
         {$quizRender.number}
       </h1>
@@ -125,12 +125,12 @@
           {#if el.image}
             {#if el.image}
               <ImageLoader
-                width={252}
-                height={142}
+                width={378}
+                height={213}
                 imageSrc={el.image}
                 hash={el.hash}
                 word={$quizRender}
-                className="mb-9 shadow-sm shadow-black/45"
+                className="mb-6 shadow-sm shadow-black/45 rounded-3"
               />
             {/if}
           {/if}
@@ -139,7 +139,7 @@
     </div>
 
     <div
-      class="bg-transparent no-scrollbar w-2/3 mb-3 outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-3"
+      class="bg-transparent no-scrollbar w-full mb-3 outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-3"
     >
       {#each options as item}
         <button
@@ -164,14 +164,14 @@
 
 <style>
   .quiz-choice {
-    @apply cursor-pointer w-full h-[72px] select-none overflow-hidden rounded-3 text-center text-15 leading-21 !bg-white/5 hover:!bg-white/15 transition-all;
+    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden rounded-3 text-center text-14 leading-21 hover:!bg-white/30 transition-all text-black/90 font-400;
   }
 
   .quiz-choice-true {
-    @apply cursor-pointer w-full h-[72px] select-none overflow-hidden rounded-3 text-center text-15 leading-21 !bg-green-400;
+    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden rounded-3 text-center text-14 leading-21 !bg-green-400/60 text-black/90 font-400;
   }
 
   .quiz-choice-false {
-    @apply cursor-pointer w-full h-[72px] select-none overflow-hidden rounded-3 text-center text-15 leading-21 !bg-red-500;
+    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden rounded-3 text-center text-14 leading-21 !bg-red-500/60 text-black/90 font-400;
   }
 </style>

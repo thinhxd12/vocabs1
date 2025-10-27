@@ -128,81 +128,6 @@
     class="layout-black h-36 flex-1 overflow-hidden rounded-1 flex flex-wrap justify-center"
   >
     <div class="w-full flex justify-center items-center">
-      <a
-        href="/vocab"
-        class:active={page.url.pathname === "/vocab"}
-        class="btn-nav"
-      >
-        <Icon icon="solar:compass-square-linear" width="13" height="13" />
-      </a>
-
-      <a
-        href="/schedule"
-        class:active={page.url.pathname === "/schedule"}
-        class="btn-nav"
-      >
-        <Icon icon="solar:calendar-linear" width="13" height="13" />
-      </a>
-
-      <a
-        href="/quiz"
-        class="btn-nav"
-        class:active={page.url.pathname === "/quiz"}
-      >
-        <Icon icon="solar:bill-check-linear" width="13" height="13" />
-      </a>
-
-      <a
-        href="/sad"
-        class="btn-nav"
-        class:active={page.url.pathname === "/sad"}
-      >
-        <Icon icon="solar:sad-circle-outline" width="13" height="13" />
-      </a>
-
-      <a
-        href="/live"
-        class:active={page.url.pathname === "/live"}
-        class="btn-nav"
-      >
-        <Icon icon="solar:tv-outline" width="13" height="13" />
-      </a>
-
-      {#if innerWidth.current && innerWidth.current > 1500}
-        {#if $showLayout}
-          <button
-            class="btn-nav"
-            class:active={$showLayout}
-            onclick={() => ($showLayout = !$showLayout)}
-          >
-            <Icon icon="solar:undo-left-square-linear" width="13" height="13" />
-          </button>
-        {:else}
-          <button
-            class="btn-nav"
-            class:active={$showLayout}
-            onclick={() => {
-              $showBookmark = true;
-              $showLayout = true;
-            }}
-          >
-            <Icon icon="solar:notebook-outline" width="13" height="13" />
-          </button>
-        {/if}
-      {/if}
-    </div>
-
-    <div class="w-full flex justify-center items-center">
-      <form method="post" action="/login?/signout">
-        <button class="btn-menu">
-          <Icon
-            icon="solar:lock-password-unlocked-outline"
-            width="13"
-            height="13"
-          />
-        </button>
-      </form>
-
       <button
         class="btn-menu"
         class:active={$todaySchedule &&
@@ -229,10 +154,6 @@
         {/if}
       </button>
 
-      <button class="btn-menu" onclick={() => ($showTranslate = true)}>
-        <Icon icon="ph:translate" width="13" height="13" />
-      </button>
-
       <button
         class="btn-menu {$showTimer ? 'timer' : ''}"
         onclick={() => ($showTimer = !$showTimer)}
@@ -244,6 +165,98 @@
           class="relative z-20"
         />
       </button>
+
+      {#if innerWidth.current && innerWidth.current > 1500}
+        {#if $showLayout}
+          <button
+            class="btn-nav"
+            class:active={$showLayout}
+            onclick={() => ($showLayout = !$showLayout)}
+          >
+            <Icon
+              icon="solar:align-horizontal-center-outline"
+              width="13"
+              height="13"
+            />
+          </button>
+        {:else}
+          <button
+            class="btn-nav"
+            class:active={$showLayout}
+            onclick={() => {
+              $showBookmark = true;
+              $showLayout = true;
+            }}
+          >
+            <Icon icon="solar:align-right-outline" width="13" height="13" />
+          </button>
+        {/if}
+      {/if}
+    </div>
+
+    <div class="w-full flex justify-center items-center">
+      <a
+        href="/vocab"
+        class:active={page.url.pathname === "/vocab"}
+        class="btn-nav"
+      >
+        <Icon icon="solar:document-linear" width="13" height="13" />
+      </a>
+
+      <a
+        href="/schedule"
+        class:active={page.url.pathname === "/schedule"}
+        class="btn-nav"
+      >
+        <Icon icon="solar:calendar-date-linear" width="13" height="13" />
+      </a>
+
+      <a
+        href="/quiz"
+        class="btn-nav"
+        class:active={page.url.pathname === "/quiz"}
+      >
+        <Icon
+          icon="solar:list-check-minimalistic-bold"
+          width="13"
+          height="13"
+        />
+      </a>
+
+      <a
+        href="/vocab"
+        class:active={page.url.pathname === "/vocab"}
+        class="btn-nav"
+        onclick={() => ($showTranslate = true)}
+      >
+        <Icon icon="fluent:translate-16-regular" width="15" height="15" />
+      </a>
+
+      <a
+        href="/sad"
+        class="btn-nav"
+        class:active={page.url.pathname === "/sad"}
+      >
+        <Icon
+          icon="solar:expressionless-square-linear"
+          width="13"
+          height="13"
+        />
+      </a>
+
+      <a
+        href="/live"
+        class:active={page.url.pathname === "/live"}
+        class="btn-nav"
+      >
+        <Icon icon="solar:balls-broken" width="13" height="13" />
+      </a>
+
+      <form method="post" action="/login?/signout">
+        <button class="btn-menu">
+          <Icon icon="solar:logout-outline" width="13" height="13" />
+        </button>
+      </form>
     </div>
   </div>
 
@@ -350,15 +363,15 @@
 
 <style>
   .btn-nav {
-    @apply outline-none h-15 min-w-17 px-2 mx-2 rounded-2 flex items-center justify-center bg-white/5 hover:bg-white/30 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30;
+    @apply outline-none h-15 min-w-17 px-2 mx-2 rounded-2 flex items-center justify-center bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .btn-nav.active {
-    @apply bg-white/30 text-black;
+    @apply bg-white/60 text-black;
   }
 
   .btn-menu {
-    @apply mx-2 flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/5 hover:bg-white/30  text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30;
+    @apply mx-2 flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 hover:bg-white/40  text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .btn-menu span {
@@ -366,11 +379,11 @@
   }
 
   .btn-menu.active {
-    @apply !bg-green-400/90 text-black;
+    @apply !bg-green-400/60 text-black;
   }
 
   .btn-menu.timer {
-    @apply !bg-blue-500/90 text-black;
+    @apply !bg-blue-500/60 text-black;
   }
 
   .btn-weather {

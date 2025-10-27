@@ -88,7 +88,7 @@
     class="my-9 min-h-[105px] w-content mx-auto relative flex no-scrollbar layout-white select-none items-center overflow-hidden rounded-3"
   >
     <h1
-      class="absolute font-300 w-full left-1/2 -translate-x-1/2 flex justify-between items-center bg-transparent text-center text-[135px] leading-[105px] text-white/15"
+      class="absolute font-300 w-full left-1/2 -translate-x-1/2 flex justify-between items-center bg-transparent text-center text-[135px] leading-[105px] text-secondary-white"
     >
       <span class="w-[170px] text-center">{minute()}</span>
       <span class="leading-[90px] -mt-30">:</span>
@@ -115,6 +115,6 @@
 
 <style>
   .btn-timer {
-    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-100 text-white/50;
+    @apply outline-none my-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-100 text-secondary-white;
   }
 </style>

@@ -278,7 +278,7 @@
   {#if $searchResults.length}
     <div
       transition:expand={{ duration: 150 }}
-      class="layout-white p-6 rounded-3 absolute flex flex-col w-full h-full z-20 no-scrollbar overflow-y-scroll"
+      class="layout-white p-3 rounded-3 absolute flex flex-col w-full h-full z-20 no-scrollbar overflow-y-scroll"
     >
       {#each $searchResults as item, i}
         {#if i === deleteIndex}
@@ -299,7 +299,7 @@
           </div>
         {:else}
           <div
-            class="flex items-center justify-between h-27 my-6 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
+            class="flex items-center justify-between h-27 my-3 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
           >
             <button
               onclick={() => handleEditFromSearch(item.id)}

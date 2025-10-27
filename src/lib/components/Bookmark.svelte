@@ -331,7 +331,7 @@
 
 <div class="flex items-center justify-between flex-1 h-full relative">
   <div
-    class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden backdrop-blur-xl bg-gradient-to-b from-black/80 via-black/70 via-70% to-black/15 border-r border-black/10 shadow-lg shadow-black/30"
+    class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden layout-black"
   >
     <div class="flex flex-col items-center">
       {#if bookInfo}

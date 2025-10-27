@@ -56,14 +56,14 @@
 {/if}
 
 {#if !$showLayout}
-  <div class=" absolute z-50 top-0 left-0 hidden sm:flex">
+  <div class="absolute z-50 top-0 left-0 hidden sm:flex">
     <select
       bind:value={bgSrc}
       onchange={() => (showBg = false)}
       class="layout-white btn-menu"
     >
       {#each videos as video}
-        <option value={video.src}>
+        <option value={video.src} class="!bg-none text-black">
           {video.id}
         </option>
       {/each}
@@ -89,6 +89,6 @@
 
 <style>
   .btn-menu {
-    @apply m-3 flex size-27 items-center justify-center appearance-none text-center cursor-pointer rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90 text-9 leading-27 font-500 outline-none;
+    @apply m-3 flex size-27 items-center justify-center appearance-none text-center cursor-pointer rounded-3 hover:bg-white/40 transition duration-100 text-white text-11 font-400 outline-none;
   }
 </style>
