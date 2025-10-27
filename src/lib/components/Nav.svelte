@@ -225,9 +225,9 @@
 
       <a
         href="/vocab"
-        class:active={($showTranslate = true)}
         class="btn-nav"
         onclick={() => ($showTranslate = true)}
+        class:active={$showTranslate}
       >
         <Icon icon="fluent:translate-16-regular" width="15" height="15" />
       </a>
@@ -237,11 +237,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <Icon
-          icon="solar:expressionless-square-linear"
-          width="13"
-          height="13"
-        />
+        <Icon icon="pixelarticons:mood-sad" width="13" height="13" />
       </a>
 
       <a
