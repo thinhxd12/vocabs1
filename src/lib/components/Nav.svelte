@@ -225,7 +225,7 @@
 
       <a
         href="/vocab"
-        class:active={page.url.pathname === "/vocab"}
+        class:active={($showTranslate = true)}
         class="btn-nav"
         onclick={() => ($showTranslate = true)}
       >
