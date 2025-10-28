@@ -4,7 +4,6 @@
     listContent,
     quizRender,
     listCount,
-    totalMemories,
     updateTodayScheduleLocal,
     showTimer,
   } from "$lib/store/navstore";
@@ -12,11 +11,12 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { timerString } from "$lib/store/layoutstore";
   import { archiveVocab } from "$lib/functions";
-  import type { PageProps } from "./$types";
   import { page } from "$app/state";
 
-  let src = $state<string>("");
-  let paused = $state<boolean>(true);
+  let src0 = $state<string>("");
+  let paused0 = $state<boolean>(true);
+  let src1 = $state<string>("");
+  let paused1 = $state<boolean>(true);
   let value = $state("");
   let options = $state<string[]>([]);
   let submitted = $state<boolean>(false);
@@ -33,6 +33,11 @@
 
   function createOptions() {
     if ($listContent.length === 0 || !$quizRender) return;
+    let sound = $quizRender!.meanings
+      .flatMap((item) => item.translation)
+      .join(", ");
+    src0 = `https://vocabs3.vercel.app/speech?text=${sound}`;
+    paused0 = false;
     const filterdOptions = $listContent.filter(
       (choice) => choice.id !== $quizRender!.id
     );
@@ -48,11 +53,11 @@
     if (value == $quizRender.word) {
       handleCheckQuizWord();
       $quizRender = { ...$quizRender, number: $quizRender.number - 1 };
-      src = $quizRender.audio;
-      paused = false;
+      src1 = $quizRender.audio;
+      paused1 = false;
     } else {
-      src = "/sounds/mp3_Boing.mp3";
-      paused = false;
+      src0 = "/sounds/mp3_Boing.mp3";
+      paused0 = false;
     }
     $listCount += 1;
     if ($listCount < $listContent.length) {
@@ -63,8 +68,8 @@
       }, 1000);
     } else {
       setTimeout(async () => {
-        src = "/sounds/mp3_Ding.mp3";
-        paused = false;
+        src0 = "/sounds/mp3_Ding.mp3";
+        paused0 = false;
         $quizRender = undefined;
         $listContent = [];
         $listCount = 0;
@@ -99,7 +104,8 @@
 
   <meta name="Quiz" content="Some Quiz" />
 </svelte:head>
-<audio {src} bind:paused></audio>
+<audio src={src0} bind:paused={paused0}></audio>
+<audio src={src1} bind:paused={paused1}></audio>
 
 {#if $quizRender}
   <main

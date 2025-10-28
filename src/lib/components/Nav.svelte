@@ -96,10 +96,10 @@
 
 <nav class="w-content h-[42px] flex z-20">
   <div
-    class="w-12 h-36 rounded-1 mr-3 flex flex-col items-center justify-between overflow-hidden shadow-sm shadow-black/45 ring-1 ring-white/15"
+    class="layout-black w-12 h-36 rounded-1 mr-3 flex flex-col items-center justify-between overflow-hidden"
   >
     <div
-      class="w-full h-22 bg-black/45 flex flex-col justify-center text-center backdrop-blur-xl"
+      class="w-full h-22 flex flex-col justify-center text-center backdrop-blur-xl"
     >
       {#if $todaySchedule}
         <span class="text-9 leading-11 text-white">
@@ -257,7 +257,7 @@
   </div>
 
   <div
-    class="ml-3 flex rounded-1 h-36 flex-col items-center px-2 justify-center text-white layout-black !bg-black/90"
+    class="ml-3 flex rounded-2 h-36 flex-col items-center px-2 justify-center text-white layout-black"
   >
     <span class="font-tupa text-18 font-600 leading-17">
       {Math.floor($totalMemories / 100) < 10
@@ -272,11 +272,11 @@
   </div>
 
   <button
-    class="btn-weather relative before:bg-black/15 before:absolute before:inset-0 before:content-['']"
+    class="btn-weather relative bg-no-repeat bg-clip-content before:bg-black/15 before:absolute before:inset-0 before:content-['']"
     style="background-image: url({getConditionBackground(
       navWeatherData.values.weatherCode,
       navWeatherData.time
-    )})"
+    )});background-size: 88px 34px;"
     onclick={() => ($showWeather = !$showWeather)}
   >
     <div class="flex absolute top-1 right-3 justify-center items-start gap-3">
@@ -383,11 +383,11 @@
   }
 
   .btn-weather {
-    @apply relative rounded-2 outline-none ml-3 block h-36 min-w-[90px] overflow-hidden  shadow-md shadow-black/30 ring-1 ring-white/15 bg-cover;
+    @apply relative rounded-2 outline-none ml-3 block h-36 min-w-[90px] overflow-hidden border border-white/10;
   }
 
   .btn-autoplay {
-    @apply rounded-2 outline-none relative ml-3 h-36  min-w-[90px]  w-[90px] overflow-hidden shadow-md shadow-black/30 ring-1 ring-white/15;
+    @apply rounded-2 outline-none relative ml-3 h-36 min-w-[90px] w-[90px] overflow-hidden border border-white/10;
   }
 
   .marquee-container {

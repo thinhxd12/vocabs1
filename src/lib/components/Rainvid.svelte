@@ -89,6 +89,6 @@
 
 <style>
   .btn-menu {
-    @apply m-3 flex size-27 items-center justify-center appearance-none text-center cursor-pointer rounded-3 hover:bg-white/40 transition duration-100 text-white text-11 font-400 outline-none;
+    @apply m-3 flex size-23 items-center justify-center appearance-none text-center cursor-pointer rounded-3 hover:bg-white/40 transition duration-100 text-white text-11 font-400 outline-none;
   }
 </style>

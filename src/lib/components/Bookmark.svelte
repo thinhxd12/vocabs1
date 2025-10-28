@@ -8,6 +8,7 @@
   import StarRating from "./StarRating.svelte";
   import { page } from "$app/state";
   import { showBookmark } from "$lib/store/layoutstore";
+  import { DEFAULT_CORS_PROXY } from "$lib/constants";
 
   type PageContent = {
     flipped: boolean;
@@ -38,7 +39,7 @@
       .eq("id", idData.currentId)
       .limit(1);
     if (data && data.length) {
-      isReset = true;
+      resetRenderBookmark();
       bookmark = data[0];
       handleGetBookInfo(data[0]);
       setBookContent(data[0].content);
@@ -98,7 +99,7 @@
       .update({ currentId: data.id })
       .eq("id", 1);
 
-    isReset = true;
+    resetRenderBookmark();
     if (data.bookTile !== bookmark?.bookTile) {
       handleGetBookInfo(data);
     }
@@ -143,7 +144,7 @@
   }
 
   async function getRandomBookmark() {
-    isReset = true;
+    resetRenderBookmark();
     const { data, error } = await page.data.supabase.rpc("get_random_bookmark");
     if (data && data.length) {
       if (data[0].bookTile !== bookmark?.bookTile) {
@@ -253,13 +254,8 @@
         const last = acc[acc.length - 1];
         if (acc.length > 1) {
           if (
-            getHeight(
-              last + " " + curr,
-              "Copernicus, sans-serif",
-              14,
-              24,
-              285
-            ) < maxHeight
+            getHeight(last + " " + curr, "Open Sans, sans-serif", 15, 24, 300) <
+            maxHeight
           ) {
             acc[acc.length - 1] = (last + " " + curr).trim();
           } else {
@@ -270,10 +266,10 @@
           if (
             getHeightFirstPage(
               last + " " + curr,
-              "Copernicus, sans-serif",
-              14,
+              "Open Sans, sans-serif",
+              15,
               24,
-              285
+              300
             ) < maxHeight
           ) {
             acc[acc.length - 1] = (last + " " + curr).trim();
@@ -320,6 +316,31 @@
   }
 
   let isSubmitting = $state<boolean>(false);
+  let showTranslated = $state<boolean>(false);
+  let translatedContent = $state<string>("");
+
+  async function translateContent(content: string) {
+    if (!translatedContent.length) {
+      const url = `https://vocabs3.vercel.app/trans?text=${bookmark?.content}&from=auto&to=vi`;
+      const response = await fetch(DEFAULT_CORS_PROXY + url);
+      const data = await response.json();
+      translatedContent = data.translation;
+    }
+
+    if (showTranslated) {
+      setBookContent(bookmark!.content);
+      showTranslated = false;
+    } else {
+      setBookContent(translatedContent);
+      showTranslated = true;
+    }
+  }
+
+  function resetRenderBookmark() {
+    isReset = true;
+    showTranslated = false;
+    translatedContent = "";
+  }
 </script>
 
 <svelte:head>
@@ -420,6 +441,16 @@
     </div>
 
     <div class="flex justify-center items-baseline w-full py-9">
+      <button
+        class="btn-menu"
+        onclick={() =>
+          translateContent(
+            "Con người, đau khổ vì chính mình theo cách này hay cách khác, nhưng trong bất kỳ trường hợp nào về mặt sinh lý, giống như một con vật bị nhốt trong chuồng, không biết tại sao hay vì lý do gì, khao khát những lý do - những lý do giải tỏa - cũng khát khao những phương thuốc và ma túy, cuối cùng cũng phải hỏi ý kiến ​​một người biết những điều ẩn giấu - và kìa! anh ta nhận được một gợi ý, anh ta nhận được từ thầy phù thủy của mình, một linh mục khổ hạnh."
+          )}
+      >
+        <Icon icon="ic:twotone-g-translate" width="15" height="15" />
+      </button>
+
       <button class="btn-menu" onclick={copyBookMarkToClipboard}>
         <Icon icon="solar:copy-outline" width="15" height="15" />
       </button>
@@ -919,9 +950,9 @@
   .book-content {
     height: 450px;
     width: 285px;
-    font-family: "Copernicus", sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 24px;
     margin: 50px 45px;
     overflow: hidden;
@@ -1029,7 +1060,7 @@
   }
 
   .btn-menu {
-    @apply mx-3 size-27 flex items-center justify-center transition duration-300 text-white/60 hover:text-white;
+    @apply mx-3 size-23 flex items-center justify-center transition duration-300 text-white/60 hover:text-white;
   }
   .btn-menu:active :global svg {
     transform: scale(1.1);

@@ -34,7 +34,7 @@ input.layout-main {
 }
 
 .layout-white {
-  @apply bg-[color-mix(in_oklab,_white_15%,_transparent)] shadow-inner backdrop-blur-sm border border-[color-mix(in_oklab,_color-mix(in_oklab,_transparent_80%,_transparent)_90%,_white_)];
+  @apply bg-[color-mix(in_oklab,_white_20%,_transparent)] shadow-inner backdrop-blur-sm border border-[color-mix(in_oklab,_color-mix(in_oklab,_transparent_80%,_transparent)_90%,_white_)];
 }
 
 .layout-black {
