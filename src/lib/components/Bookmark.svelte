@@ -321,10 +321,10 @@
 
   async function translateContent(content: string) {
     if (!translatedContent.length) {
-      const url = `https://vocabs3.vercel.app/trans?text=${bookmark?.content}&from=auto&to=vi`;
-      const response = await fetch(DEFAULT_CORS_PROXY + url);
+      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${bookmark?.content}`;
+      const response = await fetch(url);
       const data = await response.json();
-      translatedContent = data.translation;
+      translatedContent = data[0][0];
     }
 
     if (showTranslated) {
