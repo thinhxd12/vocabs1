@@ -56,8 +56,8 @@
       src1 = $quizRender.audio;
       paused1 = false;
     } else {
-      src0 = "/sounds/mp3_Boing.mp3";
-      paused0 = false;
+      src1 = "/sounds/mp3_Boing.mp3";
+      paused1 = false;
     }
     $listCount += 1;
     if ($listCount < $listContent.length) {
@@ -68,8 +68,8 @@
       }, 1000);
     } else {
       setTimeout(async () => {
-        src0 = "/sounds/mp3_Ding.mp3";
-        paused0 = false;
+        src1 = "/sounds/mp3_Ding.mp3";
+        paused1 = false;
         $quizRender = undefined;
         $listContent = [];
         $listCount = 0;

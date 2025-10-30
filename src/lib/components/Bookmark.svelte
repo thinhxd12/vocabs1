@@ -8,7 +8,6 @@
   import StarRating from "./StarRating.svelte";
   import { page } from "$app/state";
   import { showBookmark } from "$lib/store/layoutstore";
-  import { DEFAULT_CORS_PROXY } from "$lib/constants";
 
   type PageContent = {
     flipped: boolean;
@@ -254,7 +253,7 @@
         const last = acc[acc.length - 1];
         if (acc.length > 1) {
           if (
-            getHeight(last + " " + curr, "Open Sans, sans-serif", 15, 24, 300) <
+            getHeight(last + " " + curr, "Proxima Nova", 16, 23, 295) <
             maxHeight
           ) {
             acc[acc.length - 1] = (last + " " + curr).trim();
@@ -264,13 +263,8 @@
           return acc;
         } else {
           if (
-            getHeightFirstPage(
-              last + " " + curr,
-              "Open Sans, sans-serif",
-              15,
-              24,
-              300
-            ) < maxHeight
+            getHeightFirstPage(last + " " + curr, "Proxima Nova", 16, 23, 295) <
+            maxHeight
           ) {
             acc[acc.length - 1] = (last + " " + curr).trim();
           } else {
@@ -290,7 +284,7 @@
   let flipPages = $state<PageContent[]>([]);
 
   function setBookContent(content: string) {
-    pages = splitIntoBlocks(content, 450);
+    pages = splitIntoBlocks(content, 415);
     let result: PageContent[] = [];
     const middle = pages.slice(1, -1);
     for (let i = 0; i < middle.length; i += 2) {
@@ -352,7 +346,7 @@
 
 <div class="flex items-center justify-between flex-1 h-full relative">
   <div
-    class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden layout-black"
+    class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden layout-black !bg-black/45"
   >
     <div class="flex flex-col items-center">
       {#if bookInfo}
@@ -478,8 +472,10 @@
   </div>
 
   <div class="flex-1 h-full flex justify-center items-center">
-    <div class="book">
-      <div class="cover-front">
+    <div class="cover">
+      <div class="layer-1"></div>
+      <div class="layer-2"></div>
+      <div class="page-front">
         {#await promise}
           <img
             src="/gif/whisperoftheheart.gif"
@@ -515,9 +511,9 @@
         ></button>
       {/if}
 
-      <div class="flip-book">
+      <div class="page-flip">
         {#await promise}
-          <div class="cover-back"></div>
+          <div class="page-back"></div>
         {:then data}
           {#each flipPages as page, i}
             <button
@@ -546,7 +542,7 @@
               </div>
             </button>
           {/each}
-          <div class="cover-back">
+          <div class="page-back">
             <p class="book-content">
               {pages[pages.length - 1]}
             </p>
@@ -558,7 +554,7 @@
             </button>
           </div>
         {:catch error}
-          <div class="cover-back"></div>
+          <div class="page-back"></div>
         {/await}
       </div>
     </div>
@@ -761,20 +757,41 @@
 </div>
 
 <style>
-  .book {
-    display: flex;
-    padding: 0 15px 0;
-    box-shadow: 0 30px 21px rgba(0, 0, 0, 0.6);
-    border-radius: 3px;
-    position: relative;
+  .cover {
+    width: 95%;
+    aspect-ratio: 1.61803398875;
     background-image: url("/images/paper.webp");
     background-size: cover;
+    position: relative;
+    display: flex;
+    box-shadow: rgba(0, 0, 0, 0.8) 0px 30px 21px;
   }
 
-  .cover-front {
-    width: 376px;
-    height: 550px;
-    position: relative;
+  .layer-1 {
+    position: absolute;
+    left: 12px;
+    top: 9px;
+    width: calc(100% - 24px);
+    height: calc(100% - 18px);
+    background-color: #9c8f78;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);
+  }
+
+  .layer-2 {
+    position: absolute;
+    left: 20px;
+    top: 6px;
+    width: calc(100% - 40px);
+    height: calc(100% - 12px);
+    background-color: #bdbaad;
+  }
+
+  .page-front {
+    width: calc(50% - 28px);
+    height: calc(100% - 8px);
+    position: absolute;
+    left: 28px;
+    top: 4px;
     background-color: #f5f5f5;
     background-image: linear-gradient(
         90deg,
@@ -787,23 +804,12 @@
     border-right: 1px solid rgba(204, 204, 204, 0.7);
   }
 
-  .book::before {
-    content: "";
-    background-color: #bdbaad;
+  .page-back {
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
-    left: 8px;
-    right: 8px;
-    bottom: 0;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);
-  }
-
-  .cover-back {
-    width: 375px;
-    height: 550px;
-    position: absolute;
-    top: 0;
-    left: 0;
+    right: 0;
     background-color: #f5f5f5;
     background-image: linear-gradient(
         -90deg,
@@ -815,10 +821,12 @@
     cursor: default;
   }
 
-  .flip-book {
-    width: 375px;
-    height: 550px;
-    position: relative;
+  .page-flip {
+    width: calc(50% - 28px);
+    height: calc(100% - 8px);
+    position: absolute;
+    left: 50%;
+    top: 4px;
     perspective: 2000px;
   }
 
@@ -933,7 +941,7 @@
     height: 100%;
     top: 0;
     left: 0;
-    z-index: 0;
+    z-index: 999;
     cursor: pointer;
   }
 
@@ -943,23 +951,25 @@
     height: 100%;
     top: 0;
     right: 0;
-    z-index: 0;
+    z-index: 999;
     cursor: pointer;
   }
 
   .book-content {
-    height: 450px;
-    width: 285px;
-    font-family: "Open Sans", sans-serif;
+    width: 100%;
+    height: 100%;
+    font-family: "Proxima Nova", sans-serif;
     font-weight: 400;
-    font-size: 15px;
-    line-height: 24px;
-    margin: 50px 45px;
+    font-size: 16px;
+    line-height: 1.4375;
+    padding: 55px 50px;
     overflow: hidden;
     text-align: left;
+    text-size-adjust: 100%;
+    color: #1e1915;
   }
 
-  .cover-front .book-content::first-letter {
+  .page-front .book-content::first-letter {
     font-family: "Open Sans";
     font-size: 125px;
     color: #dcd8d1;
@@ -982,22 +992,23 @@
 
   .ribbon-zero {
     width: 36px;
-    height: 6px;
+    height: 12px;
     position: absolute;
     padding-top: 6px;
-    top: -6px;
-    left: 352px;
+    top: -8px;
+    left: calc(50% - 40px);
     border-top-left-radius: 3px;
     user-select: none;
     background: #a90909;
   }
 
-  .ribbon-zero:before {
+  .ribbon-zero:before,
+  .ribbon:before {
     height: 0;
     width: 0;
-    right: -4px;
-    top: 0.1px;
-    border-bottom: 6px solid #c02031;
+    right: -5px;
+    top: 0px;
+    border-bottom: 9px solid #c02031;
     border-right: 5px solid transparent;
   }
   .ribbon-zero:before {
@@ -1007,11 +1018,11 @@
 
   .ribbon {
     width: 36px;
-    height: 300px;
+    height: 400px;
     position: absolute;
     padding-top: 6px;
-    top: -6px;
-    left: 352px;
+    top: -8px;
+    left: calc(50% - 40px);
     text-align: center;
     border-top-left-radius: 3px;
     font-family: "Copernicus", sans-serif;
@@ -1025,22 +1036,13 @@
       rgba(164, 5, 2, 1) 40%,
       rgb(229, 10, 0) 100%
     );
-    box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0px 8px 0px rgba(0, 0, 0, 0.9);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     z-index: 12;
   }
 
   .ribbon:active {
     box-shadow: none;
-  }
-
-  .ribbon:before {
-    height: 0;
-    width: 0;
-    right: -4px;
-    top: 0.1px;
-    border-bottom: 6px solid #c02031;
-    border-right: 5px solid transparent;
   }
 
   .ribbon:before,
@@ -1052,7 +1054,7 @@
   .ribbon:after {
     height: 0;
     width: 36px;
-    top: 300px;
+    top: 400px;
     left: 0;
     border-left: 18px solid #e50a00;
     border-right: 18px solid #e50a00;

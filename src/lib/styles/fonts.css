@@ -341,3 +341,31 @@
   font-style: italic;
   font-display: swap;
 }
+
+@font-face {
+  font-family: "Proxima Nova";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/proxima/ProximaNova-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Proxima Nova";
+  font-style: italic;
+  font-weight: 400;
+  src: url("/fonts/proxima/ProximaNova-RegularIt.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Proxima Nova";
+  font-style: normal;
+  font-weight: 600;
+  src: url("/fonts/proxima/ProximaNova-Semibold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Proxima Nova";
+  font-style: italic;
+  font-weight: 600;
+  src: url("/fonts/proxima/ProximaNova-SemiboldIt.woff") format("woff");
+}
