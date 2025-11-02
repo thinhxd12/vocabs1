@@ -346,7 +346,7 @@
 
 <div class="flex items-center justify-between flex-1 h-full relative">
   <div
-    class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden layout-black !bg-black/45"
+    class="w-[240px] h-full relative z-50 flex flex-col items-center justify-between overflow-hidden layout-black !bg-black/60"
   >
     <div class="flex flex-col items-center">
       {#if bookInfo}
@@ -475,6 +475,9 @@
     <div class="cover">
       <div class="layer-1"></div>
       <div class="layer-2"></div>
+      <div class="layer-3"></div>
+      <div class="layer-4"></div>
+      <div class="layer-5"></div>
       <div class="page-front">
         {#await promise}
           <img
@@ -765,6 +768,8 @@
     position: relative;
     display: flex;
     box-shadow: rgba(0, 0, 0, 0.8) 0px 30px 21px;
+    border: 1px solid #554e40;
+    border-radius: 3px;
   }
 
   .layer-1 {
@@ -773,16 +778,42 @@
     top: 9px;
     width: calc(100% - 24px);
     height: calc(100% - 18px);
-    background-color: #9c8f78;
+    background-color: #7b715e;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.9);
   }
-
   .layer-2 {
     position: absolute;
-    left: 20px;
-    top: 6px;
-    width: calc(100% - 40px);
-    height: calc(100% - 12px);
+    left: 15px;
+    top: 7px;
+    width: calc(100% - 30px);
+    height: calc(100% - 14px);
+    background-color: #918165;
+  }
+
+  .layer-3 {
+    position: absolute;
+    left: 19px;
+    top: 5px;
+    width: calc(100% - 38px);
+    height: calc(100% - 10px);
+    background-color: #9c8f78;
+  }
+
+  .layer-4 {
+    position: absolute;
+    left: 22px;
+    top: 4px;
+    width: calc(100% - 44px);
+    height: calc(100% - 8px);
+    background-color: #ae9f9d;
+  }
+
+  .layer-5 {
+    position: absolute;
+    left: 25px;
+    top: 3px;
+    width: calc(100% - 50px);
+    height: calc(100% - 6px);
     background-color: #bdbaad;
   }
 

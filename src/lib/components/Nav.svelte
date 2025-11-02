@@ -96,11 +96,9 @@
 
 <nav class="w-content h-[42px] flex z-20">
   <div
-    class="layout-black w-12 h-36 rounded-1 mr-3 flex flex-col items-center justify-between overflow-hidden"
+    class="layout-black !bg-black/60 w-12 h-36 rounded-1 mr-3 flex flex-col items-center justify-between overflow-hidden"
   >
-    <div
-      class="w-full h-22 flex flex-col justify-center text-center backdrop-blur-xl"
-    >
+    <div class="w-full h-22 flex flex-col justify-center text-center">
       {#if $todaySchedule}
         <span class="text-9 leading-11 text-white">
           {$todaySchedule.start.count}
@@ -114,9 +112,7 @@
       {/if}
     </div>
 
-    <div
-      class="w-full h-14 flex items-center justify-center bg-white/30 backdrop-blur-xl"
-    >
+    <div class="w-full h-14 flex items-center justify-center bg-white/30">
       <span
         class="uppercase transform -rotate-90 origin-center text-7 font-600"
       >
@@ -257,7 +253,7 @@
   </div>
 
   <div
-    class="ml-3 flex rounded-2 h-36 flex-col items-center px-2 justify-center text-white layout-black"
+    class="ml-3 flex rounded-2 h-36 flex-col items-center px-2 justify-center text-white layout-black !bg-black/60"
   >
     <span class="font-tupa text-18 font-600 leading-17">
       {Math.floor($totalMemories / 100) < 10
