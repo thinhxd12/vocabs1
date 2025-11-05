@@ -55,37 +55,33 @@
   </video>
 {/if}
 
-{#if !$showLayout}
-  <div class="absolute z-50 top-0 left-0 hidden sm:flex">
-    <select
-      bind:value={bgSrc}
-      onchange={() => (showBg = false)}
-      class="layout-white btn-menu"
-    >
-      {#each videos as video}
-        <option value={video.src} class="!bg-none text-black">
-          {video.id}
-        </option>
-      {/each}
-    </select>
+{#if !$showLayout}{/if}
+<div class="absolute z-50 top-0 left-0 hidden sm:flex">
+  <select
+    bind:value={bgSrc}
+    onchange={() => (showBg = false)}
+    class="layout-white btn-menu"
+  >
+    {#each videos as video}
+      <option value={video.src} class="!bg-none text-black">
+        {video.id}
+      </option>
+    {/each}
+  </select>
 
-    <button onclick={changeBackgroundImg} class="btn-menu layout-white">
-      <Icon icon="mingcute:sun-line" width="15" height="15" />
+  <button onclick={changeBackgroundImg} class="btn-menu layout-white">
+    <Icon icon="mingcute:sun-line" width="15" height="15" />
+  </button>
+  {#if !showBg}
+    <button onclick={() => (isMuted = !isMuted)} class="btn-menu layout-white">
+      {#if isMuted}
+        <Icon icon="solar:muted-outline" width="15" height="15" />
+      {:else}
+        <Icon icon="solar:volume-loud-linear" width="15" height="15" />
+      {/if}
     </button>
-    {#if !showBg}
-      <button
-        onclick={() => (isMuted = !isMuted)}
-        class="btn-menu layout-white"
-      >
-        {#if isMuted}
-          <Icon icon="solar:muted-outline" width="15" height="15" />
-        {:else}
-          <Icon icon="solar:volume-loud-linear" width="15" height="15" />
-        {/if}
-      </button>
-    {/if}
-  </div>
-{/if}
+  {/if}
+</div>
 
 <style>
   .btn-menu {
