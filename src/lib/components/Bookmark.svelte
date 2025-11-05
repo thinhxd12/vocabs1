@@ -570,7 +570,7 @@
             class="w-full h-full object-contain"
           />
         {:else}
-          <img src="/images/paper.webp" alt="" class="w-4/5 h-full" />
+          <img src="/images/paper.webp" alt="" class="w-3/5 h-full" />
         {/if}
         <div class="ribbonFrontCover"></div>
       </button>
@@ -723,7 +723,7 @@
         <button
           class="flip-page-ribbon"
           class:ribbon={bookmark?.like}
-          class:ribbonReset={isReset && bookmark?.like}
+          class:ribbonChecked={!isReset && bookmark?.like}
           onclick={() => handleCheckBookmark()}
         >
           {#if bookmark && bookmark.like}
@@ -743,8 +743,6 @@
     >
       <div class="front bg-[#999]"></div>
     </button>
-
-    <div class="breaker"></div>
 
     {#if flipPages.length}
       {#each flipPages as page, i}
@@ -778,7 +776,7 @@
             <button
               class="flip-page-ribbon"
               class:ribbon={bookmark?.like}
-              class:ribbonReset={isReset && bookmark?.like}
+              class:ribbonChecked={!isReset && bookmark?.like}
               onclick={() => handleCheckBookmark()}
             >
               {#if bookmark && bookmark.like}
@@ -826,6 +824,12 @@
     transform: rotateY(0deg);
   }
 
+  .front-cover,
+  .back-cover {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
   .back-cover {
     box-shadow:
       4px 4px 12px rgba(0, 0, 0, 0.9),
@@ -845,10 +849,24 @@
     background-image: linear-gradient(
         -90deg,
         #d4d4d4 0%,
-        rgba(247, 247, 247, 0) 18%
+        rgba(247, 247, 247, 0) 12%
       ),
-      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
-      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
+      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%),
+      linear-gradient(
+        90deg,
+        rgba(212, 212, 212, 0.8) 0%,
+        rgba(247, 247, 247, 0.3) 12%
+      ),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+  }
+
+  .front-cover .front {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
   }
 
   .back {
@@ -864,10 +882,15 @@
     background-image: linear-gradient(
         90deg,
         #d4d4d4 0%,
-        rgba(247, 247, 247, 0) 18%
+        rgba(247, 247, 247, 0) 12%
       ),
-      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%),
-      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 9%);
+      linear-gradient(0deg, rgb(212, 212, 212) 0%, rgba(247, 247, 247, 0) 12%),
+      linear-gradient(
+        -90deg,
+        rgba(212, 212, 212, 0.6) 0%,
+        rgba(247, 247, 247, 0.3) 18%
+      ),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
   }
 
   .pageFoldRight {
@@ -976,7 +999,7 @@
 
   .ribbonFrontCover {
     position: absolute;
-    top: -18px;
+    top: -9px;
     left: 12px;
     width: 36px;
     height: 9px;
@@ -1029,7 +1052,7 @@
 
   .ribbon {
     top: 0;
-    height: 110%;
+    height: 90%;
     font-family: "Copernicus", sans-serif;
     font-size: 24px;
     line-height: 30px;
@@ -1044,6 +1067,7 @@
       rgb(229, 10, 0) 100%
     );
     transition: height 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.6);
   }
 
   .ribbon:after {
@@ -1058,18 +1082,12 @@
     border-bottom: 18px solid transparent;
   }
 
-  .ribbonReset {
-    height: 90%;
+  .ribbonChecked {
+    height: 110%;
   }
 
-  .openned .breaker {
-    position: absolute;
-    width: 1px;
-    height: calc(100% - 18px);
-    left: 50%;
-    top: 9px;
-    background-color: rgba(204, 204, 204, 0.7);
-    z-index: 50;
+  .closed .flip-page-ribbon {
+    height: 90%;
   }
 
   .btn-menu {
