@@ -133,8 +133,9 @@ function parsePublishedDateSearch($: CheerioAPI, $el: Cheerio<any>, book: any) {
 function parseCoverImageSearch($: CheerioAPI, $el: Cheerio<any>, book: any) {
   let coverImage = $el.find("img.bookCover").attr("src");
   if (coverImage) {
-    coverImage = coverImage.replace("SX50", "SX500");
-    coverImage = coverImage.replace("SY75", "SY750");
+    // coverImage = coverImage.replace("SX50", "SX500");
+    // coverImage = coverImage.replace("SY75", "SY750");
+    coverImage = coverImage.replace(/\._[^.]+_\.jpg$/, ".jpg");
   }
   book.coverImage = coverImage || null;
 }

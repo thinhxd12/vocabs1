@@ -10,6 +10,7 @@
   import { showBookmark } from "$lib/store/layoutstore";
 
   type PageContent = {
+    id: number;
     flipped: boolean;
     front: string;
     back: string;
@@ -178,12 +179,14 @@
     showDelete = !showDelete;
   }
 
+  let pageWidth = $state<number>(0);
+  let pageHeight = $state<number>(0);
+
   function getHeight(
     pText: string,
     pFont: string,
     pSize: number,
-    pLine: number,
-    pWidth: number
+    pLine: number
   ) {
     let lDiv = document.createElement("div");
     document.body.appendChild(lDiv);
@@ -192,7 +195,7 @@
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine + "px";
-    lDiv.style.width = "" + pWidth + "px";
+    lDiv.style.width = String(pageWidth - 100) + "px";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
@@ -206,8 +209,7 @@
     pText: string,
     pFont: string,
     pSize: number,
-    pLine: number,
-    pWidth: number
+    pLine: number
   ) {
     let firstLetter = pText.slice(0, 1);
     let rest = pText.slice(1);
@@ -227,7 +229,7 @@
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine + "px";
-    lDiv.style.width = "" + pWidth + "px";
+    lDiv.style.width = String(pageWidth - 100) + "px";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
@@ -246,16 +248,16 @@
     return height;
   }
 
-  function splitIntoBlocks(text: string, maxHeight: number) {
+  function splitIntoBlocks(text: string) {
     const words = text.split(" ");
+    let maxHeight = pageHeight - 110;
 
     const result = words.reduce(
       (acc, curr) => {
         const last = acc[acc.length - 1];
         if (acc.length > 1) {
           if (
-            getHeight(last + " " + curr, "Proxima Nova", 16, 23, 345) <
-            maxHeight
+            getHeight(last + " " + curr, "Proxima Nova", 16, 23) < maxHeight
           ) {
             acc[acc.length - 1] = (last + " " + curr).trim();
           } else {
@@ -264,7 +266,7 @@
           return acc;
         } else {
           if (
-            getHeightFirstPage(last + " " + curr, "Proxima Nova", 16, 23, 345) <
+            getHeightFirstPage(last + " " + curr, "Proxima Nova", 16, 23) <
             maxHeight
           ) {
             acc[acc.length - 1] = (last + " " + curr).trim();
@@ -280,13 +282,13 @@
     return result;
   }
 
-  let currentPage = $state<number>(999);
+  let currentPage = $state<number>(-1);
   let pages = $state<string[]>([]);
   let flipPages = $state<PageContent[]>([]);
 
   function setBookContent(content: string) {
-    pages = splitIntoBlocks(content, 435);
-    let result: PageContent[] = [];
+    pages = splitIntoBlocks(content);
+    let result: any = [];
     for (let i = 0; i < pages.length; i += 2) {
       result.push({
         flipped: false,
@@ -294,7 +296,10 @@
         back: pages[i + 1] || "",
       });
     }
-    flipPages = result;
+    flipPages = result.map((item: any, index: number) => ({
+      id: index,
+      ...item,
+    }));
   }
 
   let insertData = $state<DBSelect["bookmark_table"][] | undefined>(undefined);
@@ -331,11 +336,52 @@
   }
 
   function resetRenderBookmark() {
-    setTimeout(() => {
-      isReset = true;
-      translatedContent = "";
-      showTranslated = false;
-    }, 300);
+    isReset = true;
+    translatedContent = "";
+    showTranslated = false;
+    currentPage = -1;
+  }
+  function handleFlipPage(id: number) {
+    currentPage = id;
+    flipPages[id].flipped = !flipPages[id].flipped;
+  }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === "ArrowRight") {
+      switch (currentPage) {
+        case -1:
+          isOpen ||= true;
+          setTimeout(() => {
+            currentPage = 0;
+          }, 500);
+          break;
+        case flipPages.length:
+          isOpen = false;
+          handleGetNextBookmark();
+          break;
+        default:
+          flipPages[currentPage].flipped = true;
+          setTimeout(() => {
+            currentPage++;
+          }, 500);
+          break;
+      }
+    } else if (e.key === "ArrowLeft") {
+      switch (currentPage) {
+        case -1:
+          break;
+        case 0:
+          isOpen = false;
+          handleGetPrevBookmark();
+          break;
+        default:
+          currentPage--;
+          flipPages[currentPage].flipped = false;
+          break;
+      }
+    } else if (e.key === "ArrowDown") {
+      handleCheckBookmark();
+    }
   }
 </script>
 
@@ -554,7 +600,7 @@
   <div class="book" class:openned={isOpen} class:closed={!isOpen}>
     <div
       class="front-cover bg-black"
-      style="z-index: {isOpen ? flipPages.length + 2 : 99}"
+      style="z-index: {isOpen ? flipPages.length + 2 : 1001}"
     >
       <button
         class="front flex justify-center"
@@ -572,15 +618,18 @@
         {:else}
           <img src="/images/paper.webp" alt="" class="w-3/5 h-full" />
         {/if}
-        <div class="ribbonFrontCover"></div>
       </button>
 
-      <div class="back flex justify-center items-center">
+      <div
+        class="back flex justify-center items-center"
+        bind:offsetWidth={pageWidth}
+        bind:offsetHeight={pageHeight}
+      >
         <button
           class="w-full h-full absolute top-0 left-0"
           onclick={() => {
             isOpen = false;
-            handleGetNextBookmark();
+            handleGetPrevBookmark();
           }}
           aria-label="prev-bookmark"
         ></button>
@@ -716,18 +765,14 @@
         </div>
 
         <button
-          class="ribbonZero"
-          onclick={() => handleCheckBookmark()}
-          aria-label="ribbonZero"
-        ></button>
-        <button
-          class="flip-page-ribbon"
+          class:ribbonUnchecked={!bookmark?.like}
           class:ribbon={bookmark?.like}
           class:ribbonChecked={!isReset && bookmark?.like}
           onclick={() => handleCheckBookmark()}
         >
           {#if bookmark && bookmark.like}
             <span>{bookmark.like}</span>
+            <div class="ribbonTail"></div>
           {/if}
         </button>
       </div>
@@ -736,9 +781,10 @@
     <button
       class="back-cover bg-black"
       aria-label="back-cover"
+      style="z-index: 1;"
       onclick={() => {
         isOpen = false;
-        handleGetPrevBookmark();
+        handleGetNextBookmark();
       }}
     >
       <div class="front bg-[#999]"></div>
@@ -749,50 +795,42 @@
         <div
           class="flip-page"
           class:flipped={page.flipped}
-          style="z-index: {i == currentPage
+          style="z-index: {currentPage === page.id
             ? 999
             : page.flipped
-              ? 2 + flipPages.length + i
-              : 1 + flipPages.length - i};"
+              ? 3 + flipPages.length + page.id
+              : 1 + flipPages.length - page.id};"
         >
           <div class="front" class:flipFirstPage={i == 0}>
             <p class="page-content">{page.front}</p>
+            <p class="page-number">{2 * i + 1}</p>
             <button
               class="buttonFoldRight absolute w-[60px] h-full top-0 right-0"
               aria-label="front-button"
-              onclick={() => {
-                currentPage = i;
-                flipPages[i].flipped = true;
-                setTimeout(() => {
-                  currentPage = 999;
-                }, 300);
-              }}
+              onclick={() => handleFlipPage(page.id)}
             >
               <div class="pageFoldRight"></div>
             </button>
           </div>
           <div class="back">
             <p class="page-content">{page.back}</p>
+            <p class="page-number">{2 * i + 2}</p>
             <button
-              class="flip-page-ribbon"
+              class:ribbonUnchecked={!bookmark?.like}
               class:ribbon={bookmark?.like}
               class:ribbonChecked={!isReset && bookmark?.like}
               onclick={() => handleCheckBookmark()}
             >
               {#if bookmark && bookmark.like}
                 <span>{bookmark.like}</span>
+                <div class="ribbonTail"></div>
               {/if}
             </button>
+
             <button
               class="buttonFoldLeft absolute w-[60px] h-full top-0 left-0"
               aria-label="back-button"
-              onclick={() => {
-                currentPage = i;
-                flipPages[i].flipped = false;
-                setTimeout(() => {
-                  currentPage = 999;
-                }, 300);
-              }}
+              onclick={() => handleFlipPage(page.id)}
             >
               <div class="pageFoldLeft"></div>
             </button>
@@ -803,9 +841,15 @@
   </div>
 </div>
 
+<svelte:window on:keydown={onKeyDown} />
+
 <style>
+  button:focus {
+    outline: none;
+  }
+
   .book {
-    perspective: 1500px;
+    perspective: 3000px;
     width: 80%;
     aspect-ratio: 1.61803398875;
   }
@@ -997,29 +1041,18 @@
       rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   }
 
-  .ribbonFrontCover {
+  .page-number {
     position: absolute;
-    top: -9px;
-    left: 12px;
-    width: 36px;
-    height: 9px;
-    border-top-right-radius: 3px;
-    user-select: none;
-    background: #a90909;
+    bottom: 21px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: "Copernicus", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
   }
 
-  .ribbonFrontCover::before {
-    content: "";
-    position: absolute;
-    height: 0;
-    width: 0;
-    left: -5px;
-    top: 0px;
-    border-bottom: 9px solid #600909;
-    border-left: 5px solid transparent;
-  }
-
-  .ribbonZero {
+  .ribbonUnchecked {
     width: 36px;
     height: 18px;
     position: absolute;
@@ -1030,7 +1063,8 @@
     background: #a90909;
   }
 
-  .ribbonZero::before {
+  .ribbonUnchecked::before,
+  .ribbon::before {
     content: "";
     position: absolute;
     height: 0;
@@ -1041,21 +1075,17 @@
     border-right: 5px solid transparent;
   }
 
-  .flip-page-ribbon {
-    position: absolute;
-    width: 36px;
-    top: 0px;
-    right: 9px;
-    user-select: none;
-    z-index: inherit;
-  }
-
   .ribbon {
-    top: 0;
+    position: absolute;
+    top: -18px;
+    right: 9px;
+    border-top-left-radius: 3px;
     height: 90%;
     font-family: "Copernicus", sans-serif;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 28px;
+    line-height: 1;
+    padding: 0 6px;
+    min-width: 36px;
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     user-select: none;
@@ -1070,23 +1100,31 @@
     box-shadow: 0 6px 6px rgba(0, 0, 0, 0.6);
   }
 
-  .ribbon:after {
-    content: "";
+  .ribbonTail {
     position: absolute;
-    height: 0;
-    width: 36px;
     top: 100%;
     left: 0;
-    border-left: 18px solid #e50a00;
-    border-right: 18px solid #e50a00;
-    border-bottom: 18px solid transparent;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .ribbonTail:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: -124%;
+    transform: rotate(45deg) translate(0, 50%);
+    transform-origin: left;
+    background: rgb(229, 10, 0);
   }
 
   .ribbonChecked {
     height: 110%;
   }
 
-  .closed .flip-page-ribbon {
+  .closed .ribbon {
     height: 90%;
   }
 
