@@ -236,17 +236,9 @@
         <Icon icon="pixelarticons:mood-sad" width="13" height="13" />
       </a>
 
-      <a
-        href="/live"
-        class:active={page.url.pathname === "/live"}
-        class="btn-nav"
-      >
-        <Icon icon="solar:balls-broken" width="13" height="13" />
-      </a>
-
       <form method="post" action="/login?/signout">
         <button class="btn-menu">
-          <Icon icon="solar:logout-outline" width="13" height="13" />
+          <Icon icon="hugeicons:logout-03" width="13" height="13" />
         </button>
       </form>
     </div>

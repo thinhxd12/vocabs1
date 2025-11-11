@@ -130,6 +130,7 @@ export interface WeatherCodeData {
 export type BackgroundImageType = {
   title: string;
   url: string;
+  place: string;
 };
 
 export type BookDetailType = {

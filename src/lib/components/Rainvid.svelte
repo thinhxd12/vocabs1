@@ -33,14 +33,13 @@
       alt="bg"
     />
 
-    {#if !$showLayout}
-      <p
-        style="text-shadow: 0 0 3px black;"
-        class="absolute w-[calc(50vw-215px)] hidden md:block left-0 bottom-6 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white"
-      >
-        {@html bgImage.title}
-      </p>
-    {/if}
+    <div
+      style="text-shadow: 0 0 3px black;"
+      class="absolute w-[calc(50vw-215px)] hidden md:block left-0 bottom-6 z-40 cursor-pointer px-6 pt-3 text-12 leading-16 text-white"
+    >
+      <p>{@html bgImage.title}</p>
+      <p>{bgImage.place.split("©")[0].trim()}</p>
+    </div>
   {/if}
 {:else}
   <video
@@ -55,7 +54,6 @@
   </video>
 {/if}
 
-{#if !$showLayout}{/if}
 <div class="absolute z-50 top-0 left-0 hidden sm:flex">
   <select
     bind:value={bgSrc}

@@ -4,23 +4,33 @@
   import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { toast } from "svelte-sonner";
-  import { fly } from "svelte/transition";
+  import { fade, fly } from "svelte/transition";
   import StarRating from "./StarRating.svelte";
   import { page } from "$app/state";
   import { showBookmark } from "$lib/store/layoutstore";
+  import { Tween } from "svelte/motion";
+  import { quadInOut } from "svelte/easing";
+  import { onDestroy } from "svelte";
 
   type PageContent = {
     id: number;
-    flipped: boolean;
+    isFlipped: boolean;
     front: string;
     back: string;
   };
 
   let bookmark = $state<DBSelect["bookmark_table"] | undefined>(undefined);
   let bookInfo = $state<BookSearchType | undefined>(undefined);
-  let isReset = $state<boolean>(false);
+  let likeBookmark = $state<boolean>(false);
+  let keyPressed = $state<boolean>(false);
   let promise = $state(handleGetCurrentBookmark());
-  let isOpen = $state<boolean>(false);
+  let visualProgress = new Tween(0, {
+    duration: 300,
+    easing: quadInOut,
+  });
+  let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
 
   async function handleGetCurrentId() {
     const { data } = await page.data.supabase
@@ -31,7 +41,6 @@
   }
 
   async function handleGetCurrentBookmark() {
-    isReset = false;
     const idData = await handleGetCurrentId();
     if (!idData) return;
     const { data } = await page.data.supabase
@@ -48,7 +57,6 @@
   }
 
   async function handleGetNextBookmark() {
-    isReset = false;
     if (!bookmark) return;
     const { data } = await page.data.supabase
       .from("bookmark_table")
@@ -71,7 +79,6 @@
   }
 
   async function handleGetPrevBookmark() {
-    isReset = false;
     if (!bookmark) return;
     const { data } = await page.data.supabase
       .from("bookmark_table")
@@ -117,18 +124,20 @@
 
   async function handleCheckBookmark() {
     if (!bookmark) return;
-    if (isReset) {
-      const newLike = bookmark.like + 1;
+    if (likeBookmark) {
+      const newLike = bookmark.like - 1;
+      visualProgress.target = newLike === 0 ? 0.033 : 0.9;
       bookmark = { ...bookmark, like: newLike };
-      isReset = !isReset;
+      likeBookmark = false;
       const { error } = await page.data.supabase
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", bookmark.id);
     } else {
-      const newLike = bookmark.like - 1;
+      const newLike = bookmark.like + 1;
+      visualProgress.target = 1.1;
       bookmark = { ...bookmark, like: newLike };
-      isReset = !isReset;
+      likeBookmark = true;
       const { error } = await page.data.supabase
         .from("bookmark_table")
         .update({ like: newLike })
@@ -182,7 +191,7 @@
   let pageWidth = $state<number>(0);
   let pageHeight = $state<number>(0);
 
-  function getHeight(
+  function getHeightNormalPage(
     pText: string,
     pFont: string,
     pSize: number,
@@ -194,8 +203,9 @@
     lDiv.innerHTML = pText;
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
-    lDiv.style.lineHeight = "" + pLine + "px";
-    lDiv.style.width = String(pageWidth - 100) + "px";
+    lDiv.style.lineHeight = "" + pLine;
+    lDiv.style.fontWeight = "400";
+    lDiv.style.width = String(pageWidth - 122) + "px";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
@@ -211,12 +221,11 @@
     pSize: number,
     pLine: number
   ) {
-    let firstLetter = pText.slice(0, 1);
-    let rest = pText.slice(1);
-    if (!/^[a-zA-z0-9]+$/.test(firstLetter)) {
-      firstLetter = pText.slice(0, 2);
-      rest = pText.slice(2);
-    }
+    let matchSymbol = pText.match(/^(\W*)\w/);
+    let matchLetter = pText.match(/^\w/);
+    let result = matchSymbol ? matchSymbol : matchLetter;
+    let firstLetter = result![0];
+    let rest = pText.replace(firstLetter, "");
 
     let lDiv = document.createElement("div");
     document.body.appendChild(lDiv);
@@ -228,8 +237,9 @@
 
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
-    lDiv.style.lineHeight = "" + pLine + "px";
-    lDiv.style.width = String(pageWidth - 100) + "px";
+    lDiv.style.lineHeight = "" + pLine;
+    lDiv.style.width = String(pageWidth - 122) + "px";
+    lDiv.style.fontWeight = "400";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
@@ -249,57 +259,61 @@
   }
 
   function splitIntoBlocks(text: string) {
-    const words = text.split(" ");
-    let maxHeight = pageHeight - 110;
+    const words = text.trim().split(" ");
+    let maxHeight = Math.round(pageHeight - 120);
 
-    const result = words.reduce(
-      (acc, curr) => {
-        const last = acc[acc.length - 1];
-        if (acc.length > 1) {
+    const flattenedArray = words.reduce(
+      (acc: string[], cur: string, index: number) => {
+        if (acc.length === 0) {
+          acc.push(cur);
+        } else if (acc.length === 1) {
+          let testString = acc[acc.length - 1] + " " + cur;
           if (
-            getHeight(last + " " + curr, "Proxima Nova", 16, 23) < maxHeight
-          ) {
-            acc[acc.length - 1] = (last + " " + curr).trim();
-          } else {
-            acc.push(curr);
-          }
-          return acc;
-        } else {
-          if (
-            getHeightFirstPage(last + " " + curr, "Proxima Nova", 16, 23) <
+            getHeightFirstPage(testString, "Proxima Nova", 16, 1.4375) <
             maxHeight
           ) {
-            acc[acc.length - 1] = (last + " " + curr).trim();
-          } else {
-            acc.push(curr);
-          }
-          return acc;
+            acc[acc.length - 1] = testString;
+          } else acc.push(cur);
+        } else {
+          let testString = acc[acc.length - 1] + " " + cur;
+          if (
+            getHeightNormalPage(testString, "Proxima Nova", 16, 1.4375) <
+            maxHeight
+          ) {
+            acc[acc.length - 1] = testString;
+          } else acc.push(cur);
         }
+        return acc;
       },
-      [""]
+      []
     );
-    if (result.length % 2 !== 0) result.push("");
-    return result;
+
+    if (flattenedArray.length % 2 !== 0) flattenedArray.push("");
+    return flattenedArray;
   }
 
-  let currentPage = $state<number>(-1);
-  let pages = $state<string[]>([]);
+  let currentPage = $state<number>(0);
   let flipPages = $state<PageContent[]>([]);
 
   function setBookContent(content: string) {
-    pages = splitIntoBlocks(content);
-    let result: any = [];
-    for (let i = 0; i < pages.length; i += 2) {
-      result.push({
-        flipped: false,
-        front: pages[i],
-        back: pages[i + 1] || "",
-      });
-    }
-    flipPages = result.map((item: any, index: number) => ({
-      id: index,
-      ...item,
-    }));
+    let pages = splitIntoBlocks(content);
+    const result = pages.reduce(
+      (acc: PageContent[], cur: string, index: number) => {
+        if (index % 2 === 0) {
+          acc.push({
+            id: acc.length + 1,
+            front: cur,
+            back: pages[index + 1],
+            isFlipped: false,
+          });
+        }
+        return acc;
+      },
+      []
+    );
+    flipPages = [{ id: 0, front: "", back: "", isFlipped: false }].concat(
+      result
+    );
   }
 
   let insertData = $state<DBSelect["bookmark_table"][] | undefined>(undefined);
@@ -326,63 +340,127 @@
       translatedContent = data[0][0];
     }
 
+    flipPages = flipPages.map((item: PageContent) => ({
+      ...item,
+      isFlipped: false,
+    }));
+
+    flipTimeoutId = setTimeout(() => {
+      currentPage = 0;
+    }, 250);
+
     if (showTranslated) {
-      setBookContent(bookmark!.content);
       showTranslated = false;
+      flagTimeoutId = setTimeout(() => {
+        setBookContent(bookmark!.content);
+      }, 500);
     } else {
-      setBookContent(translatedContent);
       showTranslated = true;
+      flagTimeoutId = setTimeout(() => {
+        setBookContent(translatedContent);
+      }, 500);
     }
   }
 
   function resetRenderBookmark() {
-    isReset = true;
+    clearTimeout(flipTimeoutId);
+    clearTimeout(flagTimeoutId);
+    visualProgress.target = 0.033;
+    likeBookmark = false;
     translatedContent = "";
     showTranslated = false;
-    currentPage = -1;
+    currentPage = 0;
   }
+
   function handleFlipPage(id: number) {
+    clearTimeout(flipTimeoutId);
+    clearTimeout(flagTimeoutId);
     currentPage = id;
-    flipPages[id].flipped = !flipPages[id].flipped;
+
+    visualProgress.target = 0.033;
+
+    if (flipPages[id].isFlipped) {
+      if (id === 0) {
+        flipPages[currentPage].isFlipped = false;
+        flipTimeoutId = setTimeout(() => {
+          handleGetPrevBookmark();
+        }, 500);
+        return;
+      }
+      flipPages[currentPage].isFlipped = false;
+    } else {
+      flipPages[currentPage].isFlipped = true;
+    }
+    if (bookmark?.like) {
+      flagTimeoutId = setTimeout(() => {
+        visualProgress.target = likeBookmark ? 1.1 : 0.9;
+      }, 900);
+    }
   }
 
   function onKeyDown(e: KeyboardEvent) {
+    if (keyPressed) {
+      e.preventDefault();
+      return;
+    }
     if (e.key === "ArrowRight") {
       switch (currentPage) {
-        case -1:
-          isOpen ||= true;
-          setTimeout(() => {
-            currentPage = 0;
-          }, 500);
+        case 0:
+          flipPages[0].isFlipped ? handleFlipPage(1) : handleFlipPage(0);
           break;
-        case flipPages.length:
-          isOpen = false;
-          handleGetNextBookmark();
+        case flipPages.length - 1:
+          if (flipPages[currentPage].isFlipped) handleCloseBook();
+          else handleFlipPage(currentPage);
           break;
         default:
-          flipPages[currentPage].flipped = true;
-          setTimeout(() => {
-            currentPage++;
-          }, 500);
+          if (flipPages[currentPage].isFlipped) handleFlipPage(currentPage + 1);
+          else handleFlipPage(currentPage);
           break;
       }
+      handleListenKeypress();
     } else if (e.key === "ArrowLeft") {
       switch (currentPage) {
-        case -1:
-          break;
         case 0:
-          isOpen = false;
-          handleGetPrevBookmark();
+          if (flipPages[0].isFlipped) handleFlipPage(0);
+          else return;
           break;
         default:
-          currentPage--;
-          flipPages[currentPage].flipped = false;
+          if (flipPages[currentPage].isFlipped) handleFlipPage(currentPage);
+          else handleFlipPage(currentPage - 1);
           break;
       }
+      handleListenKeypress();
     } else if (e.key === "ArrowDown") {
-      handleCheckBookmark();
+      if (flipPages[0].isFlipped) handleCheckBookmark();
+      handleListenKeypress();
     }
   }
+
+  function handleListenKeypress() {
+    keyPressed = true;
+    keyDownTimeoutId = setTimeout(() => {
+      keyPressed = false;
+    }, 900);
+  }
+
+  function handleCloseBook() {
+    for (let i = flipPages.length - 1; i >= 0; i--) {
+      flipPages[i].isFlipped = false;
+      if (i === 0) {
+        flipTimeoutId = setTimeout(() => {
+          currentPage = 0;
+        }, 250);
+      }
+    }
+
+    handleGetNextBookmark();
+  }
+
+  onDestroy(() => {
+    clearTimeout(flipTimeoutId);
+    clearTimeout(flagTimeoutId);
+    clearTimeout(keyDownTimeoutId);
+  });
 </script>
 
 <svelte:head>
@@ -392,7 +470,7 @@
   <meta name="bookmark" content="Some bookmark" />
 </svelte:head>
 
-<div class="flex items-center justify-center flex-1 h-full relative">
+<div class="flex flex-col items-center justify-center flex-1 h-full relative">
   {#if showEdit}
     <div
       class="w-full h-full absolute top-0 left-0 z-40 flex items-center justify-center"
@@ -597,247 +675,279 @@
     </div>
   {/if}
 
-  <div class="book" class:openned={isOpen} class:closed={!isOpen}>
+  <div class="book">
     <div
-      class="front-cover bg-black"
-      style="z-index: {isOpen ? flipPages.length + 2 : 1001}"
+      class="back-book"
+      bind:offsetWidth={pageWidth}
+      bind:offsetHeight={pageHeight}
     >
-      <button
-        class="front flex justify-center"
-        style="background-color: black; background-image: none;"
-        onclick={() => {
-          isOpen = true;
-        }}
-      >
-        {#if bookInfo}
-          <img
-            src={bookInfo.coverImage}
-            alt="book-cover"
-            class="w-full h-full object-contain"
-          />
-        {:else}
-          <img src="/images/paper.webp" alt="" class="w-3/5 h-full" />
-        {/if}
-      </button>
+      {#if flipPages.length}
+        <div class="cover bg-[#0a0905] p-9 pl-0">
+          <div class="w-full h-full bg-front relative">
+            <button
+              class="absolute w-full h-full"
+              aria-label="back-book-button"
+              onclick={handleCloseBook}
+            ></button>
 
-      <div
-        class="back flex justify-center items-center"
-        bind:offsetWidth={pageWidth}
-        bind:offsetHeight={pageHeight}
-      >
-        <button
-          class="w-full h-full absolute top-0 left-0"
-          onclick={() => {
-            isOpen = false;
-            handleGetPrevBookmark();
-          }}
-          aria-label="prev-bookmark"
-        ></button>
-
-        <div class="flex flex-col justify-center items-center h-full relative">
-          {#if bookInfo}
-            {#if bookInfo.coverImage}
-              <img
-                src={bookInfo.coverImage}
-                alt="book-cover"
-                class="mb-9 shadow-sm shadow-black/30"
-                width="120"
-              />
-
-              <div class="flex justify-end items-center mb-6">
-                <Icon
-                  icon="solar:heart-bold"
-                  width="15"
-                  height="15"
-                  class="text-[#707070] ml-6"
-                />
-                <span
-                  class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
-                >
-                  {bookmark?.like}
-                </span>
-
-                {#if bookInfo && bookInfo.numberOfRatings}
-                  <Icon
-                    icon="solar:eye-bold"
-                    width="15"
-                    height="15"
-                    class="text-[#707070] ml-6"
-                  />
-                  <span
-                    class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
-                  >
-                    {Number(bookInfo.numberOfRatings).toLocaleString()}
-                  </span>
+            {#if flipPages[0].isFlipped}
+              <button
+                class="ribbon {visualProgress.current > 0.033
+                  ? 'bg-long'
+                  : 'bg-short'}"
+                onclick={() => handleCheckBookmark()}
+                style="height: {visualProgress.current *
+                  100}%; box-shadow: {visualProgress.current > 0.033
+                  ? '0 6px 3px black'
+                  : 'none'}; z-index: {visualProgress.current > 0.033
+                  ? 1001
+                  : 1};"
+                in:fly={{ y: 30, delay: 250, duration: 50 }}
+                out:fly={{
+                  y: 0,
+                  delay: 210,
+                  duration: 50,
+                }}
+              >
+                {#if visualProgress.current > 0.033}
+                  <span>{bookmark?.like ? bookmark?.like : ""}</span>
+                  <div class="ribbonTail"></div>
                 {/if}
-              </div>
+              </button>
             {/if}
-
-            {#if bookInfo.title}
-              <p
-                class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
-              >
-                {bookInfo.title}
-              </p>
-            {/if}
-
-            {#if bookInfo.authors}
-              <p
-                class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
-              >
-                {bookInfo.authors.join(", ")}
-              </p>
-            {/if}
-
-            {#if bookmark}
-              <p
-                class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
-              >
-                at {format(
-                  new Date(bookmark.dateOfCreation),
-                  "p cccc, do MMMM yyyy"
-                )}
-              </p>
-            {/if}
-
-            {#if bookInfo.publishedYear}
-              <p
-                class="mb-3 text-12 leading-18 font-proxima font-400 text-[#4f4f4d] text-center"
-              >
-                First published {bookInfo.publishedYear}
-              </p>
-            {/if}
-            {#if bookInfo.numberOfRatings}
-              <div class="mb-3 flex items-center justify-center pl-33">
-                <StarRating
-                  rating={Number(bookInfo.averageRating)}
-                  size={15}
-                  gap={3}
-                />
-                <span
-                  class="ml-3 w-30 text-center text-12 pt-3 leading-15 font-proxima font-400 text-[#4f4f4d]"
-                >
-                  ({bookInfo.averageRating})
-                </span>
-              </div>
-            {/if}
-          {/if}
-
-          <div class="flex justify-center items-baseline w-full pt-18">
-            <button class="btn-menu" onclick={() => translateContent()}>
-              <Icon icon="ic:twotone-g-translate" width="15" height="15" />
-            </button>
-
-            <button class="btn-menu" onclick={copyBookMarkToClipboard}>
-              <Icon icon="solar:copy-outline" width="15" height="15" />
-            </button>
-
-            <button
-              class="btn-menu"
-              onclick={() => (promise = getRandomBookmark())}
-            >
-              <Icon icon="solar:refresh-outline" width="15" height="15" />
-            </button>
-
-            <button class="btn-menu" onclick={() => (showEdit = !showEdit)}>
-              <Icon icon="solar:document-add-linear" width="15" height="15" />
-            </button>
-
-            <button class="btn-menu" onclick={showInsertBookmark}>
-              <Icon icon="solar:library-linear" width="15" height="15" />
-            </button>
-
-            <button class="btn-menu" onclick={() => (showDelete = !showDelete)}>
-              <Icon
-                icon="solar:trash-bin-trash-outline"
-                width="15"
-                height="15"
-              />
-            </button>
-
-            <button
-              class="btn-menu"
-              onclick={() => ($showBookmark = !$showBookmark)}
-            >
-              <Icon icon="solar:pallete-2-linear" width="15" height="15" />
-            </button>
           </div>
         </div>
-
-        <button
-          class:ribbonUnchecked={!bookmark?.like}
-          class:ribbon={bookmark?.like}
-          class:ribbonChecked={!isReset && bookmark?.like}
-          onclick={() => handleCheckBookmark()}
-        >
-          {#if bookmark && bookmark.like}
-            <span>{bookmark.like}</span>
-            <div class="ribbonTail"></div>
-          {/if}
-        </button>
-      </div>
+      {/if}
     </div>
 
-    <button
-      class="back-cover bg-black"
-      aria-label="back-cover"
-      style="z-index: 1;"
-      onclick={() => {
-        isOpen = false;
-        handleGetNextBookmark();
-      }}
-    >
-      <div class="front bg-[#999]"></div>
-    </button>
-
-    {#if flipPages.length}
-      {#each flipPages as page, i}
-        <div
-          class="flip-page"
-          class:flipped={page.flipped}
-          style="z-index: {currentPage === page.id
-            ? 999
-            : page.flipped
-              ? 3 + flipPages.length + page.id
-              : 1 + flipPages.length - page.id};"
-        >
-          <div class="front" class:flipFirstPage={i == 0}>
-            <p class="page-content">{page.front}</p>
-            <p class="page-number">{2 * i + 1}</p>
-            <button
-              class="buttonFoldRight absolute w-[60px] h-full top-0 right-0"
-              aria-label="front-button"
-              onclick={() => handleFlipPage(page.id)}
-            >
-              <div class="pageFoldRight"></div>
-            </button>
-          </div>
-          <div class="back">
-            <p class="page-content">{page.back}</p>
-            <p class="page-number">{2 * i + 2}</p>
-            <button
-              class:ribbonUnchecked={!bookmark?.like}
-              class:ribbon={bookmark?.like}
-              class:ribbonChecked={!isReset && bookmark?.like}
-              onclick={() => handleCheckBookmark()}
-            >
-              {#if bookmark && bookmark.like}
-                <span>{bookmark.like}</span>
-                <div class="ribbonTail"></div>
+    {#each flipPages as page, i}
+      <div
+        class="flip {i === 0 ? 'flip-cover' : 'flip-page'}"
+        class:flipped={page.isFlipped}
+        style="z-index: {currentPage === page.id
+          ? 999
+          : page.isFlipped
+            ? 3 + flipPages.length + page.id
+            : 1 + flipPages.length - page.id};"
+      >
+        <div class="page page-front">
+          {#if i === 0}
+            <div class="cover bg-[#0a0905]">
+              {#if bookInfo}
+                <img
+                  src={bookInfo.coverImage}
+                  alt="book-cover"
+                  class="w-full h-full object-contain"
+                />
+              {:else}
+                <div class="w-full h-full p-15 flex flex-col justify-between">
+                  <p
+                    class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus mb-30"
+                  >
+                    take a small step every day
+                  </p>
+                  <p
+                    class="text-[#d0c9c5] text-500 text-13 font-proxima indent-15"
+                  >
+                    since 07-05-2022
+                  </p>
+                </div>
               {/if}
-            </button>
-
-            <button
-              class="buttonFoldLeft absolute w-[60px] h-full top-0 left-0"
-              aria-label="back-button"
-              onclick={() => handleFlipPage(page.id)}
+            </div>
+          {:else}
+            <div
+              class="content bg-front"
+              class:firstPage={i === 1}
+              style="width: {pageWidth - 12}px; height: {pageHeight - 19}px;"
             >
-              <div class="pageFoldLeft"></div>
-            </button>
-          </div>
+              {page.front}
+            </div>
+            <p class="page-number">{2 * i - 1}</p>
+          {/if}
+
+          <button
+            class="page-button"
+            aria-label="page-button"
+            onclick={() => handleFlipPage(page.id)}
+          >
+            {#if i != 0}
+              <div class="page-fold"></div>
+            {/if}
+          </button>
         </div>
-      {/each}
-    {/if}
+
+        <div class="page page-back">
+          {#if i === 0}
+            <div class="cover bg-[#0a0905]">
+              <div class="cover bg-back">
+                {#if bookInfo}
+                  {#if bookInfo.coverImage}
+                    <img
+                      src={bookInfo.coverImage}
+                      alt="book-cover"
+                      class="mb-9 shadow-sm shadow-black/30 h-2/5 object-contain"
+                    />
+
+                    <div class="flex justify-end items-center mb-6">
+                      <Icon
+                        icon="solar:heart-bold"
+                        width="15"
+                        height="15"
+                        class="text-[#707070] ml-6"
+                      />
+                      <span
+                        class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
+                      >
+                        {bookmark?.like}
+                      </span>
+
+                      {#if bookInfo && bookInfo.numberOfRatings}
+                        <Icon
+                          icon="solar:eye-bold"
+                          width="15"
+                          height="15"
+                          class="text-[#707070] ml-6"
+                        />
+                        <span
+                          class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
+                        >
+                          {Number(bookInfo.numberOfRatings).toLocaleString()}
+                        </span>
+                      {/if}
+                    </div>
+                  {/if}
+
+                  {#if bookInfo.title}
+                    <p
+                      class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
+                    >
+                      {bookInfo.title}
+                    </p>
+                  {/if}
+
+                  {#if bookInfo.authors}
+                    <p
+                      class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
+                    >
+                      {bookInfo.authors.join(", ")}
+                    </p>
+                  {/if}
+
+                  {#if bookmark}
+                    <p
+                      class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
+                    >
+                      at {format(
+                        new Date(bookmark.dateOfCreation),
+                        "p cccc, do MMMM yyyy"
+                      )}
+                    </p>
+                  {/if}
+
+                  {#if bookInfo.publishedYear}
+                    <p
+                      class="mb-3 text-12 leading-18 font-proxima font-400 text-[#4f4f4d] text-center"
+                    >
+                      First published {bookInfo.publishedYear}
+                    </p>
+                  {/if}
+                  {#if bookInfo.numberOfRatings}
+                    <div class="mb-3 flex items-center justify-center pl-33">
+                      <StarRating
+                        rating={Number(bookInfo.averageRating)}
+                        size={15}
+                        gap={3}
+                      />
+                      <span
+                        class="ml-3 w-30 text-center text-12 pt-3 leading-15 font-proxima font-400 text-[#4f4f4d]"
+                      >
+                        ({bookInfo.averageRating})
+                      </span>
+                    </div>
+                  {/if}
+                {/if}
+
+                <div class="flex justify-center items-baseline w-full pt-18">
+                  <button class="btn-menu" onclick={() => translateContent()}>
+                    <Icon
+                      icon="ic:twotone-g-translate"
+                      width="15"
+                      height="15"
+                    />
+                  </button>
+
+                  <button class="btn-menu" onclick={copyBookMarkToClipboard}>
+                    <Icon icon="solar:copy-outline" width="15" height="15" />
+                  </button>
+
+                  <button
+                    class="btn-menu"
+                    onclick={() => (promise = getRandomBookmark())}
+                  >
+                    <Icon icon="solar:refresh-outline" width="15" height="15" />
+                  </button>
+
+                  <button
+                    class="btn-menu"
+                    onclick={() => (showEdit = !showEdit)}
+                  >
+                    <Icon
+                      icon="solar:document-add-linear"
+                      width="15"
+                      height="15"
+                    />
+                  </button>
+
+                  <button class="btn-menu" onclick={showInsertBookmark}>
+                    <Icon icon="solar:library-linear" width="15" height="15" />
+                  </button>
+
+                  <button
+                    class="btn-menu"
+                    onclick={() => (showDelete = !showDelete)}
+                  >
+                    <Icon
+                      icon="solar:trash-bin-trash-outline"
+                      width="15"
+                      height="15"
+                    />
+                  </button>
+
+                  <button
+                    class="btn-menu"
+                    onclick={() => ($showBookmark = !$showBookmark)}
+                  >
+                    <Icon
+                      icon="solar:pallete-2-linear"
+                      width="15"
+                      height="15"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          {:else}
+            <div
+              class="content bg-back"
+              style="width: {pageWidth - 12}px; height: {pageHeight - 19}px;"
+            >
+              {page.back}
+            </div>
+            <p class="page-number">{2 * i}</p>
+          {/if}
+
+          <button
+            class="page-button"
+            aria-label="page-button"
+            onclick={() => handleFlipPage(page.id)}
+          >
+            {#if i != 0}
+              <div class="page-fold"></div>
+            {/if}
+          </button>
+        </div>
+      </div>
+    {/each}
   </div>
 </div>
 
@@ -852,43 +962,61 @@
     perspective: 3000px;
     width: 80%;
     aspect-ratio: 1.61803398875;
+    position: relative;
   }
 
-  .front-cover,
-  .back-cover,
-  .flip-page {
-    transform-style: preserve-3d;
+  .back-book {
     position: absolute;
     height: 100%;
     width: 50%;
     top: 0;
     right: 0;
-    transform-origin: left;
-    transition: transform 0.5s ease-in-out;
-    transform: rotateY(0deg);
   }
 
-  .front-cover,
-  .back-cover {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-  }
-
-  .back-cover {
-    box-shadow:
-      4px 4px 12px rgba(0, 0, 0, 0.9),
-      -2px -2px 6px rgba(0, 0, 0, 0.3);
-  }
-
-  .front {
+  .flip {
+    transform-style: preserve-3d;
     position: absolute;
-    width: calc(100% - 9px);
+    transition: transform 0.5s ease-in-out;
+    transform-origin: left center;
+  }
+
+  .flip-cover {
+    height: 100%;
+    width: 50% !important;
+    top: 0;
+    right: 0 !important;
+  }
+
+  .flip-page {
     height: calc(100% - 18px);
+    width: calc(50% - 11px);
+    right: 11px;
     top: 9px;
-    left: 0;
-    z-index: 1;
+    box-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .page {
+    position: absolute;
+    height: 100%;
+    width: 100%;
     user-select: text;
     backface-visibility: hidden;
+  }
+
+  .page-front {
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .page-back {
+    top: 0;
+    left: 0;
+    z-index: 0;
+    transform: rotateY(180deg);
+  }
+
+  .bg-front {
     background-color: #f5f5f5;
     background-image: linear-gradient(
         -90deg,
@@ -904,24 +1032,7 @@
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
   }
 
-  .front-cover .front {
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-  }
-
-  .back {
-    position: absolute;
-    width: calc(100% - 9px);
-    height: calc(100% - 18px);
-    top: 9px;
-    left: 0;
-    user-select: text;
-    transform: rotateY(180deg);
-    backface-visibility: hidden;
+  .bg-back {
     background-color: #f5f5f5;
     background-image: linear-gradient(
         90deg,
@@ -937,90 +1048,22 @@
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
   }
 
-  .pageFoldRight {
-    position: absolute;
-    width: 0px;
-    height: 0px;
-    top: 0;
-    right: 0;
-    border-left-width: 1px;
-    border-left-color: #dddddd;
-    border-left-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: #dddddd;
-    border-bottom-style: solid;
-    transition: all 0.3s ease-out;
-    box-shadow: -3px 3px 9px rgba(0, 0, 0, 0.45);
-  }
-
-  .pageFoldLeft {
-    position: absolute;
-    width: 0px;
-    height: 0px;
-    top: 0;
-    left: 0;
-    border-right-width: 1px;
-    border-right-color: #dddddd;
-    border-right-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: #dddddd;
-    border-bottom-style: solid;
-    transition: all 0.3s ease-out;
-    box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.45);
-  }
-
-  .buttonFoldRight:hover .pageFoldRight {
-    width: 60px;
-    height: 60px;
-    background-image: linear-gradient(
-      45deg,
-      #f7f7f7 0%,
-      rgba(247, 247, 247, 0.3) 49%,
-      transparent 50%,
-      transparent 100%
-    );
-  }
-
-  .buttonFoldLeft:hover .pageFoldLeft {
-    width: 60px;
-    height: 60px;
-    background-image: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 49%,
-      #e9e8e8 50%,
-      #dadada 100%
-    );
-  }
-
-  .openned .front-cover {
-    transform: rotateY(-180deg);
-  }
-
-  .flipped {
-    transform: rotateY(-180deg);
-  }
-
-  .closed .front-cover,
-  .closed .flip-page {
-    transform: rotateY(0deg);
-  }
-
-  .page-content {
+  .content {
     width: 100%;
     height: 100%;
     font-family: "Proxima Nova", sans-serif;
     font-weight: 400;
     font-size: 16px;
     line-height: 1.4375;
-    padding: 55px 50px;
+    letter-spacing: 0px;
+    padding: 55px 50px 55px 60px;
     overflow: hidden;
     text-align: left;
     text-size-adjust: 100%;
     color: #1e1915;
   }
 
-  .flipFirstPage .page-content::first-letter {
+  .firstPage::first-letter {
     font-family: "Open Sans";
     font-size: 125px;
     color: #dcd8d1;
@@ -1041,29 +1084,110 @@
       rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
   }
 
-  .page-number {
-    position: absolute;
-    bottom: 21px;
-    left: 0;
+  .cover {
     width: 100%;
-    text-align: center;
-    font-family: "Copernicus", sans-serif;
-    font-weight: 500;
-    font-size: 14px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
-  .ribbonUnchecked {
-    width: 36px;
-    height: 18px;
+  .back-book > .cover,
+  .flip-cover > .page-front > .cover {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+
+  .flip-cover > .page-back > .cover {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    box-shadow: -8px 4px 12px rgba(0, 0, 0, 0.6);
+  }
+
+  .page-back .cover {
+    padding: 9px 0 9px 9px;
+  }
+
+  .back-book > .cover {
+    box-shadow: 8px 4px 12px rgba(0, 0, 0, 0.6);
+  }
+
+  .flipped {
+    transform: rotateY(-180deg);
+  }
+
+  .page-button {
     position: absolute;
-    top: -18px;
-    right: 9px;
-    border-top-left-radius: 3px;
-    user-select: none;
-    background: #a90909;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 60px;
   }
 
-  .ribbonUnchecked::before,
+  .page-front .page-button {
+    right: 0;
+  }
+
+  .page-back .page-button {
+    left: 0;
+  }
+
+  .page-fold {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    transition: all 0.3s ease-out;
+  }
+
+  .page-front .page-fold {
+    top: 0;
+    right: 0;
+    border-left-width: 1px;
+    border-left-color: #dddddd;
+    border-left-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    box-shadow: -3px 3px 9px rgba(0, 0, 0, 0.45);
+  }
+
+  .page-front .page-button:hover .page-fold {
+    width: 60px;
+    height: 60px;
+    background-image: linear-gradient(
+      45deg,
+      #f7f7f7 0%,
+      rgba(247, 247, 247, 0.3) 49%,
+      transparent 50%,
+      transparent 100%
+    );
+  }
+
+  .page-back .page-fold {
+    top: 0;
+    left: 0;
+    border-right-width: 1px;
+    border-right-color: #dddddd;
+    border-right-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.45);
+  }
+
+  .page-back .page-button:hover .page-fold {
+    width: 60px;
+    height: 60px;
+    background-image: linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 49%,
+      #e9e8e8 50%,
+      #dadada 100%
+    );
+  }
+
   .ribbon::before {
     content: "";
     position: absolute;
@@ -1078,7 +1202,7 @@
   .ribbon {
     position: absolute;
     top: -18px;
-    right: 9px;
+    left: 9px;
     border-top-left-radius: 3px;
     height: 90%;
     font-family: "Copernicus", sans-serif;
@@ -1089,6 +1213,13 @@
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     user-select: none;
+  }
+
+  .bg-short {
+    background: rgb(169, 9, 9);
+  }
+
+  .bg-long {
     background: linear-gradient(
       180deg,
       rgb(169, 9, 9) 0%,
@@ -1096,8 +1227,6 @@
       rgba(164, 5, 2, 1) 40%,
       rgb(229, 10, 0) 100%
     );
-    transition: height 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.6);
   }
 
   .ribbonTail {
@@ -1117,15 +1246,18 @@
     top: -124%;
     transform: rotate(45deg) translate(0, 50%);
     transform-origin: left;
-    background: rgb(229, 10, 0);
+    background: rgb(228 9 0);
   }
 
-  .ribbonChecked {
-    height: 110%;
-  }
-
-  .closed .ribbon {
-    height: 90%;
+  .page-number {
+    position: absolute;
+    bottom: 21px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: "Copernicus", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
   }
 
   .btn-menu {
