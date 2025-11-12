@@ -432,7 +432,6 @@
       handleListenKeypress();
     } else if (e.key === "ArrowDown") {
       if (flipPages[0].isFlipped) handleCheckBookmark();
-      handleListenKeypress();
     }
   }
 
