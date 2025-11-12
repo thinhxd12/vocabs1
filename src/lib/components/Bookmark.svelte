@@ -340,14 +340,14 @@
       translatedContent = data[0][0];
     }
 
-    flipPages = flipPages.map((item: PageContent) => ({
-      ...item,
-      isFlipped: false,
-    }));
-
-    flipTimeoutId = setTimeout(() => {
-      currentPage = 0;
-    }, 250);
+    for (let i = flipPages.length - 1; i >= 0; i--) {
+      flipPages[i].isFlipped = false;
+      if (i === 0) {
+        flipTimeoutId = setTimeout(() => {
+          currentPage = 0;
+        }, 250);
+      }
+    }
 
     if (showTranslated) {
       showTranslated = false;
