@@ -119,7 +119,9 @@
     const response = await fetch(
       `/server/getbookinfo?query=${data.bookTile.split(":")[0]}&author=${data.authors.split(";")[0]}`
     );
-    bookInfo = await response.json();
+    if (response.status === 200) {
+      bookInfo = await response.json();
+    } else bookInfo = undefined;
   }
 
   async function handleCheckBookmark() {
@@ -741,12 +743,12 @@
               {:else}
                 <div class="w-full h-full p-15 flex flex-col justify-between">
                   <p
-                    class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus mb-30"
+                    class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus mt-30 pl-30"
                   >
                     take a small step every day
                   </p>
                   <p
-                    class="text-[#d0c9c5] text-500 text-13 font-proxima indent-15"
+                    class="text-[#d0c9c5] text-center text-500 text-13 font-proxima indent-15"
                   >
                     since 07-05-2022
                   </p>
@@ -850,6 +852,7 @@
                       First published {bookInfo.publishedYear}
                     </p>
                   {/if}
+
                   {#if bookInfo.numberOfRatings}
                     <div class="mb-3 flex items-center justify-center pl-33">
                       <StarRating
@@ -863,6 +866,27 @@
                         ({bookInfo.averageRating})
                       </span>
                     </div>
+                  {/if}
+                {:else}
+                  <p
+                    class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
+                  >
+                    {bookmark?.bookTile}
+                  </p>
+                  <p
+                    class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
+                  >
+                    {bookmark?.authors}
+                  </p>
+                  {#if bookmark}
+                    <p
+                      class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
+                    >
+                      at {format(
+                        new Date(bookmark.dateOfCreation),
+                        "p cccc, do MMMM yyyy"
+                      )}
+                    </p>
                   {/if}
                 {/if}
 
