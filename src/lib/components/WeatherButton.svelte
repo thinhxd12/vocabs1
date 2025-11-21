@@ -30,7 +30,7 @@
         style="filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.6));"
       />
       <div
-        class="flex flex-col items-end text-8 leading-10 mt-3 mr-2 font-500"
+        class="flex flex-col items-end text-white text-8 leading-10 mt-3 mr-2 font-500"
         style="text-shadow: 0px 0px 3px #000000"
       >
         <span>{Math.round($weatherData?.current.temperature_2m || 0)}°</span>
@@ -54,7 +54,7 @@
 
     <!-- svelte-ignore a11y_distracting_elements -->
     <marquee
-      class="marquee absolute bottom-0 text-8 font-500 leading-12"
+      class="marquee absolute bottom-0 text-8 font-500 leading-12 text-white"
       scrollamount="1"
       width="90"
     >

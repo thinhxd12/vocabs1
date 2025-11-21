@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
 import type { LayoutImageType } from "$lib/types";
+import { DEFAULT_CORS_PROXY } from "$lib/utils/constants";
 
 export async function GET({ url }) {
   const link = url.searchParams.get("link");
@@ -16,7 +17,7 @@ export async function GET({ url }) {
 }
 
 const getImageData = async (url: string) => {
-  const response = await fetch(url, {
+  const response = await fetch(DEFAULT_CORS_PROXY + url, {
     headers: {
       "cache-control": "no-cache",
     },

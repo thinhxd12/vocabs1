@@ -56,22 +56,26 @@
   });
 </script>
 
-<div class="w-main dark flex items-center gap-2">
+<div class="w-main flex items-center gap-2">
   <div class="relative w-12 h-full flex flex-col">
-    <div class="flex-1 bg-black/60 flex flex-col justify-center text-center">
+    <div
+      class="flex-1 flex flex-col justify-center text-center text-white/90 bg-black/80 backdrop-blur-md"
+    >
       {#if $todaySchedule}
-        <span class="text-9 leading-11 text-white">
+        <span class="text-9 leading-11">
           {$todaySchedule.start.count}
         </span>
-        <span class="text-9 leading-11 text-white">
+        <span class="text-9 leading-11">
           {$todaySchedule.end.count}
         </span>
       {:else}
-        <span class="text-9 leading-11 text-white">N</span>
-        <span class="text-9 leading-11 text-white">N</span>
+        <span class="text-9 leading-11">N</span>
+        <span class="text-9 leading-11">N</span>
       {/if}
     </div>
-    <div class="relative w-12 h-15 bg-white/30 overflow-hidden">
+    <div
+      class="relative w-12 h-15 overflow-hidden bg-white/30 backdrop-blur-md"
+    >
       <span
         class="uppercase text-8 font-900 text-black leading-12 text-center absolute w-15 h-full transform -rotate-90 origin-center"
       >
@@ -80,10 +84,10 @@
     </div>
   </div>
 
-  <div class="h-full flex-1 flex flex-wrap gap-4">
+  <div class="dark h-full flex-1 flex flex-wrap gap-4">
     <div class="w-full flex justify-center items-end gap-2">
       <button
-        class="btn-menu disabled:cursor-default disabled:opacity-30 hover:!bg-white/20 hover:!text-black/60"
+        class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
         class:active={$todaySchedule &&
           $todaySchedule.start.id === $currentSchedule?.id}
         onclick={() => handleGetList(0)}
@@ -97,7 +101,7 @@
       </button>
 
       <button
-        class="btn-menu disabled:cursor-default disabled:opacity-30 hover:!bg-white/20 hover:!text-black/60"
+        class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
         class:active={$todaySchedule &&
           $todaySchedule.end.id === $currentSchedule?.id}
         onclick={() => handleGetList(1)}
@@ -180,7 +184,7 @@
   </div>
 
   <div
-    class="h-full flex flex-col items-center justify-center px-2 bg-black/60"
+    class="h-full flex flex-col items-center justify-center px-2 text-white/90 bg-black/80 backdrop-blur-md"
   >
     <span class="font-tupa text-18 font-600 leading-20">
       {Math.floor($totalMemories / 100) < 10

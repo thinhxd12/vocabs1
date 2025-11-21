@@ -13,7 +13,7 @@
 </svelte:head>
 
 <div class="login w-main">
-  <p class="font-sfpro text-24 text-white/80 mb-15 indent-6">Log in</p>
+  <p class="font-sfpro text-24 text-secondary-white mb-9 indent-6">Log in</p>
   <form
     name="signin"
     action="?/signin"
@@ -33,7 +33,7 @@
         name="password"
         autocomplete="off"
         bind:value={password}
-        class="password dark w-full h-36 border border-black/10 rounded-full outline-none text-center mb-6"
+        class="password dark w-full h-36 rounded-full outline-none text-center mb-6"
         required
       />
 
