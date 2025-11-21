@@ -2,16 +2,14 @@
   import "../app.css";
   import { page } from "$app/state";
   import { schedule } from "$lib/store/navstore";
-  import Rainvid from "$lib/components/Rainvid.svelte";
+  import LayoutBackground from "$lib/components/LayoutBackground.svelte";
 
   let { children } = $props();
 
   $schedule = page.data.schedule;
 </script>
 
-<main class="h-screen w-screen relative bg-cover overflow-hidden">
-  {#if page.url.pathname !== "/live"}
-    <Rainvid />
-  {/if}
+<main class="h-screen w-screen relative overflow-hidden">
+  <LayoutBackground />
   {@render children()}
 </main>

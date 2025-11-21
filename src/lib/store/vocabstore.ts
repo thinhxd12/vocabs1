@@ -5,7 +5,6 @@ export const renderWord = writable<VocabType | undefined>(undefined);
 export const editWord = writable<VocabType | undefined>(undefined);
 export const searchTerm = writable<string>("");
 export const searchResults = writable<VocabularySearchType[]>([]);
-export const modal = writable<any>(null);
 export const showTranslate = writable<boolean>(false);
 export const showEdit = writable<boolean>(false);
 export const cachedProgressLength = writable<number | null>(null);

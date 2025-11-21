@@ -180,6 +180,7 @@
     border-radius: 3px;
     letter-spacing: 3px;
     text-indent: 3px;
+    overflow: hidden;
   }
 
   .tick-flip:nth-child(2) {

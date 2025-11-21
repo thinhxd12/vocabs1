@@ -1,6 +1,6 @@
 import { fail, type ActionResult } from "@sveltejs/kit";
 import type { Actions } from "./$types";
-import { REPETITION_PATTERN } from "$lib/constants";
+import { REPETITION_PATTERN } from "../../../lib/utils/constants";
 import type { DBInsert } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
 

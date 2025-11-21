@@ -10,8 +10,9 @@
   import arrayShuffle from "array-shuffle";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { timerString } from "$lib/store/layoutstore";
-  import { archiveVocab } from "$lib/functions";
+  import { archiveVocab } from "$lib/utils/functions";
   import { page } from "$app/state";
+  import Container from "$lib/components/Container.svelte";
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -94,7 +95,7 @@
 </script>
 
 <svelte:head>
-  {#if $showTimer}
+  {#if $showTimer && $timerString}
     <title>🤔 {$timerString}</title>
   {:else if $listCount}
     <title>🤔 {Math.floor(($listCount / $listContent.length) * 100)}%</title>
@@ -108,11 +109,9 @@
 <audio src={src1} bind:paused={paused1}></audio>
 
 {#if $quizRender}
-  <main
-    class="w-content h-[calc(100vh-42px)] flex flex-col overflow-y-scroll no-scrollbar"
-  >
+  <Container zIndex={6}>
     <div
-      class="my-6 min-h-[120px] w-full mx-auto relative flex no-scrollbar layout-black select-none items-center overflow-hidden rounded-3 !backdrop-blur-lg"
+      class="min-h-[120px] w-full mx-auto relative flex no-scrollbar dark select-none items-center overflow-hidden rounded-2"
     >
       <h1
         class="absolute left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/30 font-200"
@@ -125,18 +124,20 @@
         {$quizRender.meanings.flatMap((item) => item.translation).join(", ")}
       </p>
     </div>
-    <div class="flex flex-1 flex-col mx-auto overflow-y-scroll no-scrollbar">
+    <div
+      class="flex flex-1 flex-col mx-auto overflow-y-scroll no-scrollbar gap-2"
+    >
       {#each $quizRender.meanings as entry}
         {#each entry.definitions as el}
           {#if el.image}
             {#if el.image}
               <ImageLoader
-                width={378}
-                height={213}
+                width={382}
+                height={215}
                 imageSrc={el.image}
                 hash={el.hash}
                 word={$quizRender}
-                className="mb-6 shadow-sm shadow-black/45 rounded-3"
+                className="rounded-2"
               />
             {/if}
           {/if}
@@ -145,19 +146,19 @@
     </div>
 
     <div
-      class="bg-transparent no-scrollbar w-full mb-3 outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-3"
+      class="bg-transparent no-scrollbar w-full outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-2"
     >
       {#each options as item}
         <button
           class={submitted
             ? item == value
               ? item === $quizRender.word
-                ? "layout-white quiz-choice-true"
-                : "layout-white quiz-choice-false"
+                ? "light quiz-choice-true"
+                : "light quiz-choice-false"
               : item === $quizRender.word
-                ? "layout-white quiz-choice-true"
-                : "layout-white quiz-choice"
-            : "layout-white quiz-choice"}
+                ? "light quiz-choice-true"
+                : "light quiz-choice"
+            : "light quiz-choice"}
           disabled={submitted}
           onclick={() => submitAnswer(item)}
         >
@@ -165,19 +166,19 @@
         </button>
       {/each}
     </div>
-  </main>
+  </Container>
 {/if}
 
 <style>
   .quiz-choice {
-    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden rounded-3 text-center text-14 leading-21 hover:!bg-white/30 transition-all text-black/90 font-400;
+    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
   }
 
   .quiz-choice-true {
-    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden rounded-3 text-center text-14 leading-21 !bg-green-400/60 text-black/90 font-400;
+    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 !bg-green-400/60 font-400;
   }
 
   .quiz-choice-false {
-    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden rounded-3 text-center text-14 leading-21 !bg-red-500/60 text-black/90 font-400;
+    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 !bg-red-500/60 font-400;
   }
 </style>

@@ -31,7 +31,6 @@
     "@supabase/supabase-js": "^2.48.0",
     "@svelte-put/dragscroll": "^4.0.0",
     "array-shuffle": "^3.0.0",
-    "bits-ui": "^0.22.0",
     "cheerio": "^1.0.0",
     "date-fns": "^4.1.0",
     "sharp": "^0.33.5",

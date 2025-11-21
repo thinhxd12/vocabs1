@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { cachedDiary } from "$lib/store/vocabstore";
   import type { CalendarDayType } from "$lib/types";
   import Icon from "@iconify/svelte";
+  import { format } from "date-fns";
   import { untrack } from "svelte";
   type DayType = {
     enabled: boolean;
@@ -111,64 +113,90 @@
   }
 </script>
 
-<div class="layout-white">
-  <img
-    src="/images/{month + 1}.webp"
-    alt="calendar-bg"
-    class="w-full h-[210px] object-cover"
-  />
-  <div class="calendar-header flex items-center justify-between">
-    <button onclick={prev} class="size-27 flex items-center justify-center">
-      <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
-    </button>
-    <h1
-      class="font-rubik text-18 select-none leading-18 mt-3 text-black/80 font-400"
+<div class="w-full">
+  <div class="relative w-full golden">
+    <img
+      src="/images/{month + 1}.webp"
+      alt="calendar-bg"
+      class="w-full h-full object-cover"
+    />
+    <div
+      class="light absolute right-0 bottom-0 cursor-default px-4 py-2 rounded-2"
     >
-      {monthNames[month]}
-      {year}
-    </h1>
-    <button onclick={next} class="size-27 flex items-center justify-center">
-      <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
-    </button>
+      {#if $cachedDiary}
+        {#each $cachedDiary as item}
+          <p class="text-8 font-400 leading-10">
+            {format(new Date(item.date), "yyyy-MM-dd")} | {item.count}
+          </p>
+        {/each}
+      {/if}
+    </div>
   </div>
 
-  <div class="grid w-full grid-cols-7 mb-6 mt-3 justify-items-center">
-    {#each dayNames as date}
-      <span
-        class="w-[50px] h-20 bg-black/20 text-center font-rubik leading-20 select-none text-12 text-black/80 uppercase font-500 first-of-type:text-[#ff3333]"
-      >
-        {date}
-      </span>
-    {/each}
-  </div>
+  <div class="calendar">
+    <div class="calendar-month flex items-center justify-between">
+      <button onclick={prev} class="size-27 flex items-center justify-center">
+        <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
+      </button>
+      <h1 class="font-rubik text-18 select-none leading-18 mt-3 font-400">
+        {monthNames[month]}
+        {year}
+      </h1>
+      <button onclick={next} class="size-27 flex items-center justify-center">
+        <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
+      </button>
+    </div>
 
-  <div class="calendar no-scrollbar">
-    {#each days as day}
-      <div
-        class="day {day.enabled
-          ? 'opacity-100'
-          : 'opacity-45'} w-[50px] h-20 text-center relative font-rubik leading-20 text-12 text-black/70 select-none"
-      >
-        {day.date}
-        {#if day.count}
-          <span
-            class="schedule absolute right-6 top-0 text-8 font-rubik font-600 leading-8"
-          >
-            {day.count}
-          </span>
-        {/if}
-        {#if day.date == now.getDate() && day.month == now.getMonth() && day.year == now.getFullYear()}
-          <span
-            class="today absolute bottom-2 left-1/2 -translate-x-6 w-12 h-2 rounded-full bg-[#38e07b]"
-          ></span>
-        {/if}
-      </div>
-    {/each}
+    <div
+      class="calendar-week grid w-full grid-cols-7 mb-6 mt-3 justify-items-center"
+    >
+      {#each dayNames as date}
+        <span
+          class="w-[50px] h-21 bg-black/45 text-center font-rubik leading-18 pt-3 select-none text-13 font-400 first-of-type:text-[#ff3333]"
+        >
+          {date}
+        </span>
+      {/each}
+    </div>
+
+    <div class="calendar-day no-scrollbar">
+      {#each days as day}
+        <div
+          class="day {day.enabled
+            ? 'opacity-100'
+            : 'opacity-45'} w-[50px] h-20 text-center relative font-rubik leading-20 text-12 select-none"
+        >
+          {day.date}
+          {#if day.count}
+            <span
+              class="schedule absolute right-6 top-0 text-8 font-rubik font-600 leading-8"
+            >
+              {day.count}
+            </span>
+          {/if}
+          {#if day.date == now.getDate() && day.month == now.getMonth() && day.year == now.getFullYear()}
+            <span
+              class="today absolute bottom-2 left-1/2 -translate-x-6 w-12 h-2 rounded-full bg-[#38e07b]"
+            ></span>
+          {/if}
+        </div>
+      {/each}
+    </div>
   </div>
 </div>
 
 <style>
   .calendar {
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.8) 100%
+      )
+      0% 0% no-repeat padding-box padding-box transparent;
+    backdrop-filter: blur(6px);
+  }
+
+  .calendar-day {
     display: grid;
     width: 100%;
     grid-template-columns: repeat(7, minmax(50px, 1fr));

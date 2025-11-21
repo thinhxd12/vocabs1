@@ -3,10 +3,11 @@ import arrayShuffle from "array-shuffle";
 import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
-import type { DBInsert, DBSelect } from "$lib/types";
-import { archiveVocab } from "$lib/functions";
+import type { DBInsert, DBSelect, OpenMeteoResponse } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
+import { archiveVocab } from "$lib/utils/functions";
 
+export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
 export const isAutoPlay = writable<boolean>(false);
 export const showWeather = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);

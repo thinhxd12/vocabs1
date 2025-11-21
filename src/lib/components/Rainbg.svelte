@@ -1,6 +1,6 @@
 <script lang="ts">
-  import RainRenderer from "$lib/rain-renderer";
-  import Raindrops from "$lib/raindrop";
+  import RainRenderer from "$lib/utils/rain-renderer";
+  import Raindrops from "$lib/utils/raindrop";
   import { showLayout } from "$lib/store/layoutstore";
   import type { BackgroundImageType } from "$lib/types";
   import Icon from "@iconify/svelte";

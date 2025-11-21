@@ -4,7 +4,7 @@ import {
   isBrowser,
 } from "@supabase/ssr";
 import type { LayoutLoad } from "./$types";
-import type { Database } from "$lib/supabase";
+import type { Database } from "../lib/utils/supabase";
 const PUBLIC_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const PUBLIC_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 

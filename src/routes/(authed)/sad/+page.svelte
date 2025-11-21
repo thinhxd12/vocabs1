@@ -4,6 +4,7 @@
   import { onMount } from "svelte";
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
+  import Container from "$lib/components/Container.svelte";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -86,20 +87,18 @@
   <meta name="sad" content="Sad day!" />
 </svelte:head>
 
-<main
-  class="w-content relative h-[calc(100vh-42px)] justify-around no-scrollbar overflow-y-scroll flex flex-col gap-3"
->
-  <h1 class="font-copernicus text-24 text-center my-15 uppercase font-600">
+<Container zIndex={6}>
+  <h1 class="font-copernicus text-24 text-center mt-10 uppercase font-600">
     Sad <span class="font-garamond lowercase italic">days</span>
   </h1>
 
-  <ul class="text-center flex-1 mx-30">
-    <li>
+  <ul class="text-center flex-1">
+    <li class="!shadow-none">
       <button aria-label="add" class="btn-add" onclick={addDay}></button>
     </li>
 
     {#each progressItems as item}
-      <li>
+      <li class="light">
         <button
           aria-label="delete"
           class="btn-delete"
@@ -109,25 +108,24 @@
       </li>
     {/each}
   </ul>
-  <div class="flex justify-center items-center my-15">
+
+  <div class="flex justify-center items-center mt-6">
     <button
-      class="size-24 select-none rounded-9 layout-white flex items-center justify-center text-black/80 disabled:cursor-not-allowed disabled:text-black/10"
+      class="size-24 light select-none rounded-6 flex items-center justify-center disabled:cursor-not-allowed disabled:text-black/10"
       onclick={() => getPages(currentPage - 1)}
       disabled={currentPage === 1}
     >
       <Icon icon="solar:alt-arrow-left-linear" width="14" height="14" />
     </button>
 
-    <div
-      class="rounded-full layout-white flex justify-center items-center mx-3 h-24"
-    >
+    <div class="rounded-6 light flex justify-center items-center mx-3 h-24">
       {#each pages as page}
         {#if page === "..."}
           <span class="text-12 leading-14 select-none">…</span>
         {:else}
           <button
             class:active={page === currentPage}
-            class="page-button select-none text-center size-24 font-rubik text-12 leading-21 pt-3"
+            class="page-button"
             onclick={() => getPages(page as number)}
           >
             {page}
@@ -137,24 +135,33 @@
     </div>
 
     <button
-      class="size-24 rounded-9 select-none layout-white flex items-center justify-center text-black/80 disabled:cursor-not-allowed disabled:text-black/10"
+      class="size-24 light select-none rounded-6 flex items-center justify-center disabled:cursor-not-allowed disabled:text-black/10"
       onclick={() => getPages(currentPage + 1)}
       disabled={currentPage === totalPages}
     >
       <Icon icon="solar:alt-arrow-right-linear" width="14" height="14" />
     </button>
   </div>
-</main>
+</Container>
 
 <style>
   li {
-    @apply font-basier font-500 text-15 text-left leading-15 italic mb-9 flex justify-start;
+    @apply p-6 rounded-2 flex items-center justify-start font-basier font-500 text-15 text-left leading-12 italic mb-3 hover:bg-white/40 shadow shadow-black/40;
   }
 
   .btn-add {
     @apply size-15 border-black border mr-6 hover:bg-green-400/90;
   }
+
   .btn-delete {
     @apply size-15 border-black border mr-6 hover:bg-red-400/90;
+  }
+
+  .page-button {
+    @apply select-none text-black/30 text-center size-24 font-rubik text-12 leading-21 pt-3;
+  }
+
+  .page-button.active {
+    @apply text-black;
   }
 </style>

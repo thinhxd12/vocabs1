@@ -8,16 +8,16 @@
     searchTerm,
     searchResults,
     showEdit,
+    showTranslate,
   } from "$lib/store/vocabstore";
   import Icon from "@iconify/svelte";
-  import { untrack } from "svelte";
+  import { onDestroy, untrack } from "svelte";
   import { showTimer, vocabInput } from "$lib/store/navstore";
-  import { slide } from "svelte/transition";
   import { toast } from "svelte-sonner";
-  import { innerWidth } from "svelte/reactivity/window";
   import { timerString } from "$lib/store/layoutstore";
-  import { archiveVocab } from "$lib/functions";
+  import { archiveVocab } from "$lib/utils/functions";
   import { page } from "$app/state";
+  import Container from "$lib/components/Container.svelte";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
@@ -38,7 +38,7 @@
           $searchTerm = "";
           $vocabInput = "";
           $searchResults = [];
-          deleteIndex = 9;
+          activeIndex = 0;
         }, 1500);
         src0 = "/sounds/mp3_Boing.mp3";
         paused0 = false;
@@ -46,7 +46,7 @@
       case 1:
         searchTermFounded = true;
         $searchResults = data;
-        deleteIndex = 9;
+        activeIndex = 0;
         if (text.length > 4) {
           checkTimeout = setTimeout(() => {
             handleSelectWordFromSearch(data[0].id);
@@ -56,7 +56,7 @@
       default:
         searchTermFounded = true;
         $searchResults = data;
-        deleteIndex = 9;
+        activeIndex = 0;
         break;
     }
   }, 300);
@@ -70,10 +70,22 @@
   }
 
   function onKeyDown(e: KeyboardEvent) {
+    if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
+
     clearTimeout(debouncetimeout);
     clearTimeout(checkTimeout);
     clearTimeout(deleteSearchTimeout);
     switch (true) {
+      case e.key === "ArrowDown":
+        activeIndex = (activeIndex + 1) % $searchResults.length;
+        break;
+      case e.key === "ArrowUp":
+        activeIndex =
+          (activeIndex - 1 + $searchResults.length) % $searchResults.length;
+        break;
+      case e.key === "Enter":
+        handleSelectWordFromSearch($searchResults[activeIndex].id);
+        break;
       case e.key === "Backspace":
         $searchTerm = $searchTerm.slice(0, -1);
         if ($searchTerm.length > 2) trigger($searchTerm.toLowerCase());
@@ -97,17 +109,11 @@
     }
   }
 
-  function expand(node: Element, { duration = 150 }) {
-    const style = getComputedStyle(node);
-    const height = parseFloat(style.height);
-
-    return {
-      duration,
-      css: (t: number) => `overflow: hidden; height: ${t * height}px;`,
-    };
-  }
   // handlecheck
   async function handleSelectWordFromSearch(id: string) {
+    $searchTerm = "";
+    $searchResults = [];
+
     const { data } = await page.data.supabase
       .from("vocab_table")
       .select("*")
@@ -126,8 +132,6 @@
         await archiveVocab(data[0].id, data[0].word, page.data.supabase);
       }
     }
-    $searchTerm = "";
-    $searchResults = [];
   }
 
   let searchTermFounded = $state<boolean>(true);
@@ -136,7 +140,7 @@
   let src1 = $state<string>("");
   let paused1 = $state<boolean>(true);
   let flipNumber = $state<number>(0);
-  let deleteIndex = $state<number>(9);
+  let activeIndex = $state<number>(0);
 
   $effect(() => {
     const v = $renderWord?.id;
@@ -182,6 +186,7 @@
   let editId = $state<string>("");
 
   function handleEditFromSearch(id: string) {
+    $searchTerm = "";
     $showEdit = true;
     editId = id;
   }
@@ -197,10 +202,14 @@
       trigger($vocabInput.toLowerCase());
     }
   }
+
+  onDestroy(() => {
+    renderWord.set(undefined);
+  });
 </script>
 
 <svelte:head>
-  {#if $showTimer}
+  {#if $showTimer && $timerString}
     <title>{$timerString}</title>
   {:else}
     <title>{$renderWord ? `${$renderWord.word}` : "vocab"}</title>
@@ -213,123 +222,85 @@
 <audio src={src1} bind:paused={paused1} onended={handlePlaySoundMeanings}>
 </audio>
 
-<div class="w-content h-[48px] flex justify-center items-center gap-6">
-  {#if innerWidth.current && innerWidth.current > 450}
-    {#if $renderWord}
-      <Flipcard number={flipNumber} />
-      <div
-        style="color: {searchTermFounded ? 'black' : 'white'}"
-        class="relative layout-white rounded-3 h-36 flex-1"
-      >
-        <div
-          class="absolute top-0 left-0 z-30 w-full h-full truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-33"
-        >
-          {$searchTerm || $renderWord.word}
-        </div>
-        <span
-          class="absolute z-10 font-sfpro left-0 bottom-0 w-full text-center text-9 opacity-50 leading-12 font-400 !lowercase"
-        >
-          {$renderWord.phonetics}
-        </span>
-      </div>
-    {:else}
-      <p
-        style="color: {searchTermFounded ? 'black' : 'white'}"
-        class="layout-white rounded-3 h-36 w-full pt-2 truncate text-center font-constantine text-21 font-700 uppercase leading-36 text-white"
-      >
-        {$searchTerm}
-      </p>
-    {/if}
-  {:else}
-    {#if $renderWord}
-      <Flipcard number={flipNumber} />
-    {/if}
-    <div class="relative layout-white rounded-3 h-36 flex-1 overflow-hidden">
-      <input
-        style="color: {searchTermFounded ? 'black' : 'white'}"
-        class="absolute top-0 left-0 z-30 w-full h-full bg-transparent truncate text-center align-baseline font-constantine text-21 font-700 uppercase leading-36 outline-none"
-        type="text"
-        bind:value={$vocabInput}
-        oninput={handleSearchInput}
-        onfocus={() => {
-          $vocabInput = "";
-          $searchResults = [];
-        }}
-        onblur={() => {
-          if ($renderWord) $vocabInput = $renderWord.word;
-        }}
-      />
-      {#if $renderWord}
-        <span
-          class="absolute z-10 font-sfpro left-0 bottom-0 w-full text-center text-9 opacity-50 leading-12 font-400 !lowercase"
-        >
-          {$renderWord.phonetics}
-        </span>
-      {/if}
-    </div>
-  {/if}
-</div>
-<div class="relative w-content h-[calc(100%-54px)]">
-  {#if $renderWord}
-    <div class="absolute w-full h-full z-10 no-scrollbar overflow-y-scroll">
-      <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
-    </div>
-  {/if}
-  {#if $searchResults.length}
-    <div
-      transition:expand={{ duration: 150 }}
-      class="layout-white p-3 rounded-3 absolute flex flex-col w-full h-full z-20 no-scrollbar overflow-y-scroll"
+{#if $showTranslate}
+  <Container zIndex={6} scrollable>
+    <Translate />
+  </Container>
+{:else if $searchTerm}
+  <Container zIndex={6}>
+    <p
+      style="color: {searchTermFounded ? 'black' : 'white'}"
+      class="light h-36 w-full truncate text-center font-constantine text-21 font-700 uppercase leading-36"
     >
-      {#each $searchResults as item, i}
-        {#if i === deleteIndex}
-          <div
-            transition:slide={{ duration: 300 }}
-            class="flex items-center px-12 justify-between h-27 my-6 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
-          >
-            <span class="text-12 text-white">Delete this word?</span>
-            <button
-              onclick={() => confirmDelete(item.id)}
-              class="text-12 text-secondary-white hover:text-black hover:font-600"
-              >Yes</button
-            >
-            <button
-              onclick={() => (deleteIndex = 9)}
-              class="text-12 text-secondary-white">No</button
-            >
-          </div>
-        {:else}
-          <div
-            class="flex items-center justify-between h-27 my-3 cursor-pointer rounded-3 bg-black/50 shadow-sm shadow-black/45"
-          >
-            <button
-              onclick={() => handleEditFromSearch(item.id)}
-              class="text-secondary-white text-10 leading-10 w-27 h-full"
-              >{i + 1}</button
-            >
-            <button
-              style="text-shadow: 0 2px 3px black;"
-              class="font-constantine text-24 font-700 leading-27 text-white hover:scale-[2] transition duration-100"
-              onclick={() => handleSelectWordFromSearch(item.id)}
-              >{item.word}</button
-            >
-            <button
-              onclick={() => (deleteIndex = i)}
-              class="text-secondary-white text-10 leading-10 w-27 h-full"
-            >
-              <Icon
-                icon="solar:trash-bin-trash-outline"
-                width="15"
-                height="15"
-              />
-            </button>
-          </div>
-        {/if}
-      {/each}
+      {$searchTerm}
+    </p>
+    {#if $searchResults.length}
+      <div class="h-[calc(100vh-80px)] w-full no-scrollbar overflow-y-scroll">
+        <ol>
+          {#each $searchResults as item, i}
+            <li class="{i === activeIndex ? 'light' : 'dark'} flex mb-2">
+              <button
+                class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
+                onclick={() => handleEditFromSearch(item.id)}
+              >
+                <Icon
+                  icon="fluent:slide-text-edit-28-regular"
+                  width="16"
+                  height="16"
+                />
+              </button>
+              <button
+                class="text-center flex-1 text-20 leading-30"
+                onclick={() => {
+                  handleSelectWordFromSearch(item.id);
+                }}
+              >
+                <span class="">
+                  <strong>{$searchTerm}</strong>{item.word.replace(
+                    $searchTerm,
+                    ""
+                  )}
+                </span>
+              </button>
+              <button
+                class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
+                onclick={() => confirmDelete(item.id)}
+              >
+                <Icon
+                  icon="solar:trash-bin-trash-outline"
+                  width="16"
+                  height="16"
+                />
+              </button>
+            </li>
+          {/each}
+        </ol>
+      </div>
+    {/if}
+  </Container>
+{:else if $showEdit}
+  <Container zIndex={6} scrollable>
+    <Edit id={editId} />
+  </Container>
+{:else if $renderWord}
+  <Container zIndex={6} scrollable>
+    <div class="h-36 w-full flex gap-3">
+      <Flipcard number={flipNumber} />
+      <div class="light flex-1 flex flex-col h-full">
+        <p
+          class="truncate text-center font-constantine text-21 font-700 uppercase leading-24"
+        >
+          {$renderWord.word}
+        </p>
+        <p
+          class="truncate text-center text-9 opacity-50 leading-9 font-400 lowercase"
+        >
+          {$renderWord.phonetics}
+        </p>
+      </div>
     </div>
-  {/if}
-
-  <Translate />
-  <Edit id={editId} />
-</div>
+    <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
+  </Container>
+{/if}
 
 <svelte:window on:keydown={onKeyDown} />

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { base64ToUint8Array } from "$lib/functions";
   import type { DBInsert, DBSelect } from "$lib/types";
   import { untrack } from "svelte";
   import { fade } from "svelte/transition";
   import { thumbHashToDataURL } from "thumbhash";
   import { page } from "$app/state";
+  import { base64ToUint8Array } from "$lib/utils/functions";
 
   interface Props {
     word?: DBSelect["vocab_table"] | DBInsert["vocab_table"];
