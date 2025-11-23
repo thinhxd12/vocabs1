@@ -115,6 +115,14 @@
       </button>
 
       <TimerButton />
+
+      <a
+        href="/pomodoro"
+        class:active={page.url.pathname === "/pomodoro"}
+        class="btn-nav"
+      >
+        <Icon icon="emojione-monotone:tomato" width="13" height="13" />
+      </a>
     </div>
 
     <div class="w-full flex justify-center items-start gap-2">

@@ -1,76 +1,54 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
   import type { PageProps } from "./$types";
   import { onMount } from "svelte";
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
   import Container from "$lib/components/Container.svelte";
+  import Pagination from "$lib/components/Pagination.svelte";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
   let currentPage = $state<number>(1);
-  let totalPages = $state<number>(1);
-  let pages = $state<(string | number)[]>([]);
-  let progressItems = $state<DBSelect["saddays_table"][]>([]);
+  let itemsPerPage = $state<number>(1);
+  let totalItems = $state<number | undefined>(undefined);
+  let paginationItems = $state<DBSelect["saddays_table"][]>([]);
+
+  function onPageChange(page: number) {
+    currentPage = page;
+    getDataByIndex(page);
+  }
 
   async function getTableLength() {
     const { count } = await supabase
       .from("saddays_table")
       .select("*", { count: "exact", head: true });
-    if (count) totalPages = Math.ceil(count / 18);
+    if (count) totalItems = count;
   }
 
   onMount(async () => {
+    let divHeight = window.innerHeight;
+    itemsPerPage = Math.floor((divHeight - 200) / 27);
     await getTableLength();
-    getPages(1);
+
+    getDataByIndex(1);
   });
 
-  async function getProgressByIndex(index: number) {
+  async function getDataByIndex(index: number) {
     const { data } = await supabase
       .from("saddays_table")
       .select("*")
-      .order("created_at", { ascending: true })
-      .range(index * 18, index * 18 + 17);
+      .order("created_at", { ascending: false })
+      .range((index - 1) * itemsPerPage, index * itemsPerPage - 1);
 
     if (data) {
-      progressItems = data;
+      paginationItems = data;
     }
-  }
-
-  async function getPages(current: number) {
-    currentPage = current;
-    const delta = 1;
-    const range = [];
-    const rangeWithDots = [];
-    let l;
-    for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= current - delta && i <= current + delta)
-      ) {
-        range.push(i);
-      }
-    }
-    for (let i of range) {
-      if (l) {
-        if (i - l === 2) {
-          rangeWithDots.push(l + 1);
-        } else if (i - l > 2) {
-          rangeWithDots.push("...");
-        }
-      }
-      rangeWithDots.push(i);
-      l = i;
-    }
-    pages = rangeWithDots;
-    getProgressByIndex(totalPages - current);
   }
 
   async function addDay() {
     const { data, error } = await supabase.from("saddays_table").insert({});
-    getPages(currentPage);
+    getDataByIndex(currentPage);
   }
 
   async function deleteDay(day: string) {
@@ -78,7 +56,7 @@
       .from("saddays_table")
       .delete()
       .eq("created_at", day);
-    getPages(currentPage);
+    getDataByIndex(currentPage);
   }
 </script>
 
@@ -93,11 +71,10 @@
   </h1>
 
   <ul class="text-center flex-1">
-    <li class="!shadow-none">
+    <li class="!shadow-none hover:!bg-transparent">
       <button aria-label="add" class="btn-add" onclick={addDay}></button>
     </li>
-
-    {#each progressItems as item}
+    {#each paginationItems as item}
       <li class="light">
         <button
           aria-label="delete"
@@ -109,39 +86,9 @@
     {/each}
   </ul>
 
-  <div class="flex justify-center items-center mt-6">
-    <button
-      class="size-24 light select-none rounded-6 flex items-center justify-center disabled:cursor-not-allowed disabled:text-black/10"
-      onclick={() => getPages(currentPage - 1)}
-      disabled={currentPage === 1}
-    >
-      <Icon icon="solar:alt-arrow-left-linear" width="14" height="14" />
-    </button>
-
-    <div class="rounded-6 light flex justify-center items-center mx-3 h-24">
-      {#each pages as page}
-        {#if page === "..."}
-          <span class="text-12 leading-14 select-none">…</span>
-        {:else}
-          <button
-            class:active={page === currentPage}
-            class="page-button"
-            onclick={() => getPages(page as number)}
-          >
-            {page}
-          </button>
-        {/if}
-      {/each}
-    </div>
-
-    <button
-      class="size-24 light select-none rounded-6 flex items-center justify-center disabled:cursor-not-allowed disabled:text-black/10"
-      onclick={() => getPages(currentPage + 1)}
-      disabled={currentPage === totalPages}
-    >
-      <Icon icon="solar:alt-arrow-right-linear" width="14" height="14" />
-    </button>
-  </div>
+  {#if totalItems}
+    <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
+  {/if}
 </Container>
 
 <style>
@@ -155,13 +102,5 @@
 
   .btn-delete {
     @apply size-15 border-black border mr-6 hover:bg-red-400/90;
-  }
-
-  .page-button {
-    @apply select-none text-black/30 text-center size-24 font-rubik text-12 leading-21 pt-3;
-  }
-
-  .page-button.active {
-    @apply text-black;
   }
 </style>

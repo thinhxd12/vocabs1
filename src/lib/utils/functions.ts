@@ -2,6 +2,7 @@ import { toast } from "svelte-sonner";
 import type {
   AirQualityResponse,
   CurrentlyWeatherType,
+  DBSelect,
   HourlyWeatherType,
   OpenMeteoResponse,
   WeatherQueryParams,
@@ -9,6 +10,7 @@ import type {
 import { v7 as uuidv7 } from "uuid";
 import { totalMemories } from "$lib/store/navstore";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { format } from "date-fns";
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
@@ -220,6 +222,30 @@ export const archiveVocab = async (
     .eq("id", smallestRow.id);
 
   if (!lastError) totalMemories.update((n) => n + 1);
+};
+
+export const submitReportPomodoro = async (
+  time: number,
+  supabase: SupabaseClient
+) => {
+  const today = new Date();
+  const date = format(today, "yyyy-MM-dd");
+
+  const { data } = await supabase
+    .from("pomodoro_table")
+    .select("time")
+    .eq("date", date);
+
+  if (data && data.length) {
+    await supabase
+      .from("pomodoro_table")
+      .update({
+        time: data[0].time + time,
+      })
+      .eq("date", date);
+  } else {
+    await supabase.from("pomodoro_table").insert({ date, time });
+  }
 };
 
 /**

@@ -106,6 +106,7 @@
   }
 
   function handleCloseBook() {
+    handleListenKeypress();
     for (let i = flipPages.length - 1; i >= 0; i--) {
       flipPages[i].isFlipped = false;
       if (i === 0) {
@@ -420,10 +421,9 @@
   }
 
   function handleFlipPage(id: number) {
-    clearTimeout(flipTimeoutId);
-    clearTimeout(flagTimeoutId);
-    currentPage = id;
+    handleListenKeypress();
 
+    currentPage = id;
     visualProgress.target = 0.033;
 
     if (flipPages[id].isFlipped) {
@@ -464,7 +464,6 @@
           else handleFlipPage(currentPage);
           break;
       }
-      handleListenKeypress();
     } else if (e.key === "ArrowLeft") {
       switch (currentPage) {
         case 0:
@@ -476,7 +475,6 @@
           else handleFlipPage(currentPage - 1);
           break;
       }
-      handleListenKeypress();
     } else if (e.key === "ArrowDown") {
       if (flipPages[0].isFlipped) handleCheckBookmark();
     }

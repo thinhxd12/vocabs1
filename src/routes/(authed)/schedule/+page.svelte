@@ -2,7 +2,7 @@
   import { enhance } from "$app/forms";
   import Calendar from "$lib/components/Calendar.svelte";
   import { schedule, todaySchedule } from "$lib/store/navstore";
-  import { cachedDiary, cachedProgressLength } from "$lib/store/vocabstore";
+  import { cachedDiary } from "$lib/store/vocabstore";
   import type { CalendarDayType, DBSelect } from "$lib/types.js";
   import Icon from "@iconify/svelte";
   import { format } from "date-fns";
@@ -11,6 +11,7 @@
   import { fade } from "svelte/transition";
   import type { PageProps } from "./$types";
   import Container from "$lib/components/Container.svelte";
+  import Pagination from "$lib/components/Pagination.svelte";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -40,70 +41,48 @@
   let paused = $state<boolean>(true);
   let showReset = $state<boolean>(false);
   let showCreate = $state<boolean>(false);
-  let progressItems = $state<DBSelect["progress_table"][] | null>(null);
-  let currentPage = $state<number>(1);
-  let pages = $state<(string | number)[]>([]);
 
-  async function getProgressByIndex(index: number) {
+  let currentPage = $state<number>(1);
+  let itemsPerPage = 5;
+  let totalItems = $state<number | undefined>(undefined);
+  let paginationItems = $state<DBSelect["progress_table"][] | null>(null);
+
+  async function getTableProgressLength() {
+    const { count } = await supabase
+      .from("progress_table")
+      .select("id", { count: "exact", head: true });
+    if (count) totalItems = count;
+  }
+
+  function onPageChange(page: number) {
+    currentPage = page;
+    getDataByIndex(page);
+  }
+
+  async function getDataByIndex(index: number) {
     const { data } = await supabase
       .from("progress_table")
       .select("*")
-      .order("id", { ascending: true })
-      .range(index * 5, index * 5 + 4);
+      .order("id", { ascending: false })
+      .range((index - 1) * itemsPerPage, index * itemsPerPage - 1);
+
     if (data && data.length) {
-      progressItems = data;
+      paginationItems = data;
     }
-  }
-
-  async function getPages(current: number) {
-    let totalPages = $cachedProgressLength;
-    if (!totalPages) return;
-    currentPage = current;
-    const delta = 1;
-    const range = [];
-    const rangeWithDots = [];
-    let l;
-
-    for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= current - delta && i <= current + delta)
-      ) {
-        range.push(i);
-      }
-    }
-
-    for (let i of range) {
-      if (l) {
-        if (i - l === 2) {
-          rangeWithDots.push(l + 1);
-        } else if (i - l > 2) {
-          rangeWithDots.push("...");
-        }
-      }
-      rangeWithDots.push(i);
-      l = i;
-    }
-
-    pages = rangeWithDots;
-    getProgressByIndex(totalPages - current);
   }
 
   onMount(async () => {
-    if (!$cachedProgressLength) {
-      if (layoutData.totalProgress) {
-        $cachedProgressLength = Math.ceil(layoutData.totalProgress / 5);
-        const { data } = await supabase
-          .from("diary_table")
-          .select("*")
-          .order("id", { ascending: true });
-        if (data) {
-          $cachedDiary = data;
-        }
-        getPages(1);
+    if (!$cachedDiary) {
+      const { data } = await supabase
+        .from("diary_table")
+        .select("*")
+        .order("id", { ascending: true });
+      if (data) {
+        $cachedDiary = data;
       }
-    } else getPages(1);
+    }
+    await getTableProgressLength();
+    getDataByIndex(1);
   });
 
   async function reloadScheduleData() {
@@ -380,71 +359,31 @@
   </p>
 
   <div class="w-full flex flex-col items-center min-h-[135px]">
-    {#if progressItems}
-      {#each progressItems as item}
-        <div
-          class="w-full gap-2 font-rubik text-12 h-24 flex items-center mb-2 select-none"
-        >
-          <div class="dark min-w-[120px] text-center leading-22 pt-2">
-            {item.index + 1} - {item.index + 200}
-          </div>
-          <div class="light flex-1 text-center leading-22 pt-2">
-            {format(new Date(item.start_date), "yyyy-MM-dd")}
-          </div>
-          <div class="light flex-1 text-center leading-22 pt-2">
-            {format(new Date(item.end_date), "yyyy-MM-dd")}
-          </div>
+    {#each paginationItems as item}
+      <div
+        class="w-full gap-2 font-rubik text-12 h-24 flex items-center mb-2 select-none"
+      >
+        <div class="dark min-w-[120px] text-center leading-22 pt-2">
+          {item.index + 1} - {item.index + 200}
         </div>
-      {/each}
-    {/if}
+        <div class="light flex-1 text-center leading-22 pt-2">
+          {format(new Date(item.start_date), "yyyy-MM-dd")}
+        </div>
+        <div class="light flex-1 text-center leading-22 pt-2">
+          {format(new Date(item.end_date), "yyyy-MM-dd")}
+        </div>
+      </div>
+    {/each}
   </div>
 
-  <div class="flex justify-center items-center">
-    <button
-      class="size-24 light select-none rounded-6 flex items-center justify-center disabled:cursor-not-allowed disabled:text-black/10"
-      onclick={() => getPages(currentPage - 1)}
-      disabled={currentPage === 1}
-    >
-      <Icon icon="solar:alt-arrow-left-linear" width="14" height="14" />
-    </button>
-
-    <div class="rounded-6 light flex justify-center items-center mx-3 h-24">
-      {#each pages as page}
-        {#if page === "..."}
-          <span class="text-12 leading-14 select-none">…</span>
-        {:else}
-          <button
-            class:active={page === currentPage}
-            class="page-button"
-            onclick={() => getPages(page as number)}
-          >
-            {page}
-          </button>
-        {/if}
-      {/each}
-    </div>
-
-    <button
-      class="size-24 light rounded-6 select-none flex items-center justify-center disabled:cursor-not-allowed disabled:text-black/10"
-      onclick={() => getPages(currentPage + 1)}
-      disabled={currentPage === $cachedProgressLength}
-    >
-      <Icon icon="solar:alt-arrow-right-linear" width="14" height="14" />
-    </button>
-  </div>
+  {#if totalItems}
+    <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
+  {/if}
 </Container>
 
 <style>
   .calendar-button {
     @apply size-24 flex justify-center items-center rounded-2 hover:bg-white/40 shadow-sm shadow-black/30;
-  }
-
-  .page-button {
-    @apply select-none text-black/30 text-center size-24 font-rubik text-12 leading-21 pt-3;
-  }
-
-  .page-button.active {
-    @apply text-black;
   }
 
   .form-date {

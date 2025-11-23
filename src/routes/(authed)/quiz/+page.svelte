@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from "svelte";
+  import { onDestroy, untrack } from "svelte";
   import {
     listContent,
     quizRender,
@@ -21,11 +21,12 @@
   let value = $state("");
   let options = $state<string[]>([]);
   let submitted = $state<boolean>(false);
+  let timeout: ReturnType<typeof setTimeout>;
 
   $effect(() => {
     const v = $listContent;
     untrack(() => {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         createOptions();
         submitted = false;
       }, 500);
@@ -62,15 +63,15 @@
     }
     $listCount += 1;
     if ($listCount < $listContent.length) {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         submitted = false;
         $quizRender = $listContent[$listCount];
         createOptions();
       }, 1000);
     } else {
-      setTimeout(async () => {
-        src1 = "/sounds/mp3_Ding.mp3";
-        paused1 = false;
+      timeout = setTimeout(async () => {
+        src0 = "/sounds/mp3_Ding.mp3";
+        paused0 = false;
         $quizRender = undefined;
         $listContent = [];
         $listCount = 0;
@@ -92,6 +93,10 @@
       await archiveVocab($quizRender.id, $quizRender.word, page.data.supabase);
     }
   }
+
+  onDestroy(() => {
+    clearTimeout(timeout);
+  });
 </script>
 
 <svelte:head>

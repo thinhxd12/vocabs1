@@ -138,6 +138,21 @@ export type Database = {
         };
         Relationships: [];
       };
+      pomodoro_table: {
+        Row: {
+          date: string;
+          time: number;
+        };
+        Insert: {
+          date: string;
+          time: number;
+        };
+        Update: {
+          date: string;
+          time: number;
+        };
+        Relationships: [];
+      };
       progress_table: {
         Row: {
           created_at: string;
