@@ -18,10 +18,10 @@
 
   let showSetting = $state<boolean>(false);
   let showReport = $state<boolean>(false);
-  let pomodoro = $state<number>(3);
+  let pomodoro = $state<number>(7);
   let shortBreak = $state<number>(2);
   let longBreak = $state<number>(15);
-  let longBreakInterval = $state<number>(4);
+  let longBreakInterval = $state<number>(3);
   let interval: ReturnType<typeof setInterval>;
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
@@ -30,19 +30,12 @@
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
   const padWithZeroes = (number: number) => number.toString().padStart(2, "0");
 
-  // svelte-ignore state_referenced_locally
-  const POMODORO_S = minutesToSeconds(pomodoro);
-  // svelte-ignore state_referenced_locally
-  const LONG_BREAK_S = minutesToSeconds(longBreak);
-  // svelte-ignore state_referenced_locally
-  const SHORT_BREAK_S = minutesToSeconds(shortBreak);
-
   let now = $state<number>(0);
   let end = $state<number>(0);
 
   onMount(() => {
     if ($currentState === "focus" && !$countPomodoros)
-      $countPomodoros = POMODORO_S;
+      $countPomodoros = minutesToSeconds(pomodoro);
   });
 
   function formatTime(timeInSeconds: number): string {
@@ -75,10 +68,10 @@
     submitReport();
     if ($completedPomodoros === longBreakInterval) {
       $completedPomodoros = 0;
-      $countPomodoros = LONG_BREAK_S;
+      $countPomodoros = minutesToSeconds(longBreak);
       rest();
     } else {
-      $countPomodoros = SHORT_BREAK_S;
+      $countPomodoros = minutesToSeconds(shortBreak);
       rest();
     }
   }
@@ -97,7 +90,7 @@
     now = Date.now();
     $countPomodoros = Math.round((end - now) / 1000);
     if (now >= end) {
-      $countPomodoros = POMODORO_S;
+      $countPomodoros = minutesToSeconds(pomodoro);
       startPomodoro();
       pauseAudio = false;
     }
@@ -317,7 +310,7 @@
           class="timer-status"
           class:active={$currentState === "focus"}
           onclick={() => {
-            $countPomodoros = POMODORO_S;
+            $countPomodoros = minutesToSeconds(pomodoro);
             startPomodoro();
           }}
         >
@@ -328,7 +321,7 @@
           class:active={$currentState === "rest" && $completedPomodoros !== 0}
           onclick={() => {
             if ($completedPomodoros === 0) $completedPomodoros = 1;
-            $countPomodoros = SHORT_BREAK_S;
+            $countPomodoros = minutesToSeconds(shortBreak);
             rest();
           }}
         >
@@ -339,7 +332,7 @@
           class:active={$currentState === "rest" && $completedPomodoros === 0}
           onclick={() => {
             $completedPomodoros = 0;
-            $countPomodoros = LONG_BREAK_S;
+            $countPomodoros = minutesToSeconds(longBreak);
             rest();
           }}
         >
@@ -375,14 +368,6 @@
   .rest {
     background-image: url("/images/green-tomatoes.jpg");
     background-size: contain;
-  }
-
-  .main::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(99, 66, 66, 0.3);
   }
 
   .setting-button {
