@@ -47,7 +47,7 @@
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["progress_table"][] | null>(null);
 
-  async function getTableProgressLength() {
+  async function getTablePaginationLength() {
     const { count } = await supabase
       .from("progress_table")
       .select("id", { count: "exact", head: true });
@@ -56,15 +56,21 @@
 
   function onPageChange(page: number) {
     currentPage = page;
-    getDataByIndex(page);
+    getDataPaginationByIndex(page);
   }
 
-  async function getDataByIndex(index: number) {
+  async function getDataPaginationByIndex(index: number) {
+    const fixNumber = Math.abs(
+      totalItems! - Math.round(totalItems! / itemsPerPage) * itemsPerPage
+    );
     const { data } = await supabase
       .from("progress_table")
       .select("*")
       .order("id", { ascending: false })
-      .range((index - 1) * itemsPerPage, index * itemsPerPage - 1);
+      .range(
+        (index - 1) * itemsPerPage - fixNumber,
+        (2 * index - 1) * itemsPerPage - 1 - fixNumber
+      );
 
     if (data && data.length) {
       paginationItems = data;
@@ -81,8 +87,8 @@
         $cachedDiary = data;
       }
     }
-    await getTableProgressLength();
-    getDataByIndex(1);
+    await getTablePaginationLength();
+    getDataPaginationByIndex(1);
   });
 
   async function reloadScheduleData() {
@@ -174,31 +180,155 @@
 
     {#if showReset}
       <div
-        class="light w-1/2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        transition:fade={{ duration: 150 }}
+        class="absolute z-20 w-full h-full bg-black/80 p-50"
+        transition:fade={{ duration: 100 }}
       >
-        <div class="flex items-center justify-between bg-black">
-          <p class="text-12 font-rubik text-white leading-21 pl-6">
-            Set today task
-          </p>
-          <button
-            onclick={() => (showReset = !showReset)}
-            class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
+        <div
+          class="bg-white w-full h-full rounded-2 overflow-hidden flex flex-col"
+        >
+          <div
+            class="w-full min-h-36 px-6 flex items-center justify-between bg-black"
           >
-            <Icon
-              icon="material-symbols:close-rounded"
-              width="14"
-              height="14"
-            />
-          </button>
-        </div>
+            <p class="text-12 font-rubik text-white leading-21 pl-6">
+              Set today task
+            </p>
+            <button
+              onclick={() => (showReset = !showReset)}
+              class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
+            >
+              <Icon
+                icon="material-symbols:close-rounded"
+                width="14"
+                height="14"
+              />
+            </button>
+          </div>
 
-        {#if $todaySchedule}
+          {#if $todaySchedule}
+            <form
+              name="editprogress"
+              action="?/setProgress"
+              method="post"
+              class="w-full h-full grid grid-cols-3 grid-rows-3 gap-3 p-3"
+              use:enhance={({ formElement, formData, action, cancel }) => {
+                return async ({ result }) => {
+                  if (result.type === "failure") {
+                    toast.error(result.data?.error as string, {
+                      class: "my-toast",
+                    });
+                  } else {
+                    toast.success("Update successfully", {
+                      class: "my-toast",
+                    });
+                    updateScheduleLocal(
+                      {
+                        id: formData.get("id0"),
+                        date: formData.get("date0"),
+                        count: Number(formData.get("count0")),
+                      },
+                      {
+                        id: formData.get("id1"),
+                        date: formData.get("date1"),
+                        count: Number(formData.get("count1")),
+                      }
+                    );
+                    showReset = false;
+                  }
+                };
+              }}
+            >
+              <input
+                hidden
+                name="id0"
+                autocomplete="off"
+                value={$todaySchedule.start.id}
+              />
+              <input
+                hidden
+                name="id1"
+                autocomplete="off"
+                value={$todaySchedule.end.id}
+              />
+
+              <input
+                name="date0"
+                autocomplete="off"
+                type="date"
+                bind:value={$todaySchedule.start.date}
+                class="form-date"
+              />
+              <input
+                name="count0"
+                autocomplete="off"
+                type="number"
+                min="0"
+                bind:value={$todaySchedule.start.count}
+                class="form-number"
+              />
+
+              <input
+                name="date1"
+                autocomplete="off"
+                type="date"
+                bind:value={$todaySchedule.end.date}
+                class="form-date"
+              />
+
+              <input
+                name="count1"
+                autocomplete="off"
+                type="number"
+                min="0"
+                bind:value={$todaySchedule.end.count}
+                class="form-number"
+              />
+
+              <div class="form-buttons">
+                <button
+                  type="button"
+                  class="form-button"
+                  onclick={() => (showReset = !showReset)}
+                >
+                  Cancle
+                </button>
+
+                <button type="submit" class="form-button"> Submit </button>
+              </div>
+            </form>
+          {/if}
+        </div>
+      </div>
+    {/if}
+
+    {#if showCreate}
+      <div
+        class="absolute z-20 w-full h-full bg-black/80 p-50"
+        transition:fade={{ duration: 100 }}
+      >
+        <div class="bg-white w-full rounded-2 overflow-hidden flex flex-col">
+          <div
+            class="w-full min-h-36 px-6 flex items-center justify-between bg-black"
+          >
+            <p class="text-12 font-rubik text-white leading-21 pl-6">
+              Create new schedule
+            </p>
+            <button
+              onclick={() => (showCreate = !showCreate)}
+              class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
+            >
+              <Icon
+                icon="material-symbols:close-rounded"
+                width="14"
+                height="14"
+              />
+            </button>
+          </div>
+
           <form
-            name="editprogress"
-            action="?/setProgress"
+            name="createschedule"
+            action="?/setSchedule"
             method="post"
-            class="w-full grid grid-cols-3 grid-rows-3 gap-3 p-3"
+            class="w-full h-36 flex items-center justify-center"
             use:enhance={({ formElement, formData, action, cancel }) => {
               return async ({ result }) => {
                 if (result.type === "failure") {
@@ -206,141 +336,27 @@
                     class: "my-toast",
                   });
                 } else {
-                  toast.success("Update successfully", {
+                  toast.success("Create successfully", {
                     class: "my-toast",
                   });
-                  updateScheduleLocal(
-                    {
-                      id: formData.get("id0"),
-                      date: formData.get("date0"),
-                      count: Number(formData.get("count0")),
-                    },
-                    {
-                      id: formData.get("id1"),
-                      date: formData.get("date1"),
-                      count: Number(formData.get("count1")),
-                    }
-                  );
-                  showReset = false;
+                  reloadScheduleData();
                 }
               };
             }}
           >
-            <input
-              hidden
-              name="id0"
-              autocomplete="off"
-              value={$todaySchedule.start.id}
-            />
-            <input
-              hidden
-              name="id1"
-              autocomplete="off"
-              value={$todaySchedule.end.id}
-            />
-
-            <input
-              name="date0"
-              autocomplete="off"
-              type="date"
-              bind:value={$todaySchedule.start.date}
-              class="form-date"
-            />
-            <input
-              name="count0"
-              autocomplete="off"
-              type="number"
-              min="0"
-              bind:value={$todaySchedule.start.count}
-              class="form-number"
-            />
-
-            <input
-              name="date1"
-              autocomplete="off"
-              type="date"
-              bind:value={$todaySchedule.end.date}
-              class="form-date"
-            />
-
-            <input
-              name="count1"
-              autocomplete="off"
-              type="number"
-              min="0"
-              bind:value={$todaySchedule.end.count}
-              class="form-number"
-            />
-
-            <div class="form-buttons">
+            <div class="flex gap-30 py-6">
               <button
                 type="button"
                 class="form-button"
-                onclick={() => (showReset = !showReset)}
+                onclick={() => (showCreate = !showCreate)}
               >
                 Cancle
               </button>
 
-              <button type="submit" class="form-button"> Submit </button>
+              <button type="submit" class="form-button"> Create </button>
             </div>
           </form>
-        {/if}
-      </div>
-    {/if}
-
-    {#if showCreate}
-      <div
-        class="light w-1/2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-        transition:fade={{ duration: 150 }}
-      >
-        <div class="flex items-center justify-between bg-black">
-          <p class="text-12 font-rubik text-white leading-21 pl-6">
-            Create new schedule
-          </p>
-          <button
-            onclick={() => (showCreate = !showCreate)}
-            class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
-          >
-            <Icon
-              icon="material-symbols:close-rounded"
-              width="14"
-              height="14"
-            />
-          </button>
         </div>
-
-        <form
-          name="createschedule"
-          action="?/setSchedule"
-          method="post"
-          class="w-full flex items-center justify-center"
-          use:enhance={({ formElement, formData, action, cancel }) => {
-            return async ({ result }) => {
-              if (result.type === "failure") {
-                toast.error(result.data?.error as string, {
-                  class: "my-toast",
-                });
-              } else {
-                toast.success("Create successfully", {
-                  class: "my-toast",
-                });
-                reloadScheduleData();
-              }
-            };
-          }}
-        >
-          <div class="flex gap-30 py-6">
-            <button
-              type="button"
-              class="form-button"
-              onclick={() => (showCreate = !showCreate)}
-            >
-              Cancle
-            </button>
-
-            <button type="submit" class="form-button"> Create </button>
-          </div>
-        </form>
       </div>
     {/if}
   </div>
@@ -399,6 +415,6 @@
   }
 
   .form-button {
-    @apply px-6 py-3 rounded-2 text-12 leading-12 font-rubik bg-black/10  hover:bg-black/20;
+    @apply px-12 pt-6 pb-4 rounded-2 text-12 leading-12 font-rubik bg-black/10  hover:bg-black/20;
   }
 </style>

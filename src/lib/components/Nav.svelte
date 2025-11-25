@@ -74,7 +74,7 @@
       {/if}
     </div>
     <div
-      class="relative w-12 h-15 overflow-hidden bg-white/30 backdrop-blur-md"
+      class="relative w-12 h-15 overflow-hidden bg-white/60 backdrop-blur-md"
     >
       <span
         class="uppercase text-8 font-900 text-black leading-12 text-center absolute w-15 h-full transform -rotate-90 origin-center"
@@ -114,8 +114,6 @@
         {/if}
       </button>
 
-      <TimerButton />
-
       <a
         href="/pomodoro"
         class:active={page.url.pathname === "/pomodoro"}
@@ -123,6 +121,8 @@
       >
         <Icon icon="emojione-monotone:tomato" width="13" height="13" />
       </a>
+
+      <TimerButton />
     </div>
 
     <div class="w-full flex justify-center items-start gap-2">

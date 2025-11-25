@@ -99,6 +99,9 @@ export const actions = {
   editBookmark: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const id = formData.get("id") as string;
+    const bookTile = formData.get("bookTile") as string;
+    const authors = formData.get("authors") as string;
+    const dateOfCreation = formData.get("dateOfCreation") as string;
     const content = formData.get("content") as string;
     const like = formData.get("like") as string;
 
@@ -107,7 +110,13 @@ export const actions = {
 
     const { error } = await supabase
       .from("bookmark_table")
-      .update({ content: content, like: Number(like) })
+      .update({
+        bookTile,
+        authors,
+        dateOfCreation,
+        content,
+        like: Number(like),
+      })
       .eq("id", id);
 
     if (error) {

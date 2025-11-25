@@ -10,16 +10,16 @@
   const { supabase } = layoutData;
 
   let currentPage = $state<number>(1);
-  let itemsPerPage = $state<number>(1);
+  let itemsPerPage = 18;
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["saddays_table"][]>([]);
 
   function onPageChange(page: number) {
     currentPage = page;
-    getDataByIndex(page);
+    getDataPaginationByIndex(page);
   }
 
-  async function getTableLength() {
+  async function getTablePaginationLength() {
     const { count } = await supabase
       .from("saddays_table")
       .select("*", { count: "exact", head: true });
@@ -27,19 +27,22 @@
   }
 
   onMount(async () => {
-    let divHeight = window.innerHeight;
-    itemsPerPage = Math.floor((divHeight - 200) / 27);
-    await getTableLength();
-
-    getDataByIndex(1);
+    await getTablePaginationLength();
+    getDataPaginationByIndex(1);
   });
 
-  async function getDataByIndex(index: number) {
+  async function getDataPaginationByIndex(index: number) {
+    const fixNumber = Math.abs(
+      totalItems! - Math.round(totalItems! / itemsPerPage) * itemsPerPage
+    );
     const { data } = await supabase
       .from("saddays_table")
       .select("*")
       .order("created_at", { ascending: false })
-      .range((index - 1) * itemsPerPage, index * itemsPerPage - 1);
+      .range(
+        (index - 1) * itemsPerPage - fixNumber,
+        (2 * index - 1) * itemsPerPage - 1 - fixNumber
+      );
 
     if (data) {
       paginationItems = data;
@@ -48,7 +51,7 @@
 
   async function addDay() {
     const { data, error } = await supabase.from("saddays_table").insert({});
-    getDataByIndex(currentPage);
+    getDataPaginationByIndex(currentPage);
   }
 
   async function deleteDay(day: string) {
@@ -56,7 +59,7 @@
       .from("saddays_table")
       .delete()
       .eq("created_at", day);
-    getDataByIndex(currentPage);
+    getDataPaginationByIndex(currentPage);
   }
 </script>
 

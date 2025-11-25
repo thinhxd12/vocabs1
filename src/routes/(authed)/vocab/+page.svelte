@@ -143,11 +143,11 @@
   let activeIndex = $state<number>(0);
 
   $effect(() => {
-    const v = $renderWord?.id;
+    const v = $renderWord;
     untrack(() => {
-      if ($renderWord) {
-        flipNumber = $renderWord.number;
-        src1 = $renderWord.audio;
+      if (v) {
+        flipNumber = v.number;
+        src1 = v.audio;
         paused1 = false;
       }
     });

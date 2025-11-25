@@ -4,7 +4,7 @@
   import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { toast } from "svelte-sonner";
-  import { fly } from "svelte/transition";
+  import { fly, fade } from "svelte/transition";
   import { page } from "$app/state";
   import { Tween } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
@@ -58,7 +58,11 @@
   }
 
   onMount(() => {
-    handleGetCurrentBookmark();
+    if (!$bookmark) {
+      handleGetCurrentBookmark();
+    } else {
+      setBookContent($bookmark.content);
+    }
   });
 
   async function handleGetNextBookmark() {
@@ -379,7 +383,8 @@
   let insertData = $state<DBSelect["bookmark_table"][] | undefined>(undefined);
 
   async function showInsertBookmark() {
-    showInsert = !showInsert;
+    isSubmitting = false;
+    showInsert = true;
     const { data } = await page.data.supabase
       .from("bookmark_table")
       .select("*")
@@ -491,6 +496,9 @@
     clearTimeout(flipTimeoutId);
     clearTimeout(flagTimeoutId);
     clearTimeout(keyDownTimeoutId);
+    if (isRandomed) {
+      $bookmark = $bookInfo = undefined;
+    }
   });
 </script>
 
@@ -502,16 +510,16 @@
 </svelte:head>
 
 <section
-  class="absolute top-0 left-0 w-screen h-screen flex justify-center pt-60 z-[5]"
+  class="absolute top-0 left-0 w-screen h-screen flex items-center justify-center pt-60 px-60 pb-90 z-[5]"
 >
   {#if showEdit}
-    <div class="dark popup" transition:fly={{ y: "-100%", duration: 300 }}>
+    <div class="popup" transition:fade={{ duration: 100 }}>
       {#if bookmark}
         <form
           name="editbookmark"
           action="?/editBookmark"
           method="post"
-          class="w-full p-18 text-black"
+          class="bg-[#f5f5f5] h-full golden rounded-2 overflow-hidden p-15"
           use:enhance={({ formElement, formData, action, cancel }) => {
             isSubmitting = true;
             return async ({ result, update }) => {
@@ -530,48 +538,82 @@
           }}
         >
           <input hidden name="id" autocomplete="off" value={$bookmark!.id} />
-          <textarea
-            class="p-9 w-full style-scrollbar rounded-3 border-0 font-proxima text-14 font-400 leading-24 bg-[#f5f5f5] outline-none ring-1 ring-white/30"
-            name="content"
-            autocomplete="off"
-            onkeydown={(e) => e.stopPropagation()}
-            rows="18"
-            bind:value={$bookmark!.content}
-          ></textarea>
-
-          <div class="relative w-80 rounded-3 overflow-hidden">
-            <div
-              class="absolute flex items-center justify-center inset-y-0 start-3 {$bookmark!
-                .like
-                ? 'text-[#a90909]'
-                : ''}"
-            >
-              <Icon icon="solar:heart-bold" width="15" height="15" />
+          <div class="mb-6">
+            <p class="form-title">Book title</p>
+            <div class="mt-2">
+              <input
+                type="text"
+                name="bookTile"
+                autocomplete="off"
+                class="form-input"
+                bind:value={$bookmark!.bookTile}
+              />
             </div>
-            <input
-              class="block w-full rounded-3 py-3 outline-none pl-24 font-proxima text-14 leading-12 font-500"
-              name="like"
-              type="number"
-              min="0"
-              autocomplete="off"
-              onkeydown={(e) => e.stopPropagation()}
-              bind:value={$bookmark!.like}
-            />
           </div>
-          <div class="flex w-full items-center justify-center gap-24 mt-6">
-            <button
-              class="btn-form"
-              type="button"
-              onclick={() => (showEdit = !showEdit)}
-            >
-              Cancel
-            </button>
+          <div class="mb-6">
+            <p class="form-title">Authors</p>
+            <div class="mt-2">
+              <input
+                type="text"
+                name="authors"
+                autocomplete="off"
+                class="form-input"
+                bind:value={$bookmark!.authors}
+              />
+            </div>
+          </div>
+          <div class="mb-6">
+            <p class="form-title">Date of Creation</p>
+            <div class="mt-2">
+              <input
+                type="text"
+                name="dateOfCreation"
+                autocomplete="off"
+                class="form-input"
+                bind:value={$bookmark!.dateOfCreation}
+              />
+            </div>
+          </div>
+          <div>
+            <p class="form-title">Content</p>
+            <div class="mt-2">
+              <textarea
+                name="content"
+                autocomplete="off"
+                rows="9"
+                class="form-input"
+                bind:value={$bookmark!.content}
+              ></textarea>
+            </div>
+          </div>
+          <div class="border-b border-gray-900/10 mb-15 pb-20">
+            <p class="form-title">Like</p>
+            <div class="mt-2">
+              <input
+                type="number"
+                name="like"
+                min="0"
+                autocomplete="off"
+                class="form-input"
+                bind:value={$bookmark!.like}
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center justify-start gap-6">
             <button
               type="submit"
-              class="btn-form disabled:cursor-not-allowed"
+              class="form-submit-button"
               disabled={isSubmitting}
             >
-              Submit
+              Save
+            </button>
+            <button
+              type="button"
+              class="text-14 leading-18 py-4 px-12 font-500"
+              onclick={() => (showEdit = false)}
+            >
+              Cancel
             </button>
           </div>
         </form>
@@ -580,81 +622,89 @@
   {/if}
 
   {#if showInsert}
-    <div class="dark popup" transition:fly={{ y: "-100%", duration: 300 }}>
-      <form
-        name="insertbookmark"
-        action="?/insertBookmark"
-        method="post"
-        class="w-full h-1/2 flex flex-col text-white"
-        use:enhance={({ formElement, formData, action, cancel }) => {
-          return async ({ result }) => {
-            if (result.status === 200) {
-              toast.success("Insert items successfully", {
-                class: "my-toast",
-              });
-            } else {
-              toast.error("Error", {
-                class: "my-toast",
-              });
-            }
-          };
-        }}
-      >
-        <textarea
-          class="p-9 w-full style-scrollbar rounded-3 border-0 font-proxima text-14 font-400 leading-24 bg-[#f5f5f5] outline-none"
-          name="content"
-          autocomplete="off"
-          onkeydown={(e) => e.stopPropagation()}
-          rows="11"
-        ></textarea>
-
-        <div class="flex w-full items-center justify-center gap-24 my-6">
-          <button
-            class="btn-form"
-            type="button"
-            onclick={() => (showInsert = !showInsert)}
-          >
-            Cancel
-          </button>
-          <button type="submit" class="btn-form">Insert</button>
-        </div>
-      </form>
-
-      {#if insertData}
-        <div
-          class="flex-1 w-full overflow-y-scroll style-scrollbar font-proxima"
+    <div class="popup" transition:fade={{ duration: 100 }}>
+      <div class="bg-[#f5f5f5] h-full golden rounded-2 overflow-hidden p-15">
+        <form
+          class="w-full border-b border-gray-900/10 mb-9 pb-9"
+          name="insertbookmark"
+          action="?/insertBookmark"
+          method="post"
+          use:enhance={({ formElement, formData, action, cancel }) => {
+            isSubmitting = true;
+            return async ({ result }) => {
+              if (result.status === 200) {
+                toast.success("Insert items successfully", {
+                  class: "my-toast",
+                });
+              } else {
+                toast.error("Error", {
+                  class: "my-toast",
+                });
+              }
+              isSubmitting = false;
+            };
+          }}
         >
-          <table class="w-full">
+          <div>
+            <p class="form-title">Highlights</p>
+            <div class="mt-2">
+              <textarea
+                name="content"
+                autocomplete="off"
+                rows="9"
+                class="form-input"
+              ></textarea>
+            </div>
+          </div>
+          <div class="flex items-center justify-start gap-6">
+            <button
+              type="submit"
+              class="form-submit-button"
+              disabled={isSubmitting}
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="text-14 leading-18 py-4 px-12 font-500"
+              onclick={() => (showInsert = false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+        {#if insertData}
+          <table
+            class="w-full text-left table-auto min-w-max rounded-3 shadow-sm shadow-black/30"
+          >
             <thead>
               <tr class="text-12 font-400 bg-gray-50 text-black">
-                <th>authors</th>
-                <th>bookTile</th>
-                <th>date</th>
-                <th>content</th>
+                <th>Book title</th>
+                <th>Authors</th>
+                <th>Date of Creation</th>
+                <th>Content</th>
               </tr>
             </thead>
             <tbody>
               {#each insertData as item}
-                <tr
-                  class="text-12 font-400 h-30 overflow-hidden w-full border-b border-gray-50/30"
-                >
+                <tr>
                   <td
-                    class="max-w-100 indent-6 whitespace-nowrap text-ellipsis overflow-hidden"
-                  >
-                    {item.authors}
-                  </td>
-                  <td
-                    class="max-w-[180px] whitespace-nowrap text-ellipsis overflow-hidden"
+                    class="max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis"
                   >
                     {item.bookTile}
                   </td>
                   <td
-                    class="max-w-80 whitespace-nowrap text-ellipsis overflow-hidden"
+                    class="max-w-[140px] overflow-hidden whitespace-nowrap text-ellipsis"
+                  >
+                    {item.authors}
+                  </td>
+                  <td
+                    class="max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis"
                   >
                     {format(new Date(item.dateOfCreation), "P")}
                   </td>
                   <td
-                    class="max-w-[350px] h-30 whitespace-nowrap text-ellipsis overflow-hidden"
+                    class="max-w-[460px] overflow-hidden whitespace-nowrap text-ellipsis"
                   >
                     {item.content}
                   </td>
@@ -662,8 +712,8 @@
               {/each}
             </tbody>
           </table>
-        </div>
-      {/if}
+        {/if}
+      </div>
     </div>
   {/if}
 
@@ -922,7 +972,10 @@
 
                   <button
                     class="btn-menu"
-                    onclick={() => (showEdit = !showEdit)}
+                    onclick={() => {
+                      showEdit = true;
+                      isSubmitting = false;
+                    }}
                   >
                     <Icon
                       icon="solar:document-add-linear"
@@ -979,7 +1032,7 @@
 <style>
   .book {
     perspective: 4500px;
-    height: 80%;
+    height: 100%;
     position: relative;
   }
 
@@ -1294,6 +1347,26 @@
   }
 
   .popup {
-    @apply absolute w-3/5 top-[5vh] aspect-[1.61803398875] z-[6];
+    @apply absolute top-0 left-0 z-20 w-screen h-screen py-60 px-90 flex justify-center bg-black/80;
+  }
+
+  .form-title {
+    @apply text-14 font-600 text-gray-900;
+  }
+
+  .form-input {
+    @apply w-full !text-14 font-400 rounded-3 px-6 py-2 text-base text-gray-900 border border-gray-300 focus:border-gray-400 outline-none;
+  }
+
+  .form-submit-button {
+    @apply rounded-2 py-4 px-12 text-center text-14 shadow font-500 leading-18 bg-gray-300 transition hover:bg-green-200 disabled:cursor-not-allowed;
+  }
+
+  th {
+    @apply py-4 px-8 text-14 font-500 leading-16 text-gray-600 border-b border-gray-400 bg-gray-300;
+  }
+
+  td {
+    @apply py-4 px-8 text-13 font-400 leading-16 text-gray-900 border-b border-gray-100;
   }
 </style>
