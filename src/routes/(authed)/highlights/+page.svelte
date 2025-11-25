@@ -168,7 +168,7 @@
         .eq("id", $bookmark!.id);
     } else {
       const newLike = $bookmark!.like + 1;
-      visualProgress.target = 1.1;
+      visualProgress.target = 1.08;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = true;
       const { error } = await page.data.supabase
@@ -445,7 +445,7 @@
     }
     if ($bookmark!.like) {
       flagTimeoutId = setTimeout(() => {
-        visualProgress.target = likeBookmark ? 1.1 : 0.9;
+        visualProgress.target = likeBookmark ? 1.08 : 0.9;
       }, 900);
     }
   }
@@ -592,7 +592,7 @@
               <input
                 type="number"
                 name="like"
-                min="0"
+                min={0}
                 autocomplete="off"
                 class="form-input"
                 bind:value={$bookmark!.like}
