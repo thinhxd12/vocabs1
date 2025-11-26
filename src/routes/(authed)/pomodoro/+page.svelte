@@ -25,6 +25,7 @@
   let interval: ReturnType<typeof setInterval>;
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
+  let srcAudio = $state<string>("");
 
   const minutesToSeconds = (minutes: number) => minutes * 60;
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -60,6 +61,7 @@
     if (now >= end) {
       $completedPomodoros++;
       completePomodoro();
+      srcAudio = "/sounds/mp3_rest.ogg";
       pauseAudio = false;
     }
   }
@@ -92,6 +94,7 @@
     if (now >= end) {
       $countPomodoros = minutesToSeconds(pomodoro);
       startPomodoro();
+      srcAudio = "/sounds/mp3_focus.ogg";
       pauseAudio = false;
     }
   }
@@ -139,7 +142,7 @@
       .select("*")
       .order("date", { ascending: false })
       .range(
-       (index - 1) * itemsPerPage - fixNumber,
+        (index - 1) * itemsPerPage - fixNumber,
         (index - 1) * itemsPerPage - fixNumber + itemsPerPage - 1
       );
 
@@ -173,7 +176,7 @@
   {/if}
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
-<audio src="/sounds/mp3_Ding.mp3" bind:paused={pauseAudio}></audio>
+<audio src={srcAudio} bind:paused={pauseAudio} preload="auto"></audio>
 
 <Container zIndex={6}>
   <div
@@ -223,7 +226,7 @@
                 name="pomodoro"
                 autocomplete="off"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 bind:value={pomodoro}
                 class="input-setting"
@@ -232,7 +235,7 @@
                 name="shortBreak"
                 autocomplete="off"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 bind:value={shortBreak}
                 class="input-setting"
@@ -241,7 +244,7 @@
                 name="longBreak"
                 autocomplete="off"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 bind:value={longBreak}
                 class="input-setting"
@@ -251,7 +254,7 @@
                 name="longBreakInterval"
                 autocomplete="off"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 bind:value={longBreakInterval}
                 class="input-setting"

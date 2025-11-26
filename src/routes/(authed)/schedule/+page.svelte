@@ -159,7 +159,7 @@
   <meta name="Schedule" content="Some Schedule" />
 </svelte:head>
 
-<audio {src} bind:paused></audio>
+<audio {src} bind:paused preload="auto"></audio>
 
 <Container zIndex={6}>
   <div class="absolute w-main golden z-10">

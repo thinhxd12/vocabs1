@@ -110,8 +110,8 @@
 
   <meta name="Quiz" content="Some Quiz" />
 </svelte:head>
-<audio src={src0} bind:paused={paused0}></audio>
-<audio src={src1} bind:paused={paused1}></audio>
+<audio src={src0} bind:paused={paused0} preload="auto"></audio>
+<audio src={src1} bind:paused={paused1} preload="auto"></audio>
 
 {#if $quizRender}
   <Container zIndex={6}>

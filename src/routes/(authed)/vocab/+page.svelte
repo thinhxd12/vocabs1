@@ -220,8 +220,13 @@
   <meta name="Vocab" content="Some Vocab" />
 </svelte:head>
 
-<audio src={src0} bind:paused={paused0}></audio>
-<audio src={src1} bind:paused={paused1} onended={handlePlaySoundMeanings}>
+<audio src={src0} bind:paused={paused0} preload="auto"></audio>
+<audio
+  src={src1}
+  bind:paused={paused1}
+  onended={handlePlaySoundMeanings}
+  preload="auto"
+>
 </audio>
 
 {#if $showTranslate}
