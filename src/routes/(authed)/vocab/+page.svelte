@@ -189,11 +189,13 @@
     $searchTerm = "";
     $showEdit = true;
     editId = id;
+    $searchResults = [];
   }
 
   function handleEditFromDefinition() {
     $showEdit = true;
     editId = $renderWord!.id;
+    $searchResults = [];
   }
 
   function handleSearchInput() {

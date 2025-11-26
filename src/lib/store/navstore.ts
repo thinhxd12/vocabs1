@@ -90,7 +90,8 @@ const handleGetListContentVocab = async (index: number) => {
     .order("id", { ascending: true })
     .range(index, index + 49);
   if (data.length) {
-    listContent.set(data);
+    const content = arrayShuffle(data) as DBSelect["vocab_table"][];
+    listContent.set(content);
     isAutoPlay.set(true);
   }
 };
@@ -214,17 +215,27 @@ export const updateTodayScheduleLocal = async () => {
     });
   }
 
-  if (todayScheduleValue.start.id === currentScheduleValue.id) {
-    todaySchedule.set({ ...todayScheduleValue, start: get(currentSchedule)! });
-  } else {
-    todaySchedule.set({ ...todayScheduleValue, end: get(currentSchedule)! });
-  }
-
   currentScheduleValue = get(currentSchedule);
+
   if (currentScheduleValue) {
     if (currentScheduleValue.count <= 11) showTimer.set(true);
-    if (currentScheduleValue.count > 11) checkSchedule();
+
+    if (todayScheduleValue.start.id === currentScheduleValue.id) {
+      todaySchedule.set({
+        ...todayScheduleValue,
+        start: currentScheduleValue,
+      });
+    } else {
+      todaySchedule.set({ ...todayScheduleValue, end: currentScheduleValue });
+      if (currentScheduleValue.count > 11) checkSchedule();
+    }
   }
+};
+
+type ResultType = {
+  index: number;
+  start: Date | null;
+  end: Date | null;
 };
 
 async function checkSchedule() {
@@ -239,16 +250,13 @@ async function checkSchedule() {
     .select("*")
     .order("id", { ascending: false })
     .limit(1);
-  type ResultType = {
-    index: number;
-    start: Date | null;
-    end: Date | null;
-  };
+
   let result: ResultType = {
     index: -1,
     start: null,
     end: null,
   };
+  
   const allDone = schedule.every(
     (item: DBSelect["schedule_table"]) => item.date !== null
   );

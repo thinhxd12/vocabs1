@@ -126,7 +126,11 @@
       <p
         class=" text-white bg-black/60 shadow-lg pb-3 shadow-black/60 backdrop-blur-xl w-full text-center"
       >
-        {$quizRender.meanings.flatMap((item) => item.translation).join(", ")}
+        {#if $quizRender.meanings.flatMap((item) => item.synonyms).length}
+          {$quizRender.meanings.flatMap((item) => item.synonyms).join(", ")}
+        {:else}
+          {$quizRender.meanings.flatMap((item) => item.translation).join(", ")}
+        {/if}
       </p>
     </div>
     <div

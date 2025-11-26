@@ -135,7 +135,7 @@ export async function GET({ url }) {
       let content: any = [];
       $("#synonyms")
         .find("li")
-        .slice(0, 3)
+        .slice(0, 12)
         .each((ind, item) => {
           content.push($(item).text().replace(/[\n\r]+|\s{2,}/g, ""));
         });
@@ -147,7 +147,7 @@ export async function GET({ url }) {
         $(element)
           .next()
           .find("li")
-          .slice(0, 3)
+          .slice(0, 12)
           .each((ind, item) => {
             content.push($(item).text().replace(/[\n\r]+|\s{2,}/g, ""));
           });

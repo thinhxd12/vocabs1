@@ -662,7 +662,7 @@
               class="form-submit-button"
               disabled={isSubmitting}
             >
-              Save
+              Import
             </button>
             <button
               type="button"
@@ -704,7 +704,7 @@
                     {format(new Date(item.dateOfCreation), "P")}
                   </td>
                   <td
-                    class="max-w-[460px] overflow-hidden whitespace-nowrap text-ellipsis"
+                    class="max-w-[28vw] overflow-hidden whitespace-nowrap text-ellipsis"
                   >
                     {item.content}
                   </td>
@@ -978,7 +978,7 @@
                     }}
                   >
                     <Icon
-                      icon="solar:document-add-linear"
+                      icon="fluent:slide-text-edit-28-regular"
                       width="15"
                       height="15"
                     />

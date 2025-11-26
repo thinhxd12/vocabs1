@@ -41,7 +41,7 @@
       .order("created_at", { ascending: false })
       .range(
         (index - 1) * itemsPerPage - fixNumber,
-        (2 * index - 1) * itemsPerPage - 1 - fixNumber
+        (index - 1) * itemsPerPage - fixNumber + itemsPerPage - 1
       );
 
     if (data) {

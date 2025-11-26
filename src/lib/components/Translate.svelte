@@ -8,6 +8,7 @@
   import Definition from "./Definition.svelte";
   import { v7 as uuidv7 } from "uuid";
   import { page } from "$app/state";
+  import { dev } from "$app/environment";
 
   const { supabase } = page.data;
 
@@ -22,6 +23,7 @@
   let translationText = $state<string>();
 
   async function getTranslateData(text: string) {
+    if (dev) return;
     const url = `https://vocabs3.vercel.app/trans?text=${text}&from=auto&to=vi`;
     const response = await fetch(url);
     const data = await response.json();
