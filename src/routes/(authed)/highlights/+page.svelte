@@ -188,7 +188,6 @@
 
   async function getRandomBookmark() {
     isRandomed = true;
-    resetRenderBookmark();
     const { data, error } = await page.data.supabase.rpc("get_random_bookmark");
 
     if (data.length) {
@@ -423,6 +422,7 @@
   function resetRenderBookmark() {
     likeBookmark = false;
     showTranslated = false;
+    translatedContent = "";
   }
 
   function handleFlipPage(id: number) {
@@ -946,7 +946,7 @@
                       class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
                     >
                       at {format(
-                        new Date($bookmark!.dateOfCreation),
+                        $bookmark!.dateOfCreation,
                         "p cccc, do MMMM yyyy"
                       )}
                     </p>

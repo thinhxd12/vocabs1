@@ -19,7 +19,7 @@
   }
 
   let showVideoBackground = $state<boolean>(false);
-  let videoSrc = $state<string>("rain1");
+  let videoSrc = $state<string>("rain4");
   let isMuted = $state<boolean>(true);
   let videos: VideoType[] = [
     {

@@ -205,19 +205,19 @@
       }}
     />
 
-    <div class="w-full flex items-center justify-center gap-9 my-6">
+    <div class="w-full flex items-center justify-center gap-24 my-6">
       <button
         type="button"
         onclick={() => ($showEdit = false)}
-        class="rounded-3 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-6"
+        class="rounded-3 min-w-60 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-12"
       >
         Close
       </button>
       <button
         type="submit"
-        class="rounded-3 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-6"
+        class="rounded-3 min-w-60 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-12"
       >
-        Submit
+        Save
       </button>
     </div>
   </form>

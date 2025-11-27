@@ -9,6 +9,7 @@
   import { v7 as uuidv7 } from "uuid";
   import { page } from "$app/state";
   import { dev } from "$app/environment";
+  import { format } from "date-fns";
 
   const { supabase } = page.data;
 
@@ -44,7 +45,7 @@
       .limit(1);
 
     if (dataMemories.length)
-      toast.error(`Memorized "${dataMemories[0].word}"!`, {
+      toast.error(`Memorized "${dataMemories[0].word}" \n on ${format(dataMemories[0].created_at,"p MM-dd-yyyy")}!`, {
         class: "my-toast",
       });
     const data = await Promise.all([
@@ -184,17 +185,17 @@
     }}
   />
 
-  <div class="w-full flex items-center justify-center gap-9 my-6">
+  <div class="w-full flex items-center justify-center gap-24 my-6">
     <button
       type="button"
       onclick={() => ($showTranslate = false)}
-      class="rounded-3 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-6"
+      class="rounded-3 min-w-60 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-6"
     >
       Close
     </button>
     <button
       type="submit"
-      class="rounded-3 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-6"
+      class="rounded-3 min-w-60 text-center text-13 shadow font-400 leading-18 bg-white/15 transition hover:bg-white/10 py-3 px-6"
     >
       Submit
     </button>

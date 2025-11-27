@@ -169,7 +169,9 @@
 </script>
 
 <svelte:head>
-  {#if $currentState === "focus"}
+  {#if isPaused}
+    <title>🍅 Paused</title>
+  {:else if $currentState === "focus"}
     <title>{formatTime($countPomodoros)} - Time to focus!</title>
   {:else}
     <title>{formatTime($countPomodoros)} - Time for a break!</title>

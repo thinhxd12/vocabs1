@@ -77,6 +77,6 @@ input.layout-main {
 }
 
 .my-toast {
-  @apply !backdrop-blur-xl !rounded-3;
-  padding: 3px 6px;
+  @apply !backdrop-blur-xl !rounded-3 shadow-md shadow-black/60;
+  padding: 6px 12px 8px;
 }
