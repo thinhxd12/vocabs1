@@ -30,10 +30,15 @@
         style="filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.6));"
       />
       <div
-        class="flex flex-col items-end text-white text-8 leading-10 mt-3 mr-2 font-500"
+        class="flex flex-col items-end text-white text-8 leading-9 mt-3 mr-2 font-500"
         style="text-shadow: 0px 0px 3px #000000"
       >
-        <span>{Math.round($weatherData?.current.temperature_2m || 0)}°</span>
+        <span class="font-600 text-9">
+          {Math.round($weatherData?.current.temperature_2m || 0)}°
+        </span>
+        <span>
+          {Math.round($weatherData?.current.apparent_temperature || 0)}°
+        </span>
         {#if $weatherData?.current.rain}
           <span>{$weatherData?.current.rain} mm</span>
         {:else if $weatherData?.current.showers}

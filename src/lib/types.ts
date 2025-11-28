@@ -219,6 +219,8 @@ export interface OpenMeteoResponse {
     snowfall: number;
     snow_depth: number;
     is_day: number;
+    us_aqi: number;
+    uv_index: number;
   };
   hourly: {
     time: string[];
@@ -240,17 +242,6 @@ export interface OpenMeteoResponse {
     sunrise: string[];
     sunset: string[];
     uv_index_max: number[];
-  };
-}
-
-export interface AirQualityResponse {
-  latitude: number;
-  longitude: number;
-  timezone: string;
-  current: {
-    time: string;
-    us_aqi: number;
-    uv_index: number;
   };
 }
 

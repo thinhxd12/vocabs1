@@ -1,8 +1,6 @@
 import { toast } from "svelte-sonner";
 import type {
-  AirQualityResponse,
   CurrentlyWeatherType,
-  DBSelect,
   HourlyWeatherType,
   OpenMeteoResponse,
   WeatherQueryParams,
@@ -262,7 +260,7 @@ export const getOpenMeteoWeather = async ({
   longitude,
   tempUnit = "c",
 }: WeatherQueryParams) => {
-  const params = {
+  const param1 = {
     latitude: String(latitude),
     longitude: String(longitude),
     current: [
@@ -310,99 +308,88 @@ export const getOpenMeteoWeather = async ({
     forecast_days: "7",
   };
 
-  const url = "https://api.open-meteo.com/v1/forecast?";
-  const paramsString = new URLSearchParams(params).toString();
-  const responses = await fetch(url + paramsString);
-  const data = await responses.json();
+  const url1 = "https://api.open-meteo.com/v1/forecast?";
+  const params1 = new URLSearchParams(param1).toString();
 
-  const result: OpenMeteoResponse = {
-    latitude: data.latitude,
-    longitude: data.longitude,
-    timezone: data.timezone || "UTC",
-    timezone_abbreviation: data.timezone_abbreviation,
-    utc_offset_seconds: data.utc_offset_seconds,
-    current: {
-      time: data.current.time,
-      is_day: data.current.is_day ?? 0,
-      temperature_2m: data.current.temperature_2m ?? 0,
-      relative_humidity_2m: data.current.relative_humidity_2m ?? 0,
-      apparent_temperature: data.current.apparent_temperature ?? 0,
-      precipitation: data.current.precipitation ?? 0,
-      weather_code: data.current.weather_code ?? 0,
-      wind_speed_10m: data.current.wind_speed_10m ?? 0,
-      wind_direction_10m: data.current.wind_direction_10m ?? 0,
-      wind_gusts_10m: data.current.wind_gusts_10m ?? 0,
-      visibility: data.current.visibility ?? 0,
-      pressure_msl: data.current.pressure_msl ?? 0,
-      dew_point_2m: data.current.dew_point_2m ?? 0,
-      cloud_cover: data.current.cloud_cover ?? 0,
-      rain: data.current.rain ?? 0,
-      showers: data.current.showers ?? 0,
-      snowfall: data.current.snowfall ?? 0,
-      snow_depth: data.current.snow_depth ?? 0,
-    },
-    hourly: {
-      time: Array.from(data.hourly.time ?? []),
-      is_day: Array.from(data.hourly.is_day ?? []),
-      temperature_2m: Array.from(data.hourly.temperature_2m ?? []),
-      apparent_temperature: Array.from(data.hourly.apparent_temperature ?? []),
-      precipitation_probability: Array.from(
-        data.hourly.precipitation_probability ?? []
-      ),
-      weather_code: Array.from(data.hourly.weather_code ?? []),
-      wind_speed_10m: Array.from(data.hourly.wind_speed_10m ?? []),
-    },
-    daily: {
-      time: Array.from(data.daily.time ?? []),
-      weather_code: Array.from(data.daily.weather_code ?? []),
-      temperature_2m_max: Array.from(data.daily.temperature_2m_max ?? []),
-      temperature_2m_min: Array.from(data.daily.temperature_2m_min ?? []),
-      apparent_temperature_max: Array.from(
-        data.daily.apparent_temperature_max ?? []
-      ),
-      apparent_temperature_min: Array.from(
-        data.daily.apparent_temperature_min ?? []
-      ),
-      precipitation_probability_max: Array.from(
-        data.daily.precipitation_probability_max ?? []
-      ),
-      sunrise: Array.from(data.daily.sunrise ?? []),
-      sunset: Array.from(data.daily.sunset ?? []),
-      uv_index_max: Array.from(
-        data.daily.uv_index_max.map((element: any) => element ?? 0) ?? []
-      ),
-    },
-  };
-
-  return result;
-};
-
-export const getOpenMeteoAirQuality = async ({
-  latitude,
-  longitude,
-}: {
-  latitude: number;
-  longitude: number;
-}) => {
-  const params = {
+  const param2 = {
     latitude: String(latitude),
     longitude: String(longitude),
     current: ["us_aqi", "uv_index"].join(","),
   };
 
-  const url = "https://air-quality-api.open-meteo.com/v1/air-quality?";
-  const paramsString = new URLSearchParams(params).toString();
-  const responses = await fetch(url + paramsString);
-  const data = await responses.json();
+  const url2 = "https://air-quality-api.open-meteo.com/v1/air-quality?";
+  const params2 = new URLSearchParams(param2).toString();
 
-  const result: AirQualityResponse = {
-    latitude: data.latitude,
-    longitude: data.longitude,
-    timezone: data.timezone || "UTC",
+  const [response1, response2] = await Promise.all([
+    fetch(url1 + params1),
+    fetch(url2 + params2),
+  ]);
+
+  if (!response1.ok || !response2.ok) {
+    throw new Error("One or both requests failed");
+  }
+
+  const data1 = await response1.json();
+  const data2 = await response2.json();
+
+  const result: OpenMeteoResponse = {
+    latitude: data1.latitude,
+    longitude: data1.longitude,
+    timezone: data1.timezone || "UTC",
+    timezone_abbreviation: data1.timezone_abbreviation,
+    utc_offset_seconds: data1.utc_offset_seconds,
     current: {
-      time: data.current.time,
-      us_aqi: data.current.us_aqi ?? 0,
-      uv_index: data.current.uv_index ?? 0,
+      time: data1.current.time,
+      is_day: data1.current.is_day ?? 0,
+      temperature_2m: data1.current.temperature_2m ?? 0,
+      relative_humidity_2m: data1.current.relative_humidity_2m ?? 0,
+      apparent_temperature: data1.current.apparent_temperature ?? 0,
+      precipitation: data1.current.precipitation ?? 0,
+      weather_code: data1.current.weather_code ?? 0,
+      wind_speed_10m: data1.current.wind_speed_10m ?? 0,
+      wind_direction_10m: data1.current.wind_direction_10m ?? 0,
+      wind_gusts_10m: data1.current.wind_gusts_10m ?? 0,
+      visibility: data1.current.visibility ?? 0,
+      pressure_msl: data1.current.pressure_msl ?? 0,
+      dew_point_2m: data1.current.dew_point_2m ?? 0,
+      cloud_cover: data1.current.cloud_cover ?? 0,
+      rain: data1.current.rain ?? 0,
+      showers: data1.current.showers ?? 0,
+      snowfall: data1.current.snowfall ?? 0,
+      snow_depth: data1.current.snow_depth ?? 0,
+      us_aqi: data2.current.us_aqi ?? 0,
+      uv_index: data2.current.uv_index ?? 0,
+    },
+    hourly: {
+      time: Array.from(data1.hourly.time ?? []),
+      is_day: Array.from(data1.hourly.is_day ?? []),
+      temperature_2m: Array.from(data1.hourly.temperature_2m ?? []),
+      apparent_temperature: Array.from(data1.hourly.apparent_temperature ?? []),
+      precipitation_probability: Array.from(
+        data1.hourly.precipitation_probability ?? []
+      ),
+      weather_code: Array.from(data1.hourly.weather_code ?? []),
+      wind_speed_10m: Array.from(data1.hourly.wind_speed_10m ?? []),
+    },
+    daily: {
+      time: Array.from(data1.daily.time ?? []),
+      weather_code: Array.from(data1.daily.weather_code ?? []),
+      temperature_2m_max: Array.from(data1.daily.temperature_2m_max ?? []),
+      temperature_2m_min: Array.from(data1.daily.temperature_2m_min ?? []),
+      apparent_temperature_max: Array.from(
+        data1.daily.apparent_temperature_max ?? []
+      ),
+      apparent_temperature_min: Array.from(
+        data1.daily.apparent_temperature_min ?? []
+      ),
+      precipitation_probability_max: Array.from(
+        data1.daily.precipitation_probability_max ?? []
+      ),
+      sunrise: Array.from(data1.daily.sunrise ?? []),
+      sunset: Array.from(data1.daily.sunset ?? []),
+      uv_index_max: Array.from(
+        data1.daily.uv_index_max.map((element: any) => element ?? 0) ?? []
+      ),
     },
   };
 

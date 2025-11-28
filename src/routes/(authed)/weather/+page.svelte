@@ -1,9 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import {
-    getOpenMeteoAirQuality,
-    getOpenMeteoWeather,
-  } from "$lib/utils/functions";
+  import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import { locationList, weatherData } from "$lib/store/navstore";
   import {
@@ -363,6 +360,28 @@
         description: descriptionSnow,
       };
 
+      const aqi = $weatherData.current.us_aqi || 0;
+      const { level: aqi_level, color } = getAQILevel(aqi);
+      const aqi_description = getAQIDescription(aqi);
+      aiqValues = {
+        aqi,
+        level: aqi_level,
+        color,
+        description: aqi_description,
+      };
+
+      const currentUV = Math.round($weatherData.current.uv_index || 0);
+      const uvScale = 11;
+      const indicatorPercent = (currentUV / uvScale) * 100;
+      const { level: uv_level, description: uv_description } =
+        getUVInfo(currentUV);
+      uvValues = {
+        currentUV,
+        indicatorPercent,
+        level: uv_level,
+        description: uv_description,
+      };
+
       const forecastData = calculateForecast();
       if (forecastData) {
         hourlyData = forecastData.hourlyForecasts;
@@ -490,46 +509,8 @@
     };
   }
 
-  async function getUVandAirQuality({
-    latitude,
-    longitude,
-  }: AirQualityQueryParams) {
-    const data = await getOpenMeteoAirQuality({ latitude, longitude });
-
-    if (data) {
-      const aqi = data.current.us_aqi || 0;
-      const { level: aqi_level, color } = getAQILevel(aqi);
-      const aqi_description = getAQIDescription(aqi);
-      aiqValues = {
-        aqi,
-        level: aqi_level,
-        color,
-        description: aqi_description,
-      };
-
-      const currentUV = Math.round(data.current.uv_index || 0);
-      const uvScale = 11;
-      const indicatorPercent = (currentUV / uvScale) * 100;
-      const { level: uv_level, description: uv_description } =
-        getUVInfo(currentUV);
-      uvValues = {
-        currentUV,
-        indicatorPercent,
-        level: uv_level,
-        description: uv_description,
-      };
-    }
-  }
-
   onMount(() => {
     getCurrentConditions();
-    const defaultLocation =
-      $locationList.find((item) => item.default) || $locationList[0];
-    let param: AirQualityQueryParams = {
-      latitude: defaultLocation.lat,
-      longitude: defaultLocation.lon,
-    };
-    getUVandAirQuality(param);
   });
 
   let location = $state<DBSelect["weather_table"] | undefined>(undefined);
@@ -542,7 +523,6 @@
     };
     $weatherData = await getOpenMeteoWeather(param);
     getCurrentConditions();
-    getUVandAirQuality({ latitude: location!.lat, longitude: location!.lon });
   }
 </script>
 
