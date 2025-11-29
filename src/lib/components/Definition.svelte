@@ -98,9 +98,9 @@
     {/each}
 
     {#if entry.synonyms.length}
-      <div class="flex items-center justify-start px-3 pb-3 pt-1">
+      <div class="flex items-start justify-start px-3 pb-3 pt-1">
         <Icon icon="mingcute:corner-down-right-line" width="15" height="15" />
-        <span class="text-12 font-500 leading-15 text-black">
+        <span class="pl-3 text-12 font-500 leading-15 text-black">
           {entry.synonyms.join(", ")}
         </span>
       </div>

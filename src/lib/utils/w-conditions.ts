@@ -85,7 +85,7 @@ const WEATHER_CODE_TO_LIQUID_ICON: Record<number, string> = {
 const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   0: "clear", // Clear sky
   1: "clear", // Mainly clear
-  2: "partly-cloudy", // Partly cloudy
+  2: "partlycloudy", // Partly cloudy
   3: "cloudy", // Overcast
   45: "foggy", // Fog
   48: "foggy", // Depositing rime fog
@@ -144,12 +144,17 @@ export function getWeatherInfo(
     ? liquidIcon
     : `${liquidIcon}${dayNight}`;
 
-  const background =
-    backgroundImage === "clear"
-      ? isday
-        ? "clear-day"
-        : "clear-night"
-      : backgroundImage;
+  const backgroundsWithoutDayNight = new Set([
+    "foggy",
+    "rain",
+    "snow",
+    "thunderstorm",
+  ]);
+
+  const background = backgroundsWithoutDayNight.has(backgroundImage)
+    ? backgroundImage
+    : `${backgroundImage}${dayNight}`;
+
   return {
     description,
     icon,
