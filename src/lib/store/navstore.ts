@@ -64,26 +64,14 @@ function notificationAlert() {
   };
 }
 
-export function handleGetListContent() {
+export async function handleGetListContent() {
   const schedule = get(currentSchedule);
   if (!schedule) return;
   listCount.set(0);
   isAutoPlay.set(false);
   listContent.set([]);
   const index = schedule.index;
-  if (page.url.pathname === "/vocab") {
-    handleGetListContentVocab(index);
-    return;
-  } else if (page.url.pathname === "/quiz") {
-    handleGetListContentQuiz(index);
-    return;
-  } else {
-    listContent.set([]);
-    isAutoPlay.set(false);
-  }
-}
 
-const handleGetListContentVocab = async (index: number) => {
   const { data } = await page.data.supabase
     .from("vocab_table")
     .select("*")
@@ -94,23 +82,7 @@ const handleGetListContentVocab = async (index: number) => {
     listContent.set(content);
     isAutoPlay.set(true);
   }
-};
-
-const handleGetListContentQuiz = async (index: number) => {
-  quizRender.set(undefined);
-  const { data } = await page.data.supabase
-    .from("vocab_table")
-    .select("*")
-    .order("id", { ascending: true })
-    .range(index, index + 49);
-
-  if (data.length) {
-    const content = arrayShuffle(data) as DBSelect["vocab_table"][];
-    listContent.set(content);
-    isAutoPlay.set(false);
-    quizRender.set(content[0]);
-  }
-};
+}
 
 // -------------------AUTOPLAY START-------------------- //
 
@@ -256,7 +228,7 @@ async function checkSchedule() {
     start: null,
     end: null,
   };
-  
+
   const allDone = schedule.every(
     (item: DBSelect["schedule_table"]) => item.date !== null
   );

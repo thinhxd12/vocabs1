@@ -213,28 +213,37 @@
   <button
     class="outline-none relative w-90 h-full overflow-hidden"
     onclick={handleAutoplay}
+    disabled={!["/vocab"].includes(page.url.pathname)}
   >
-    {#if $isAutoPlay}
-      <img
-        src="/images/sunrise.webp"
-        alt="btn-play"
-        class="w-90 h-full object-cover object-[-10px]"
-      />
+    {#if page.url.pathname === "/vocab"}
+      {#if $isAutoPlay}
+        <img
+          src="/images/sunrise.webp"
+          alt="btn-play"
+          class="w-90 h-full object-cover object-[-10px]"
+        />
+      {:else}
+        <img
+          src="/images/sunrise.webp"
+          alt="btn-pause"
+          class="grayscale w-90 h-full object-cover object-[-10px]"
+        />
+      {/if}
+      {#if $listCount}
+        <img
+          src="/images/sunrise.webp"
+          alt="btn-play"
+          class="absolute top-0 left-0 w-0 h-full z-[1] object-cover object-[-10px] transition-all duration-300"
+          style="box-shadow: 3px 0px 3px rgba(0, 0, 0, 0.45); width: {($listCount /
+            $listContent.length) *
+            90}px;"
+        />
+      {/if}
     {:else}
       <img
         src="/images/sunrise.webp"
         alt="btn-pause"
         class="grayscale w-90 h-full object-cover object-[-10px]"
-      />
-    {/if}
-    {#if $listCount}
-      <img
-        src="/images/sunrise.webp"
-        alt="btn-play"
-        class="absolute top-0 left-0 w-0 h-full z-[1] object-cover object-[-10px] transition-all duration-300"
-        style="box-shadow: 3px 0px 3px rgba(0, 0, 0, 0.45); width: {($listCount /
-          $listContent.length) *
-          90}px;"
       />
     {/if}
   </button>

@@ -23,9 +23,10 @@
   let submitted = $state<boolean>(false);
   let timeout: ReturnType<typeof setTimeout>;
 
-  $effect(() => {
-    const v = $listContent;
+  $effect.pre(() => {
+    const list = $listContent;
     untrack(() => {
+      $quizRender = list[$listCount];
       timeout = setTimeout(() => {
         createOptions();
         submitted = false;
@@ -123,13 +124,14 @@
       >
         {$quizRender.number}
       </h1>
+
       <div
-        class=" text-white bg-black/60 pb-2 shadow-lg shadow-black/60 backdrop-blur-xl w-full"
+        class="text-white bg-black/60 shadow-lg shadow-black/60 backdrop-blur-xl w-full"
       >
         {#if $quizRender.meanings.flatMap((item) => item.synonyms).length}
           {#each $quizRender.meanings as item}
             {#if item.synonyms.length}
-              <p class="mb-3 px-6">
+              <p class="mb-3 px-6 leading-18">
                 <i>{item.partOfSpeech}:</i>
                 {item.synonyms.join(", ")}
               </p>
@@ -138,7 +140,7 @@
         {:else}
           {#each $quizRender.meanings as item}
             {#if item.translation.length}
-              <p class="mb-3 px-6">
+              <p class="mb-3 px-6 leading-18">
                 <i>{item.partOfSpeech}:</i>
                 {item.translation.join(", ")}
               </p>
@@ -147,6 +149,7 @@
         {/if}
       </div>
     </div>
+
     <div
       class="flex flex-1 flex-col mx-auto overflow-y-scroll no-scrollbar gap-2"
     >
