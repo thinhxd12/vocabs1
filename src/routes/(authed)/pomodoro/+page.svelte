@@ -181,12 +181,7 @@
 <audio src={srcAudio} bind:paused={pauseAudio} preload="auto"></audio>
 
 <Container zIndex={6}>
-  <div
-    class="w-full h-full relative"
-    class:paused={isPaused}
-    class:focus={$currentState === "focus"}
-    class:rest={$currentState === "rest"}
-  >
+  <div class="w-full h-full flex items-center relative">
     <div
       class="absolute top-2 right-2 z-10 flex justify-end items-center gap-3"
     >
@@ -199,7 +194,7 @@
     </div>
     {#if showSetting}
       <div
-        class="absolute z-20 w-full h-full bg-black/80 py-60 px-20"
+        class="absolute z-50 w-full h-full bg-black/80 py-60 px-20"
         transition:fade={{ duration: 100 }}
       >
         <div
@@ -269,7 +264,7 @@
 
     {#if showReport}
       <div
-        class="absolute z-20 w-full h-full bg-black/80 py-60 px-20"
+        class="absolute z-50 w-full h-full bg-black/80 py-60 px-20"
         transition:fade={{ duration: 100 }}
       >
         <div
@@ -327,71 +322,80 @@
     {/if}
 
     <div
-      class="main dark w-full z-10 golden absolute left-0 top-1/2 -translate-y-1/2 py-12 flex flex-col justify-between items-center"
+      class="shadow-lg shadow-black/45 relative w-full h-[236px] rounded-2 overflow-hidden"
+      class:paused={isPaused}
+      class:focus={$currentState === "focus"}
+      class:rest={$currentState === "rest"}
     >
-      <div class="w-full flex items-center justify-center gap-15">
-        <button
-          class="timer-status"
-          class:focusing={$currentState === "focus"}
-          onclick={() => {
-            $currentState = "focus";
-            isPaused = true;
-            $countPomodoros = minutesToSeconds(pomodoro);
-          }}
-        >
-          Pomodoro
-        </button>
-        <button
-          class="timer-status"
-          class:repose={$currentState === "rest" && $completedPomodoros !== 0}
-          onclick={() => {
-            if ($completedPomodoros === 0) $completedPomodoros = 1;
-            $currentState = "rest";
-            isPaused = true;
-            $countPomodoros = minutesToSeconds(shortBreak);
-          }}
-        >
-          Short Break
-        </button>
-        <button
-          class="timer-status"
-          class:repose={$currentState === "rest" && $completedPomodoros === 0}
-          onclick={() => {
-            $completedPomodoros = 0;
-            $countPomodoros = minutesToSeconds(longBreak);
-            $currentState = "rest";
-            isPaused = true;
-          }}
-        >
-          Long Break
-        </button>
-      </div>
-      <h1
-        class="w-full flex justify-center items-center text-[120px] leading-100 font-100 text-white select-none"
+      <div
+        class="w-full h-full dark py-12 flex flex-col justify-between items-center"
       >
-        <span class="w-1/2 text-right pr-6"
-          >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
+        <div class="w-full flex items-center justify-center gap-15">
+          <button
+            class="timer-status"
+            class:focusing={$currentState === "focus"}
+            onclick={() => {
+              $currentState = "focus";
+              isPaused = true;
+              $countPomodoros = minutesToSeconds(pomodoro);
+            }}
+          >
+            Pomodoro
+          </button>
+          <button
+            class="timer-status"
+            class:repose={$currentState === "rest" && $completedPomodoros !== 0}
+            onclick={() => {
+              if ($completedPomodoros === 0) $completedPomodoros = 1;
+              $currentState = "rest";
+              isPaused = true;
+              $countPomodoros = minutesToSeconds(shortBreak);
+            }}
+          >
+            Short Break
+          </button>
+          <button
+            class="timer-status"
+            class:repose={$currentState === "rest" && $completedPomodoros === 0}
+            onclick={() => {
+              $completedPomodoros = 0;
+              $countPomodoros = minutesToSeconds(longBreak);
+              $currentState = "rest";
+              isPaused = true;
+            }}
+          >
+            Long Break
+          </button>
+        </div>
+
+        <h1
+          class="w-full flex justify-center items-center text-[120px] leading-100 font-100 text-white select-none"
         >
-        <span class="pb-15">:</span>
-        <span class="w-1/2 text-left pl-6"
-          >{padWithZeroes($countPomodoros % 60)}</span
-        >
-      </h1>
-      {#if isPaused}
-        <button
-          class="timer-button {$currentState === 'focus' ? 'play' : 'pause'}"
-          onclick={handleResume}
-        >
-          Start
-        </button>
-      {:else}
-        <button
-          class="timer-button {$currentState === 'focus' ? 'play' : 'pause'}"
-          onclick={pausePomodoro}
-        >
-          Pause
-        </button>
-      {/if}
+          <span class="w-1/2 text-right pr-6"
+            >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
+          >
+          <span class="pb-15">:</span>
+          <span class="w-1/2 text-left pl-6"
+            >{padWithZeroes($countPomodoros % 60)}</span
+          >
+        </h1>
+
+        {#if isPaused}
+          <button
+            class="timer-button {$currentState === 'focus' ? 'play' : 'pause'}"
+            onclick={handleResume}
+          >
+            Start
+          </button>
+        {:else}
+          <button
+            class="timer-button {$currentState === 'focus' ? 'play' : 'pause'}"
+            onclick={pausePomodoro}
+          >
+            Pause
+          </button>
+        {/if}
+      </div>
     </div>
   </div>
 </Container>
@@ -399,32 +403,32 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style>
-  .focus::after {
+  .focus::before {
     content: "";
     position: absolute;
     top: 0;
     width: 100%;
     height: 100%;
     background-image: url("/images/red-tomatoes.jpg");
-    background-size: contain;
+    background-size: cover;
+    background-position: left center;
+    z-index: -1;
   }
 
-  .paused::after {
+  .paused::before {
     filter: grayscale(1);
   }
 
-  .rest::after {
+  .rest::before {
     content: "";
     position: absolute;
     top: 0;
     width: 100%;
     height: 100%;
     background-image: url("/images/green-tomatoes.jpg");
-    background-size: contain;
-  }
-
-  .main {
-    box-shadow: 0 0 12px black;
+    background-size: cover;
+    background-position: left center;
+    z-index: -1;
   }
 
   .setting-button {
