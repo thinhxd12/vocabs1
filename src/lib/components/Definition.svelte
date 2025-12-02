@@ -99,7 +99,12 @@
 
     {#if entry.synonyms.length}
       <div class="flex items-start justify-start px-3 pb-3 pt-1">
-        <Icon icon="mingcute:corner-down-right-line" width="15" height="15" />
+        <Icon
+          icon="mingcute:corner-down-right-line"
+          width="15"
+          height="15"
+          class="min-w-15"
+        />
         <span class="pl-3 text-12 font-500 leading-15 text-black">
           {entry.synonyms.join(", ")}
         </span>

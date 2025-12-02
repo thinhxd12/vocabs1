@@ -123,15 +123,29 @@
       >
         {$quizRender.number}
       </h1>
-      <p
-        class=" text-white bg-black/60 shadow-lg pb-3 shadow-black/60 backdrop-blur-xl w-full text-center"
+      <div
+        class=" text-white bg-black/60 pb-2 shadow-lg shadow-black/60 backdrop-blur-xl w-full"
       >
         {#if $quizRender.meanings.flatMap((item) => item.synonyms).length}
-          {$quizRender.meanings.flatMap((item) => item.synonyms).join(", ")}
+          {#each $quizRender.meanings as item}
+            {#if item.synonyms.length}
+              <p class="mb-3 px-6">
+                <i>{item.partOfSpeech}:</i>
+                {item.synonyms.join(", ")}
+              </p>
+            {/if}
+          {/each}
         {:else}
-          {$quizRender.meanings.flatMap((item) => item.translation).join(", ")}
+          {#each $quizRender.meanings as item}
+            {#if item.translation.length}
+              <p class="mb-3 px-6">
+                <i>{item.partOfSpeech}:</i>
+                {item.translation.join(", ")}
+              </p>
+            {/if}
+          {/each}
         {/if}
-      </p>
+      </div>
     </div>
     <div
       class="flex flex-1 flex-col mx-auto overflow-y-scroll no-scrollbar gap-2"
