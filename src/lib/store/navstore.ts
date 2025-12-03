@@ -133,8 +133,10 @@ const pauseAutoplay = () => {
 
 const endAutoplay = async () => {
   clearInterval(intervalAutoplay);
-  listCount.set(0);
   renderWord.set(undefined);
+  listContent.set([]);
+  listCount.set(0);
+  isAutoPlay.set(false);
   await updateTodayScheduleLocal();
 };
 

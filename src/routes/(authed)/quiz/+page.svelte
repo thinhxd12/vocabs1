@@ -6,6 +6,7 @@
     listCount,
     updateTodayScheduleLocal,
     showTimer,
+    isAutoPlay,
   } from "$lib/store/navstore";
   import arrayShuffle from "array-shuffle";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
@@ -76,6 +77,7 @@
         $quizRender = undefined;
         $listContent = [];
         $listCount = 0;
+        $isAutoPlay = false;
         submitted = false;
         updateTodayScheduleLocal();
       }, 1000);

@@ -370,6 +370,7 @@
 
         <h1
           class="w-full flex justify-center items-center text-[120px] leading-100 font-100 text-white select-none"
+          style="text-shadow: 0 0 3px black;"
         >
           <span class="w-1/2 text-right pr-6"
             >{padWithZeroes(secondsToMinutes($countPomodoros))}</span

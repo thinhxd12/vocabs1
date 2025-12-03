@@ -997,9 +997,8 @@
     width: 100%;
     background: linear-gradient(
         0deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(190, 212, 224, 0.7) 20%,
-        rgba(143, 183, 207, 0.9) 100%
+        rgb(255 255 255 / 30%) 0%,
+        rgb(171, 203, 222) 100%
       )
       0% 0% no-repeat padding-box padding-box transparent;
     backdrop-filter: blur(6px);
