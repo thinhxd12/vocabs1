@@ -84,7 +84,7 @@
           class="btn-delete"
           onclick={() => deleteDay(item.created_at)}
         ></button>
-        <span>{format(item.created_at, "Pp")}</span>
+        <span>{format(item.created_at, "p, yyyy-MM-dd")}</span>
       </li>
     {/each}
   </ul>

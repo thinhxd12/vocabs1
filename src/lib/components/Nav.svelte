@@ -131,7 +131,7 @@
         class:active={page.url.pathname === "/vocab"}
         class="btn-nav"
       >
-        <Icon icon="ep:document" width="13" height="13" />
+        <Icon icon="dinkie-icons:page-facing-up" width="13" height="13" />
       </a>
 
       <a
@@ -139,7 +139,7 @@
         class:active={page.url.pathname === "/schedule"}
         class="btn-nav"
       >
-        <Icon icon="clarity:calendar-line" width="13" height="13" />
+        <Icon icon="dinkie-icons:calendar-alt" width="13" height="13" />
       </a>
 
       <a
@@ -147,7 +147,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <Icon icon="streamline-sharp:notebook" width="12" height="12" />
+        <Icon icon="dinkie-icons:electric-light-bulb" width="13" height="13" />
       </a>
 
       <a
@@ -156,7 +156,7 @@
         onclick={() => ($showTranslate = !$showTranslate)}
         class:active={$showTranslate}
       >
-        <Icon icon="fluent:translate-16-regular" width="15" height="15" />
+        <Icon icon="dinkie-icons:translate-hira-latin" width="13" height="13" />
       </a>
 
       <a
@@ -164,7 +164,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/highlights"}
       >
-        <Icon icon="emojione-monotone:green-book" width="15" height="15" />
+        <Icon icon="dinkie-icons:closed-book" width="13" height="13" />
       </a>
 
       <a
@@ -172,7 +172,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/art"}
       >
-        <Icon icon="ri:painting-line" width="15" height="15" />
+        <Icon icon="gravity-ui:frame" width="13" height="13" />
       </a>
 
       <a
@@ -180,12 +180,12 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <Icon icon="pixelarticons:mood-sad" width="15" height="15" />
+        <Icon icon="pixelarticons:mood-sad" width="16" height="16" />
       </a>
 
       <form method="post" action="/login?/signout">
         <button class="btn-menu">
-          <Icon icon="hugeicons:logout-03" width="13" height="13" />
+          <Icon icon="dinkie-icons:exit" width="13" height="13" />
         </button>
       </form>
     </div>
