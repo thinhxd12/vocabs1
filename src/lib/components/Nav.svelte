@@ -64,9 +64,6 @@
       try {
         wakeLockObj = await navigator.wakeLock.request("screen");
         wakeEnable = true;
-        toast.success("NoSleep enabled", {
-          class: "my-toast",
-        });
         wakeLockObj.addEventListener("release", handleWakeLockAbort);
       } catch (err) {
         console.log(err);
@@ -77,9 +74,6 @@
         wakeLockObj.release().then(() => {
           wakeLockObj = null;
           wakeEnable = false;
-          toast.error("NoSleep disabled", {
-            class: "my-toast",
-          });
         });
       }
     }
@@ -161,11 +155,7 @@
         class:active={wakeEnable}
         onclick={() => toggleWakeLock(!wakeEnable)}
       >
-        {#if wakeEnable}
-          <Icon icon="flowbite:moon-solid" width="13" height="13" />
-        {:else}
-          <Icon icon="flowbite:moon-outline" width="13" height="13" />
-        {/if}
+        <Icon icon="flowbite:moon-outline" width="13" height="13" />
       </button>
 
       <TimerButton />
