@@ -57,7 +57,7 @@
 
 {#if $showTimer}
   <button
-    class="btn-menu group relative"
+    class="btn-timer group relative"
     onclick={stopCountdown}
     class:timerPlay={$showTimer}
   >
@@ -78,8 +78,12 @@
 {/if}
 
 <style>
-  .btn-menu {
+  .btn-timer {
     @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
+  }
+
+  .btn-menu {
+    @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 hover:bg-white/40 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .timerPlay {
