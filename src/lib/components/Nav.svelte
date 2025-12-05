@@ -87,7 +87,6 @@
 
   onDestroy(() => {
     clearInterval(interval);
-    toggleWakeLock(false);
   });
 </script>
 
