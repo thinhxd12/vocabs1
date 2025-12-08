@@ -8,6 +8,10 @@
     completedPomodoros,
     countPomodoros,
     currentState,
+    longBreak,
+    longBreakInterval,
+    pomodoro,
+    shortBreak,
   } from "$lib/store/layoutstore";
   import { submitReportPomodoro } from "$lib/utils/functions";
   import { page } from "$app/state";
@@ -18,10 +22,6 @@
 
   let showSetting = $state<boolean>(false);
   let showReport = $state<boolean>(false);
-  let pomodoro = $state<number>(7);
-  let shortBreak = $state<number>(2);
-  let longBreak = $state<number>(15);
-  let longBreakInterval = $state<number>(3);
   let interval: ReturnType<typeof setInterval>;
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
@@ -36,7 +36,7 @@
 
   onMount(() => {
     if ($currentState === "focus" && !$countPomodoros)
-      $countPomodoros = minutesToSeconds(pomodoro);
+      $countPomodoros = minutesToSeconds($pomodoro);
   });
 
   function formatTime(timeInSeconds: number): string {
@@ -68,12 +68,12 @@
 
   function completePomodoro() {
     submitReport();
-    if ($completedPomodoros === longBreakInterval) {
+    if ($completedPomodoros === $longBreakInterval) {
       $completedPomodoros = 0;
-      $countPomodoros = minutesToSeconds(longBreak);
+      $countPomodoros = minutesToSeconds($longBreak);
       rest();
     } else {
-      $countPomodoros = minutesToSeconds(shortBreak);
+      $countPomodoros = minutesToSeconds($shortBreak);
       rest();
     }
   }
@@ -92,7 +92,7 @@
     now = Date.now();
     $countPomodoros = Math.round((end - now) / 1000);
     if (now >= end) {
-      $countPomodoros = minutesToSeconds(pomodoro);
+      $countPomodoros = minutesToSeconds($pomodoro);
       startPomodoro();
       srcAudio = "/sounds/mp3_focus.ogg";
       pauseAudio = false;
@@ -113,7 +113,7 @@
   }
 
   async function submitReport() {
-    await submitReportPomodoro(pomodoro, page.data.supabase);
+    await submitReportPomodoro($pomodoro, page.data.supabase);
   }
 
   let currentPage = $state<number>(1);
@@ -225,7 +225,7 @@
                 type="number"
                 min="1"
                 step="1"
-                bind:value={pomodoro}
+                bind:value={$pomodoro}
                 class="input-setting"
               />
               <input
@@ -234,7 +234,7 @@
                 type="number"
                 min="1"
                 step="1"
-                bind:value={shortBreak}
+                bind:value={$shortBreak}
                 class="input-setting"
               />
               <input
@@ -243,7 +243,7 @@
                 type="number"
                 min="1"
                 step="1"
-                bind:value={longBreak}
+                bind:value={$longBreak}
                 class="input-setting"
               />
               <p class="text-14 font-500 col-span-3">Long Break interval</p>
@@ -253,7 +253,7 @@
                 type="number"
                 min="1"
                 step="1"
-                bind:value={longBreakInterval}
+                bind:value={$longBreakInterval}
                 class="input-setting"
               />
             </div>
@@ -337,7 +337,7 @@
             onclick={() => {
               $currentState = "focus";
               isPaused = true;
-              $countPomodoros = minutesToSeconds(pomodoro);
+              $countPomodoros = minutesToSeconds($pomodoro);
             }}
           >
             Pomodoro
@@ -349,7 +349,7 @@
               if ($completedPomodoros === 0) $completedPomodoros = 1;
               $currentState = "rest";
               isPaused = true;
-              $countPomodoros = minutesToSeconds(shortBreak);
+              $countPomodoros = minutesToSeconds($shortBreak);
             }}
           >
             Short Break
@@ -359,7 +359,7 @@
             class:repose={$currentState === "rest" && $completedPomodoros === 0}
             onclick={() => {
               $completedPomodoros = 0;
-              $countPomodoros = minutesToSeconds(longBreak);
+              $countPomodoros = minutesToSeconds($longBreak);
               $currentState = "rest";
               isPaused = true;
             }}
