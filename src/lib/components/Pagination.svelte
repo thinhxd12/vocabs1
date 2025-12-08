@@ -10,8 +10,8 @@
 
   let showInputPrev = $state<boolean>(false);
   let showInputNext = $state<boolean>(false);
-  let pageInputPrev = $state<number>(4);
-  let pageInputNext = $state<number>(4);
+  let pageInputPrev = $state<number>(1);
+  let pageInputNext = $state<number>(1);
 
   let totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -21,7 +21,7 @@
       showInputPrev = showInputNext = false;
       onPageChange(page);
     }
-    pageInputPrev = currentPage - 3;
+    pageInputPrev = getPageNumbers()[0] - 1;
     pageInputNext = currentPage + 3;
   }
 

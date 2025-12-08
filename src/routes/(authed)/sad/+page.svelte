@@ -32,17 +32,14 @@
   });
 
   async function getDataPaginationByIndex(index: number) {
-    const fixNumber = Math.abs(
-      totalItems! - Math.round(totalItems! / itemsPerPage) * itemsPerPage
-    );
+    const totalPages = Math.ceil(totalItems! / itemsPerPage);
+    const from = (totalPages - index) * itemsPerPage;
+    const to = (totalPages - index + 1) * itemsPerPage - 1;
     const { data } = await supabase
       .from("saddays_table")
       .select("*")
-      .order("created_at", { ascending: false })
-      .range(
-        (index - 1) * itemsPerPage - fixNumber,
-        (index - 1) * itemsPerPage - fixNumber + itemsPerPage - 1
-      );
+      .order("created_at", { ascending: true })
+      .range(from, to);
 
     if (data) {
       paginationItems = data;
