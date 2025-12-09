@@ -20,7 +20,6 @@
   import { showTranslate } from "$lib/store/vocabstore";
   import WeatherButton from "./WeatherButton.svelte";
   import TimerButton from "./TimerButton.svelte";
-  import { toast } from "svelte-sonner";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
@@ -28,15 +27,31 @@
   let wakeEnable = $state<boolean>(false);
 
   onMount(() => {
-    clearInterval(interval);
     getNavWeatherData();
-    interval = setInterval(
-      () => {
-        getNavWeatherData();
-      },
-      1000 * 15 * 60
-    );
+    startInterval();
   });
+
+  function calculateNextInterval() {
+    const now = new Date();
+    let minutes = now.getMinutes();
+    let nextIntervalMinutes = Math.ceil(minutes / 15) * 15;
+    if (nextIntervalMinutes === 60) {
+      nextIntervalMinutes = 0;
+      now.setHours(now.getHours() + 1);
+    }
+
+    now.setMinutes(nextIntervalMinutes, 0, 0);
+    const delay = now.getTime() - Date.now() + 300;
+    return delay;
+  }
+
+  const startInterval = () => {
+    const delay = calculateNextInterval();
+    setTimeout(() => {
+      getNavWeatherData();
+      interval = setInterval(getNavWeatherData, 15 * 60 * 1000);
+    }, delay);
+  };
 
   async function getNavWeatherData() {
     const defaultLocation =

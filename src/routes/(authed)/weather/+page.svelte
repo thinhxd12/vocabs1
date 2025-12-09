@@ -31,10 +31,6 @@
   } from "$lib/utils/w-formatting";
   import type { DBSelect, WeatherQueryParams } from "$lib/types";
 
-  interface AirQualityQueryParams {
-    latitude: number;
-    longitude: number;
-  }
   type HourlyForecast = {
     time: string;
     temp: number;
@@ -538,7 +534,7 @@
         name="location"
         bind:value={location}
         onchange={() => handleChangeDefaultLocation()}
-        class="location-list"
+        class="location-list mb-18"
       >
         {#each $locationList as item}
           <option value={item} class="hover:bg-red-500 hover:text-white">
@@ -547,7 +543,7 @@
         {/each}
       </select>
 
-      <div class="flex justify-center items-center gap-9">
+      <div class="flex justify-center items-center gap-9 h-50">
         <img
           src="/liquid/128/{currentValues.icon}.png"
           alt="icon"
@@ -558,7 +554,7 @@
         >
       </div>
 
-      <h1 class="text-100 font-100 leading-100 text-center">
+      <h1 class="indent-45 text-[120px] font-400 leading-[110px] text-center">
         {currentValues.actual}°
       </h1>
       <p class="text-center text-16 mb-6">
