@@ -55,8 +55,6 @@
       class="absolute top-0 left-0 w-90 h-full object-cover"
     />
 
-    <div class="absolute w-full h-full bg-black/15"></div>
-
     <!-- svelte-ignore a11y_distracting_elements -->
     <marquee
       class="marquee absolute bottom-0 text-8 font-500 leading-12 text-white"
