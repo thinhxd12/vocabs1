@@ -17,9 +17,11 @@
   import { page } from "$app/state";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
+  import { format } from "date-fns";
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
+  const todayDate = format(new Date(), "yyyy-MM-dd");
   let showSetting = $state<boolean>(false);
   let showReport = $state<boolean>(false);
   let interval: ReturnType<typeof setInterval>;
@@ -292,11 +294,19 @@
               <tbody class="text-center text-12">
                 {#each paginationItems as item}
                   <tr>
-                    <td>{item.date}</td>
-                    <td>
-                      {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                        item.time % 60
-                      )}
+                    <td class="w-90">{item.date}</td>
+                    <td class="flex items-center justify-between">
+                      <span
+                        class="h-12 {todayDate === item.date
+                          ? 'bg-blue-500'
+                          : 'bg-blue-200'}"
+                        style="width: {Math.round((item.time / 7) * 5)}px;"
+                      ></span>
+                      <span class="pr-6 min-w-45">
+                        {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
+                          item.time % 60
+                        )}
+                      </span>
                     </td>
                   </tr>
                 {/each}
