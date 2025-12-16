@@ -300,7 +300,7 @@
                         class="h-12 {todayDate === item.date
                           ? 'bg-blue-500'
                           : 'bg-blue-200'}"
-                        style="width: {Math.round((item.time / 7) * 5)}px;"
+                        style="width: {Math.round((item.time / 7) * 4)}px;"
                       ></span>
                       <span class="pr-6 min-w-45">
                         {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
@@ -335,7 +335,7 @@
       class:rest={$currentState === "rest"}
     >
       <div
-        class="w-full h-full dark py-12 flex flex-col justify-between items-center"
+        class="w-full h-full py-12 flex flex-col justify-between items-center"
       >
         <div class="w-full flex items-center justify-center gap-15">
           <button
@@ -417,7 +417,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-image: url("/images/red-tomatoes.jpg");
+    background-image: url("/images/Laugee George The End of the Day.avif");
     background-size: cover;
     background-position: left center;
     z-index: -1;
@@ -433,7 +433,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-image: url("/images/green-tomatoes.jpg");
+    background-image: url("/images/Van_Gogh_La Sieste.avif");
     background-size: cover;
     background-position: left center;
     z-index: -1;
