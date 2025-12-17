@@ -23,6 +23,7 @@
   let options = $state<string[]>([]);
   let submitted = $state<boolean>(false);
   let timeout: ReturnType<typeof setTimeout>;
+  let answer = $state<string>("");
 
   $effect.pre(() => {
     const list = $listContent;
@@ -94,6 +95,43 @@
         .eq("id", $quizRender.id);
     } else {
       await archiveVocab($quizRender.id, $quizRender.word, page.data.supabase);
+    }
+  }
+
+  function onKeyDown(e: KeyboardEvent) {
+    const isCapsLockOn = e.getModifierState("CapsLock");
+    if (isCapsLockOn) {
+      answer = "Caps lock is on";
+      return;
+    }
+
+    if (
+      e.ctrlKey ||
+      e.altKey ||
+      e.shiftKey ||
+      e.metaKey ||
+      answer === $quizRender!.word
+    )
+      return;
+
+    switch (true) {
+      case e.key === "Backspace":
+        answer = answer.slice(0, -1);
+        break;
+      case /^[a-z]$/.test(e.key):
+        answer += e.key;
+        if (answer === $quizRender!.word) {
+          submitAnswer(answer);
+          setTimeout(() => {
+            answer = "";
+          }, 1000);
+        }
+        break;
+      case e.key === " ":
+        answer = "";
+        break;
+      default:
+        break;
     }
   }
 
@@ -174,7 +212,7 @@
     </div>
 
     <div
-      class="bg-transparent no-scrollbar w-full outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-2"
+      class="relative no-scrollbar w-full outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-2"
     >
       {#each options as item}
         <button
@@ -193,9 +231,19 @@
           {item}
         </button>
       {/each}
+
+      {#if answer}
+        <div
+          class="absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white bg-black/60 shadow-lg shadow-black/60 backdrop-blur-xl"
+        >
+          {answer}
+        </div>
+      {/if}
     </div>
   </Container>
 {/if}
+
+<svelte:window on:keydown={onKeyDown} />
 
 <style>
   .quiz-choice {
