@@ -27,7 +27,7 @@
   let interval: ReturnType<typeof setInterval>;
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
-  let srcAudio = $state<string>("");
+  let srcAudio = $state<string>("/sounds/mp3_rest.ogg");
 
   const minutesToSeconds = (minutes: number) => minutes * 60;
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -177,6 +177,7 @@
   {/if}
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
+
 <audio src={srcAudio} bind:paused={pauseAudio} preload="auto"></audio>
 
 <Container zIndex={6}>
@@ -193,7 +194,7 @@
     </div>
     {#if showSetting}
       <div
-        class="absolute z-50 w-full h-full bg-black/80 py-60 px-20"
+        class="absolute z-50 w-full h-full bg-black/30 py-60 px-20"
         transition:fade={{ duration: 100 }}
       >
         <div
@@ -263,7 +264,7 @@
 
     {#if showReport}
       <div
-        class="absolute z-50 w-full h-full bg-black/80 py-60 px-20"
+        class="absolute z-50 w-full h-full bg-black/30 py-60 px-20"
         transition:fade={{ duration: 100 }}
       >
         <div

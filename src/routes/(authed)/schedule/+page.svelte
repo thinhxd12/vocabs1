@@ -177,7 +177,7 @@
 
     {#if showReset}
       <div
-        class="absolute z-20 w-full h-full bg-black/80 p-50"
+        class="absolute z-20 w-full h-full bg-black/30 p-50"
         transition:fade={{ duration: 100 }}
       >
         <div
@@ -299,7 +299,7 @@
 
     {#if showCreate}
       <div
-        class="absolute z-20 w-full h-full bg-black/80 p-50"
+        class="absolute z-20 w-full h-full bg-black/30 p-50"
         transition:fade={{ duration: 100 }}
       >
         <div class="bg-white w-full rounded-2 overflow-hidden flex flex-col">

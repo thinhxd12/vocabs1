@@ -95,7 +95,7 @@
         $searchTerm = "";
         $searchResults = [];
         break;
-      case /^[A-Za-z]$/.test(e.key):
+      case /^[A-Za-z\-]$/.test(e.key):
         $searchTerm += e.key;
         if ($searchTerm.length > 2) {
           trigger($searchTerm.toLowerCase());

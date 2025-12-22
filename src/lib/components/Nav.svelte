@@ -133,7 +133,10 @@
         class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
         class:active={$todaySchedule &&
           $todaySchedule.start.id === $currentSchedule?.id}
-        onclick={() => handleGetList(0)}
+        onclick={(e) => {
+          handleGetList(0);
+          e.currentTarget.blur();
+        }}
         disabled={!["/vocab", "/quiz"].includes(page.url.pathname)}
       >
         {#if $todaySchedule}
@@ -147,7 +150,10 @@
         class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
         class:active={$todaySchedule &&
           $todaySchedule.end.id === $currentSchedule?.id}
-        onclick={() => handleGetList(1)}
+        onclick={(e) => {
+          handleGetList(1);
+          e.currentTarget.blur();
+        }}
         disabled={!["/vocab", "/quiz"].includes(page.url.pathname)}
       >
         {#if $todaySchedule}
@@ -168,7 +174,10 @@
       <button
         class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
         class:active={wakeEnable}
-        onclick={() => toggleWakeLock(!wakeEnable)}
+        onclick={(e) => {
+          toggleWakeLock(!wakeEnable);
+          e.currentTarget.blur();
+        }}
       >
         <Icon icon="flowbite:moon-outline" width="13" height="13" />
       </button>

@@ -99,12 +99,6 @@
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    const isCapsLockOn = e.getModifierState("CapsLock");
-    if (isCapsLockOn) {
-      answer = "Caps lock is on";
-      return;
-    }
-
     if (
       e.ctrlKey ||
       e.altKey ||
@@ -118,8 +112,8 @@
       case e.key === "Backspace":
         answer = answer.slice(0, -1);
         break;
-      case /^[a-z]$/.test(e.key):
-        answer += e.key;
+      case /^[A-Za-z\-]$/.test(e.key):
+        answer += e.key.toLowerCase();
         if (answer === $quizRender!.word) {
           submitAnswer(answer);
           setTimeout(() => {
@@ -160,13 +154,13 @@
       class="min-h-[120px] w-full mx-auto relative flex no-scrollbar dark select-none items-center overflow-hidden rounded-2"
     >
       <h1
-        class="absolute left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/30 font-200"
+        class="absolute z-10 left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/30 font-200"
       >
         {$quizRender.number}
       </h1>
 
       <div
-        class="text-white bg-black/60 shadow-lg shadow-black/60 backdrop-blur-xl w-full"
+        class="py-3 z-30 text-white bg-black/80 shadow-lg shadow-black/60 w-full"
       >
         {#if $quizRender.meanings.flatMap((item) => item.synonyms).length}
           {#each $quizRender.meanings as item}
@@ -234,7 +228,7 @@
 
       {#if answer}
         <div
-          class="absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white bg-black/60 shadow-lg shadow-black/60 backdrop-blur-xl"
+          class="absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white bg-black/80 shadow-lg shadow-black/60"
         >
           {answer}
         </div>
