@@ -89,14 +89,20 @@
     class="z-[9] absolute w-[calc(50vw-215px)] hidden md:flex flex-col items-start left-0 top-3 px-3 text-12 leading-16 text-white"
   >
     <button
-      onclick={() => (showVideoBackground = true)}
+      onclick={(e) => {
+        showVideoBackground = true;
+        e.currentTarget.blur();
+      }}
       style="text-shadow: 0 0 3px black;"
       class="text-left"
     >
       {@html bgImage.title || "Show video background."}
     </button>
     <button
-      onclick={changeBackgroundImg}
+      onclick={(e) => {
+        changeBackgroundImg();
+        e.currentTarget.blur();
+      }}
       style="text-shadow: 0 0 3px black;"
       class="text-left"
     >
