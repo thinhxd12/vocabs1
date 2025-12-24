@@ -903,7 +903,7 @@
                     >
                       at {format(
                         new Date($bookmark!.dateOfCreation),
-                        "p cccc, do MMMM yyyy"
+                        "p cccc, yyyy-MM-dd"
                       )}
                     </p>
                   {/if}

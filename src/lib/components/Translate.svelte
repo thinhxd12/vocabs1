@@ -45,7 +45,7 @@
       .limit(1);
 
     if (dataMemories.length)
-      toast.error(`Memorized "${dataMemories[0].word}" \n on ${format(dataMemories[0].created_at,"p yyyy-MM-dd")}!`, {
+      toast.error(`Memorized "${dataMemories[0].word}" \n at ${format(dataMemories[0].created_at,"p cccc, yyyy-MM-dd")}!`, {
         class: "my-toast",
       });
     const data = await Promise.all([
