@@ -547,6 +547,7 @@
                 autocomplete="off"
                 class="form-input"
                 bind:value={$bookmark!.bookTile}
+                onkeydown={(e) => e.stopPropagation()}
               />
             </div>
           </div>
@@ -559,6 +560,7 @@
                 autocomplete="off"
                 class="form-input"
                 bind:value={$bookmark!.authors}
+                onkeydown={(e) => e.stopPropagation()}
               />
             </div>
           </div>
@@ -571,6 +573,7 @@
                 autocomplete="off"
                 class="form-input"
                 bind:value={$bookmark!.dateOfCreation}
+                onkeydown={(e) => e.stopPropagation()}
               />
             </div>
           </div>
@@ -583,6 +586,7 @@
                 rows="9"
                 class="form-input"
                 bind:value={$bookmark!.content}
+                onkeydown={(e) => e.stopPropagation()}
               ></textarea>
             </div>
           </div>
@@ -596,6 +600,7 @@
                 autocomplete="off"
                 class="form-input"
                 bind:value={$bookmark!.like}
+                onkeydown={(e) => e.stopPropagation()}
               />
             </div>
           </div>
@@ -653,6 +658,7 @@
                 autocomplete="off"
                 rows="9"
                 class="form-input"
+                onkeydown={(e) => e.stopPropagation()}
               ></textarea>
             </div>
           </div>
@@ -901,7 +907,7 @@
                     <p
                       class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
                     >
-                      at {format(
+                      Bookmarked at {format(
                         new Date($bookmark!.dateOfCreation),
                         "p cccc, yyyy-MM-dd"
                       )}
