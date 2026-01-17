@@ -5,7 +5,7 @@
   import { onDestroy, onMount } from "svelte";
   import Container from "$lib/components/Container.svelte";
   import {
-    completedPomodoros,
+    currentInterval,
     countPomodoros,
     currentState,
     longBreak,
@@ -28,6 +28,7 @@
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
   let srcAudio = $state<string>("/sounds/mp3_rest.ogg");
+  let isMuted = $state<boolean>(false);
 
   const minutesToSeconds = (minutes: number) => minutes * 60;
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -35,6 +36,7 @@
 
   let now = $state<number>(0);
   let end = $state<number>(0);
+  let angle = $state<number>(0);
 
   onMount(() => {
     if ($currentState === "focus" && !$countPomodoros)
@@ -49,8 +51,6 @@
 
   function startPomodoro() {
     clearInterval(interval);
-
-    $currentState = "focus";
     now = Date.now();
     end = now + $countPomodoros * 1000;
     isPaused = false;
@@ -60,8 +60,9 @@
   function updatePomodoro() {
     now = Date.now();
     $countPomodoros = Math.round((end - now) / 1000);
+    angle = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
     if (now >= end) {
-      $completedPomodoros++;
+      $currentInterval++;
       completePomodoro();
       srcAudio = "/sounds/mp3_rest.ogg";
       pauseAudio = false;
@@ -70,11 +71,13 @@
 
   function completePomodoro() {
     submitReport();
-    if ($completedPomodoros === $longBreakInterval) {
-      $completedPomodoros = 0;
+    if ($currentInterval > $longBreakInterval) {
+      $currentInterval = 1;
+      $currentState = "longbreak";
       $countPomodoros = minutesToSeconds($longBreak);
       rest();
     } else {
+      $currentState = "break";
       $countPomodoros = minutesToSeconds($shortBreak);
       rest();
     }
@@ -82,8 +85,6 @@
 
   function rest() {
     clearInterval(interval);
-
-    $currentState = "rest";
     now = Date.now();
     end = now + $countPomodoros * 1000;
     isPaused = false;
@@ -93,8 +94,12 @@
   function updateRest() {
     now = Date.now();
     $countPomodoros = Math.round((end - now) / 1000);
+    if ($currentState === "break") {
+      angle = (($shortBreak * 60 - $countPomodoros) / $shortBreak) * 6;
+    } else angle = (($longBreak * 60 - $countPomodoros) / $longBreak) * 6;
     if (now >= end) {
       $countPomodoros = minutesToSeconds($pomodoro);
+      $currentState = "focus";
       startPomodoro();
       srcAudio = "/sounds/mp3_focus.ogg";
       pauseAudio = false;
@@ -107,10 +112,18 @@
   }
 
   function handleResume() {
-    if ($currentState === "focus") {
-      startPomodoro();
-    } else {
-      rest();
+    switch ($currentState) {
+      case "focus":
+        startPomodoro();
+        break;
+      case "break":
+        rest();
+        break;
+      case "longbreak":
+        rest();
+        break;
+      default:
+        break;
     }
   }
 
@@ -178,7 +191,8 @@
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
 
-<audio src={srcAudio} bind:paused={pauseAudio} preload="auto"></audio>
+<audio src={srcAudio} muted={isMuted} bind:paused={pauseAudio} preload="auto"
+></audio>
 
 <Container zIndex={6}>
   <div class="w-full h-full flex items-center relative">
@@ -186,10 +200,19 @@
       class="absolute top-2 right-2 z-10 flex justify-end items-center gap-3"
     >
       <button class="setting-button" onclick={handleShowReport}>
-        Report
+        <Icon icon="mdi:report-box-outline" width="16" height="16" />
       </button>
+
       <button class="setting-button" onclick={() => (showSetting = true)}>
-        Setting
+        <Icon icon="mage:settings" width="16" height="16" />
+      </button>
+
+      <button class="setting-button" onclick={() => (isMuted = !isMuted)}>
+        {#if isMuted}
+          <Icon icon="tabler:volume-3" width="16" height="16" />
+        {:else}
+          <Icon icon="tabler:volume" width="16" height="16" />
+        {/if}
       </button>
     </div>
     {#if showSetting}
@@ -201,7 +224,7 @@
           class="bg-white w-full rounded-2 overflow-hidden flex flex-col justify-center"
         >
           <div class="flex justify-between px-6 bg-black text-white py-3">
-            <span class="text-15">Setting</span>
+            <span class="text-15 indent-3">Setting</span>
             <button
               onclick={() => (showSetting = false)}
               class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
@@ -256,6 +279,17 @@
                 bind:value={$longBreakInterval}
                 class="input-setting"
               />
+              <p class="text-14 font-500 col-span-3">Current interval</p>
+              <input
+                name="longBreakInterval"
+                autocomplete="off"
+                type="number"
+                min="1"
+                max={$longBreakInterval}
+                step="1"
+                bind:value={$currentInterval}
+                class="input-setting"
+              />
             </div>
           </div>
         </div>
@@ -272,7 +306,7 @@
         >
           <div>
             <div class="flex justify-between px-6 bg-black text-white py-3">
-              <span class="text-15">Report</span>
+              <span class="text-15 indent-3">Report</span>
               <button
                 onclick={() => (showReport = false)}
                 class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
@@ -330,45 +364,66 @@
     {/if}
 
     <div
-      class="shadow-lg shadow-black/45 relative w-full h-[236px] rounded-2 overflow-hidden"
-      class:paused={isPaused}
-      class:focus={$currentState === "focus"}
-      class:rest={$currentState === "rest"}
+      class="shadow-2xl shadow-black relative w-full h-[236px] rounded-2 overflow-hidden"
     >
+      <img
+        src={$currentState === "focus"
+          ? "/images/Laugee George The End of the Day.avif"
+          : "/images/Van_Gogh_La Sieste.avif"}
+        alt="bg"
+        class="absolute z-10 object-cover w-full h-full grayscale-[1]"
+      />
+
+      {#if !isPaused}
+        <img
+          src={$currentState === "focus"
+            ? "/images/Laugee George The End of the Day.avif"
+            : "/images/Van_Gogh_La Sieste.avif"}
+          alt="pbg"
+          class="absolute z-20 object-cover w-full h-full"
+          style="mask-image: conic-gradient(
+          from 0deg,
+          black 0deg {angle}deg,
+          transparent {angle}deg 360deg
+          );"
+        />
+
+        <div class="static"></div>
+        <div class="dynamic" style="transform: rotate({angle}deg);"></div>
+      {/if}
+
       <div
-        class="w-full h-full py-12 flex flex-col justify-between items-center"
+        class="relative z-40 w-full h-full py-12 flex flex-col justify-between items-center"
       >
         <div class="w-full flex items-center justify-center gap-15">
           <button
-            class="timer-status"
-            class:focusing={$currentState === "focus"}
+            class="timerStatus"
+            class:timerStatusFocus={$currentState === "focus"}
             onclick={() => {
+              $countPomodoros = minutesToSeconds($pomodoro);
               $currentState = "focus";
               isPaused = true;
-              $countPomodoros = minutesToSeconds($pomodoro);
             }}
           >
             Pomodoro
           </button>
           <button
-            class="timer-status"
-            class:repose={$currentState === "rest" && $completedPomodoros !== 0}
+            class="timerStatus"
+            class:timerStatusBreak={$currentState === "break"}
             onclick={() => {
-              if ($completedPomodoros === 0) $completedPomodoros = 1;
-              $currentState = "rest";
-              isPaused = true;
               $countPomodoros = minutesToSeconds($shortBreak);
+              $currentState = "break";
+              isPaused = true;
             }}
           >
             Short Break
           </button>
           <button
-            class="timer-status"
-            class:repose={$currentState === "rest" && $completedPomodoros === 0}
+            class="timerStatus"
+            class:timerStatusBreak={$currentState === "longbreak"}
             onclick={() => {
-              $completedPomodoros = 0;
               $countPomodoros = minutesToSeconds($longBreak);
-              $currentState = "rest";
+              $currentState = "longbreak";
               isPaused = true;
             }}
           >
@@ -391,14 +446,16 @@
 
         {#if isPaused}
           <button
-            class="timer-button {$currentState === 'focus' ? 'play' : 'pause'}"
+            class="timerButton"
+            class:timerButtonPause={isPaused}
             onclick={handleResume}
           >
             Start
           </button>
         {:else}
           <button
-            class="timer-button {$currentState === 'focus' ? 'play' : 'pause'}"
+            class="timerButton"
+            class:timerButtonPause={isPaused}
             onclick={pausePomodoro}
           >
             Pause
@@ -412,36 +469,28 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style>
-  .focus::before {
-    content: "";
+  .static {
     position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("/images/Laugee George The End of the Day.avif");
-    background-size: cover;
-    background-position: left center;
-    z-index: -1;
+    width: 1px;
+    height: 50%;
+    left: calc(50% - 0.5px);
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 30;
   }
 
-  .paused::before {
-    filter: grayscale(1);
-  }
-
-  .rest::before {
-    content: "";
+  .dynamic {
     position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("/images/Van_Gogh_La Sieste.avif");
-    background-size: cover;
-    background-position: left center;
-    z-index: -1;
+    width: 1px;
+    height: 600px;
+    left: calc(50% - 0.5px);
+    bottom: 50%;
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 30;
+    transform-origin: bottom;
   }
 
   .setting-button {
-    @apply font-rubik px-8 pt-6 pb-4 rounded-2 text-14 leading-14 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
+    @apply h-24 flex items-center font-rubik px-8 rounded-2 text-14 leading-14 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
   }
 
   .input-setting {
@@ -456,32 +505,29 @@
     outline: 0;
   }
 
-  .timer-status {
+  .timerStatus {
     @apply font-rubik font-400 text-15 text-white px-9 pt-4 pb-2 rounded-2 shadow-sm shadow-black/60;
   }
 
-  .timer-status.repose {
-    background-color: #99c5aa;
-  }
-
-  .timer-status.focusing {
+  .timerStatusFocus {
     background: #ed5152;
   }
 
-  .timer-button {
-    @apply font-rubik font-600 text-21 leading-22 text-center w-1/3 pt-8 pb-4 uppercase bg-white rounded-3 shadow-md shadow-black/60 transition;
+  .timerStatusBreak {
+    background-color: #99c5aa;
   }
 
-  .timer-button:active {
+  .timerButton {
+    @apply font-rubik text-[#ed5152] bg-[#fff6f6] font-600 text-21 leading-22 text-center w-1/3 pt-8 pb-4 uppercase  rounded-3 shadow-md shadow-black/60 transition;
+  }
+
+  .timerButton:active {
     @apply !shadow-none;
   }
 
-  .timer-button.play {
-    color: #ed5152;
-  }
-
-  .timer-button.pause {
+  .timerButtonPause {
     color: #99c5aa;
+    background: #f0fff8;
   }
 
   tr {

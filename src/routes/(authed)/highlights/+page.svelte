@@ -528,6 +528,7 @@
                   class: "my-toast",
                 });
                 setBookContent($bookmark!.content);
+                handleCloseBook();
               } else {
                 toast.error("Error", {
                   class: "my-toast",

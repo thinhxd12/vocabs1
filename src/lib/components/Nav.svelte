@@ -179,7 +179,11 @@
           e.currentTarget.blur();
         }}
       >
-        <Icon icon="flowbite:moon-outline" width="13" height="13" />
+        {#if wakeEnable}
+          <Icon icon="flowbite:moon-solid" width="13" height="13" />
+        {:else}
+          <Icon icon="flowbite:moon-outline" width="13" height="13" />
+        {/if}
       </button>
 
       <TimerButton />

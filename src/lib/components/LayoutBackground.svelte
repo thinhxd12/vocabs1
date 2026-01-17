@@ -7,11 +7,13 @@
     value: string;
   }
 
-  let bgImage = $state<BackgroundImageType>({
+  const startedImage = {
     title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
     url: "/images/Icescape.jpg",
     place: "Snæfellsnes peninsula, Iceland",
-  });
+  };
+
+  let bgImage = $state<BackgroundImageType>(startedImage);
 
   async function changeBackgroundImg() {
     const response = await fetch(`/server/getlayoutimage`);
@@ -71,10 +73,20 @@
 
     <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
       {#if isMuted}
-        <Icon icon="mage:volume-mute" width="13" height="13" />
+        <Icon icon="tabler:volume-3" width="13" height="13" />
       {:else}
-        <Icon icon="mage:volume-down-fill" width="13" height="13" />
+        <Icon icon="tabler:volume" width="13" height="13" />
       {/if}
+    </button>
+
+    <button
+      onclick={() => {
+        showVideoBackground = false;
+        bgImage = startedImage;
+      }}
+      class="btn-menu light"
+    >
+      <Icon icon="mage:image-fill" width="13" height="13" />
     </button>
   </div>
 {:else}
