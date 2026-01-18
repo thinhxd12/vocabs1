@@ -22,7 +22,7 @@
   let isRandomed = $state<boolean>(false);
   let likeBookmark = $state<boolean>(false);
   let keyPressed = $state<boolean>(false);
-  let visualProgress = new Tween(0, {
+  let visualProgress = new Tween(18, {
     duration: 300,
     easing: quadInOut,
   });
@@ -159,7 +159,7 @@
     if (!bookmark) return;
     if (likeBookmark) {
       const newLike = $bookmark!.like - 1;
-      visualProgress.target = newLike === 0 ? 0.033 : 0.9;
+      visualProgress.target = newLike === 0 ? 18 : 480;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = false;
       const { error } = await page.data.supabase
@@ -168,7 +168,7 @@
         .eq("id", $bookmark!.id);
     } else {
       const newLike = $bookmark!.like + 1;
-      visualProgress.target = 1.08;
+      visualProgress.target = 580;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = true;
       const { error } = await page.data.supabase
@@ -429,7 +429,7 @@
     handleListenKeypress();
 
     currentPage = id;
-    visualProgress.target = 0.033;
+    visualProgress.target = 18;
 
     if (flipPages[id].isFlipped) {
       if (id === 0) {
@@ -445,7 +445,7 @@
     }
     if ($bookmark!.like) {
       flagTimeoutId = setTimeout(() => {
-        visualProgress.target = likeBookmark ? 1.08 : 0.9;
+        visualProgress.target = likeBookmark ? 580 : 480;
       }, 900);
     }
   }
@@ -480,7 +480,7 @@
           else handleFlipPage(currentPage - 1);
           break;
       }
-    } else if (e.key === "ArrowDown") {
+    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       if (flipPages[0].isFlipped) handleCheckBookmark();
     }
   }
@@ -762,17 +762,12 @@
 
             {#if flipPages[0].isFlipped}
               <button
-                class="ribbon {visualProgress.current > 0.033
+                class="ribbon {visualProgress.current > 150
                   ? 'bg-long'
                   : 'bg-short'}"
                 onclick={() => handleCheckBookmark()}
-                style="height: {visualProgress.current > 0.033
-                  ? `${visualProgress.current * 100}%`
-                  : '18px'}; box-shadow: {visualProgress.current > 0.033
-                  ? '0 6px 3px black'
-                  : 'none'}; z-index: {visualProgress.current > 0.033
-                  ? 1001
-                  : 1};"
+                style="height: {visualProgress.current}px;
+                 z-index: {visualProgress.current > 18 ? 1001 : 1};"
                 in:fly={{ y: 30, delay: 250, duration: 50 }}
                 out:fly={{
                   y: 0,
@@ -780,9 +775,15 @@
                   duration: 50,
                 }}
               >
-                {#if visualProgress.current > 0.033}
-                  <span>{$bookmark!.like ? $bookmark!.like : ""}</span>
-                  <div class="ribbonTail"></div>
+                {#if visualProgress.current > 90}
+                  <span class="ribbonContent">
+                    {$bookmark!.like ? $bookmark!.like : ""}
+                  </span>
+                  <span
+                    class="ribbonTail {visualProgress.current > 150
+                      ? 'ribbonTailLong'
+                      : 'ribbonTailShort'}"
+                  ></span>
                 {/if}
               </button>
             {/if}
@@ -1266,6 +1267,19 @@
     );
   }
 
+  .ribbon {
+    position: relative;
+    top: -18px;
+    left: 6px;
+    user-select: none;
+    border-top-left-radius: 3px;
+    width: 36px;
+    height: 18px;
+    font-size: 1em;
+    container-type: inline-size;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.6);
+  }
+
   .ribbon::before {
     content: "";
     position: absolute;
@@ -1278,24 +1292,36 @@
     border-right: 6px solid transparent;
   }
 
-  .ribbon {
-    position: absolute;
-    top: -18px;
-    left: 0px;
-    border-top-left-radius: 3px;
-    height: 90%;
+  .ribbonContent {
     font-family: "Copernicus", sans-serif;
-    font-size: 28px;
-    line-height: 1;
-    padding: 0 6px;
-    min-width: 36px;
+    font-size: 60cqi;
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     user-select: none;
   }
 
+  .ribbonTail {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: inherit;
+
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+  }
+
+  .ribbonTailLong {
+    border-top: 20px solid #e40900;
+  }
+
+  .ribbonTailShort {
+    border-top: 20px solid #a90909;
+  }
+
   .bg-short {
-    background: rgb(169, 9, 9);
+    background: #a90909;
   }
 
   .bg-long {
@@ -1306,26 +1332,6 @@
       rgba(164, 5, 2, 1) 40%,
       rgb(229, 10, 0) 100%
     );
-  }
-
-  .ribbonTail {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    aspect-ratio: 1;
-    overflow: hidden;
-  }
-
-  .ribbonTail:after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: -124%;
-    transform: rotate(45deg) translate(0, 50%);
-    transform-origin: left;
-    background: rgb(228 9 0);
   }
 
   .page-number {
