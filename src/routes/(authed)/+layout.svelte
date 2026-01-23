@@ -5,7 +5,6 @@
     totalMemories,
     locationList,
   } from "$lib/store/navstore";
-  import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { Toaster } from "svelte-sonner";
 
@@ -30,7 +29,14 @@
   $locationList = data.weatherList || [];
 </script>
 
-<Toaster position="top-center" duration={4500} visibleToasts={6} />
+<Toaster
+  position="top-center"
+  duration={4500}
+  visibleToasts={6}
+  toastOptions={{
+    unstyled: true,
+  }}
+/>
 
 <main class="absolute w-full h-full z-[3]">
   {@render children()}
