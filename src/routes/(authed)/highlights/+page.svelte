@@ -599,7 +599,21 @@
             </div>
           </div>
           <div>
-            <p class="form-title">Content</p>
+            <div class="flex items-center gap-12">
+              <p class="form-title">Content</p>
+              <button
+                type="button"
+                onclick={() => navigator.clipboard.writeText("<p>")}
+              >
+                <Icon icon="ph:caret-left-fill" width="16" height="16" />
+              </button>
+              <button
+                type="button"
+                onclick={() => navigator.clipboard.writeText("</p>")}
+              >
+                <Icon icon="ph:caret-right-fill" width="16" height="16" />
+              </button>
+            </div>
             <div class="mt-2">
               <textarea
                 name="content"
@@ -842,16 +856,11 @@
                   class="w-full h-full object-contain"
                 />
               {:else}
-                <div class="w-full h-full p-15 flex flex-col justify-between">
+                <div class="w-full h-full flex items-center p-45">
                   <p
-                    class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus mt-30 pl-30"
+                    class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
                   >
                     take a small step every day
-                  </p>
-                  <p
-                    class="text-[#d0c9c5] text-center text-500 text-13 font-proxima indent-15"
-                  >
-                    since 07-05-2022
                   </p>
                 </div>
               {/if}
@@ -862,7 +871,7 @@
               class:firstPage={i === 1}
               style="width: {pageWidth - 12}px; height: {pageHeight - 19}px;"
             >
-              {page.front}
+              {@html page.front}
             </div>
             <p class="page-number">{2 * i - 1}</p>
           {/if}
@@ -1044,7 +1053,7 @@
               class="content bg-back"
               style="width: {pageWidth - 12}px; height: {pageHeight - 19}px;"
             >
-              {page.back}
+              {@html page.back}
             </div>
             <p class="page-number">{2 * i}</p>
           {/if}
@@ -1170,6 +1179,12 @@
     text-align: left;
     text-size-adjust: 100%;
     color: #1e1915;
+  }
+
+  .content :global {
+    p {
+      text-indent: 15px;
+    }
   }
 
   .firstPage::first-letter {
@@ -1378,11 +1393,9 @@
   .btn-menu {
     @apply mx-3 size-23 flex items-center justify-center transition duration-300 text-[#4f4f4d] hover:text-[#1e1915];
   }
+
   .btn-menu:active :global svg {
     transform: scale(1.1);
-  }
-  .btn-form {
-    @apply rounded-2 text-center text-12 shadow font-proxima font-400 leading-18 text-white bg-white/15 transition hover:bg-white/10 py-3 px-6;
   }
 
   .btn-delete {

@@ -65,6 +65,7 @@
     if (now >= end) {
       toast.success(`Finish #${$currentInterval}!`, {
         description: "Time for a break!",
+        duration: 9000,
         class: "my-toast-success",
         classes: {
           title: "text-[#00c441] text-15 font-500",
@@ -114,6 +115,7 @@
       pauseAudio = false;
       toast.error(`Pomodoro #${$currentInterval}!`, {
         description: "Time to focus!",
+        duration: 9000,
         class: "my-toast-error",
         classes: {
           title: "text-[#f70000] text-14",
