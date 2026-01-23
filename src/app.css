@@ -77,9 +77,9 @@ input.layout-main {
 }
 
 .my-toast-error {
-  @apply flex items-center gap-9 w-full bg-white/30 backdrop-blur-md border-white/45 text-[#f70000] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
+  @apply font-sfpro flex items-center gap-9 w-full bg-white/30 backdrop-blur-md border-white/45 text-[#f70000] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
 }
 
 .my-toast-success {
-  @apply flex items-center gap-9 w-full bg-white/30 backdrop-blur-md border-white/45 text-[#00c441] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
+  @apply font-sfpro flex items-center gap-9 w-full bg-white/30 backdrop-blur-md border-white/45 text-[#00c441] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
 }
