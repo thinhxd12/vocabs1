@@ -34,7 +34,7 @@
     "cheerio": "^1.0.0",
     "date-fns": "^4.1.0",
     "sharp": "^0.33.5",
-    "svelte-sonner": "^0.3.28",
+    "svelte-sonner": "^1.0.7",
     "thumbhash": "^0.1.1",
     "uuid": "^11.0.5"
   }

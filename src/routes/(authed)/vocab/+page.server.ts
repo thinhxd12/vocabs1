@@ -18,11 +18,12 @@ export const actions = {
     const audio = formData.get("audio") as string;
     const phonetics = formData.get("phonetics") as string;
     const meanings = formData.get("meanings") as string;
+    
     if (
-      JSON.parse(meanings).length === 0 ||
       word === "" ||
       audio === "" ||
-      phonetics === ""
+      phonetics === "" ||
+      JSON.parse(meanings).length === 0
     )
       return fail(422, { error: "Invalid data" });
 

@@ -172,11 +172,21 @@
 
     if (error) {
       toast.error("Error!", {
-        class: "my-toast",
+        description: error.message as string,
+        class: "my-toast-error",
+        classes: {
+          title: "text-[#f70000] text-14",
+          description: "text-black/80 text-12",
+        },
       });
     } else
-      toast.success("Delete action was successful!", {
-        class: "my-toast",
+      toast.success("Success!", {
+        description: "Delete successfully.",
+        class: "my-toast-success",
+        classes: {
+          title: "text-[#00c441] text-15 font-500",
+          description: "text-black/70 text-12 font-400",
+        },
       });
     searchTermFounded = true;
     $searchTerm = "";
@@ -265,7 +275,7 @@
                 <span class="">
                   <strong>{$searchTerm}</strong>{item.word.replace(
                     $searchTerm,
-                    ""
+                    "",
                   )}
                 </span>
               </button>

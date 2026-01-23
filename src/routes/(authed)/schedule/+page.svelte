@@ -25,7 +25,7 @@
       const month = dateObj.getMonth();
       const year = dateObj.getFullYear();
       const existing = acc.find(
-        (item: any) => item.date === day && item.month === month
+        (item: any) => item.date === day && item.month === month,
       );
       if (existing) {
         existing.count += curr.count;
@@ -34,7 +34,7 @@
       }
       return acc;
     },
-    []
+    [],
   );
 
   let src = $state<string>("");
@@ -98,7 +98,7 @@
     if (schedule) {
       let index = schedule.findIndex(
         (item) =>
-          format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null
+          format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null,
       );
 
       if (index > -1) {
@@ -115,7 +115,7 @@
           const month = dateObj.getMonth();
           const year = dateObj.getFullYear();
           const existing = acc.find(
-            (item: any) => item.date === day && item.month === month
+            (item: any) => item.date === day && item.month === month,
           );
           if (existing) {
             existing.count += curr.count;
@@ -124,7 +124,7 @@
           }
           return acc;
         },
-        []
+        [],
       );
     }
   }
@@ -137,7 +137,7 @@
 
   async function updateScheduleLocal(
     start: UpdateSchedule,
-    end: UpdateSchedule
+    end: UpdateSchedule,
   ) {
     schedule.update((current) =>
       current?.map((item) => {
@@ -146,7 +146,7 @@
         } else if (item.id === end.id) {
           return { ...item, ...end };
         } else return item;
-      })
+      }),
     );
   }
 </script>
@@ -210,12 +210,22 @@
               use:enhance={({ formElement, formData, action, cancel }) => {
                 return async ({ result }) => {
                   if (result.type === "failure") {
-                    toast.error(result.data?.error as string, {
-                      class: "my-toast",
+                    toast.error("Error!", {
+                      description: result.data?.error as string,
+                      class: "my-toast-error",
+                      classes: {
+                        title: "text-[#f70000] text-14",
+                        description: "text-black/80 text-12",
+                      },
                     });
                   } else {
-                    toast.success("Update successfully", {
-                      class: "my-toast",
+                    toast.success("Success!", {
+                      description: "Edit successfully.",
+                      class: "my-toast-success",
+                      classes: {
+                        title: "text-[#00c441] text-15 font-500",
+                        description: "text-black/70 text-12 font-400",
+                      },
                     });
                     updateScheduleLocal(
                       {
@@ -227,7 +237,7 @@
                         id: formData.get("id1"),
                         date: formData.get("date1"),
                         count: Number(formData.get("count1")),
-                      }
+                      },
                     );
                     showReset = false;
                   }
@@ -329,12 +339,22 @@
             use:enhance={({ formElement, formData, action, cancel }) => {
               return async ({ result }) => {
                 if (result.type === "failure") {
-                  toast.error(result.data?.error as string, {
-                    class: "my-toast",
+                  toast.error("Error!", {
+                    description: result.data?.error as string,
+                    class: "my-toast-error",
+                    classes: {
+                      title: "text-[#f70000] text-14",
+                      description: "text-black/80 text-12",
+                    },
                   });
                 } else {
-                  toast.success("Create successfully", {
-                    class: "my-toast",
+                  toast.success("Success!", {
+                    description: "Create successfully.",
+                    class: "my-toast-success",
+                    classes: {
+                      title: "text-[#00c441] text-15 font-500",
+                      description: "text-black/70 text-12 font-400",
+                    },
                   });
                   reloadScheduleData();
                 }

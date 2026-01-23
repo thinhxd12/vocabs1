@@ -123,7 +123,7 @@ export const getHourlyWeatherData = async ({
 
 export const getCurrentWeatherTomorrowData = async (
   lat: number,
-  lon: number
+  lon: number,
 ) => {
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${lat}, ${lon}&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi`;
   const options = {
@@ -143,7 +143,7 @@ export const getCurrentWeatherTomorrowData = async (
 
 export const getHourlyWeatherTomorrowData = async (
   lat: number,
-  lon: number
+  lon: number,
 ) => {
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${lat}, ${lon}&timesteps=1h&apikey=iKOCmIMApJ9ZJoeGT3JjQgr7Fvx6jQVi`;
   const options = {
@@ -164,15 +164,20 @@ export const getHourlyWeatherTomorrowData = async (
 export const archiveVocab = async (
   id: string,
   word: string,
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
 ) => {
   const { error: errorMemories } = await supabase
     .from("memories_table")
     .insert({ id: uuidv7(), word: word });
 
   if (errorMemories) {
-    toast.error(errorMemories.details as string, {
-      class: "my-toast",
+    toast.error("Error!", {
+      description: errorMemories.message as string,
+      class: "my-toast-error",
+      classes: {
+        title: "text-[#f70000] text-14",
+        description: "text-black/80 text-12",
+      },
     });
     return;
   }
@@ -183,8 +188,13 @@ export const archiveVocab = async (
     .eq("id", id);
 
   if (errorDeleteVocab) {
-    toast.error(errorDeleteVocab.details as string, {
-      class: "my-toast",
+    toast.error("Error!", {
+      description: errorDeleteVocab.message as string,
+      class: "my-toast-error",
+      classes: {
+        title: "text-[#f70000] text-14",
+        description: "text-black/80 text-12",
+      },
     });
     return;
   }
@@ -211,7 +221,7 @@ export const archiveVocab = async (
   if (!rangeResults) return;
   const smallestRow = rangeResults.reduce(
     (min, row) => (row.number < min.number ? row : min),
-    rangeResults[0]
+    rangeResults[0],
   );
 
   const { error: lastError } = await supabase
@@ -224,7 +234,7 @@ export const archiveVocab = async (
 
 export const submitReportPomodoro = async (
   time: number,
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
 ) => {
   const today = new Date();
   const date = format(today, "yyyy-MM-dd");
@@ -366,7 +376,7 @@ export const getOpenMeteoWeather = async ({
       temperature_2m: Array.from(data1.hourly.temperature_2m ?? []),
       apparent_temperature: Array.from(data1.hourly.apparent_temperature ?? []),
       precipitation_probability: Array.from(
-        data1.hourly.precipitation_probability ?? []
+        data1.hourly.precipitation_probability ?? [],
       ),
       weather_code: Array.from(data1.hourly.weather_code ?? []),
       wind_speed_10m: Array.from(data1.hourly.wind_speed_10m ?? []),
@@ -377,18 +387,18 @@ export const getOpenMeteoWeather = async ({
       temperature_2m_max: Array.from(data1.daily.temperature_2m_max ?? []),
       temperature_2m_min: Array.from(data1.daily.temperature_2m_min ?? []),
       apparent_temperature_max: Array.from(
-        data1.daily.apparent_temperature_max ?? []
+        data1.daily.apparent_temperature_max ?? [],
       ),
       apparent_temperature_min: Array.from(
-        data1.daily.apparent_temperature_min ?? []
+        data1.daily.apparent_temperature_min ?? [],
       ),
       precipitation_probability_max: Array.from(
-        data1.daily.precipitation_probability_max ?? []
+        data1.daily.precipitation_probability_max ?? [],
       ),
       sunrise: Array.from(data1.daily.sunrise ?? []),
       sunset: Array.from(data1.daily.sunset ?? []),
       uv_index_max: Array.from(
-        data1.daily.uv_index_max.map((element: any) => element ?? 0) ?? []
+        data1.daily.uv_index_max.map((element: any) => element ?? 0) ?? [],
       ),
     },
   };

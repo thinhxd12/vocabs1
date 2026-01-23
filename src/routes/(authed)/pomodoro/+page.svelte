@@ -18,6 +18,7 @@
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
+  import { toast } from "svelte-sonner";
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
@@ -62,6 +63,14 @@
     $countPomodoros = Math.round((end - now) / 1000);
     angle = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
     if (now >= end) {
+      toast.success(`Finish #${$currentInterval}!`, {
+        description: "Time for a break!",
+        class: "my-toast-success",
+        classes: {
+          title: "text-[#00c441] text-15 font-500",
+          description: "text-black/70 text-12 font-400",
+        },
+      });
       $currentInterval++;
       completePomodoro();
       srcAudio = "/sounds/mp3_rest.ogg";
@@ -103,6 +112,14 @@
       startPomodoro();
       srcAudio = "/sounds/mp3_focus.ogg";
       pauseAudio = false;
+      toast.error(`Pomodoro #${$currentInterval}!`, {
+        description: "Time to focus!",
+        class: "my-toast-error",
+        classes: {
+          title: "text-[#f70000] text-14",
+          description: "text-black/80 text-12",
+        },
+      });
     }
   }
 
@@ -339,7 +356,7 @@
                       ></span>
                       <span class="pr-6 min-w-45">
                         {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                          item.time % 60
+                          item.time % 60,
                         )}
                       </span>
                     </td>

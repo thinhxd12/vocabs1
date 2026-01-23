@@ -16,9 +16,13 @@ export const actions = {
     const content = formData.get("content") as string;
     const like = formData.get("like") as string;
 
-    console.log(formData);
-
-    if (id.length === 0 || content.length === 0)
+    if (
+      id === "" ||
+      bookTile === "" ||
+      authors === "" ||
+      dateOfCreation === "" ||
+      content === ""
+    )
       return fail(422, { error: "Invalid data" });
 
     const { error } = await supabase
@@ -31,7 +35,6 @@ export const actions = {
         like: Number(like),
       })
       .eq("id", id);
-    console.log("🚀 ~ error:", error);
 
     if (error) {
       return fail(422, { error: error.data.message });
@@ -53,6 +56,8 @@ export const actions = {
     let entries = readKindleClipping(content);
     let parsedEntries = parseKindleEntries(entries);
 
+    if (parsedEntries.length === 0) return fail(422, { error: "Invalid data" });
+
     for (let i = 0; i < parsedEntries.length; i++) {
       const row = {
         authors: parsedEntries[i].authors,
@@ -73,7 +78,7 @@ export const actions = {
       type: "success",
       status: 200,
       data: {
-        message: "Insert successfully",
+        message: `Insert successfully ${parsedEntries.length} highlights.`,
       },
     } as ActionResult;
   },

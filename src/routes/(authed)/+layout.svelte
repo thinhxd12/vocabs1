@@ -5,6 +5,7 @@
     totalMemories,
     locationList,
   } from "$lib/store/navstore";
+  import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { Toaster } from "svelte-sonner";
 
@@ -15,7 +16,7 @@
   if (data.schedule) {
     let index = data.schedule.findIndex(
       (item) =>
-        format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null
+        format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null,
     );
 
     if (index > -1) {
@@ -29,7 +30,7 @@
   $locationList = data.weatherList || [];
 </script>
 
-<Toaster position="top-center" richColors />
+<Toaster position="top-center" duration={4500} visibleToasts={6} />
 
 <main class="absolute w-full h-full z-[3]">
   {@render children()}

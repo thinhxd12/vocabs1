@@ -147,7 +147,7 @@
     let authorParam = data.authors.split(";")[0];
 
     const response = await fetch(
-      `/server/getbookinfo?query=${titleParam}&author=${authorParam}`
+      `/server/getbookinfo?query=${titleParam}&author=${authorParam}`,
     );
     if (response.status === 200) {
       let data = await response.json();
@@ -217,12 +217,22 @@
       .delete()
       .eq("id", $bookmark!.id);
     if (error) {
-      toast.error("Error", {
-        class: "my-toast",
+      toast.error("Error!", {
+        description: error.message as string,
+        class: "my-toast-error",
+        classes: {
+          title: "text-[#f70000] text-14",
+          description: "text-black/80 text-12",
+        },
       });
     } else {
-      toast.success("Delete bookmark successfully", {
-        class: "my-toast",
+      toast.success("Success!", {
+        description: "Delete successfully.",
+        class: "my-toast-success",
+        classes: {
+          title: "text-[#00c441] text-15 font-500",
+          description: "text-black/70 text-12 font-400",
+        },
       });
     }
     handleGetNextBookmark();
@@ -237,7 +247,7 @@
     pFont: string,
     pSize: number,
     pLine: number,
-    pWidth: number
+    pWidth: number,
   ) {
     let lDiv = document.createElement("div");
     document.body.appendChild(lDiv);
@@ -272,7 +282,7 @@
     pFont: string,
     pSize: number,
     pLine: number,
-    pWidth: number
+    pWidth: number,
   ) {
     let matchSymbol = pText.match(/^(\W*)\w/);
     let matchLetter = pText.match(/^\w/);
@@ -327,7 +337,7 @@
               "Proxima Nova",
               16,
               1.4375,
-              pageWidth
+              pageWidth,
             ) < maxHeight
           ) {
             acc[acc.length - 1] = testString;
@@ -340,7 +350,7 @@
               "Proxima Nova",
               16,
               1.4375,
-              pageWidth
+              pageWidth,
             ) < maxHeight
           ) {
             acc[acc.length - 1] = testString;
@@ -348,7 +358,7 @@
         }
         return acc;
       },
-      []
+      [],
     );
 
     if (flattenedArray.length % 2 !== 0) flattenedArray.push("");
@@ -372,10 +382,10 @@
         }
         return acc;
       },
-      []
+      [],
     );
     flipPages = [{ id: 0, front: "", back: "", isFlipped: false }].concat(
-      result
+      result,
     );
   }
 
@@ -523,16 +533,26 @@
           use:enhance={({ formElement, formData, action, cancel }) => {
             isSubmitting = true;
             return async ({ result, update }) => {
-              if (result.status === 200) {
-                toast.success("Update bookmark successfully", {
-                  class: "my-toast",
+              if (result.type === "failure") {
+                toast.error("Error!", {
+                  description: result.data?.error as string,
+                  class: "my-toast-error",
+                  classes: {
+                    title: "text-[#f70000] text-14",
+                    description: "text-black/80 text-12",
+                  },
+                });
+              } else {
+                toast.success("Success!", {
+                  description: "Edit successfully.",
+                  class: "my-toast-success",
+                  classes: {
+                    title: "text-[#00c441] text-15 font-500",
+                    description: "text-black/70 text-12 font-400",
+                  },
                 });
                 setBookContent($bookmark!.content);
                 handleCloseBook();
-              } else {
-                toast.error("Error", {
-                  class: "my-toast",
-                });
               }
               isSubmitting = false;
             };
@@ -638,13 +658,23 @@
           use:enhance={({ formElement, formData, action, cancel }) => {
             isSubmitting = true;
             return async ({ result }) => {
-              if (result.status === 200) {
-                toast.success("Insert items successfully", {
-                  class: "my-toast",
+              if (result.type === "failure") {
+                toast.error("Error!", {
+                  description: result.data?.error as string,
+                  class: "my-toast-error",
+                  classes: {
+                    title: "text-[#f70000] text-14",
+                    description: "text-black/80 text-12",
+                  },
                 });
               } else {
-                toast.error("Error", {
-                  class: "my-toast",
+                toast.success("Success!", {
+                  description: "Insert successfully.",
+                  class: "my-toast-success",
+                  classes: {
+                    title: "text-[#00c441] text-15 font-500",
+                    description: "text-black/70 text-12 font-400",
+                  },
                 });
               }
               isSubmitting = false;
@@ -911,7 +941,7 @@
                     >
                       Bookmarked at {format(
                         new Date($bookmark!.dateOfCreation),
-                        "p cccc, yyyy-MM-dd"
+                        "p cccc, yyyy-MM-dd",
                       )}
                     </p>
                   {/if}
@@ -955,7 +985,7 @@
                     >
                       at {format(
                         $bookmark!.dateOfCreation,
-                        "p cccc, do MMMM yyyy"
+                        "p cccc, do MMMM yyyy",
                       )}
                     </p>
                   {/if}

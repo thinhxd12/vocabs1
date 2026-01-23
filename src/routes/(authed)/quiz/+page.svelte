@@ -44,7 +44,7 @@
     src0 = `https://vocabs3.vercel.app/speech?text=${sound}`;
     paused0 = false;
     const filterdOptions = $listContent.filter(
-      (choice) => choice.id !== $quizRender!.id
+      (choice) => choice.id !== $quizRender!.id,
     );
     let randomChoices = arrayShuffle(filterdOptions).slice(0, 3);
     randomChoices = arrayShuffle([...randomChoices, $quizRender!]);

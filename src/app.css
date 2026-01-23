@@ -76,7 +76,10 @@ input.layout-main {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-.my-toast {
-  @apply !backdrop-blur-xl !rounded-3 shadow-md shadow-black/60;
-  padding: 6px 12px 8px;
+.my-toast-error {
+  @apply m-0 flex bg-white/30 backdrop-blur-md border-white/45 text-[#f70000] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
+}
+
+.my-toast-success {
+  @apply mx-auto flex bg-white/30 backdrop-blur-md border-white/45 text-[#00c441] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
 }

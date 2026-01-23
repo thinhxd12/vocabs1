@@ -45,8 +45,13 @@
       .limit(1);
 
     if (dataMemories.length)
-      toast.error(`Memorized "${dataMemories[0].word}" \n at ${format(dataMemories[0].created_at,"p cccc, yyyy-MM-dd")}!`, {
-        class: "my-toast",
+      toast.error(`Memorized "${dataMemories[0].word}"!`, {
+        description: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}`,
+        class: "my-toast-error",
+        classes: {
+          title: "text-[#f70000] text-14",
+          description: "text-black/80 text-12",
+        },
       });
     const data = await Promise.all([
       getTextDataWebster(translateWord.word),
@@ -105,12 +110,22 @@
   use:enhance={({ formElement, formData, action, cancel }) => {
     return async ({ result }) => {
       if (result.type === "failure") {
-        toast.error(result.data?.error as string, {
-          class: "my-toast",
+        toast.error("Error!", {
+          description: result.data?.error as string,
+          class: "my-toast-error",
+          classes: {
+            title: "text-[#f70000] text-14",
+            description: "text-black/80 text-12",
+          },
         });
       } else if (result.type === "success") {
-        toast.success("Vocab inserted successfully", {
-          class: "my-toast",
+        toast.success("Success!", {
+          description: "Add word successfully.",
+          class: "my-toast-success",
+          classes: {
+            title: "text-[#00c441] text-15 font-500",
+            description: "text-black/70 text-12 font-400",
+          },
         });
       }
     };
