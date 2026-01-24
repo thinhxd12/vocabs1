@@ -1,36 +1,95 @@
 <script lang="ts">
-  import Container from "$lib/components/Container.svelte";
-  import Pagination from "$lib/components/Pagination.svelte";
+  import { enhance } from "$app/forms";
+  import type { DBSelect } from "$lib/types";
+  import Icon from "@iconify/svelte";
+  import { format } from "date-fns";
   import { toast } from "svelte-sonner";
+  import { fly, fade } from "svelte/transition";
+  import { page } from "$app/state";
+  import { Tween } from "svelte/motion";
+  import { quadInOut } from "svelte/easing";
+  import { onDestroy, onMount, untrack } from "svelte";
+  import StarRating from "$lib/components/StarRating.svelte";
+  import { bookmark, bookInfo } from "$lib/store/highlightstore";
+  import { innerWidth, innerHeight } from "svelte/reactivity/window";
 
-  let totalItems = 180;
-  let itemsPerPage = 10;
-  let currentPage = 2;
+  type PageContent = {
+    id: number;
+    isFlipped: boolean;
+    front: string;
+    back: string;
+  };
 
-  function onPageChange(page: number) {
-    currentPage = page;
-    console.log("Page changed to:", page);
-    // You can also fetch new data here based on the current page
-  }
+  let windowHeight = $state<number>(703);
+  const ratio = 1.61803398875;
 
-  function test() {
-    // toast.error(`Memorized !`, {
-    //   duration: Number.POSITIVE_INFINITY,
-    //   class: "my-toast-error",
-    // });
+  const pageWidth = (wHeight: number) => {
+    const width = Math.round(ratio * (wHeight - 150));
+    return width % 2 !== 0 ? width + 1 : width;
+  };
+  const pageHeight = (wHeight: number) => wHeight - 150;
 
-    toast("Hello World", {
-      duration: Number.POSITIVE_INFINITY,
-      unstyled: true,
-      classes: {
-        toast: "bg-blue-400",
-        title: "text-red-400 text-2xl",
-        description: "text-red-400",
-        actionButton: "bg-zinc-400",
-        cancelButton: "bg-orange-400",
-        closeButton: "bg-lime-400",
-      },
-    });
+  const dumb = [
+    {
+      id: 4,
+      front: "",
+      back: "",
+      isFlipped: true,
+    },
+    {
+      id: 3,
+      front:
+        "Fate, however, can improve; moreover, we will not ask much of it if we are inwardly rich. A poor wretch, on the other hand, remains a wretch, a dunce remains a dunce to the end of his life, even if he were in paradise surrounded by houris. Hence Goethe says: <p>Nations, rulers, slaves subjected</p> <p>All on this one point agree: <p>Joy of earthlings is perfected</p> <p>In the personality.</p> <p>West-Eastern Divana</p> That the subjective is incomparably more essential for our happiness and our pleasure than the objective is confirmed by everything: from the fact that hunger is the best sauce and that the old man looks with indifference at the goddess of the young, to the life of the genius and the saint.",
+      back: "Especially health so far outweighs all external goods that a healthy beggar is truly more fortunate than a king in poor health. A calm and cheerful temperament resulting from perfect health and a lucky bodily organization, a clear, lively, penetrating and accurately comprehending understanding, a moderate, gentle will, and consequently a good conscience – these are advantages for which no rank or wealth can compensate. For what somebody is in himself, what accompanies him in solitude, and what nobody can give him or take away from him, is obviously more essential to him than anything that he possesses or that he may be in the eyes of others. A witty person, all alone, has excellent entertainment in his own thoughts and fantasies, whereas in a dullard the continuous diversion of parties, plays, excursions, and amusements cannot",
+      isFlipped: false,
+    },
+    {
+      id: 2,
+      front:
+        "fend off the torments of boredom. A good, moderate, gentle character can be contented in meagre circumstances, whereas a greedy, envious, and malicious one is not in spite of all his wealth. Indeed, for the person who continuously enjoys an extraordinary, intellectually eminent personality, most of the generally desired pleasures are entirely superfluous, even just troublesome and annoying. Hence Horace says of himself: Gems, marble, ivory, Etruscan figurines, pictures, Silver, clothes dyed in Gaetulian purple, Many there are who own none, one who does not care to own.",
+      back: "",
+      isFlipped: false,
+    },
+  ];
+
+  let visualProgress = new Tween(0, {
+    duration: 500,
+    easing: quadInOut,
+  });
+  let currentPage = $state<number>(0);
+  let flipPages = $state<PageContent[]>(dumb);
+
+  function handleFlipPage(id: number) {
+    // handleListenKeypress();
+
+    currentPage = id;
+    visualProgress.target = 0;
+    const index = flipPages.findIndex((item) => item.id === id);
+    // if (!index) return;
+    console.log(index);
+    flipPages[index].id = 99;
+
+    if (flipPages[index].isFlipped) {
+      // if (id === 0) {
+      //   flipPages[currentPage].isFlipped = false;
+      //   flipTimeoutId = setTimeout(() => {
+      //     handleGetPrevBookmark();
+      //   }, 500);
+      //   return;
+      // }
+      flipPages[index].isFlipped = false;
+      // flipPages[index].id = 1 + flipPages.length - index;
+      visualProgress.target = 180;
+    } else {
+      flipPages[index].isFlipped = true;
+      // flipPages[index].id = flipPages[index].id - flipPages.length;
+      visualProgress.target = 180;
+    }
+    // if ($bookmark!.like) {
+    //   flagTimeoutId = setTimeout(() => {
+    //     visualProgress.target = likeBookmark ? 580 : 480;
+    //   }, 900);
+    // }
   }
 </script>
 
@@ -39,10 +98,290 @@
   <meta name="sad" content="Sad day!" />
 </svelte:head>
 
-<div class="absolute z-50 w-full h-full flex justify-center">
-  <button onclick={test} class="text-white z-50 relative">click</button>
-  <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
-</div>
+<section
+  class="absolute top-0 left-0 w-screen h-screen flex items-center justify-center pt-60 px-60 pb-90 z-[5]"
+>
+  <div
+    class="book"
+    style="width: {pageWidth(windowHeight)}px; height:{pageHeight(
+      windowHeight,
+    )}px;"
+  >
+  
+
+    {#each flipPages as page, i}
+      {#if i === 0}
+        <div
+          class="flip frontCover"
+          class:flipped={page.isFlipped}
+          style="z-index: {page.id};"
+        >
+          <div class="pageFront">
+            <div class="bg-black w-full h-full text-center">
+              <h1 class="text-white">cover</h1>
+            </div>
+            <!-- <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(page.id)}
+            >
+            </button> -->
+          </div>
+
+          <div class="pageBack">
+            <div class="backPaper w-full h-full text-center">
+              <div class="content">
+                <h1 class="text-black">back cover</h1>
+              </div>
+            </div>
+            <!-- <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(page.id)}
+            >
+            </button> -->
+          </div>
+        </div>
+      {:else}
+        <div
+          class="flip page"
+          class:flipped={page.isFlipped}
+          style="z-index: {page.id};"
+        >
+          <div class="pageFront frontPaper">
+            <div class="content">
+              {@html page.front}
+            </div>
+            <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(page.id)}
+            >
+              <div class="pageFold"></div>
+            </button>
+          </div>
+
+          <div class="pageBack backPaper">
+            <div class="content">
+              {@html page.back}
+            </div>
+            <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(page.id)}
+            >
+              <div class="pageFold"></div>
+            </button>
+          </div>
+        </div>
+      {/if}
+    {/each}
+
+      <div class="backCover" style="z-index: 1;">
+      <div class="w-full h-full backPaper"></div>
+    </div>
+  </div>
+</section>
+
+<svelte:window bind:innerHeight={windowHeight} />
 
 <style>
+  .book {
+    perspective: 4500px;
+    position: relative;
+    z-index: 90;
+  }
+
+  .backCover {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    top: 0;
+    right: 0;
+    background: #0a0905;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding: 9px 9px 9px 0;
+  }
+
+  .backPaper {
+    background-color: #f5f5f5;
+    background-image: linear-gradient(
+        -90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 12%
+      ),
+      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%),
+      linear-gradient(
+        90deg,
+        rgba(212, 212, 212, 0.8) 0%,
+        rgba(247, 247, 247, 0.3) 12%
+      ),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+  }
+
+  .frontPaper {
+    background-color: #f5f5f5;
+    background-image: linear-gradient(
+        90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 12%
+      ),
+      linear-gradient(0deg, rgb(212, 212, 212) 0%, rgba(247, 247, 247, 0) 12%),
+      linear-gradient(
+        -90deg,
+        rgba(212, 212, 212, 0.6) 0%,
+        rgba(247, 247, 247, 0.3) 18%
+      ),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+  }
+
+  .flip {
+    transform-style: preserve-3d;
+    /* position: absolute; */
+    transition: transform 0.5s ease-in-out;
+    transform-origin: left center;
+  }
+
+  .flipped {
+    transform: rotateY(-180deg);
+  }
+
+  .page {
+    position: absolute;
+    height: calc(100% - 18px);
+    width: calc(50% - 9px);
+    right: 9px;
+    top: 9px;
+    user-select: text;
+    backface-visibility: hidden;
+  }
+
+  .frontCover {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    top: 0;
+    right: 0;
+    user-select: text;
+    backface-visibility: hidden;
+  }
+
+  .pageFront {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    backface-visibility: hidden;
+  }
+
+  .pageBack {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+  }
+
+  .frontCover .pageBack {
+    background: #0a0905;
+    padding: 9px 0px 9px 9px;
+  }
+
+  .content {
+    width: 100%;
+    height: 100%;
+    font-family: "Proxima Nova", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.4375;
+    letter-spacing: 0px;
+    padding: 55px 50px 55px 60px;
+    overflow: hidden;
+    text-align: left;
+    text-size-adjust: 100%;
+    color: #1e1915;
+  }
+
+  .content :global {
+    p {
+      text-indent: 15px;
+    }
+  }
+
+  .pageButton {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 60px;
+    background-color: red;
+  }
+
+  .pageFront .pageButton {
+    right: 0;
+  }
+
+  .pageBack .pageButton {
+    left: 0;
+  }
+
+  /* .pageFold {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    transition: all 0.3s ease-out;
+  }
+
+  .pageFront .pageFold {
+    top: 0;
+    right: 0;
+    border-left-width: 1px;
+    border-left-color: #dddddd;
+    border-left-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    box-shadow: -3px 3px 9px rgba(0, 0, 0, 0.45);
+  }
+
+  .pageFront .pageButton:hover .pageFold {
+    width: 60px;
+    height: 60px;
+    background-image: linear-gradient(
+      45deg,
+      #f7f7f7 0%,
+      rgba(247, 247, 247, 0.3) 49%,
+      transparent 50%,
+      transparent 100%
+    );
+  }
+
+  .pageBack .pageFold {
+    top: 0;
+    left: 0;
+    border-right-width: 1px;
+    border-right-color: #dddddd;
+    border-right-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.45);
+  }
+
+  .pageBack .pageButton:hover .pageFold {
+    width: 60px;
+    height: 60px;
+    background-image: linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 49%,
+      #e9e8e8 50%,
+      #dadada 100%
+    );
+  } */
 </style>

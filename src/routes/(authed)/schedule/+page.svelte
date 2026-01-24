@@ -381,7 +381,7 @@
   <Calendar schedule={calendarData} />
 
   <p
-    class="light !bg-green-400/15 font-garamond text-12 font-500 leading-14 p-6 select-none"
+    class="light !bg-green-400/15 font-garamond text-12 font-500 leading-14 p-6"
   >
     The tree that is supposed to grow to a proud height can dispense with bad
     weather and storms. Whether misfortune and external resistance, some kinds

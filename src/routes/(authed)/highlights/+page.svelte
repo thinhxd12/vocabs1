@@ -8,7 +8,7 @@
   import { page } from "$app/state";
   import { Tween } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
-  import { onDestroy, onMount, untrack } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
 
@@ -19,6 +19,7 @@
     back: string;
   };
 
+  const ratio = 1.61803398875;
   let isRandomed = $state<boolean>(false);
   let likeBookmark = $state<boolean>(false);
   let keyPressed = $state<boolean>(false);
@@ -29,6 +30,13 @@
   let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
   let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
   let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let windowHeight = $state<number>(0);
+
+  const pageWidth = (wHeight: number) => {
+    const width = Math.round(ratio * (wHeight - 150));
+    return width % 2 !== 0 ? width + 1 : width;
+  };
+  const pageHeight = (wHeight: number) => wHeight - 150;
 
   async function handleGetCurrentId() {
     const { data } = await page.data.supabase
@@ -239,9 +247,6 @@
     showDelete = !showDelete;
   }
 
-  let pageWidth = $state<number>(0);
-  let pageHeight = $state<number>(0);
-
   function getHeightNormalPage(
     pText: string,
     pFont: string,
@@ -253,11 +258,12 @@
     document.body.appendChild(lDiv);
 
     lDiv.innerHTML = pText;
+    lDiv.style.textIndent = "15px";
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine;
     lDiv.style.fontWeight = "400";
-    lDiv.style.width = String(pWidth - 122) + "px";
+    lDiv.style.width = String(pWidth) + "px";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
@@ -295,13 +301,15 @@
     let cText = document.createElement("span");
     lDiv.appendChild(cText);
     cText.textContent = firstLetter;
-    let restTextNode = document.createTextNode(rest);
-    lDiv.appendChild(restTextNode);
+    let restText = document.createElement("span");
+    lDiv.appendChild(restText);
+    restText.innerHTML = rest;
 
+    restText.style.textIndent = "15px";
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine;
-    lDiv.style.width = String(pWidth - 122) + "px";
+    lDiv.style.width = String(pWidth) + "px";
     lDiv.style.fontWeight = "400";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
@@ -323,7 +331,8 @@
 
   function splitIntoBlocks(text: string) {
     const words = text.trim().split(" ");
-    let maxHeight = Math.round(pageHeight - 120);
+    let maxHeight = pageHeight(windowHeight) - 18 - 110;
+    let maxWidth = pageWidth(windowHeight) / 2 - 12 - 110 - 1;
 
     const flattenedArray = words.reduce(
       (acc: string[], cur: string, index: number) => {
@@ -337,7 +346,7 @@
               "Proxima Nova",
               16,
               1.4375,
-              pageWidth,
+              maxWidth,
             ) < maxHeight
           ) {
             acc[acc.length - 1] = testString;
@@ -350,7 +359,7 @@
               "Proxima Nova",
               16,
               1.4375,
-              pageWidth,
+              maxWidth,
             ) < maxHeight
           ) {
             acc[acc.length - 1] = testString;
@@ -788,12 +797,13 @@
     </div>
   {/if}
 
-  <div class="book golden">
-    <div
-      class="back-book"
-      bind:offsetWidth={pageWidth}
-      bind:offsetHeight={pageHeight}
-    >
+  <div
+    class="book"
+    style="width: {pageWidth(windowHeight)}px; height:{pageHeight(
+      windowHeight,
+    )}px;"
+  >
+    <div class="back-book">
       {#if flipPages.length}
         <div class="cover bg-[#0a0905] p-9 pl-0">
           <div class="w-full h-full bg-front relative">
@@ -869,7 +879,8 @@
             <div
               class="content bg-front"
               class:firstPage={i === 1}
-              style="width: {pageWidth - 12}px; height: {pageHeight - 19}px;"
+              style="width: {pageWidth(windowHeight) / 2 -
+                12}px; height: {pageHeight(windowHeight) - 19}px;"
             >
               {@html page.front}
             </div>
@@ -1051,7 +1062,8 @@
           {:else}
             <div
               class="content bg-back"
-              style="width: {pageWidth - 12}px; height: {pageHeight - 19}px;"
+              style="width: {pageWidth(windowHeight) / 2 -
+                12}px; height: {pageHeight(windowHeight) - 19}px;"
             >
               {@html page.back}
             </div>
@@ -1074,12 +1086,11 @@
   </div>
 </section>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window on:keydown={onKeyDown} bind:innerHeight={windowHeight} />
 
 <style>
   .book {
     perspective: 4500px;
-    height: 100%;
     position: relative;
   }
 
