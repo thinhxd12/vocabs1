@@ -13,8 +13,8 @@
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
 
   type PageContent = {
-    id: number;
-    isFlipped: boolean;
+    zIndex: number;
+    rotate: number;
     front: string;
     back: string;
   };
@@ -56,12 +56,10 @@
       .limit(1);
 
     if (data.length) {
-      //  Get book cover first.
       handleGetBookInfo(data[0]);
-      //  Set bookmark data.
       bookmark.set(data[0]);
-      // Set the pages.
       setBookContent(data[0].content);
+      resetRenderBookmark();
     }
   }
 
@@ -70,6 +68,7 @@
       handleGetCurrentBookmark();
     } else {
       setBookContent($bookmark.content);
+      resetRenderBookmark();
     }
   });
 
@@ -117,36 +116,51 @@
     }
   }
 
-  function handleCloseBook() {
-    handleListenKeypress();
-    for (let i = flipPages.length - 1; i >= 0; i--) {
-      flipPages[i].isFlipped = false;
-      if (i === 0) {
-        flipTimeoutId = setTimeout(() => {
-          currentPage = 0;
-        }, 250);
+  function handleCloseBook(data: DBSelect["bookmark_table"]) {
+    keyPressed = true;
+    visualProgress.target = 18;
+
+    if (currentPage === 0) {
+      flipPages[0].rotate = 0;
+      flipPages[0].zIndex = 1002;
+      flipTimeoutId = setTimeout(() => {
+        bookmark.set(data);
+        setBookContent(data.content);
+        resetRenderBookmark();
+        currentPage = 0;
+        keyPressed = false;
+      }, 300);
+    } else {
+      for (let index = 0; index < flipPages.length; index++) {
+        flipTimeoutId = setTimeout(
+          () => {
+            flipPages[index].rotate = 0;
+            flipPages[index].zIndex = 1 + flipPages.length - index;
+          },
+          (flipPages.length - index - 1) * 150,
+        );
       }
+      flipTimeoutId = setTimeout(
+        () => {
+          bookmark.set(data);
+          setBookContent(data.content);
+          resetRenderBookmark();
+          currentPage = 0;
+          keyPressed = false;
+        },
+        (flipPages.length - 1) * 150 + 300,
+      );
     }
   }
 
   async function handleSetBookmark(data: DBSelect["bookmark_table"]) {
-    //  Update current bookmark id.
+    // Update id - Get book cover - Set state bookmark - Close book - Set page content and reset ribbon, translate,...
+    handleCloseBook(data);
+    handleGetBookInfo(data);
     const { error } = await page.data.supabase
       .from("bookmark_progress")
       .update({ currentId: data.id })
       .eq("id", 1);
-    //  Get book cover first.
-    handleGetBookInfo(data);
-    //  Set bookmark data.
-    bookmark.set(data);
-    //  Reset liked and show translation.
-    resetRenderBookmark();
-    //  Close the book.
-    handleCloseBook();
-    // Set the pages.
-    setTimeout(() => {
-      setBookContent(data.content);
-    }, 500);
   }
 
   async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
@@ -199,18 +213,8 @@
     const { data, error } = await page.data.supabase.rpc("get_random_bookmark");
 
     if (data.length) {
-      //  Get book cover first..
       handleGetBookInfo(data[0]);
-      //  Set bookmark data.
-      bookmark.set(data[0]);
-      //  Reset liked and show translation.
-      resetRenderBookmark();
-      //  Close the book.
-      handleCloseBook();
-      // Set the pages.
-      setTimeout(() => {
-        setBookContent(data[0].content);
-      }, 500);
+      handleCloseBook(data[0]);
     }
   }
 
@@ -332,7 +336,7 @@
   function splitIntoBlocks(text: string) {
     const words = text.trim().split(" ");
     let maxHeight = pageHeight(windowHeight) - 18 - 110;
-    let maxWidth = pageWidth(windowHeight) / 2 - 12 - 110 - 1;
+    let maxWidth = pageWidth(windowHeight) / 2 - 9 - 110;
 
     const flattenedArray = words.reduce(
       (acc: string[], cur: string, index: number) => {
@@ -379,22 +383,20 @@
 
   function setBookContent(content: string) {
     let pages = splitIntoBlocks(content);
-    const result = pages.reduce(
+    pages.unshift("", "");
+    flipPages = pages.reduce(
       (acc: PageContent[], cur: string, index: number) => {
         if (index % 2 === 0) {
           acc.push({
-            id: acc.length + 1,
+            zIndex: 1 + pages.length / 2 - index / 2,
             front: cur,
             back: pages[index + 1],
-            isFlipped: false,
+            rotate: 0,
           });
         }
         return acc;
       },
       [],
-    );
-    flipPages = [{ id: 0, front: "", back: "", isFlipped: false }].concat(
-      result,
     );
   }
 
@@ -423,19 +425,19 @@
       translatedContent = data[0][0];
     }
 
-    handleCloseBook();
-
-    if (showTranslated) {
-      showTranslated = false;
-      flagTimeoutId = setTimeout(() => {
+    flipPages[0].rotate = 0;
+    flipPages[0].zIndex = 1002;
+    flipTimeoutId = setTimeout(() => {
+      if (showTranslated) {
+        showTranslated = false;
         setBookContent($bookmark!.content);
-      }, 500);
-    } else {
-      showTranslated = true;
-      flagTimeoutId = setTimeout(() => {
+      } else {
+        showTranslated = true;
         setBookContent(translatedContent);
-      }, 500);
-    }
+      }
+      currentPage = 0;
+      keyPressed = false;
+    }, 300);
   }
 
   function resetRenderBookmark() {
@@ -444,28 +446,30 @@
     translatedContent = "";
   }
 
-  function handleFlipPage(id: number) {
-    handleListenKeypress();
-
-    currentPage = id;
+  function handleFlipPage(index: number) {
+    keyPressed = true;
+    currentPage = index;
     visualProgress.target = 18;
+    flipPages[index].zIndex = 999;
 
-    if (flipPages[id].isFlipped) {
-      if (id === 0) {
-        flipPages[currentPage].isFlipped = false;
-        flipTimeoutId = setTimeout(() => {
-          handleGetPrevBookmark();
-        }, 500);
-        return;
-      }
-      flipPages[currentPage].isFlipped = false;
+    if (flipPages[index].rotate) {
+      flipPages[index].rotate = 0;
+      flipTimeoutId = setTimeout(() => {
+        flipPages[index].zIndex = 1 + flipPages.length - index;
+        keyPressed = false;
+      }, 600);
     } else {
-      flipPages[currentPage].isFlipped = true;
+      flipPages[index].rotate = 180;
+      flipTimeoutId = setTimeout(() => {
+        flipPages[index].zIndex = 1 + index;
+        keyPressed = false;
+      }, 600);
     }
-    if ($bookmark!.like) {
+
+    if (flipPages[0].rotate !== 0 && $bookmark!.like) {
       flagTimeoutId = setTimeout(() => {
         visualProgress.target = likeBookmark ? 580 : 480;
-      }, 900);
+      }, 600);
     }
   }
 
@@ -476,39 +480,36 @@
     }
     if (e.key === "ArrowRight") {
       switch (currentPage) {
-        case 0:
-          flipPages[0].isFlipped ? handleFlipPage(1) : handleFlipPage(0);
-          break;
         case flipPages.length - 1:
-          if (flipPages[currentPage].isFlipped) handleGetNextBookmark();
-          else handleFlipPage(currentPage);
+          flipPages[currentPage].rotate === 0
+            ? handleFlipPage(currentPage)
+            : handleGetNextBookmark();
           break;
         default:
-          if (flipPages[currentPage].isFlipped) handleFlipPage(currentPage + 1);
-          else handleFlipPage(currentPage);
+          flipPages[currentPage].rotate === 0
+            ? handleFlipPage(currentPage)
+            : handleFlipPage(currentPage + 1);
           break;
       }
     } else if (e.key === "ArrowLeft") {
       switch (currentPage) {
         case 0:
-          if (flipPages[0].isFlipped) handleFlipPage(0);
-          else return;
+          if (flipPages[0].rotate === 180) handleGetPrevBookmark();
+          break;
+        case 1:
+          flipPages[1].rotate === 0
+            ? handleGetPrevBookmark()
+            : handleFlipPage(1);
           break;
         default:
-          if (flipPages[currentPage].isFlipped) handleFlipPage(currentPage);
-          else handleFlipPage(currentPage - 1);
+          flipPages[currentPage].rotate === 0
+            ? handleFlipPage(currentPage - 1)
+            : handleFlipPage(currentPage);
           break;
       }
     } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      if (flipPages[0].isFlipped) handleCheckBookmark();
+      handleCheckBookmark();
     }
-  }
-
-  function handleListenKeypress() {
-    keyPressed = true;
-    keyDownTimeoutId = setTimeout(() => {
-      keyPressed = false;
-    }, 500);
   }
 
   onDestroy(() => {
@@ -560,8 +561,8 @@
                     description: "text-black/70 text-12 font-400",
                   },
                 });
-                setBookContent($bookmark!.content);
-                handleCloseBook();
+                // setBookContent($bookmark!.content);
+                handleCloseBook($bookmark!);
               }
               isSubmitting = false;
             };
@@ -803,116 +804,63 @@
       windowHeight,
     )}px;"
   >
-    <div class="back-book">
-      {#if flipPages.length}
-        <div class="cover bg-[#0a0905] p-9 pl-0">
-          <div class="w-full h-full bg-front relative">
-            <button
-              class="absolute w-full h-full disabled:cursor-not-allowed"
-              aria-label="back-book-button"
-              onclick={handleGetNextBookmark}
-              disabled={isRandomed}
-            ></button>
-
-            {#if flipPages[0].isFlipped}
-              <button
-                class="ribbon {visualProgress.current > 150
-                  ? 'bg-long'
-                  : 'bg-short'}"
-                onclick={() => handleCheckBookmark()}
-                style="height: {visualProgress.current}px;
-                 z-index: {visualProgress.current > 18 ? 1001 : 1};"
-                in:fly={{ y: 30, delay: 250, duration: 50 }}
-                out:fly={{
-                  y: 0,
-                  delay: 210,
-                  duration: 50,
-                }}
-              >
-                {#if visualProgress.current > 90}
-                  <span class="ribbonContent">
-                    {$bookmark!.like ? $bookmark!.like : ""}
-                  </span>
-                  <span
-                    class="ribbonTail {visualProgress.current > 150
-                      ? 'ribbonTailLong'
-                      : 'ribbonTailShort'}"
-                  ></span>
-                {/if}
-              </button>
-            {/if}
-          </div>
-        </div>
-      {/if}
-    </div>
-
     {#each flipPages as page, i}
-      <div
-        class="flip {i === 0 ? 'flip-cover' : 'flip-page'}"
-        class:flipped={page.isFlipped}
-        style="z-index: {currentPage === page.id
-          ? 999
-          : page.isFlipped
-            ? 3 + flipPages.length + page.id
-            : 1 + flipPages.length - page.id};"
-      >
-        <div class="page page-front">
-          {#if i === 0}
-            <div class="cover bg-[#0a0905]">
-              {#if $bookInfo}
-                <img
-                  src={$bookInfo!.coverImage}
-                  alt="book-cover"
-                  class="w-full h-full object-contain"
-                />
-              {:else}
-                <div class="w-full h-full flex items-center p-45">
-                  <p
-                    class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
-                  >
-                    take a small step every day
-                  </p>
-                </div>
-              {/if}
-            </div>
-          {:else}
-            <div
-              class="content bg-front"
-              class:firstPage={i === 1}
-              style="width: {pageWidth(windowHeight) / 2 -
-                12}px; height: {pageHeight(windowHeight) - 19}px;"
-            >
-              {@html page.front}
-            </div>
-            <p class="page-number">{2 * i - 1}</p>
-          {/if}
-
-          <button
-            class="page-button"
-            aria-label="page-button"
-            onclick={() => handleFlipPage(page.id)}
-          >
-            {#if i != 0}
-              <div class="page-fold"></div>
+      {#if i === 0}
+        <div
+          class="flip coverPage"
+          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg);"
+        >
+          <div class="pageFront bg-[#0a0905]">
+            {#if $bookInfo}
+              <img
+                src={$bookInfo!.coverImage}
+                alt="book-cover"
+                class="w-full h-full object-contain"
+              />
+            {:else}
+              <div class="w-full h-full flex items-center p-45 bg-[#0a0905]">
+                <p
+                  class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
+                >
+                  take a small step every day
+                </p>
+              </div>
             {/if}
-          </button>
-        </div>
+            <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(i)}
+            ></button>
+          </div>
 
-        <div class="page page-back">
-          {#if i === 0}
-            <div class="cover bg-[#0a0905]">
-              <div class="cover bg-back">
-                {#if $bookInfo}
-                  {#if $bookInfo!.coverImage}
-                    <img
-                      src={$bookInfo!.coverImage}
-                      alt="book-cover"
-                      class="mb-9 shadow-sm shadow-black/30 h-2/5 object-contain"
+          <div class="pageBack p-9 pr-0 bg-[#0a0905]" style="">
+            <div
+              class="content backPaper flex justify-center items-center flex-col"
+            >
+              {#if $bookInfo}
+                {#if $bookInfo!.coverImage}
+                  <img
+                    src={$bookInfo!.coverImage}
+                    alt="book-cover"
+                    class="mb-9 shadow-sm shadow-black/30 h-2/5 object-contain"
+                  />
+
+                  <div class="flex justify-end items-center mb-6">
+                    <Icon
+                      icon="solar:heart-bold"
+                      width="15"
+                      height="15"
+                      class="text-[#707070] ml-6"
                     />
+                    <span
+                      class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
+                    >
+                      {$bookmark!.like}
+                    </span>
 
-                    <div class="flex justify-end items-center mb-6">
+                    {#if $bookInfo && $bookInfo!.numberOfRatings}
                       <Icon
-                        icon="solar:heart-bold"
+                        icon="solar:eye-bold"
                         width="15"
                         height="15"
                         class="text-[#707070] ml-6"
@@ -920,169 +868,211 @@
                       <span
                         class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
                       >
-                        {$bookmark!.like}
+                        {Number($bookInfo!.numberOfRatings).toLocaleString()}
                       </span>
+                    {/if}
+                  </div>
+                {/if}
 
-                      {#if $bookInfo && $bookInfo!.numberOfRatings}
-                        <Icon
-                          icon="solar:eye-bold"
-                          width="15"
-                          height="15"
-                          class="text-[#707070] ml-6"
-                        />
-                        <span
-                          class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
-                        >
-                          {Number($bookInfo!.numberOfRatings).toLocaleString()}
-                        </span>
-                      {/if}
-                    </div>
-                  {/if}
-
-                  {#if $bookInfo!.title}
-                    <p
-                      class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
-                    >
-                      {$bookInfo!.title}
-                    </p>
-                  {/if}
-
-                  {#if $bookInfo!.authors}
-                    <p
-                      class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
-                    >
-                      {$bookInfo!.authors.join(", ")}
-                    </p>
-                  {/if}
-
-                  {#if $bookmark}
-                    <p
-                      class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
-                    >
-                      Bookmarked at {format(
-                        new Date($bookmark!.dateOfCreation),
-                        "p cccc, yyyy-MM-dd",
-                      )}
-                    </p>
-                  {/if}
-
-                  {#if $bookInfo!.publishedYear}
-                    <p
-                      class="mb-3 text-12 leading-18 font-proxima font-400 text-[#4f4f4d] text-center"
-                    >
-                      First published {$bookInfo!.publishedYear}
-                    </p>
-                  {/if}
-
-                  {#if $bookInfo!.numberOfRatings}
-                    <div class="mb-3 flex items-center justify-center pl-33">
-                      <StarRating
-                        rating={Number($bookInfo!.averageRating)}
-                        size={15}
-                        gap={3}
-                      />
-                      <span
-                        class="ml-3 w-30 text-center text-12 pt-3 leading-15 font-proxima font-400 text-[#4f4f4d]"
-                      >
-                        ({$bookInfo!.averageRating})
-                      </span>
-                    </div>
-                  {/if}
-                {:else}
+                {#if $bookInfo!.title}
                   <p
                     class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
                   >
-                    {$bookmark!.bookTile}
+                    {$bookInfo!.title}
                   </p>
+                {/if}
+
+                {#if $bookInfo!.authors}
                   <p
                     class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
                   >
-                    {$bookmark!.authors}
+                    {$bookInfo!.authors.join(", ")}
                   </p>
-                  {#if $bookmark}
-                    <p
-                      class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
-                    >
-                      at {format(
-                        $bookmark!.dateOfCreation,
-                        "p cccc, do MMMM yyyy",
-                      )}
-                    </p>
-                  {/if}
                 {/if}
 
-                <div class="flex justify-center items-baseline w-full pt-18">
-                  <button class="btn-menu" onclick={() => translateContent()}>
-                    <Icon
-                      icon="ic:twotone-g-translate"
-                      width="15"
-                      height="15"
-                    />
-                  </button>
-
-                  <button class="btn-menu" onclick={copyBookMarkToClipboard}>
-                    <Icon icon="solar:copy-outline" width="15" height="15" />
-                  </button>
-
-                  <button class="btn-menu" onclick={() => getRandomBookmark()}>
-                    <Icon icon="solar:refresh-outline" width="15" height="15" />
-                  </button>
-
-                  <button
-                    class="btn-menu"
-                    onclick={() => {
-                      showEdit = true;
-                      isSubmitting = false;
-                    }}
+                {#if $bookmark}
+                  <p
+                    class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
                   >
-                    <Icon
-                      icon="fluent:slide-text-edit-28-regular"
-                      width="15"
-                      height="15"
-                    />
-                  </button>
+                    Bookmarked at {format(
+                      new Date($bookmark!.dateOfCreation),
+                      "p cccc, yyyy-MM-dd",
+                    )}
+                  </p>
+                {/if}
 
-                  <button class="btn-menu" onclick={showInsertBookmark}>
-                    <Icon icon="solar:library-linear" width="15" height="15" />
-                  </button>
-
-                  <button
-                    class="btn-menu"
-                    onclick={() => (showDelete = !showDelete)}
+                {#if $bookInfo!.publishedYear}
+                  <p
+                    class="mb-3 text-12 leading-18 font-proxima font-400 text-[#4f4f4d] text-center"
                   >
-                    <Icon
-                      icon="solar:trash-bin-trash-outline"
-                      width="15"
-                      height="15"
+                    First published {$bookInfo!.publishedYear}
+                  </p>
+                {/if}
+
+                {#if $bookInfo!.numberOfRatings}
+                  <div class="mb-3 flex items-center justify-center pl-33">
+                    <StarRating
+                      rating={Number($bookInfo!.averageRating)}
+                      size={15}
+                      gap={3}
                     />
-                  </button>
-                </div>
+                    <span
+                      class="ml-3 w-30 text-center text-12 pt-3 leading-15 font-proxima font-400 text-[#4f4f4d]"
+                    >
+                      ({$bookInfo!.averageRating})
+                    </span>
+                  </div>
+                {/if}
+              {:else}
+                <p
+                  class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
+                >
+                  {$bookmark!.bookTile}
+                </p>
+                <p
+                  class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
+                >
+                  {$bookmark!.authors}
+                </p>
+                {#if $bookmark}
+                  <p
+                    class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
+                  >
+                    at {format(
+                      $bookmark!.dateOfCreation,
+                      "p cccc, do MMMM yyyy",
+                    )}
+                  </p>
+                {/if}
+              {/if}
+
+              <div class="flex justify-center items-baseline w-full pt-18">
+                <button class="btn-menu" onclick={() => translateContent()}>
+                  <Icon icon="ic:twotone-g-translate" width="15" height="15" />
+                </button>
+
+                <button class="btn-menu" onclick={copyBookMarkToClipboard}>
+                  <Icon icon="solar:copy-outline" width="15" height="15" />
+                </button>
+
+                <button class="btn-menu" onclick={() => getRandomBookmark()}>
+                  <Icon icon="solar:refresh-outline" width="15" height="15" />
+                </button>
+
+                <button
+                  class="btn-menu"
+                  onclick={() => {
+                    showEdit = true;
+                    isSubmitting = false;
+                  }}
+                >
+                  <Icon
+                    icon="fluent:slide-text-edit-28-regular"
+                    width="15"
+                    height="15"
+                  />
+                </button>
+
+                <button class="btn-menu" onclick={showInsertBookmark}>
+                  <Icon icon="solar:library-linear" width="15" height="15" />
+                </button>
+
+                <button
+                  class="btn-menu"
+                  onclick={() => (showDelete = !showDelete)}
+                >
+                  <Icon
+                    icon="solar:trash-bin-trash-outline"
+                    width="15"
+                    height="15"
+                  />
+                </button>
               </div>
             </div>
-          {:else}
-            <div
-              class="content bg-back"
-              style="width: {pageWidth(windowHeight) / 2 -
-                12}px; height: {pageHeight(windowHeight) - 19}px;"
+            <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={handleGetPrevBookmark}
+              disabled={keyPressed || isRandomed}
+              class:disabled={keyPressed || isRandomed}
+            ></button>
+          </div>
+        </div>
+      {:else}
+        <div
+          class="flip normalPage"
+          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg);"
+        >
+          <div class="pageFront" class:firstPage={i === 1}>
+            <div class="content frontPaper">
+              {@html page.front}
+            </div>
+            <p class="pageNumber">{2 * i - 1}</p>
+            <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(i)}
             >
+              {#if page.rotate === 0}
+                <div class="pageFold"></div>
+              {/if}
+            </button>
+          </div>
+          <div class="pageBack">
+            <div class="content backPaper">
               {@html page.back}
             </div>
-            <p class="page-number">{2 * i}</p>
-          {/if}
-
-          <button
-            class="page-button disabled:cursor-not-allowed"
-            aria-label="page-button"
-            onclick={() => handleFlipPage(page.id)}
-            disabled={isRandomed && i === 0}
-          >
-            {#if i != 0}
-              <div class="page-fold"></div>
-            {/if}
-          </button>
+            <p class="pageNumber">{2 * i}</p>
+            <button
+              class="pageButton"
+              aria-label="pageButton"
+              onclick={() => handleFlipPage(i)}
+            >
+              {#if page.rotate === 180}
+                <div class="pageFold"></div>
+              {/if}
+            </button>
+          </div>
         </div>
-      </div>
+      {/if}
     {/each}
+
+    <div class="backCover" style="z-index: 1;">
+      <div class="w-full h-full frontPaper">
+        <button
+          class="pageButton"
+          aria-label="pageButton"
+          onclick={handleGetNextBookmark}
+          disabled={keyPressed || isRandomed}
+          class:disabled={keyPressed || isRandomed}
+        >
+        </button>
+      </div>
+    </div>
+
+    <button
+      class="ribbon {visualProgress.current > 150
+        ? 'ribbonLong'
+        : 'ribbonShort'}"
+      style="height: {visualProgress.current}px; z-index: {visualProgress.current >
+      18
+        ? 1001
+        : 1};"
+      onclick={handleCheckBookmark}
+    >
+      {#if visualProgress.current > 240}
+        <span class="ribbonContent">
+          {$bookmark!.like ? $bookmark!.like : ""}
+        </span>
+      {/if}
+      {#if visualProgress.current > 18}
+        <span
+          class="ribbonTail {visualProgress.current > 150
+            ? 'ribbonTailLong'
+            : 'ribbonTailShort'}"
+        ></span>
+      {/if}
+    </button>
   </div>
 </section>
 
@@ -1094,74 +1084,20 @@
     position: relative;
   }
 
-  .back-book {
+  .backCover {
     position: absolute;
     height: 100%;
     width: 50%;
     top: 0;
     right: 0;
+    background: #0a0905;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding: 9px 9px 9px 0;
+    box-shadow: 9px 3px 9px #0009;
   }
 
-  .flip {
-    transform-style: preserve-3d;
-    position: absolute;
-    transition: transform 0.5s ease-in-out;
-    transform-origin: left center;
-  }
-
-  .flip-cover {
-    height: 100%;
-    width: calc(50% + 1px);
-    top: 0;
-    right: -1px;
-  }
-
-  .flip-page {
-    height: calc(100% - 18px);
-    width: calc(50% - 11px);
-    right: 11px;
-    top: 9px;
-    box-shadow: 2px 2px rgba(0, 0, 0, 0.3);
-  }
-
-  .page {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    user-select: text;
-    backface-visibility: hidden;
-  }
-
-  .page-front {
-    top: 0;
-    left: 0;
-    z-index: 1;
-  }
-
-  .page-back {
-    top: 0;
-    left: 0;
-    z-index: 0;
-    transform: rotateY(180deg);
-  }
-
-  .bg-front {
-    background-color: #f5f5f5;
-    background-image: linear-gradient(
-        -90deg,
-        #d4d4d4 0%,
-        rgba(247, 247, 247, 0) 12%
-      ),
-      linear-gradient(0deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%),
-      linear-gradient(
-        90deg,
-        rgba(212, 212, 212, 0.8) 0%,
-        rgba(247, 247, 247, 0.3) 12%
-      ),
-      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
-  }
-
-  .bg-back {
+  .backPaper {
     background-color: #f5f5f5;
     background-image: linear-gradient(
         90deg,
@@ -1175,6 +1111,79 @@
         rgba(247, 247, 247, 0.3) 18%
       ),
       linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+  }
+
+  .frontPaper {
+    background-color: #f5f5f5;
+    background-image: linear-gradient(
+        90deg,
+        #d4d4d4 0%,
+        rgba(247, 247, 247, 0) 12%
+      ),
+      linear-gradient(0deg, rgb(212, 212, 212) 0%, rgba(247, 247, 247, 0) 12%),
+      linear-gradient(
+        -90deg,
+        rgba(212, 212, 212, 0.6) 0%,
+        rgba(247, 247, 247, 0.3) 18%
+      ),
+      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+  }
+
+  .flip {
+    transform-style: preserve-3d;
+    position: absolute;
+    transition: transform 450ms ease-in-out;
+    transform-origin: left center;
+  }
+
+  .normalPage {
+    position: absolute;
+    height: calc(100% - 18px);
+    width: calc(50% - 9px);
+    right: 9px;
+    top: 9px;
+  }
+
+  .coverPage {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    right: 0;
+    top: 0;
+  }
+
+  .pageFront {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    user-select: text;
+    backface-visibility: hidden;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .pageBack {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    user-select: text;
+    backface-visibility: hidden;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    transform: rotateY(180deg);
+  }
+
+  .coverPage .pageBack {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    box-shadow: -9px 3px 9px #0009;
+  }
+
+  .coverPage .pageFront {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
   }
 
   .content {
@@ -1213,69 +1222,61 @@
     background-position: center;
     padding: 0 3px 3px 3px;
     border: 1px solid #111111;
-    text-shadow: 0 0 6px rgb(0, 0, 0);
-    box-shadow:
-      rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-      rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 1);
+    box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
   }
 
-  .cover {
+  .pageNumber {
+    position: absolute;
+    bottom: 21px;
+    left: 0;
     width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    text-align: center;
+    font-family: "Copernicus", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
   }
 
-  .back-book > .cover,
-  .flip-cover > .page-front > .cover {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-  }
-
-  .flip-cover > .page-back > .cover {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-    box-shadow: -12px 4px 12px #0009;
-  }
-
-  .page-back .cover {
-    padding: 9px 0 9px 9px;
-  }
-
-  .back-book > .cover {
-    box-shadow: 8px 4px 12px #0009;
-  }
-
-  .flipped {
-    transform: rotateY(-180deg);
-  }
-
-  .page-button {
+  .pageButton {
     position: absolute;
     top: 0;
-    right: 0;
-    height: 100%;
+    bottom: 0;
     width: 60px;
   }
 
-  .page-front .page-button {
+  .pageButton.disabled {
+    cursor: not-allowed;
+  }
+
+  .pageFront .pageButton,
+  .backCover .pageButton {
     right: 0;
   }
 
-  .page-back .page-button {
+  .pageBack .pageButton {
     left: 0;
   }
 
-  .page-fold {
+  .coverPage .pageBack .pageButton {
+    top: 9px;
+    bottom: 9px;
+    left: 9px;
+  }
+
+  .backCover .pageButton {
+    top: 9px;
+    bottom: 9px;
+    right: 9px;
+  }
+
+  .pageFold {
     position: absolute;
     width: 0px;
     height: 0px;
     transition: all 0.3s ease-out;
   }
 
-  .page-front .page-fold {
+  .pageFront .pageFold {
     top: 0;
     right: 0;
     border-left-width: 1px;
@@ -1287,7 +1288,7 @@
     box-shadow: -3px 3px 9px rgba(0, 0, 0, 0.45);
   }
 
-  .page-front .page-button:hover .page-fold {
+  .pageFront .pageButton:hover .pageFold {
     width: 60px;
     height: 60px;
     background-image: linear-gradient(
@@ -1299,7 +1300,7 @@
     );
   }
 
-  .page-back .page-fold {
+  .pageBack .pageFold {
     top: 0;
     left: 0;
     border-right-width: 1px;
@@ -1311,7 +1312,7 @@
     box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.45);
   }
 
-  .page-back .page-button:hover .page-fold {
+  .pageBack .pageButton:hover .pageFold {
     width: 60px;
     height: 60px;
     background-image: linear-gradient(
@@ -1325,15 +1326,23 @@
 
   .ribbon {
     position: relative;
-    top: -18px;
-    left: 6px;
+    top: -9px;
+    left: calc(50% + 6px);
     user-select: none;
     border-top-left-radius: 3px;
     width: 36px;
     height: 18px;
     font-size: 1em;
     container-type: inline-size;
-    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.6);
+    z-index: 3;
+  }
+
+  .ribbonContent {
+    font-family: "Copernicus", sans-serif;
+    font-size: 60cqi;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    user-select: none;
   }
 
   .ribbon::before {
@@ -1348,12 +1357,19 @@
     border-right: 6px solid transparent;
   }
 
-  .ribbonContent {
-    font-family: "Copernicus", sans-serif;
-    font-size: 60cqi;
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    user-select: none;
+  .ribbonShort {
+    background: #a90909;
+  }
+
+  .ribbonLong {
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(
+      180deg,
+      rgb(169, 9, 9) 0%,
+      rgba(229, 33, 28, 1) 20%,
+      rgba(164, 5, 2, 1) 40%,
+      rgb(229, 10, 0) 100%
+    );
   }
 
   .ribbonTail {
@@ -1374,31 +1390,6 @@
 
   .ribbonTailShort {
     border-top: 20px solid #a90909;
-  }
-
-  .bg-short {
-    background: #a90909;
-  }
-
-  .bg-long {
-    background: linear-gradient(
-      180deg,
-      rgb(169, 9, 9) 0%,
-      rgba(229, 33, 28, 1) 20%,
-      rgba(164, 5, 2, 1) 40%,
-      rgb(229, 10, 0) 100%
-    );
-  }
-
-  .page-number {
-    position: absolute;
-    bottom: 21px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-family: "Copernicus", sans-serif;
-    font-weight: 500;
-    font-size: 14px;
   }
 
   .btn-menu {

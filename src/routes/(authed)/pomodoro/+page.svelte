@@ -65,7 +65,8 @@
     if (now >= end) {
       toast.success(`Finish #${$currentInterval}!`, {
         description: "Time for a break!",
-        duration: 9000,
+        duration: 6000,
+        position: "top-right",
         class: "my-toast-success",
         classes: {
           title: "text-[#00c441] text-15 font-500",
@@ -115,7 +116,8 @@
       pauseAudio = false;
       toast.error(`Pomodoro #${$currentInterval}!`, {
         description: "Time to focus!",
-        duration: 9000,
+        duration: 6000,
+        position: "top-right",
         class: "my-toast-error",
         classes: {
           title: "text-[#f70000] text-14",
@@ -466,6 +468,7 @@
         {#if isPaused}
           <button
             class="timerButton"
+            style="text-shadow: 0 3px 6px black;"
             class:timerButtonPause={isPaused}
             onclick={handleResume}
           >
@@ -474,6 +477,7 @@
         {:else}
           <button
             class="timerButton"
+            style="text-shadow: 0 3px 6px black;"
             class:timerButtonPause={isPaused}
             onclick={pausePomodoro}
           >
@@ -537,16 +541,11 @@
   }
 
   .timerButton {
-    @apply font-rubik text-[#ed5152] bg-[#fff6f6] font-600 text-21 leading-22 text-center w-1/3 pt-8 pb-4 uppercase  rounded-3 shadow-md shadow-black/60 transition;
-  }
-
-  .timerButton:active {
-    @apply !shadow-none;
+    @apply px-12 pb-6 font-rubik text-[#ed5152] font-600 text-40 leading-24 text-center uppercase;
   }
 
   .timerButtonPause {
     color: #99c5aa;
-    background: #f0fff8;
   }
 
   tr {
