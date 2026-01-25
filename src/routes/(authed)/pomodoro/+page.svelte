@@ -409,7 +409,6 @@
           );"
         />
 
-        <div class="static"></div>
         <div class="dynamic" style="transform: rotate({angle}deg);"></div>
       {/if}
 
@@ -492,15 +491,6 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style>
-  .static {
-    position: absolute;
-    width: 1px;
-    height: 50%;
-    left: calc(50% - 0.5px);
-    background-color: rgba(0, 0, 0, 0.45);
-    z-index: 30;
-  }
-
   .dynamic {
     position: absolute;
     width: 1px;
