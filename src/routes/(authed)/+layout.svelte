@@ -31,7 +31,7 @@
 
 <Toaster
   position="top-center"
-  duration={4500}
+  duration={3000}
   visibleToasts={6}
   toastOptions={{
     unstyled: true,

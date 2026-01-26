@@ -165,13 +165,13 @@
         class="calendar-button light"
         onclick={() => (showReset = !showReset)}
       >
-        <Icon icon="ri:reset-right-line" width="14" height="14" />
+        <Icon icon="dinkie-icons:wrench-filled" width="14" height="14" />
       </button>
       <button
         class="calendar-button light"
         onclick={() => (showCreate = !showCreate)}
       >
-        <Icon icon="solar:calendar-linear" width="14" height="14" />
+        <Icon icon="dinkie-icons:calendar-alt" width="14" height="14" />
       </button>
     </div>
 
@@ -414,7 +414,7 @@
   {/if}
 </Container>
 
-<style>
+<style lang="postcss">
   .calendar-button {
     @apply size-24 flex justify-center items-center rounded-2 hover:bg-white/40 shadow-sm shadow-black/30;
   }

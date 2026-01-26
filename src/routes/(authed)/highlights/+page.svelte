@@ -255,6 +255,7 @@
     pText: string,
     pFont: string,
     pSize: number,
+    pWeight: number,
     pLine: number,
     pWidth: number,
   ) {
@@ -266,7 +267,7 @@
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine;
-    lDiv.style.fontWeight = "400";
+    lDiv.style.fontWeight = String(pWeight);
     lDiv.style.width = String(pWidth) + "px";
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
@@ -283,6 +284,7 @@
    * @param pText - string
    * @param pFont - font-family
    * @param pSize - font-size
+   * @param pWeight - font-weight
    * @param pLine - line height
    * @param pWidth - page width
    * @returns The height of the pText
@@ -291,6 +293,7 @@
     pText: string,
     pFont: string,
     pSize: number,
+    pWeight: number,
     pLine: number,
     pWidth: number,
   ) {
@@ -314,7 +317,7 @@
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine;
     lDiv.style.width = String(pWidth) + "px";
-    lDiv.style.fontWeight = "400";
+    lDiv.style.fontWeight = String(pWeight);
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
@@ -325,7 +328,7 @@
     cText.style.textTransform = "uppercase";
     cText.style.float = "left";
     cText.style.margin = "6px 6px 0 0";
-    cText.style.padding = "0 3px 3px 3px";
+    cText.style.padding = "0 3px 6px 3px";
     cText.style.border = "1px solid black";
 
     const height = lDiv.clientHeight;
@@ -335,8 +338,8 @@
 
   function splitIntoBlocks(text: string) {
     const words = text.trim().split(" ");
-    let maxHeight = pageHeight(windowHeight) - 18 - 110;
-    let maxWidth = pageWidth(windowHeight) / 2 - 9 - 110;
+    let maxHeight = pageHeight(windowHeight) - 18 - 112;
+    let maxWidth = pageWidth(windowHeight) / 2 - 9 - 112;
 
     const flattenedArray = words.reduce(
       (acc: string[], cur: string, index: number) => {
@@ -347,9 +350,10 @@
           if (
             getHeightFirstPage(
               testString,
-              "Proxima Nova",
-              16,
-              1.4375,
+              "Bookerly",
+              15,
+              400,
+              1.55,
               maxWidth,
             ) < maxHeight
           ) {
@@ -360,9 +364,10 @@
           if (
             getHeightNormalPage(
               testString,
-              "Proxima Nova",
-              16,
-              1.4375,
+              "Bookerly",
+              15,
+              400,
+              1.55,
               maxWidth,
             ) < maxHeight
           ) {
@@ -424,6 +429,8 @@
       const data = await response.json();
       translatedContent = data[0][0];
     }
+
+    visualProgress.target = 18;
 
     flipPages[0].rotate = 0;
     flipPages[0].zIndex = 1002;
@@ -835,48 +842,21 @@
 
           <div class="pageBack p-9 pr-0 bg-[#0a0905]" style="">
             <div
-              class="content backPaper flex justify-center items-center flex-col"
+              class="content backPaper flex justify-center items-center flex-col p-24"
             >
               {#if $bookInfo}
                 {#if $bookInfo!.coverImage}
                   <img
                     src={$bookInfo!.coverImage}
                     alt="book-cover"
-                    class="mb-9 shadow-sm shadow-black/30 h-2/5 object-contain"
+                    class="h-2/5 object-contain"
+                    style="filter: drop-shadow(0 2px 8px rgba(0,0,0,.2));"
                   />
-
-                  <div class="flex justify-end items-center mb-6">
-                    <Icon
-                      icon="solar:heart-bold"
-                      width="15"
-                      height="15"
-                      class="text-[#707070] ml-6"
-                    />
-                    <span
-                      class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
-                    >
-                      {$bookmark!.like}
-                    </span>
-
-                    {#if $bookInfo && $bookInfo!.numberOfRatings}
-                      <Icon
-                        icon="solar:eye-bold"
-                        width="15"
-                        height="15"
-                        class="text-[#707070] ml-6"
-                      />
-                      <span
-                        class="text-10 leading-15 font-500 mx-3 text-[#707070] select-none"
-                      >
-                        {Number($bookInfo!.numberOfRatings).toLocaleString()}
-                      </span>
-                    {/if}
-                  </div>
                 {/if}
 
                 {#if $bookInfo!.title}
                   <p
-                    class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
+                    class="mt-9 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                   >
                     {$bookInfo!.title}
                   </p>
@@ -884,15 +864,55 @@
 
                 {#if $bookInfo!.authors}
                   <p
-                    class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
+                    class="mb-15 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
                   >
                     {$bookInfo!.authors.join(", ")}
                   </p>
                 {/if}
 
+                {#if $bookInfo!.numberOfRatings}
+                  <div class="mb-9 flex items-center justify-center">
+                    <StarRating
+                      rating={Number($bookInfo!.averageRating)}
+                      size={20}
+                      gap={6}
+                    />
+                    <span
+                      class="ml-9 pt-9 text-18 font-copernicus leading-16 text-[#1e1915] font-600"
+                    >
+                      {$bookInfo!.averageRating}
+                    </span>
+                  </div>
+                {/if}
+
+                <div class="mb-15 flex justify-center items-center gap-3">
+                  {#if $bookInfo && $bookInfo!.numberOfRatings}
+                    <span
+                      class="text-13 font-proxima leading-16 text-[#707070] font-400"
+                    >
+                      {Number($bookInfo!.numberOfRatings).toLocaleString()} ratings
+                    </span>
+                  {/if}
+                  <span
+                    class="text-13 font-proxima leading-16 text-[#707070] font-400"
+                  >
+                    ·&#32;{$bookmark!.like}{$bookmark!.like > 1
+                      ? " likes"
+                      : " like"}
+                  </span>
+                </div>
+
+                {#if $bookInfo!.publishedYear}
+                  <p
+                    class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
+                  >
+                    First published {$bookInfo!.publishedYear}
+                  </p>
+                {/if}
+
                 {#if $bookmark}
                   <p
-                    class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
+                    class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
                   >
                     Bookmarked at {format(
                       new Date($bookmark!.dateOfCreation),
@@ -900,32 +920,9 @@
                     )}
                   </p>
                 {/if}
-
-                {#if $bookInfo!.publishedYear}
-                  <p
-                    class="mb-3 text-12 leading-18 font-proxima font-400 text-[#4f4f4d] text-center"
-                  >
-                    First published {$bookInfo!.publishedYear}
-                  </p>
-                {/if}
-
-                {#if $bookInfo!.numberOfRatings}
-                  <div class="mb-3 flex items-center justify-center pl-33">
-                    <StarRating
-                      rating={Number($bookInfo!.averageRating)}
-                      size={15}
-                      gap={3}
-                    />
-                    <span
-                      class="ml-3 w-30 text-center text-12 pt-3 leading-15 font-proxima font-400 text-[#4f4f4d]"
-                    >
-                      ({$bookInfo!.averageRating})
-                    </span>
-                  </div>
-                {/if}
               {:else}
                 <p
-                  class="mb-3 w-3/4 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
+                  class="mb-3 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
                 >
                   {$bookmark!.bookTile}
                 </p>
@@ -946,17 +943,29 @@
                 {/if}
               {/if}
 
-              <div class="flex justify-center items-baseline w-full pt-18">
+              <div class="mt-12 flex justify-center items-baseline w-full">
                 <button class="btn-menu" onclick={() => translateContent()}>
-                  <Icon icon="ic:twotone-g-translate" width="15" height="15" />
+                  <Icon
+                    icon="dinkie-icons:translate-hira-latin"
+                    width="15"
+                    height="15"
+                  />
                 </button>
 
                 <button class="btn-menu" onclick={copyBookMarkToClipboard}>
-                  <Icon icon="solar:copy-outline" width="15" height="15" />
+                  <Icon
+                    icon="dinkie-icons:copies-filled"
+                    width="15"
+                    height="15"
+                  />
                 </button>
 
                 <button class="btn-menu" onclick={() => getRandomBookmark()}>
-                  <Icon icon="solar:refresh-outline" width="15" height="15" />
+                  <Icon
+                    icon="dinkie-icons:shuffle-arrows-filled"
+                    width="15"
+                    height="15"
+                  />
                 </button>
 
                 <button
@@ -967,25 +976,25 @@
                   }}
                 >
                   <Icon
-                    icon="fluent:slide-text-edit-28-regular"
+                    icon="dinkie-icons:wrench-filled"
                     width="15"
                     height="15"
                   />
                 </button>
 
                 <button class="btn-menu" onclick={showInsertBookmark}>
-                  <Icon icon="solar:library-linear" width="15" height="15" />
+                  <Icon
+                    icon="dinkie-icons:ejectsymbol-filled"
+                    width="15"
+                    height="15"
+                  />
                 </button>
 
                 <button
                   class="btn-menu"
                   onclick={() => (showDelete = !showDelete)}
                 >
-                  <Icon
-                    icon="solar:trash-bin-trash-outline"
-                    width="15"
-                    height="15"
-                  />
+                  <Icon icon="pixel:trash-alt-solid" width="15" height="15" />
                 </button>
               </div>
             </div>
@@ -1007,7 +1016,7 @@
             <div class="content frontPaper">
               {@html page.front}
             </div>
-            <p class="pageNumber">{2 * i - 1}</p>
+            <p class="pageNumber">{2 * i - 1}.</p>
             <button
               class="pageButton"
               aria-label="pageButton"
@@ -1022,7 +1031,7 @@
             <div class="content backPaper">
               {@html page.back}
             </div>
-            <p class="pageNumber">{2 * i}</p>
+            <p class="pageNumber">{2 * i}.</p>
             <button
               class="pageButton"
               aria-label="pageButton"
@@ -1078,7 +1087,7 @@
 
 <svelte:window on:keydown={onKeyDown} bind:innerHeight={windowHeight} />
 
-<style>
+<style lang="postcss">
   .book {
     perspective: 4500px;
     position: relative;
@@ -1094,39 +1103,27 @@
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     padding: 9px 9px 9px 0;
-    box-shadow: 9px 3px 9px #0009;
-  }
-
-  .backPaper {
-    background-color: #f5f5f5;
-    background-image: linear-gradient(
-        90deg,
-        #d4d4d4 0%,
-        rgba(247, 247, 247, 0) 12%
-      ),
-      linear-gradient(0deg, rgb(212, 212, 212) 0%, rgba(247, 247, 247, 0) 12%),
-      linear-gradient(
-        -90deg,
-        rgba(212, 212, 212, 0.6) 0%,
-        rgba(247, 247, 247, 0.3) 18%
-      ),
-      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+    box-shadow: 6px 3px 9px #0009;
   }
 
   .frontPaper {
-    background-color: #f5f5f5;
-    background-image: linear-gradient(
-        90deg,
-        #d4d4d4 0%,
-        rgba(247, 247, 247, 0) 12%
-      ),
-      linear-gradient(0deg, rgb(212, 212, 212) 0%, rgba(247, 247, 247, 0) 12%),
-      linear-gradient(
-        -90deg,
-        rgba(212, 212, 212, 0.6) 0%,
-        rgba(247, 247, 247, 0.3) 18%
-      ),
-      linear-gradient(180deg, #d4d4d4 0%, rgba(247, 247, 247, 0) 12%);
+    background: linear-gradient(
+      to right,
+      #d9d9d9 0%,
+      #f9f9f9 9%,
+      #ffffff 12%,
+      #ffffff 100%
+    );
+  }
+
+  .backPaper {
+    background: linear-gradient(
+      to right,
+      #ffffff 0%,
+      #ffffff 88%,
+      #f9f9f9 91%,
+      #d9d9d9 100%
+    );
   }
 
   .flip {
@@ -1178,7 +1175,7 @@
   .coverPage .pageBack {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
-    box-shadow: -9px 3px 9px #0009;
+    box-shadow: -6px 3px 9px #0009;
   }
 
   .coverPage .pageFront {
@@ -1189,12 +1186,12 @@
   .content {
     width: 100%;
     height: 100%;
-    font-family: "Proxima Nova", sans-serif;
+    font-family: "Bookerly", sans-serif;
     font-weight: 400;
-    font-size: 16px;
-    line-height: 1.4375;
+    font-size: 15px;
+    line-height: 1.55;
     letter-spacing: 0px;
-    padding: 55px 50px 55px 60px;
+    padding: 3rem 3rem 4rem 4rem;
     overflow: hidden;
     text-align: left;
     text-size-adjust: 100%;
@@ -1203,14 +1200,14 @@
 
   .content :global {
     p {
-      text-indent: 15px;
+      text-indent: 1.5em;
     }
   }
 
   .firstPage::first-letter {
     font-family: "Open Sans";
     font-size: 125px;
-    color: #dcd8d1;
+    color: #f0f0f0;
     font-style: normal;
     line-height: 100px;
     text-transform: uppercase;
@@ -1220,9 +1217,9 @@
     background: url("/images/TheEndoftheDay.webp") 0 0 no-repeat;
     background-size: cover;
     background-position: center;
-    padding: 0 3px 3px 3px;
+    padding: 0 3px 6px 3px;
     border: 1px solid #111111;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 1);
+    text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
     box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
   }
 
@@ -1233,8 +1230,9 @@
     width: 100%;
     text-align: center;
     font-family: "Copernicus", sans-serif;
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #1e1915;
   }
 
   .pageButton {
@@ -1273,7 +1271,7 @@
     position: absolute;
     width: 0px;
     height: 0px;
-    transition: all 0.3s ease-out;
+    transition: all 150ms;
   }
 
   .pageFront .pageFold {
@@ -1285,19 +1283,7 @@
     border-bottom-width: 1px;
     border-bottom-color: #dddddd;
     border-bottom-style: solid;
-    box-shadow: -3px 3px 9px rgba(0, 0, 0, 0.45);
-  }
-
-  .pageFront .pageButton:hover .pageFold {
-    width: 60px;
-    height: 60px;
-    background-image: linear-gradient(
-      45deg,
-      #f7f7f7 0%,
-      rgba(247, 247, 247, 0.3) 49%,
-      transparent 50%,
-      transparent 100%
-    );
+    box-shadow: -4px 4px 10px #a4a4a4;
   }
 
   .pageBack .pageFold {
@@ -1309,7 +1295,19 @@
     border-bottom-width: 1px;
     border-bottom-color: #dddddd;
     border-bottom-style: solid;
-    box-shadow: 3px 3px 9px rgba(0, 0, 0, 0.45);
+    box-shadow: 4px 4px 10px #a4a4a4;
+  }
+
+  .pageFront .pageButton:hover .pageFold {
+    width: 60px;
+    height: 60px;
+    background-image: linear-gradient(
+      45deg,
+      rgb(254, 254, 254) 0%,
+      rgb(242, 242, 242) 49%,
+      rgb(255, 255, 255) 50%,
+      rgb(255, 255, 255) 100%
+    );
   }
 
   .pageBack .pageButton:hover .pageFold {
@@ -1317,10 +1315,10 @@
     height: 60px;
     background-image: linear-gradient(
       135deg,
-      transparent 0%,
-      transparent 49%,
-      #e9e8e8 50%,
-      #dadada 100%
+      rgb(255, 255, 255) 0%,
+      rgb(255, 255, 255) 50%,
+      rgb(242, 242, 242) 51%,
+      rgb(254, 254, 254) 100%
     );
   }
 

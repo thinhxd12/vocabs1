@@ -168,7 +168,7 @@
         class:active={page.url.pathname === "/pomodoro"}
         class="btn-menu"
       >
-        <Icon icon="emojione-monotone:tomato" width="13" height="13" />
+        <Icon icon="game-icons:tomato" width="13" height="13" />
       </a>
 
       <button
@@ -180,9 +180,13 @@
         }}
       >
         {#if wakeEnable}
-          <Icon icon="flowbite:moon-solid" width="13" height="13" />
+          <Icon
+            icon="dinkie-icons:crescent-moon-filled"
+            width="13"
+            height="13"
+          />
         {:else}
-          <Icon icon="flowbite:moon-outline" width="13" height="13" />
+          <Icon icon="dinkie-icons:crescent-moon" width="13" height="13" />
         {/if}
       </button>
 
@@ -195,7 +199,7 @@
         class:active={page.url.pathname === "/vocab"}
         class="btn-nav"
       >
-        <Icon icon="dinkie-icons:page-facing-up" width="13" height="13" />
+        <Icon icon="dinkie-icons:page-curl-filled" width="13" height="13" />
       </a>
 
       <a
@@ -211,7 +215,11 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <Icon icon="dinkie-icons:electric-light-bulb" width="13" height="13" />
+        <Icon
+          icon="dinkie-icons:electric-light-bulb-filled"
+          width="13"
+          height="13"
+        />
       </a>
 
       <a
@@ -228,7 +236,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/highlights"}
       >
-        <Icon icon="dinkie-icons:closed-book" width="13" height="13" />
+        <Icon icon="dinkie-icons:closed-book-filled" width="13" height="13" />
       </a>
 
       <a
@@ -236,7 +244,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/art"}
       >
-        <Icon icon="gravity-ui:frame" width="13" height="13" />
+        <Icon icon="gravity-ui:frames" width="13" height="13" />
       </a>
 
       <a
@@ -244,12 +252,20 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <Icon icon="pixelarticons:mood-sad" width="16" height="16" />
+        <Icon
+          icon="dinkie-icons:slightly-frowning-face"
+          width="13"
+          height="13"
+        />
       </a>
 
       <form method="post" action="/login?/signout">
         <button class="btn-menu">
-          <Icon icon="dinkie-icons:exit" width="13" height="13" />
+          <Icon
+            icon="dinkie-icons:open-lock-small-filled"
+            width="13"
+            height="13"
+          />
         </button>
       </form>
     </div>
@@ -306,7 +322,7 @@
   </button>
 </div>
 
-<style>
+<style lang="postcss">
   .btn-menu {
     @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30;
   }

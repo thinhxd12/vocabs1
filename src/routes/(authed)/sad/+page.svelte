@@ -91,7 +91,7 @@
   {/if}
 </Container>
 
-<style>
+<style lang="postcss">
   li {
     @apply p-6 rounded-2 flex items-center justify-start font-basier font-500 text-15 text-left leading-12 italic mb-3 hover:bg-white/40 shadow shadow-black/40;
   }

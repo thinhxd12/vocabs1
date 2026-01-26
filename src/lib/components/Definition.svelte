@@ -113,7 +113,7 @@
   </div>
 {/each}
 
-<style>
+<style lang="postcss">
   .definition-example {
     background: #fff none repeat scroll 0 0;
     box-decoration-break: clone;

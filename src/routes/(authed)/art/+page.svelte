@@ -111,7 +111,7 @@
   </div>
 </section>
 
-<style>
+<style lang="postcss">
   .btn-menu {
     @apply mx-6 flex size-27 items-center justify-center rounded-full text-white/50 hover:text-white hover:bg-white/10 outline-none backdrop-blur-md;
   }

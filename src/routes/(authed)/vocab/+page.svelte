@@ -261,7 +261,7 @@
                 onclick={() => handleEditFromSearch(item.id)}
               >
                 <Icon
-                  icon="fluent:slide-text-edit-28-regular"
+                  icon="dinkie-icons:wrench-filled"
                   width="16"
                   height="16"
                 />
@@ -283,11 +283,7 @@
                 class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
                 onclick={() => confirmDelete(item.id)}
               >
-                <Icon
-                  icon="solar:trash-bin-trash-outline"
-                  width="16"
-                  height="16"
-                />
+                <Icon icon="pixel:trash-alt-solid" width="16" height="16" />
               </button>
             </li>
           {/each}

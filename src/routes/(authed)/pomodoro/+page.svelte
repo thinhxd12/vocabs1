@@ -18,7 +18,6 @@
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
-  import { toast } from "svelte-sonner";
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
@@ -63,16 +62,6 @@
     $countPomodoros = Math.round((end - now) / 1000);
     angle = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
     if (now >= end) {
-      toast.success(`Finish #${$currentInterval}!`, {
-        description: "Time for a break!",
-        duration: 6000,
-        position: "top-right",
-        class: "my-toast-success",
-        classes: {
-          title: "text-[#00c441] text-15 font-500",
-          description: "text-black/70 text-12 font-400",
-        },
-      });
       $currentInterval++;
       completePomodoro();
       srcAudio = "/sounds/mp3_rest.ogg";
@@ -114,16 +103,6 @@
       startPomodoro();
       srcAudio = "/sounds/mp3_focus.ogg";
       pauseAudio = false;
-      toast.error(`Pomodoro #${$currentInterval}!`, {
-        description: "Time to focus!",
-        duration: 6000,
-        position: "top-right",
-        class: "my-toast-error",
-        classes: {
-          title: "text-[#f70000] text-14",
-          description: "text-black/80 text-12",
-        },
-      });
     }
   }
 
@@ -221,18 +200,30 @@
       class="absolute top-2 right-2 z-10 flex justify-end items-center gap-3"
     >
       <button class="setting-button" onclick={handleShowReport}>
-        <Icon icon="mdi:report-box-outline" width="16" height="16" />
+        <Icon
+          icon="dinkie-icons:otfeature-hrzt-small-filled"
+          width="14"
+          height="14"
+        />
       </button>
 
       <button class="setting-button" onclick={() => (showSetting = true)}>
-        <Icon icon="mage:settings" width="16" height="16" />
+        <Icon icon="dinkie-icons:wrench-filled" width="14" height="14" />
       </button>
 
       <button class="setting-button" onclick={() => (isMuted = !isMuted)}>
         {#if isMuted}
-          <Icon icon="tabler:volume-3" width="16" height="16" />
+          <Icon
+            icon="dinkie-icons:speaker-with-cancellation-stroke"
+            width="14"
+            height="14"
+          />
         {:else}
-          <Icon icon="tabler:volume" width="16" height="16" />
+          <Icon
+            icon="dinkie-icons:speaker-with-one-sound-wave"
+            width="14"
+            height="14"
+          />
         {/if}
       </button>
     </div>
@@ -408,7 +399,7 @@
           transparent {angle}deg 360deg
           );"
         />
-
+        <div class="static"></div>
         <div class="dynamic" style="transform: rotate({angle}deg);"></div>
       {/if}
 
@@ -490,14 +481,23 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
-<style>
+<style lang="postcss">
+  .static {
+    position: absolute;
+    width: 1px;
+    height: 50%;
+    left: calc(50% - 0.5px);
+    background-color: rgba(0, 0, 0, 0.15);
+    z-index: 30;
+  }
+
   .dynamic {
     position: absolute;
     width: 1px;
     height: 600px;
     left: calc(50% - 0.5px);
     bottom: 50%;
-    background-color: rgba(0, 0, 0, 0.45);
+    background-color: rgba(0, 0, 0, 0.15);
     z-index: 30;
     transform-origin: bottom;
   }
@@ -531,7 +531,7 @@
   }
 
   .timerButton {
-    @apply px-12 pb-6 font-rubik text-[#ed5152] font-600 text-40 leading-24 text-center uppercase;
+    @apply px-12 font-rubik text-[#ed5152] font-600 text-40 leading-24 text-center uppercase;
   }
 
   .timerButtonPause {

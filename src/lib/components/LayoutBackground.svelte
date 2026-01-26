@@ -60,7 +60,7 @@
       onclick={() => (showVideoBackground = false)}
       class="btn-menu light"
     >
-      <Icon icon="mage:image" width="13" height="13" />
+      <Icon icon="pixel:image" width="13" height="13" />
     </button>
 
     <select bind:value={videoSrc} class="btn-menu light">
@@ -73,9 +73,17 @@
 
     <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
       {#if isMuted}
-        <Icon icon="tabler:volume-3" width="13" height="13" />
+        <Icon
+          icon="dinkie-icons:speaker-with-cancellation-stroke"
+          width="13"
+          height="13"
+        />
       {:else}
-        <Icon icon="tabler:volume" width="13" height="13" />
+        <Icon
+          icon="dinkie-icons:speaker-with-one-sound-wave"
+          width="13"
+          height="13"
+        />
       {/if}
     </button>
 
@@ -86,7 +94,7 @@
       }}
       class="btn-menu light"
     >
-      <Icon icon="mage:image-fill" width="13" height="13" />
+      <Icon icon="pixel:image-solid" width="13" height="13" />
     </button>
   </div>
 {:else}
@@ -123,7 +131,7 @@
   </div>
 {/if}
 
-<style>
+<style lang="postcss">
   .btn-menu {
     @apply w-17 h-15 flex items-center justify-center text-9 appearance-none text-center cursor-pointer rounded-2 hover:bg-white/40 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30;
   }

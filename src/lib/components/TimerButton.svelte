@@ -73,11 +73,11 @@
   </button>
 {:else}
   <button onclick={startCountdown} class="btn-menu">
-    <Icon icon="solar:alarm-linear" width="13" height="13" />
+    <Icon icon="dinkie-icons:alarm-clock-filled" width="13" height="13" />
   </button>
 {/if}
 
-<style>
+<style lang="postcss">
   .btn-timer {
     @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
   }

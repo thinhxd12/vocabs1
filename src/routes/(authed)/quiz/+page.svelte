@@ -239,7 +239,7 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
-<style>
+<style lang="postcss">
   .quiz-choice {
     @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
   }
