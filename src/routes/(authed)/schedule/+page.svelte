@@ -165,13 +165,21 @@
         class="calendar-button light"
         onclick={() => (showReset = !showReset)}
       >
-        <Icon icon="dinkie-icons:wrench-filled" width="14" height="14" />
+        <Icon
+          icon="material-symbols:edit-square-outline-rounded"
+          width="16"
+          height="16"
+        />
       </button>
       <button
         class="calendar-button light"
         onclick={() => (showCreate = !showCreate)}
       >
-        <Icon icon="dinkie-icons:calendar-alt" width="14" height="14" />
+        <Icon
+          icon="material-symbols:calendar-add-on-rounded"
+          width="16"
+          height="16"
+        />
       </button>
     </div>
 

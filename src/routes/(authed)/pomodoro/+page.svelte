@@ -201,26 +201,30 @@
     >
       <button class="setting-button" onclick={handleShowReport}>
         <Icon
-          icon="dinkie-icons:otfeature-hrzt-small-filled"
+          icon="material-symbols:insert-chart-outline-rounded"
           width="14"
           height="14"
         />
       </button>
 
       <button class="setting-button" onclick={() => (showSetting = true)}>
-        <Icon icon="dinkie-icons:wrench-filled" width="14" height="14" />
+        <Icon
+          icon="material-symbols:edit-square-outline-rounded"
+          width="14"
+          height="14"
+        />
       </button>
 
       <button class="setting-button" onclick={() => (isMuted = !isMuted)}>
         {#if isMuted}
           <Icon
-            icon="dinkie-icons:speaker-with-cancellation-stroke"
+            icon="material-symbols:volume-off-outline-rounded"
             width="14"
             height="14"
           />
         {:else}
           <Icon
-            icon="dinkie-icons:speaker-with-one-sound-wave"
+            icon="material-symbols:volume-up-outline-rounded"
             width="14"
             height="14"
           />

@@ -181,12 +181,16 @@
       >
         {#if wakeEnable}
           <Icon
-            icon="dinkie-icons:crescent-moon-filled"
+            icon="material-symbols:moon-stars-rounded"
             width="13"
             height="13"
           />
         {:else}
-          <Icon icon="dinkie-icons:crescent-moon" width="13" height="13" />
+          <Icon
+            icon="material-symbols:moon-stars-outline-rounded"
+            width="13"
+            height="13"
+          />
         {/if}
       </button>
 
@@ -199,7 +203,11 @@
         class:active={page.url.pathname === "/vocab"}
         class="btn-nav"
       >
-        <Icon icon="dinkie-icons:page-curl-filled" width="13" height="13" />
+        <Icon
+          icon="material-symbols:document-search-outline-rounded"
+          width="13"
+          height="13"
+        />
       </a>
 
       <a
@@ -207,7 +215,11 @@
         class:active={page.url.pathname === "/schedule"}
         class="btn-nav"
       >
-        <Icon icon="dinkie-icons:calendar-alt" width="13" height="13" />
+        <Icon
+          icon="material-symbols:calendar-month-rounded"
+          width="13"
+          height="13"
+        />
       </a>
 
       <a
@@ -216,7 +228,7 @@
         class:active={page.url.pathname === "/quiz"}
       >
         <Icon
-          icon="dinkie-icons:electric-light-bulb-filled"
+          icon="material-symbols:lightbulb-2-outline-rounded"
           width="13"
           height="13"
         />
@@ -228,7 +240,11 @@
         onclick={() => ($showTranslate = !$showTranslate)}
         class:active={$showTranslate}
       >
-        <Icon icon="dinkie-icons:translate-hira-latin" width="13" height="13" />
+        <Icon
+          icon="material-symbols:translate-rounded"
+          width="13"
+          height="13"
+        />
       </a>
 
       <a
@@ -236,7 +252,11 @@
         class="btn-nav"
         class:active={page.url.pathname === "/highlights"}
       >
-        <Icon icon="dinkie-icons:closed-book-filled" width="13" height="13" />
+        <Icon
+          icon="material-symbols:menu-book-outline-rounded"
+          width="13"
+          height="13"
+        />
       </a>
 
       <a
@@ -253,7 +273,7 @@
         class:active={page.url.pathname === "/sad"}
       >
         <Icon
-          icon="dinkie-icons:slightly-frowning-face"
+          icon="material-symbols:sentiment-neutral-outline-rounded"
           width="13"
           height="13"
         />
@@ -262,7 +282,7 @@
       <form method="post" action="/login?/signout">
         <button class="btn-menu">
           <Icon
-            icon="dinkie-icons:open-lock-small-filled"
+            icon="material-symbols:lock-open-right-outline-rounded"
             width="13"
             height="13"
           />

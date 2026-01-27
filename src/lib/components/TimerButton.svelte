@@ -73,7 +73,11 @@
   </button>
 {:else}
   <button onclick={startCountdown} class="btn-menu">
-    <Icon icon="dinkie-icons:alarm-clock-filled" width="13" height="13" />
+    <Icon
+      icon="material-symbols:alarm-outline-rounded"
+      width="13"
+      height="13"
+    />
   </button>
 {/if}
 

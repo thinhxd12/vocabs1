@@ -263,7 +263,6 @@
     document.body.appendChild(lDiv);
 
     lDiv.innerHTML = pText;
-    lDiv.style.textIndent = "15px";
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine;
@@ -272,6 +271,17 @@
     lDiv.style.padding = "0";
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
+
+    const pTag = lDiv.querySelectorAll("p");
+    pTag.forEach((item) => {
+      item.style.textIndent = "15px";
+    });
+
+    const citeTag = lDiv.querySelectorAll("cite");
+    citeTag.forEach((item) => {
+      item.style.display = "block";
+      item.style.textAlign = "right";
+    });
 
     const height = lDiv.clientHeight;
     document.body.removeChild(lDiv);
@@ -312,7 +322,6 @@
     lDiv.appendChild(restText);
     restText.innerHTML = rest;
 
-    restText.style.textIndent = "15px";
     lDiv.style.fontFamily = pFont;
     lDiv.style.fontSize = "" + pSize + "px";
     lDiv.style.lineHeight = "" + pLine;
@@ -322,14 +331,26 @@
     lDiv.style.margin = "0";
     lDiv.style.boxSizing = "border-box";
 
-    cText.style.fontFamily = "Open Sans";
+    const pTag = lDiv.querySelectorAll("p");
+    pTag.forEach((item) => {
+      item.style.textIndent = "15px";
+    });
+
+    const citeTag = lDiv.querySelectorAll("cite");
+    citeTag.forEach((item) => {
+      item.style.display = "block";
+      item.style.textAlign = "right";
+    });
+
+    cText.style.fontFamily = "Baskervville";
     cText.style.fontSize = "125px";
     cText.style.lineHeight = "100px";
+    cText.style.fontWeight = "600";
     cText.style.textTransform = "uppercase";
     cText.style.float = "left";
-    cText.style.margin = "6px 6px 0 0";
-    cText.style.padding = "0 3px 6px 3px";
-    cText.style.border = "1px solid black";
+    cText.style.margin = "6px 5px 0 0";
+    cText.style.padding = "3px 6px 3px 6px";
+    cText.style.border = "1px solid";
 
     const height = lDiv.clientHeight;
     document.body.removeChild(lDiv);
@@ -630,6 +651,18 @@
               >
                 <Icon icon="ph:caret-right-fill" width="16" height="16" />
               </button>
+              <button
+                type="button"
+                onclick={() => navigator.clipboard.writeText("<cite>")}
+              >
+                <Icon icon="mingcute:quote-left-fill" width="16" height="16" />
+              </button>
+              <button
+                type="button"
+                onclick={() => navigator.clipboard.writeText("</cite>")}
+              >
+                <Icon icon="mingcute:quote-right-fill" width="16" height="16" />
+              </button>
             </div>
             <div class="mt-2">
               <textarea
@@ -817,7 +850,7 @@
           class="flip coverPage"
           style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg);"
         >
-          <div class="pageFront bg-[#0a0905]">
+          <div class="pageFront cover">
             {#if $bookInfo}
               <img
                 src={$bookInfo!.coverImage}
@@ -825,7 +858,7 @@
                 class="w-full h-full object-contain"
               />
             {:else}
-              <div class="w-full h-full flex items-center p-45 bg-[#0a0905]">
+              <div class="w-full h-full flex items-center p-45">
                 <p
                   class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
                 >
@@ -840,9 +873,9 @@
             ></button>
           </div>
 
-          <div class="pageBack p-9 pr-0 bg-[#0a0905]" style="">
+          <div class="pageBack p-9 pr-0 bg-[#0a0905]">
             <div
-              class="content backPaper flex justify-center items-center flex-col p-24"
+              class="backPaper w-full h-full flex justify-center items-center flex-col p-24"
             >
               {#if $bookInfo}
                 {#if $bookInfo!.coverImage}
@@ -856,7 +889,7 @@
 
                 {#if $bookInfo!.title}
                   <p
-                    class="mt-9 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
+                    class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                   >
                     {$bookInfo!.title}
                   </p>
@@ -871,7 +904,7 @@
                 {/if}
 
                 {#if $bookInfo!.numberOfRatings}
-                  <div class="mb-9 flex items-center justify-center">
+                  <div class="mb-6 flex items-center justify-center">
                     <StarRating
                       rating={Number($bookInfo!.averageRating)}
                       size={20}
@@ -943,10 +976,10 @@
                 {/if}
               {/if}
 
-              <div class="mt-12 flex justify-center items-baseline w-full">
+              <div class="mt-15 flex justify-center items-baseline w-full">
                 <button class="btn-menu" onclick={() => translateContent()}>
                   <Icon
-                    icon="dinkie-icons:translate-hira-latin"
+                    icon="material-symbols:translate-rounded"
                     width="15"
                     height="15"
                   />
@@ -954,7 +987,7 @@
 
                 <button class="btn-menu" onclick={copyBookMarkToClipboard}>
                   <Icon
-                    icon="dinkie-icons:copies-filled"
+                    icon="material-symbols:content-copy-outline-rounded"
                     width="15"
                     height="15"
                   />
@@ -962,7 +995,7 @@
 
                 <button class="btn-menu" onclick={() => getRandomBookmark()}>
                   <Icon
-                    icon="dinkie-icons:shuffle-arrows-filled"
+                    icon="material-symbols:shuffle-rounded"
                     width="15"
                     height="15"
                   />
@@ -976,7 +1009,7 @@
                   }}
                 >
                   <Icon
-                    icon="dinkie-icons:wrench-filled"
+                    icon="material-symbols:edit-square-outline-rounded"
                     width="15"
                     height="15"
                   />
@@ -984,7 +1017,7 @@
 
                 <button class="btn-menu" onclick={showInsertBookmark}>
                   <Icon
-                    icon="dinkie-icons:ejectsymbol-filled"
+                    icon="material-symbols:database-upload-outline-rounded"
                     width="15"
                     height="15"
                   />
@@ -994,7 +1027,11 @@
                   class="btn-menu"
                   onclick={() => (showDelete = !showDelete)}
                 >
-                  <Icon icon="pixel:trash-alt-solid" width="15" height="15" />
+                  <Icon
+                    icon="material-symbols:delete-forever-outline-rounded"
+                    width="15"
+                    height="15"
+                  />
                 </button>
               </div>
             </div>
@@ -1016,7 +1053,7 @@
             <div class="content frontPaper">
               {@html page.front}
             </div>
-            <p class="pageNumber">{2 * i - 1}.</p>
+            <span class="pageNumber">{2 * i - 1}.</span>
             <button
               class="pageButton"
               aria-label="pageButton"
@@ -1031,7 +1068,7 @@
             <div class="content backPaper">
               {@html page.back}
             </div>
-            <p class="pageNumber">{2 * i}.</p>
+            <span class="pageNumber">{2 * i}.</span>
             <button
               class="pageButton"
               aria-label="pageButton"
@@ -1103,7 +1140,7 @@
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     padding: 9px 9px 9px 0;
-    box-shadow: 6px 3px 9px #0009;
+    box-shadow: 8px 6px 8px rgba(0, 0, 0, 0.6);
   }
 
   .frontPaper {
@@ -1124,6 +1161,23 @@
       #f9f9f9 91%,
       #d9d9d9 100%
     );
+  }
+
+  .cover {
+    border-radius: 0 3px 3px 0;
+    box-shadow: inset 4px 0 10px rgba(255, 255, 255, 0.1);
+    background: #0a0905;
+  }
+
+  .cover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 9px;
+    bottom: 0;
+    width: 2px;
+    background: rgba(81, 81, 81, 0.3);
+    box-shadow: 1px 0 3px rgba(255, 255, 255, 0.1);
   }
 
   .flip {
@@ -1175,7 +1229,7 @@
   .coverPage .pageBack {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
-    box-shadow: -6px 3px 9px #0009;
+    box-shadow: -8px 6px 8px rgba(0, 0, 0, 0.6);
   }
 
   .coverPage .pageFront {
@@ -1202,22 +1256,28 @@
     p {
       text-indent: 1.5em;
     }
+
+    cite {
+      display: block;
+      text-align: right;
+    }
   }
 
   .firstPage::first-letter {
-    font-family: "Open Sans";
+    font-family: "Baskervville";
     font-size: 125px;
+    font-weight: 600;
     color: #f0f0f0;
     font-style: normal;
     line-height: 100px;
     text-transform: uppercase;
     float: left;
-    margin: 6px 6px 0 0;
+    margin: 6px 5px 0 0;
     display: block;
     background: url("/images/TheEndoftheDay.webp") 0 0 no-repeat;
     background-size: cover;
     background-position: center;
-    padding: 0 3px 6px 3px;
+    padding: 3px 6px 3px 6px;
     border: 1px solid #111111;
     text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
     box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
@@ -1225,14 +1285,19 @@
 
   .pageNumber {
     position: absolute;
-    bottom: 21px;
-    left: 0;
-    width: 100%;
-    text-align: center;
+    bottom: 1.5rem;
     font-family: "Copernicus", sans-serif;
+    font-size: 13px;
     font-weight: 600;
-    font-size: 15px;
     color: #1e1915;
+  }
+
+  .pageFront .pageNumber {
+    right: 2.5rem;
+  }
+
+  .pageBack .pageNumber {
+    left: 2.5rem;
   }
 
   .pageButton {

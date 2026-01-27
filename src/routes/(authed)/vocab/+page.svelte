@@ -261,9 +261,9 @@
                 onclick={() => handleEditFromSearch(item.id)}
               >
                 <Icon
-                  icon="dinkie-icons:wrench-filled"
-                  width="16"
-                  height="16"
+                  icon="material-symbols:edit-square-outline-rounded"
+                  width="18"
+                  height="18"
                 />
               </button>
               <button
@@ -283,7 +283,11 @@
                 class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
                 onclick={() => confirmDelete(item.id)}
               >
-                <Icon icon="pixel:trash-alt-solid" width="16" height="16" />
+                <Icon
+                  icon="material-symbols:delete-forever-outline-rounded"
+                  width="18"
+                  height="18"
+                />
               </button>
             </li>
           {/each}
