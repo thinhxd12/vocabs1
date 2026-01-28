@@ -227,11 +227,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <Icon
-          icon="material-symbols:lightbulb-2-outline-rounded"
-          width="13"
-          height="13"
-        />
+        <Icon icon="mdi:lightbulb-question-outline" width="13" height="13" />
       </a>
 
       <a
@@ -252,11 +248,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/highlights"}
       >
-        <Icon
-          icon="material-symbols:menu-book-outline-rounded"
-          width="13"
-          height="13"
-        />
+        <Icon icon="emojione-monotone:orange-book" width="13" height="13" />
       </a>
 
       <a

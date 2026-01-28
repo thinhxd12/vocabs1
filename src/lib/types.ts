@@ -147,16 +147,6 @@ export type BookDetailType = {
   numberOfPages: string | null;
 };
 
-export type BookSearchType = {
-  title: string | null;
-  authors: any[];
-  coverImage: string | null;
-  detailsUrl: string | null;
-  goodreadsId: string | null;
-  publishedYear: string | null;
-  averageRating: string | null;
-  numberOfRatings: string | null;
-};
 
 export type TomorrowWeatherCurrentType = {
   cloudBase: number;

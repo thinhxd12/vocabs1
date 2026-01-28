@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
-import type { BookSearchType, DBSelect } from "../types";
+import type { BookDetailType, DBSelect } from "../types";
 
 export const bookmark = writable<DBSelect["bookmark_table"] | undefined>(
-  undefined
+  undefined,
 );
-export const bookInfo = writable<BookSearchType | undefined>(undefined);
+export const bookInfo = writable<BookDetailType | undefined>(undefined);

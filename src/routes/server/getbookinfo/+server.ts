@@ -1,6 +1,16 @@
-import type { BookDetailType, BookSearchType } from "$lib/types";
+import type { BookDetailType } from "$lib/types";
 import { error } from "@sveltejs/kit";
 import { load, type Cheerio, type CheerioAPI } from "cheerio";
+
+type BookSearchType = {
+  title: string | null;
+  authors: any[];
+  detailsUrl: string | null;
+  goodreadsId: string | null;
+  publishedYear: string | null;
+  averageRating: string | null;
+  numberOfRatings: string | null;
+};
 
 export async function GET({ url }) {
   const query = url.searchParams.get("query");
@@ -9,17 +19,17 @@ export async function GET({ url }) {
   if (!author) error(400, "not found");
 
   try {
-    let info = await searchBook(query, author);
+    const info = await searchBook(query, author);
     if (!info) error(400, "not found");
     return new Response(JSON.stringify(info));
   } catch (e) {
-    searchBook;
     error(404);
   }
 }
 
 // https://www.npmjs.com/package/goodreads-cli
-const BASE_URL = "https://www.goodreads.com/search";
+const BASE_SEARCH_URL = "https://www.goodreads.com/search";
+const BASE_DETAIL_URL = "https://www.goodreads.com/book/show/";
 
 /**
  * Build the search URL with the provided parameters
@@ -31,7 +41,7 @@ const BASE_URL = "https://www.goodreads.com/search";
 function buildSearchUrl(
   query: string,
   searchType: string,
-  searchField: string
+  searchField: string,
 ) {
   const searchParams = new URLSearchParams({
     utf8: "✓",
@@ -43,20 +53,24 @@ function buildSearchUrl(
     searchParams.append("search[field]", searchField);
   }
 
-  return `${BASE_URL}?${searchParams.toString()}`;
+  return `${BASE_SEARCH_URL}?${searchParams.toString()}`;
 }
 
 async function searchBook(
   query: string,
   author: string,
   searchType = "books",
-  searchField = "all"
+  searchField = "all",
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
   const response = await fetch(searchUrl);
   const responseText = await response.text();
-  const bookInfo = parseSearchResults(responseText, author);
-  return bookInfo;
+  const searchResult = parseSearchResults(responseText, author);
+  if (searchResult && searchResult.goodreadsId) {
+    const bookInfo = await lookupBook(searchResult.goodreadsId);
+    return bookInfo;
+  }
+  return null;
 }
 
 /**
@@ -65,7 +79,10 @@ async function searchBook(
  * @param {string} html - HTML content of the page
  * @returns {Array} Parsed search results
  */
-function parseSearchResults(html: string, author: string) {
+function parseSearchResults(
+  html: string,
+  author: string,
+): BookSearchType | null {
   const $ = load(html);
   const results: BookSearchType[] = [];
 
@@ -74,14 +91,16 @@ function parseSearchResults(html: string, author: string) {
     results.push(bookData);
   });
 
-  const res = results.filter((item) => item.authors.includes(author));
-  const sortedResults = res.sort((a, b) => {
-    if (a.numberOfRatings === null) return 1;
-    if (b.numberOfRatings === null) return -1;
-    return Number(b.numberOfRatings) - Number(a.numberOfRatings);
-  });
-
-  return sortedResults[0] || results[0];
+  if (results.length) {
+    const res = results.filter((item) => item.authors.includes(author));
+    const sortedResults = res.sort((a, b) => {
+      if (a.numberOfRatings === null) return 1;
+      if (b.numberOfRatings === null) return -1;
+      return Number(b.numberOfRatings) - Number(a.numberOfRatings);
+    });
+    return sortedResults[0] || results[0];
+  }
+  return null;
 }
 
 /**
@@ -95,7 +114,6 @@ function parseBookData($: CheerioAPI, element: any) {
   parseAuthorsSearch($, $(element), book);
   parsePublishedDateSearch($, $(element), book);
   parseRatingsSearch($, $(element), book);
-  parseCoverImageSearch($, $(element), book);
   return book;
 }
 
@@ -108,7 +126,7 @@ function parseBookData($: CheerioAPI, element: any) {
 function parseAuthorsSearch($: CheerioAPI, $el: Cheerio<any>, book: any) {
   $el.find(".authorName__container").each((i, authorElement) => {
     book.authors.push(
-      $(authorElement).find('span[itemprop="name"]').text().trim()
+      $(authorElement).find('span[itemprop="name"]').text().trim(),
     );
   });
 }
@@ -123,21 +141,6 @@ function parsePublishedDateSearch($: CheerioAPI, $el: Cheerio<any>, book: any) {
   const greyText = $el.find(".greyText.smallText.uitext").text();
   const publishedMatch = greyText.match(/published\s+(\d{4})/);
   book.publishedYear = publishedMatch ? publishedMatch[1] : null;
-}
-
-/**
- * Parse cover image URL
- * @param {CheerioStatic} $ - Cheerio instance
- * @param {Object} bookDetails - Book details object to update
- */
-function parseCoverImageSearch($: CheerioAPI, $el: Cheerio<any>, book: any) {
-  let coverImage = $el.find("img.bookCover").attr("src");
-  if (coverImage) {
-    // coverImage = coverImage.replace("SX50", "SX500");
-    // coverImage = coverImage.replace("SY75", "SY750");
-    coverImage = coverImage.replace(/\._[^.]+_/, "");
-  }
-  book.coverImage = coverImage || null;
 }
 
 /**
@@ -168,7 +171,6 @@ function initializeBookObject($el: Cheerio<any>) {
   return {
     title: $el.find('.bookTitle span[itemprop="name"]').text().trim() || null,
     authors: [],
-    coverImage: null,
     detailsUrl: detailsUrl || null,
     goodreadsId: detailsUrl.match(/\/show\/(\d+)/)?.[1] || null,
     publishedYear: null,
@@ -182,10 +184,22 @@ function initializeBookObject($el: Cheerio<any>) {
  * @param {string} goodreadsId - ID of the book to look up
  * @returns {Promise<Object>} Book details
  */
-async function lookupBook(goodreadsURL: string) {
-  const response = await fetch(goodreadsURL);
+async function lookupBook(goodreadsId: string) {
+  const htmlText = await navigateToBookPage(goodreadsId);
+  return parseBookDetails(htmlText);
+}
+
+/**
+ * Navigate to the book page and wait for initial content
+ * @param {Page} page - Puppeteer page object
+ * @param {string} goodreadsId - ID of the book to look up
+ */
+async function navigateToBookPage(goodreadsId: string) {
+  const url = `${BASE_DETAIL_URL}${goodreadsId}`;
+
+  const response = await fetch(url);
   const responseText = await response.text();
-  return parseBookDetails(responseText);
+  return responseText;
 }
 
 /**
@@ -253,7 +267,7 @@ function parseTitleAndSeries($: CheerioAPI, bookDetails: BookDetailType) {
  * @param {Object} bookDetails - Book details object to update
  */
 function parseAuthors($: CheerioAPI, bookDetails: BookDetailType) {
-  $(".ContributorLinksList .ContributorLink__name").each((i, el) => {
+  $(".ContributorLinksList .ContributorLink").each((i, el) => {
     const authorName = $(el).text().replace(/\s+/g, " ").trim();
     bookDetails.authors.push(authorName);
   });

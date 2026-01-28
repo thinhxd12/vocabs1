@@ -31,6 +31,7 @@
   let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
   let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
   let windowHeight = $state<number>(0);
+  let expandDesc = $state<boolean>(false);
 
   const pageWidth = (wHeight: number) => {
     const width = Math.round(ratio * (wHeight - 150));
@@ -164,9 +165,11 @@
   }
 
   async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
-    if (data.bookTile === $bookmark?.bookTile) return;
-    let titleParam = data.bookTile.split(":")[0];
+    let titleParam = data.bookTile;
     let authorParam = data.authors.split(";")[0];
+
+    // titleParam = "Mastery";
+    // authorParam = "Robert Greene";
 
     const response = await fetch(
       `/server/getbookinfo?query=${titleParam}&author=${authorParam}`,
@@ -213,7 +216,9 @@
     const { data, error } = await page.data.supabase.rpc("get_random_bookmark");
 
     if (data.length) {
-      handleGetBookInfo(data[0]);
+      if (data.bookTile !== $bookmark?.bookTile) {
+        handleGetBookInfo(data[0]);
+      }
       handleCloseBook(data[0]);
     }
   }
@@ -874,109 +879,136 @@
           </div>
 
           <div class="pageBack p-9 pr-0 bg-[#0a0905]">
-            <div
-              class="backPaper w-full h-full flex justify-center items-center flex-col p-24"
-            >
-              {#if $bookInfo}
-                {#if $bookInfo!.coverImage}
-                  <img
-                    src={$bookInfo!.coverImage}
-                    alt="book-cover"
-                    class="h-2/5 object-contain"
-                    style="filter: drop-shadow(0 2px 8px rgba(0,0,0,.2));"
-                  />
-                {/if}
+            <div class="backCoverPaper w-full h-full flex flex-col">
+              <div
+                class="w-full flex-1 px-28 py-18 overflow-y-scroll no-scrollbar flex justify-start items-center flex-col"
+              >
+                {#if $bookInfo}
+                  {#if $bookInfo.coverImage}
+                    <img
+                      src={$bookInfo.coverImage}
+                      alt="book-cover"
+                      class="h-2/5 object-contain"
+                      style="filter: drop-shadow(0 2px 8px rgba(0,0,0,.2));"
+                    />
+                  {/if}
 
-                {#if $bookInfo!.title}
+                  {#if $bookInfo.title}
+                    <p
+                      class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
+                    >
+                      {$bookInfo.title}
+                    </p>
+                  {/if}
+
+                  {#if $bookInfo.authors}
+                    <p
+                      class="mb-3 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
+                    >
+                      {$bookInfo.authors.join(", ")}
+                    </p>
+                  {/if}
+
+                  {#if $bookInfo.numberOfRatings}
+                    <div class="mb-3 flex items-center justify-center">
+                      <StarRating
+                        rating={Number($bookInfo.rating)}
+                        size={20}
+                        gap={6}
+                      />
+                      <span
+                        class="ml-9 pt-9 text-18 font-copernicus leading-16 text-[#1e1915] font-600"
+                      >
+                        {$bookInfo.rating}
+                      </span>
+                    </div>
+                  {/if}
+
+                  <div class="mb-6 flex justify-center items-center gap-3">
+                    {#if $bookInfo.numberOfRatings}
+                      <span
+                        class="text-13 font-proxima leading-16 text-[#707070] font-400"
+                      >
+                        {Number($bookInfo.numberOfRatings).toLocaleString()} ratings
+                      </span>
+                    {/if}
+                    {#if $bookInfo.numberOfReviews}
+                      <span
+                        class="text-13 font-proxima leading-16 text-[#707070] font-400"
+                      >
+                        ·&#32; {Number(
+                          $bookInfo.numberOfReviews,
+                        ).toLocaleString()} reviews
+                      </span>
+                    {/if}
+                  </div>
+
+                  {#if $bookInfo.description}
+                    <div class="my-3">
+                      <p
+                        class:clamped={!expandDesc}
+                        class="text-14 font-proxima leading-18 text-[#1e1915] font-400"
+                      >
+                        {$bookInfo.description}
+                      </p>
+
+                      <button
+                        onclick={() => (expandDesc = !expandDesc)}
+                        class="text-12 font-proxima leading-12 text-[#1e1915] font-600 float-right"
+                      >
+                        {expandDesc ? "Show less" : "Show more"}
+                      </button>
+                    </div>
+                  {/if}
+
+                  {#if $bookInfo.numberOfPages}
+                    <p
+                      class="text-13 font-proxima leading-18 text-[#4f4f4d] font-400"
+                    >
+                      {$bookInfo.numberOfPages} pages, Paperback
+                    </p>
+                  {/if}
+
+                  {#if $bookInfo.firstPublished}
+                    <p
+                      class="text-13 font-proxima leading-18 text-[#4f4f4d] font-400"
+                    >
+                      First published {$bookInfo.firstPublished}
+                    </p>
+                  {/if}
+
+                  {#if $bookmark}
+                    <p
+                      class="text-13 font-proxima leading-18 text-[#4f4f4d] font-400"
+                    >
+                      Bookmarked at {format(
+                        new Date($bookmark!.dateOfCreation),
+                        "p cccc, yyyy-MM-dd",
+                      )}
+                    </p>
+                  {/if}
+                {:else if $bookmark}
                   <p
                     class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                   >
-                    {$bookInfo!.title}
+                    {$bookmark.bookTile}
                   </p>
-                {/if}
-
-                {#if $bookInfo!.authors}
                   <p
                     class="mb-15 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
                   >
-                    {$bookInfo!.authors.join(", ")}
+                    {$bookmark.authors}
                   </p>
-                {/if}
-
-                {#if $bookInfo!.numberOfRatings}
-                  <div class="mb-6 flex items-center justify-center">
-                    <StarRating
-                      rating={Number($bookInfo!.averageRating)}
-                      size={20}
-                      gap={6}
-                    />
-                    <span
-                      class="ml-9 pt-9 text-18 font-copernicus leading-16 text-[#1e1915] font-600"
-                    >
-                      {$bookInfo!.averageRating}
-                    </span>
-                  </div>
-                {/if}
-
-                <div class="mb-15 flex justify-center items-center gap-3">
-                  {#if $bookInfo && $bookInfo!.numberOfRatings}
-                    <span
-                      class="text-13 font-proxima leading-16 text-[#707070] font-400"
-                    >
-                      {Number($bookInfo!.numberOfRatings).toLocaleString()} ratings
-                    </span>
-                  {/if}
-                  <span
-                    class="text-13 font-proxima leading-16 text-[#707070] font-400"
-                  >
-                    ·&#32;{$bookmark!.like}{$bookmark!.like > 1
-                      ? " likes"
-                      : " like"}
-                  </span>
-                </div>
-
-                {#if $bookInfo!.publishedYear}
-                  <p
-                    class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
-                  >
-                    First published {$bookInfo!.publishedYear}
-                  </p>
-                {/if}
-
-                {#if $bookmark}
                   <p
                     class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
                   >
                     Bookmarked at {format(
-                      new Date($bookmark!.dateOfCreation),
+                      new Date($bookmark.dateOfCreation),
                       "p cccc, yyyy-MM-dd",
                     )}
                   </p>
                 {/if}
-              {:else}
-                <p
-                  class="mb-3 text-14 font-copernicus text-[#1e1915] font-600 leading-18 text-center"
-                >
-                  {$bookmark!.bookTile}
-                </p>
-                <p
-                  class="mb-3 text-12 font-copernicus leading-18 text-[#1e1915] text-center font-400"
-                >
-                  {$bookmark!.authors}
-                </p>
-                {#if $bookmark}
-                  <p
-                    class="text-[#4f4f4d] text-12 font-proxima leading-18 font-400 text-left"
-                  >
-                    at {format(
-                      $bookmark!.dateOfCreation,
-                      "p cccc, do MMMM yyyy",
-                    )}
-                  </p>
-                {/if}
-              {/if}
-
-              <div class="mt-15 flex justify-center items-baseline w-full">
+              </div>
+              <div class="w-full py-6 flex justify-center items-baseline">
                 <button class="btn-menu" onclick={() => translateContent()}>
                   <Icon
                     icon="material-symbols:translate-rounded"
@@ -993,7 +1025,7 @@
                   />
                 </button>
 
-                <button class="btn-menu" onclick={() => getRandomBookmark()}>
+                <button class="btn-menu" onclick={getRandomBookmark}>
                   <Icon
                     icon="material-symbols:shuffle-rounded"
                     width="15"
@@ -1084,7 +1116,7 @@
     {/each}
 
     <div class="backCover" style="z-index: 1;">
-      <div class="w-full h-full frontPaper">
+      <div class="w-full h-full frontCoverPaper">
         <button
           class="pageButton"
           aria-label="pageButton"
@@ -1153,6 +1185,16 @@
     );
   }
 
+  .frontCoverPaper {
+    background: linear-gradient(
+      to right,
+      #d2cdc3 0%,
+      #e9e4dc 3%,
+      #efebe5 10%,
+      #efebe5 100%
+    );
+  }
+
   .backPaper {
     background: linear-gradient(
       to right,
@@ -1160,6 +1202,16 @@
       #ffffff 88%,
       #f9f9f9 91%,
       #d9d9d9 100%
+    );
+  }
+
+  .backCoverPaper {
+    background: linear-gradient(
+      to right,
+      #efebe5 0%,
+      #efebe5 90%,
+      #e9e4dc 97%,
+      #d2cdc3 100%
     );
   }
 
@@ -1453,6 +1505,13 @@
 
   .ribbonTailShort {
     border-top: 20px solid #a90909;
+  }
+
+  .clamped {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .btn-menu {

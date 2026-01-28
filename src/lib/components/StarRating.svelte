@@ -10,8 +10,8 @@
 
   let {
     rating,
-    starColor = "gold",
-    inactiveColor = "lightgray",
+    starColor = "#e87400",
+    inactiveColor = "#c2c7cc",
     totalStars = 5,
     size = 24,
     gap = 2,
