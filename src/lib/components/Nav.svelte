@@ -248,7 +248,11 @@
         class="btn-nav"
         class:active={page.url.pathname === "/highlights"}
       >
-        <Icon icon="emojione-monotone:orange-book" width="13" height="13" />
+        <Icon
+          icon="material-symbols:book-ribbon-outline-rounded"
+          width="13"
+          height="13"
+        />
       </a>
 
       <a

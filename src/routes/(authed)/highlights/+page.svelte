@@ -23,7 +23,7 @@
   let isRandomed = $state<boolean>(false);
   let likeBookmark = $state<boolean>(false);
   let keyPressed = $state<boolean>(false);
-  let visualProgress = new Tween(18, {
+  let visualProgress = new Tween(21, {
     duration: 300,
     easing: quadInOut,
   });
@@ -119,7 +119,7 @@
 
   function handleCloseBook(data: DBSelect["bookmark_table"]) {
     keyPressed = true;
-    visualProgress.target = 18;
+    visualProgress.target = 21;
 
     if (currentPage === 0) {
       flipPages[0].rotate = 0;
@@ -184,7 +184,7 @@
     if (!bookmark) return;
     if (likeBookmark) {
       const newLike = $bookmark!.like - 1;
-      visualProgress.target = newLike === 0 ? 18 : 480;
+      visualProgress.target = newLike === 0 ? 21 : 480;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = false;
       const { error } = await page.data.supabase
@@ -364,8 +364,8 @@
 
   function splitIntoBlocks(text: string) {
     const words = text.trim().split(" ");
-    let maxHeight = pageHeight(windowHeight) - 18 - 112;
-    let maxWidth = pageWidth(windowHeight) / 2 - 9 - 112;
+    let maxHeight = pageHeight(windowHeight) - 24 - 96;
+    let maxWidth = pageWidth(windowHeight) / 2 - 12 - 112;
 
     const flattenedArray = words.reduce(
       (acc: string[], cur: string, index: number) => {
@@ -456,7 +456,7 @@
       translatedContent = data[0][0];
     }
 
-    visualProgress.target = 18;
+    visualProgress.target = 21;
 
     flipPages[0].rotate = 0;
     flipPages[0].zIndex = 1002;
@@ -482,7 +482,7 @@
   function handleFlipPage(index: number) {
     keyPressed = true;
     currentPage = index;
-    visualProgress.target = 18;
+    visualProgress.target = 21;
     flipPages[index].zIndex = 999;
 
     if (flipPages[index].rotate) {
@@ -594,7 +594,6 @@
                     description: "text-black/70 text-12 font-400",
                   },
                 });
-                // setBookContent($bookmark!.content);
                 handleCloseBook($bookmark!);
               }
               isSubmitting = false;
@@ -855,7 +854,7 @@
           class="flip coverPage"
           style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg);"
         >
-          <div class="pageFront cover">
+          <div class="w-full h-full pageFront cover">
             {#if $bookInfo}
               <img
                 src={$bookInfo!.coverImage}
@@ -878,7 +877,7 @@
             ></button>
           </div>
 
-          <div class="pageBack p-9 pr-0 bg-[#0a0905]">
+          <div class="w-full h-full pageBack p-12 pr-0 bg-[#0a0905]">
             <div class="backCoverPaper w-full h-full flex flex-col">
               <div
                 class="w-full flex-1 px-28 py-18 overflow-y-scroll no-scrollbar flex justify-start items-center flex-col"
@@ -1079,12 +1078,24 @@
       {:else}
         <div
           class="flip normalPage"
-          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg);"
+          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg); left: 50%; right: {page.rotate
+            ? 12 + 2 * i
+            : 12 + 2 * (flipPages.length - i)}px;"
         >
-          <div class="pageFront" class:firstPage={i === 1}>
-            <div class="content frontPaper">
+          <div class="pageFront frontPaper" class:firstPage={i === 1}>
+            <div
+              class="content"
+              style="width: {pageWidth(windowHeight) / 2 -
+                12 -
+                112}px; height: {pageHeight(windowHeight) -
+                24 -
+                96}px; margin: 3rem 3rem 3rem calc(4rem - {page.rotate
+                ? 2 * i
+                : 2 * (flipPages.length - i)}px);"
+            >
               {@html page.front}
             </div>
+
             <span class="pageNumber">{2 * i - 1}.</span>
             <button
               class="pageButton"
@@ -1096,10 +1107,20 @@
               {/if}
             </button>
           </div>
-          <div class="pageBack">
-            <div class="content backPaper">
+          <div class="pageBack backPaper">
+            <div
+              class="content"
+              style="width: {pageWidth(windowHeight) / 2 -
+                12 -
+                112}px; height: {pageHeight(windowHeight) -
+                24 -
+                96}px; margin: 3rem calc(3rem - {page.rotate
+                ? 2 * i
+                : 2 * (flipPages.length - i)}px) 3rem 4rem;"
+            >
               {@html page.back}
             </div>
+
             <span class="pageNumber">{2 * i}.</span>
             <button
               class="pageButton"
@@ -1133,7 +1154,7 @@
         ? 'ribbonLong'
         : 'ribbonShort'}"
       style="height: {visualProgress.current}px; z-index: {visualProgress.current >
-      18
+      21
         ? 1001
         : 1};"
       onclick={handleCheckBookmark}
@@ -1143,7 +1164,7 @@
           {$bookmark!.like ? $bookmark!.like : ""}
         </span>
       {/if}
-      {#if visualProgress.current > 18}
+      {#if visualProgress.current > 21}
         <span
           class="ribbonTail {visualProgress.current > 150
             ? 'ribbonTailLong'
@@ -1171,7 +1192,7 @@
     background: #0a0905;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-    padding: 9px 9px 9px 0;
+    padding: 12px 12px 12px 0;
     box-shadow: 8px 6px 8px rgba(0, 0, 0, 0.6);
   }
 
@@ -1241,10 +1262,9 @@
 
   .normalPage {
     position: absolute;
-    height: calc(100% - 18px);
-    width: calc(50% - 9px);
-    right: 9px;
-    top: 9px;
+    bottom: 12px;
+    top: 12px;
+    box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.45);
   }
 
   .coverPage {
@@ -1257,8 +1277,6 @@
 
   .pageFront {
     position: absolute;
-    height: 100%;
-    width: 100%;
     user-select: text;
     backface-visibility: hidden;
     top: 0;
@@ -1268,8 +1286,6 @@
 
   .pageBack {
     position: absolute;
-    height: 100%;
-    width: 100%;
     user-select: text;
     backface-visibility: hidden;
     top: 0;
@@ -1290,14 +1306,11 @@
   }
 
   .content {
-    width: 100%;
-    height: 100%;
     font-family: "Bookerly", sans-serif;
     font-weight: 400;
     font-size: 15px;
     line-height: 1.55;
     letter-spacing: 0px;
-    padding: 3rem 3rem 4rem 4rem;
     overflow: hidden;
     text-align: left;
     text-size-adjust: 100%;
@@ -1442,7 +1455,7 @@
   .ribbon {
     position: relative;
     top: -9px;
-    left: calc(50% + 6px);
+    left: calc(50% + 3px);
     user-select: none;
     border-top-left-radius: 3px;
     width: 36px;
