@@ -209,7 +209,7 @@
 
       <button class="setting-button" onclick={() => (showSetting = true)}>
         <Icon
-          icon="material-symbols:edit-square-outline-rounded"
+          icon="material-symbols:settings-outline-rounded"
           width="14"
           height="14"
         />
