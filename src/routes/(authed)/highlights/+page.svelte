@@ -7,7 +7,7 @@
   import { fly, fade } from "svelte/transition";
   import { page } from "$app/state";
   import { Tween } from "svelte/motion";
-  import { quadInOut } from "svelte/easing";
+  import { cubicIn, quadInOut, sineIn, sineOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
@@ -136,7 +136,7 @@
         flipTimeoutId = setTimeout(
           () => {
             flipPages[index].rotate = 0;
-            flipPages[index].zIndex = 1 + flipPages.length - index;
+            flipPages[index].zIndex = 4 + flipPages.length - index;
           },
           (flipPages.length - index - 1) * 150,
         );
@@ -419,7 +419,7 @@
       (acc: PageContent[], cur: string, index: number) => {
         if (index % 2 === 0) {
           acc.push({
-            zIndex: 1 + pages.length / 2 - index / 2,
+            zIndex: 4 + pages.length / 2 - index / 2,
             front: cur,
             back: pages[index + 1],
             rotate: 0,
@@ -488,13 +488,13 @@
     if (flipPages[index].rotate) {
       flipPages[index].rotate = 0;
       flipTimeoutId = setTimeout(() => {
-        flipPages[index].zIndex = 1 + flipPages.length - index;
+        flipPages[index].zIndex = 4 + flipPages.length - index;
         keyPressed = false;
       }, 600);
     } else {
       flipPages[index].rotate = 180;
       flipTimeoutId = setTimeout(() => {
-        flipPages[index].zIndex = 1 + index;
+        flipPages[index].zIndex = 4 + index;
         keyPressed = false;
       }, 600);
     }
@@ -543,6 +543,27 @@
     } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       handleCheckBookmark();
     }
+  }
+
+  function shadowIn(node: HTMLElement) {
+    return {
+      delay: 300,
+      duration: 150,
+      easing: sineIn,
+      css: (t: number) => `
+        box-shadow: 1px ${9 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
+      `,
+    };
+  }
+
+  function shadowOut(node: HTMLElement) {
+    return {
+      duration: 150,
+      easing: sineOut,
+      css: (t: number) => `
+        box-shadow: 1px ${9 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
+      `,
+    };
   }
 
   onDestroy(() => {
@@ -946,14 +967,14 @@
                     <div class="my-3">
                       <p
                         class:clamped={!expandDesc}
-                        class="text-14 font-proxima leading-18 text-[#1e1915] font-400"
+                        class="text-13 font-proxima leading-16 text-[#1e1915] font-400"
                       >
                         {$bookInfo.description}
                       </p>
 
                       <button
                         onclick={() => (expandDesc = !expandDesc)}
-                        class="text-12 font-proxima leading-12 text-[#1e1915] font-600 float-right"
+                        class="text-11 font-proxima leading-12 text-[#1e1915] font-600 float-right"
                       >
                         {expandDesc ? "Show less" : "Show more"}
                       </button>
@@ -962,7 +983,7 @@
 
                   {#if $bookInfo.numberOfPages}
                     <p
-                      class="text-13 font-proxima leading-18 text-[#4f4f4d] font-400"
+                      class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                     >
                       {$bookInfo.numberOfPages} pages, Paperback
                     </p>
@@ -970,7 +991,7 @@
 
                   {#if $bookInfo.firstPublished}
                     <p
-                      class="text-13 font-proxima leading-18 text-[#4f4f4d] font-400"
+                      class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                     >
                       First published {$bookInfo.firstPublished}
                     </p>
@@ -978,7 +999,7 @@
 
                   {#if $bookmark}
                     <p
-                      class="text-13 font-proxima leading-18 text-[#4f4f4d] font-400"
+                      class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                     >
                       Bookmarked at {format(
                         new Date($bookmark!.dateOfCreation),
@@ -1136,7 +1157,18 @@
       {/if}
     {/each}
 
-    <div class="backCover" style="z-index: 1;">
+    {#if flipPages.length && flipPages[0].rotate}
+      <div
+        class="frontShadow"
+        style="z-index: 2;"
+        in:shadowIn
+        out:shadowOut
+      ></div>
+    {/if}
+
+    <div class="backShadow" style="z-index: 1;"></div>
+
+    <div class="backCover" style="z-index: 3;">
       <div class="w-full h-full frontCoverPaper">
         <button
           class="pageButton"
@@ -1193,7 +1225,28 @@
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     padding: 12px 12px 12px 0;
-    box-shadow: 8px 6px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .backShadow {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    top: 0;
+    right: 0;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    box-shadow: -1px 9px 18px rgba(0, 0, 0, 0.8);
+  }
+
+  .frontShadow {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    left: 0;
+    top: 0;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    box-shadow: 1px 9px 18px rgba(0, 0, 0, 0.8);
   }
 
   .frontPaper {
@@ -1255,7 +1308,6 @@
 
   .flip {
     transform-style: preserve-3d;
-    position: absolute;
     transition: transform 450ms ease-in-out;
     transform-origin: left center;
   }
@@ -1297,7 +1349,6 @@
   .coverPage .pageBack {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
-    box-shadow: -8px 6px 8px rgba(0, 0, 0, 0.6);
   }
 
   .coverPage .pageFront {

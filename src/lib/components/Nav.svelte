@@ -168,7 +168,7 @@
         class:active={page.url.pathname === "/pomodoro"}
         class="btn-menu"
       >
-        <Icon icon="game-icons:tomato" width="13" height="13" />
+        <Icon icon="emojione-monotone:tomato" width="13" height="13" />
       </a>
 
       <button
@@ -180,17 +180,9 @@
         }}
       >
         {#if wakeEnable}
-          <Icon
-            icon="material-symbols:moon-stars-rounded"
-            width="13"
-            height="13"
-          />
+          <Icon icon="tabler:moon-filled" width="13" height="13" />
         {:else}
-          <Icon
-            icon="material-symbols:moon-stars-outline-rounded"
-            width="13"
-            height="13"
-          />
+          <Icon icon="tabler:moon" width="13" height="13" />
         {/if}
       </button>
 
@@ -227,7 +219,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <Icon icon="mdi:lightbulb-question-outline" width="13" height="13" />
+        <Icon icon="hugeicons:quiz-02" width="13" height="13" />
       </a>
 
       <a

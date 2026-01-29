@@ -62,6 +62,7 @@
     $countPomodoros = Math.round((end - now) / 1000);
     angle = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
     if (now >= end) {
+      angle = 0;
       $currentInterval++;
       completePomodoro();
       srcAudio = "/sounds/mp3_rest.ogg";
@@ -98,6 +99,7 @@
       angle = (($shortBreak * 60 - $countPomodoros) / $shortBreak) * 6;
     } else angle = (($longBreak * 60 - $countPomodoros) / $longBreak) * 6;
     if (now >= end) {
+      angle = 0;
       $countPomodoros = minutesToSeconds($pomodoro);
       $currentState = "focus";
       startPomodoro();
@@ -196,40 +198,91 @@
 
 <Container zIndex={6}>
   <div class="w-full h-full flex items-center relative">
-    <div
-      class="absolute top-2 right-2 z-10 flex justify-end items-center gap-3"
-    >
-      <button class="setting-button" onclick={handleShowReport}>
-        <Icon
-          icon="material-symbols:insert-chart-outline-rounded"
-          width="14"
-          height="14"
-        />
-      </button>
-
-      <button class="setting-button" onclick={() => (showSetting = true)}>
-        <Icon
-          icon="material-symbols:settings-outline-rounded"
-          width="14"
-          height="14"
-        />
-      </button>
-
-      <button class="setting-button" onclick={() => (isMuted = !isMuted)}>
-        {#if isMuted}
+    <div class="absolute top-0 left-0 right-0 z-10 flex justify-between py-3">
+      <div class="flex gap-3">
+        <button class="setting-button" onclick={handleShowReport}>
           <Icon
-            icon="material-symbols:volume-off-outline-rounded"
-            width="14"
-            height="14"
+            icon="material-symbols:insert-chart-outline-rounded"
+            width="16"
+            height="16"
           />
-        {:else}
+        </button>
+
+        <button class="setting-button" onclick={() => (showSetting = true)}>
           <Icon
-            icon="material-symbols:volume-up-outline-rounded"
-            width="14"
-            height="14"
+            icon="material-symbols:settings-outline-rounded"
+            width="16"
+            height="16"
           />
-        {/if}
-      </button>
+        </button>
+
+        <button class="setting-button" onclick={() => (isMuted = !isMuted)}>
+          {#if isMuted}
+            <Icon
+              icon="material-symbols:volume-off-outline-rounded"
+              width="16"
+              height="16"
+            />
+          {:else}
+            <Icon
+              icon="material-symbols:volume-up-outline-rounded"
+              width="16"
+              height="16"
+            />
+          {/if}
+        </button>
+      </div>
+
+      <div class="flex gap-3">
+        <button
+          class="setting-button"
+          onclick={() => {
+            $countPomodoros = minutesToSeconds($pomodoro);
+            $currentState = "focus";
+            isPaused = true;
+          }}
+        >
+          {#if $currentState === "focus"}
+            <Icon icon="emojione:tomato" width="16" height="16" />
+          {:else}
+            <Icon icon="emojione-monotone:tomato" width="16" height="16" />
+          {/if}
+        </button>
+
+        <button
+          class="setting-button {$currentState === 'break'
+            ? '!text-green-400/60'
+            : ''}"
+          onclick={() => {
+            $countPomodoros = minutesToSeconds($shortBreak);
+            $currentState = "break";
+            isPaused = true;
+          }}
+        >
+          <Icon
+            icon="material-symbols-light:clock-loader-20"
+            width="16"
+            height="16"
+          />
+        </button>
+
+        <button
+          class="setting-button {$currentState === 'longbreak'
+            ? '!text-green-400/60'
+            : ''}"
+          onclick={() => {
+            $countPomodoros = minutesToSeconds($longBreak);
+            $currentState = "longbreak";
+            isPaused = true;
+          }}
+        >
+          <Icon
+            icon="material-symbols-light:clock-loader-40"
+            width="16"
+            height="16"
+          />
+        </button>
+      </div>
     </div>
     {#if showSetting}
       <div
@@ -379,105 +432,43 @@
       </div>
     {/if}
 
-    <div
-      class="shadow-2xl shadow-black relative w-full h-[236px] rounded-2 overflow-hidden"
-    >
-      <img
-        src={$currentState === "focus"
-          ? "/images/Laugee George The End of the Day.avif"
-          : "/images/Van_Gogh_La Sieste.avif"}
-        alt="bg"
-        class="absolute z-10 object-cover w-full h-full grayscale-[1]"
-      />
-
-      {#if !isPaused}
+    <div class="square">
+      <div class="circle">
         <img
           src={$currentState === "focus"
             ? "/images/Laugee George The End of the Day.avif"
             : "/images/Van_Gogh_La Sieste.avif"}
-          alt="pbg"
-          class="absolute z-20 object-cover w-full h-full"
-          style="mask-image: conic-gradient(
+          alt="bg"
+          class="absolute z-10 object-cover w-full h-full grayscale-[1]"
+        />
+
+        {#if !isPaused}
+          <img
+            src={$currentState === "focus"
+              ? "/images/Laugee George The End of the Day.avif"
+              : "/images/Van_Gogh_La Sieste.avif"}
+            alt="pbg"
+            class="absolute z-20 object-cover w-full h-full"
+            style="mask-image: conic-gradient(
           from 0deg,
           black 0deg {angle}deg,
           transparent {angle}deg 360deg
           );"
-        />
-        <div class="static"></div>
-        <div class="dynamic" style="transform: rotate({angle}deg);"></div>
-      {/if}
+          />
 
-      <div
-        class="relative z-40 w-full h-full py-12 flex flex-col justify-between items-center"
-      >
-        <div class="w-full flex items-center justify-center gap-15">
-          <button
-            class="timerStatus"
-            class:timerStatusFocus={$currentState === "focus"}
-            onclick={() => {
-              $countPomodoros = minutesToSeconds($pomodoro);
-              $currentState = "focus";
-              isPaused = true;
-            }}
-          >
-            Pomodoro
-          </button>
-          <button
-            class="timerStatus"
-            class:timerStatusBreak={$currentState === "break"}
-            onclick={() => {
-              $countPomodoros = minutesToSeconds($shortBreak);
-              $currentState = "break";
-              isPaused = true;
-            }}
-          >
-            Short Break
-          </button>
-          <button
-            class="timerStatus"
-            class:timerStatusBreak={$currentState === "longbreak"}
-            onclick={() => {
-              $countPomodoros = minutesToSeconds($longBreak);
-              $currentState = "longbreak";
-              isPaused = true;
-            }}
-          >
-            Long Break
-          </button>
-        </div>
+          <div class="static"></div>
+          <div class="dynamic" style="transform: rotate({angle}deg);"></div>
+        {/if}
 
-        <h1
-          class="w-full flex justify-center items-center text-[120px] leading-100 font-100 text-white select-none"
-          style="text-shadow: 0 0 3px black;"
-        >
-          <span class="w-1/2 text-right pr-6"
+        <button class="time" onclick={isPaused ? handleResume : pausePomodoro}>
+          <span class="w-1/2 text-right"
             >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
           >
           <span class="pb-15">:</span>
-          <span class="w-1/2 text-left pl-6"
+          <span class="w-1/2 text-left"
             >{padWithZeroes($countPomodoros % 60)}</span
           >
-        </h1>
-
-        {#if isPaused}
-          <button
-            class="timerButton"
-            style="text-shadow: 0 3px 6px black;"
-            class:timerButtonPause={isPaused}
-            onclick={handleResume}
-          >
-            Start
-          </button>
-        {:else}
-          <button
-            class="timerButton"
-            style="text-shadow: 0 3px 6px black;"
-            class:timerButtonPause={isPaused}
-            onclick={pausePomodoro}
-          >
-            Pause
-          </button>
-        {/if}
+        </button>
       </div>
     </div>
   </div>
@@ -491,18 +482,19 @@
     width: 1px;
     height: 50%;
     left: calc(50% - 0.5px);
+    top: 0;
     background-color: rgba(0, 0, 0, 0.15);
-    z-index: 30;
+    z-index: 20;
   }
 
   .dynamic {
     position: absolute;
     width: 1px;
-    height: 600px;
+    height: calc(50% * 1.4142);
     left: calc(50% - 0.5px);
     bottom: 50%;
     background-color: rgba(0, 0, 0, 0.15);
-    z-index: 30;
+    z-index: 20;
     transform-origin: bottom;
   }
 
@@ -522,26 +514,6 @@
     outline: 0;
   }
 
-  .timerStatus {
-    @apply font-rubik font-400 text-15 text-white px-9 pt-4 pb-2 rounded-2 shadow-sm shadow-black/60;
-  }
-
-  .timerStatusFocus {
-    background: #ed5152;
-  }
-
-  .timerStatusBreak {
-    background-color: #99c5aa;
-  }
-
-  .timerButton {
-    @apply px-12 font-rubik text-[#ed5152] font-600 text-40 leading-24 text-center uppercase;
-  }
-
-  .timerButtonPause {
-    color: #99c5aa;
-  }
-
   tr {
     border-bottom: 1px solid rgb(240, 240, 240);
   }
@@ -549,5 +521,38 @@
   td,
   th {
     padding: 5px 0;
+  }
+
+  .square {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 6px solid #000;
+  }
+
+  .circle {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 6px solid #000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .time {
+    width: 100%;
+    position: inherit;
+    z-index: 30;
+    color: #ffffff;
+    font-size: 9rem;
+    line-height: 9rem;
+    font-weight: 200;
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.1s ease-in-out;
   }
 </style>
