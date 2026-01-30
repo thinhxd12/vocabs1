@@ -18,6 +18,7 @@
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
+  import Modal from "$lib/components/Modal.svelte";
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
@@ -200,6 +201,43 @@
   <div class="w-full h-full flex items-center relative">
     <div class="absolute top-0 left-0 right-0 z-10 flex justify-between py-3">
       <div class="flex gap-3">
+        <button
+          class="setting-button"
+          class:active={$currentState === "focus"}
+          onclick={() => {
+            $countPomodoros = minutesToSeconds($pomodoro);
+            $currentState = "focus";
+            isPaused = true;
+          }}
+        >
+          <Icon icon="emojione-monotone:tomato" width="16" height="16" />
+        </button>
+
+        <button
+          class="setting-button"
+          class:active={$currentState === "break"}
+          onclick={() => {
+            $countPomodoros = minutesToSeconds($shortBreak);
+            $currentState = "break";
+            isPaused = true;
+          }}
+        >
+          <Icon icon="ph:circle-half-tilt-fill" width="16" height="16" />
+        </button>
+
+        <button
+          class="setting-button"
+          class:active={$currentState === "longbreak"}
+          onclick={() => {
+            $countPomodoros = minutesToSeconds($longBreak);
+            $currentState = "longbreak";
+            isPaused = true;
+          }}
+        >
+          <Icon icon="ph:circle-fill" width="16" height="16" />
+        </button>
+      </div>
+      <div class="flex gap-3">
         <button class="setting-button" onclick={handleShowReport}>
           <Icon
             icon="material-symbols:insert-chart-outline-rounded"
@@ -232,205 +270,121 @@
           {/if}
         </button>
       </div>
-
-      <div class="flex gap-3">
-        <button
-          class="setting-button"
-          onclick={() => {
-            $countPomodoros = minutesToSeconds($pomodoro);
-            $currentState = "focus";
-            isPaused = true;
-          }}
-        >
-          {#if $currentState === "focus"}
-            <Icon icon="emojione:tomato" width="16" height="16" />
-          {:else}
-            <Icon icon="emojione-monotone:tomato" width="16" height="16" />
-          {/if}
-        </button>
-
-        <button
-          class="setting-button {$currentState === 'break'
-            ? '!text-green-400/60'
-            : ''}"
-          onclick={() => {
-            $countPomodoros = minutesToSeconds($shortBreak);
-            $currentState = "break";
-            isPaused = true;
-          }}
-        >
-          <Icon
-            icon="material-symbols-light:clock-loader-20"
-            width="16"
-            height="16"
-          />
-        </button>
-
-        <button
-          class="setting-button {$currentState === 'longbreak'
-            ? '!text-green-400/60'
-            : ''}"
-          onclick={() => {
-            $countPomodoros = minutesToSeconds($longBreak);
-            $currentState = "longbreak";
-            isPaused = true;
-          }}
-        >
-          <Icon
-            icon="material-symbols-light:clock-loader-40"
-            width="16"
-            height="16"
-          />
-        </button>
-      </div>
     </div>
-    {#if showSetting}
+    <Modal bind:showModal={showSetting}>
+      {#snippet header()}
+        <span class="text-15">Setting</span>
+      {/snippet}
       <div
-        class="absolute z-50 w-full h-full bg-black/30 py-60 px-20"
-        transition:fade={{ duration: 100 }}
+        class="w-full rounded-2 overflow-hidden flex flex-col justify-center"
       >
-        <div
-          class="bg-white w-full rounded-2 overflow-hidden flex flex-col justify-center"
-        >
-          <div class="flex justify-between px-6 bg-black text-white py-3">
-            <span class="text-15 indent-3">Setting</span>
-            <button
-              onclick={() => (showSetting = false)}
-              class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
-            >
-              <Icon
-                icon="material-symbols:close-rounded"
-                width="14"
-                height="14"
-              />
-            </button>
-          </div>
-          <div class="flex flex-col p-6">
-            <p class="text-15 mb-6">Time (minutes)</p>
-            <div class="grid grid-cols-3 gap-3">
-              <p class="text-14 font-500">Pomodoro</p>
-              <p class="text-14 font-500">Short Break</p>
-              <p class="text-14 font-500">Long Break</p>
-              <input
-                name="pomodoro"
-                autocomplete="off"
-                type="number"
-                min="1"
-                step="1"
-                bind:value={$pomodoro}
-                class="input-setting"
-              />
-              <input
-                name="shortBreak"
-                autocomplete="off"
-                type="number"
-                min="1"
-                step="1"
-                bind:value={$shortBreak}
-                class="input-setting"
-              />
-              <input
-                name="longBreak"
-                autocomplete="off"
-                type="number"
-                min="1"
-                step="1"
-                bind:value={$longBreak}
-                class="input-setting"
-              />
-              <p class="text-14 font-500 col-span-3">Long Break interval</p>
-              <input
-                name="longBreakInterval"
-                autocomplete="off"
-                type="number"
-                min="1"
-                step="1"
-                bind:value={$longBreakInterval}
-                class="input-setting"
-              />
-              <p class="text-14 font-500 col-span-3">Current interval</p>
-              <input
-                name="longBreakInterval"
-                autocomplete="off"
-                type="number"
-                min="1"
-                max={$longBreakInterval}
-                step="1"
-                bind:value={$currentInterval}
-                class="input-setting"
-              />
-            </div>
+        <div class="flex flex-col p-6">
+          <p class="text-15 mb-6">Time (minutes)</p>
+          <div class="grid grid-cols-3 gap-3">
+            <p class="text-14 font-500">Pomodoro</p>
+            <p class="text-14 font-500">Short Break</p>
+            <p class="text-14 font-500">Long Break</p>
+            <input
+              name="pomodoro"
+              autocomplete="off"
+              type="number"
+              min="1"
+              step="1"
+              bind:value={$pomodoro}
+              class="input-setting"
+            />
+            <input
+              name="shortBreak"
+              autocomplete="off"
+              type="number"
+              min="1"
+              step="1"
+              bind:value={$shortBreak}
+              class="input-setting"
+            />
+            <input
+              name="longBreak"
+              autocomplete="off"
+              type="number"
+              min="1"
+              step="1"
+              bind:value={$longBreak}
+              class="input-setting"
+            />
+            <p class="text-14 font-500 col-span-3">Long Break interval</p>
+            <input
+              name="longBreakInterval"
+              autocomplete="off"
+              type="number"
+              min="1"
+              step="1"
+              bind:value={$longBreakInterval}
+              class="input-setting"
+            />
+            <p class="text-14 font-500 col-span-3">Current interval</p>
+            <input
+              name="longBreakInterval"
+              autocomplete="off"
+              type="number"
+              min="1"
+              max={$longBreakInterval}
+              step="1"
+              bind:value={$currentInterval}
+              class="input-setting"
+            />
           </div>
         </div>
       </div>
-    {/if}
+    </Modal>
 
-    {#if showReport}
+    <Modal bind:showModal={showReport}>
+      {#snippet header()}
+        <span class="text-15">Report</span>
+      {/snippet}
       <div
-        class="absolute z-50 w-full h-full bg-black/30 py-60 px-20"
-        transition:fade={{ duration: 100 }}
+        class="w-full min-h-[80vh] rounded-2 overflow-hidden flex flex-col justify-between"
       >
-        <div
-          class="bg-white w-full h-full rounded-2 overflow-hidden flex flex-col justify-between"
-        >
-          <div>
-            <div class="flex justify-between px-6 bg-black text-white py-3">
-              <span class="text-15 indent-3">Report</span>
-              <button
-                onclick={() => (showReport = false)}
-                class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
-              >
-                <Icon
-                  icon="material-symbols:close-rounded"
-                  width="14"
-                  height="14"
-                />
-              </button>
-            </div>
+        <table class="w-full">
+          <thead>
+            <tr class="text-12 font-400 bg-gray-100 text-black">
+              <th>Date</th>
+              <th>Time(hh:mm)</th>
+            </tr>
+          </thead>
+          <tbody class="text-center text-12">
+            {#each paginationItems as item}
+              <tr>
+                <td class="w-90">{item.date}</td>
+                <td class="flex items-center justify-between">
+                  <span
+                    class="h-12 {todayDate === item.date
+                      ? 'bg-blue-500'
+                      : 'bg-blue-200'}"
+                    style="width: {Math.round((item.time / 7) * 4)}px;"
+                  ></span>
+                  <span class="pr-6 min-w-45">
+                    {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
+                      item.time % 60,
+                    )}
+                  </span>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
 
-            <table class="w-full">
-              <thead>
-                <tr class="text-12 font-400 bg-gray-200 text-black">
-                  <th>Date</th>
-                  <th>Time(hh:mm)</th>
-                </tr>
-              </thead>
-              <tbody class="text-center text-12">
-                {#each paginationItems as item}
-                  <tr>
-                    <td class="w-90">{item.date}</td>
-                    <td class="flex items-center justify-between">
-                      <span
-                        class="h-12 {todayDate === item.date
-                          ? 'bg-blue-500'
-                          : 'bg-blue-200'}"
-                        style="width: {Math.round((item.time / 7) * 4)}px;"
-                      ></span>
-                      <span class="pr-6 min-w-45">
-                        {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                          item.time % 60,
-                        )}
-                      </span>
-                    </td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
+        {#if totalItems}
+          <div class="w-full py-3 bg-gray-100">
+            <Pagination
+              {totalItems}
+              {itemsPerPage}
+              {currentPage}
+              {onPageChange}
+            />
           </div>
-
-          {#if totalItems}
-            <div class="bg-gray-200 w-full p-3">
-              <Pagination
-                {totalItems}
-                {itemsPerPage}
-                {currentPage}
-                {onPageChange}
-              />
-            </div>
-          {/if}
-        </div>
+        {/if}
       </div>
-    {/if}
+    </Modal>
 
     <div class="square">
       <div class="circle">
@@ -499,7 +453,11 @@
   }
 
   .setting-button {
-    @apply h-24 flex items-center font-rubik px-8 rounded-2 text-14 leading-14 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
+    @apply h-24 w-28 flex justify-center items-center rounded-2 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
+  }
+
+  .setting-button.active {
+    @apply !bg-green-400/60 !text-black;
   }
 
   .input-setting {
@@ -526,14 +484,14 @@
   .square {
     width: 100%;
     aspect-ratio: 1;
-    border: 6px solid #000;
+    border: 2px solid #000;
   }
 
   .circle {
     width: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 6px solid #000;
+    border: 2px solid #000;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -546,8 +504,8 @@
     position: inherit;
     z-index: 30;
     color: #ffffff;
-    font-size: 9rem;
-    line-height: 9rem;
+    font-size: 8rem;
+    line-height: 8rem;
     font-weight: 200;
     text-shadow: 0 3px 6px rgba(0, 0, 0, 1);
     display: flex;

@@ -131,12 +131,14 @@
     };
   }}
 >
+  <!-- svelte-ignore a11y_autofocus -->
   <div
     class="w-full h-36 mb-3 relative bg-black/15 shadow-[0_0_3px_0px_#00000054_inset]"
   >
     <input
       name="word"
       autocomplete="off"
+      autofocus
       onkeydown={(e) => {
         e.stopPropagation();
         if (e.key === "Enter") {
