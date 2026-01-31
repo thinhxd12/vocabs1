@@ -210,7 +210,7 @@
             isPaused = true;
           }}
         >
-          <Icon icon="emojione-monotone:tomato" width="16" height="16" />
+          <Icon icon="material-symbols:adjust-outline" width="16" height="16" />
         </button>
 
         <button
@@ -222,7 +222,11 @@
             isPaused = true;
           }}
         >
-          <Icon icon="ph:circle-half-tilt-fill" width="16" height="16" />
+          <Icon
+            icon="material-symbols:bedtime-outline"
+            width="16"
+            height="16"
+          />
         </button>
 
         <button
@@ -234,7 +238,11 @@
             isPaused = true;
           }}
         >
-          <Icon icon="ph:circle-fill" width="16" height="16" />
+          <Icon
+            icon="material-symbols:sailing-outline"
+            width="16"
+            height="16"
+          />
         </button>
       </div>
       <div class="flex gap-3">
@@ -453,7 +461,7 @@
   }
 
   .setting-button {
-    @apply h-24 w-28 flex justify-center items-center rounded-2 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
+    @apply h-24 w-26 flex justify-center items-center rounded-2 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
   }
 
   .setting-button.active {

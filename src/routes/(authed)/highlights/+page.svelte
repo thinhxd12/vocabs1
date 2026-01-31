@@ -7,7 +7,7 @@
   import { fly, fade } from "svelte/transition";
   import { page } from "$app/state";
   import { Tween } from "svelte/motion";
-  import { cubicIn, quadInOut, sineIn, sineOut } from "svelte/easing";
+  import { linear, quadInOut, sineOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
@@ -24,7 +24,7 @@
   let likeBookmark = $state<boolean>(false);
   let keyPressed = $state<boolean>(false);
   let visualProgress = new Tween(21, {
-    duration: 300,
+    duration: 200,
     easing: quadInOut,
   });
   let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
@@ -122,15 +122,20 @@
     visualProgress.target = 21;
 
     if (currentPage === 0) {
-      flipPages[0].rotate = 0;
       flipPages[0].zIndex = 1002;
+      flipPages[0].rotate = 90;
+
+      flipTimeoutId = setTimeout(() => {
+        flipPages[0].rotate = 0;
+      }, 200);
+
       flipTimeoutId = setTimeout(() => {
         bookmark.set(data);
         setBookContent(data.content);
         resetRenderBookmark();
         currentPage = 0;
         keyPressed = false;
-      }, 300);
+      }, 400);
     } else {
       for (let index = 0; index < flipPages.length; index++) {
         flipTimeoutId = setTimeout(
@@ -149,7 +154,7 @@
           currentPage = 0;
           keyPressed = false;
         },
-        (flipPages.length - 1) * 150 + 300,
+        (flipPages.length - 1) * 150 + 200,
       );
     }
   }
@@ -167,9 +172,6 @@
   async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
     let titleParam = data.bookTile;
     let authorParam = data.authors.split(";")[0];
-
-    // titleParam = "Mastery";
-    // authorParam = "Robert Greene";
 
     const response = await fetch(
       `/server/getbookinfo?query=${titleParam}&author=${authorParam}`,
@@ -256,106 +258,28 @@
     showDelete = !showDelete;
   }
 
-  function getHeightNormalPage(
-    pText: string,
-    pFont: string,
-    pSize: number,
-    pWeight: number,
-    pLine: number,
-    pWidth: number,
-  ) {
-    let lDiv = document.createElement("div");
-    document.body.appendChild(lDiv);
-
-    lDiv.innerHTML = pText;
-    lDiv.style.fontFamily = pFont;
-    lDiv.style.fontSize = "" + pSize + "px";
-    lDiv.style.lineHeight = "" + pLine;
-    lDiv.style.fontWeight = String(pWeight);
-    lDiv.style.width = String(pWidth) + "px";
-    lDiv.style.padding = "0";
-    lDiv.style.margin = "0";
-    lDiv.style.boxSizing = "border-box";
-
-    const pTag = lDiv.querySelectorAll("p");
-    pTag.forEach((item) => {
-      item.style.textIndent = "15px";
-    });
-
-    const citeTag = lDiv.querySelectorAll("cite");
-    citeTag.forEach((item) => {
-      item.style.display = "block";
-      item.style.textAlign = "right";
-    });
-
-    const height = lDiv.clientHeight;
-    document.body.removeChild(lDiv);
-    return height;
-  }
-
   /**
    * Get height of the text.
-   *
    * @param pText - string
-   * @param pFont - font-family
-   * @param pSize - font-size
-   * @param pWeight - font-weight
-   * @param pLine - line height
    * @param pWidth - page width
+   * @param fistPage - fistPage
    * @returns The height of the pText
    */
-  function getHeightFirstPage(
+  function getHeightTextPage(
     pText: string,
-    pFont: string,
-    pSize: number,
-    pWeight: number,
-    pLine: number,
     pWidth: number,
+    fistPage: boolean = false,
   ) {
-    let matchSymbol = pText.match(/^(\W*)\w/);
-    let matchLetter = pText.match(/^\w/);
-    let result = matchSymbol ? matchSymbol : matchLetter;
-    let firstLetter = result![0];
-    let rest = pText.replace(firstLetter, "");
-
     let lDiv = document.createElement("div");
+
     document.body.appendChild(lDiv);
-    let cText = document.createElement("span");
-    lDiv.appendChild(cText);
-    cText.textContent = firstLetter;
-    let restText = document.createElement("span");
-    lDiv.appendChild(restText);
-    restText.innerHTML = rest;
-
-    lDiv.style.fontFamily = pFont;
-    lDiv.style.fontSize = "" + pSize + "px";
-    lDiv.style.lineHeight = "" + pLine;
+    if (fistPage) {
+      lDiv.className = "highlightContent highlightContentFirstPage";
+    } else {
+      lDiv.className = "highlightContent";
+    }
+    lDiv.innerHTML = pText;
     lDiv.style.width = String(pWidth) + "px";
-    lDiv.style.fontWeight = String(pWeight);
-    lDiv.style.padding = "0";
-    lDiv.style.margin = "0";
-    lDiv.style.boxSizing = "border-box";
-
-    const pTag = lDiv.querySelectorAll("p");
-    pTag.forEach((item) => {
-      item.style.textIndent = "15px";
-    });
-
-    const citeTag = lDiv.querySelectorAll("cite");
-    citeTag.forEach((item) => {
-      item.style.display = "block";
-      item.style.textAlign = "right";
-    });
-
-    cText.style.fontFamily = "Baskervville";
-    cText.style.fontSize = "125px";
-    cText.style.lineHeight = "100px";
-    cText.style.fontWeight = "600";
-    cText.style.textTransform = "uppercase";
-    cText.style.float = "left";
-    cText.style.margin = "6px 5px 0 0";
-    cText.style.padding = "3px 6px 3px 6px";
-    cText.style.border = "1px solid";
 
     const height = lDiv.clientHeight;
     document.body.removeChild(lDiv);
@@ -373,30 +297,12 @@
           acc.push(cur);
         } else if (acc.length === 1) {
           let testString = acc[acc.length - 1] + " " + cur;
-          if (
-            getHeightFirstPage(
-              testString,
-              "Bookerly",
-              15,
-              400,
-              1.55,
-              maxWidth,
-            ) < maxHeight
-          ) {
+          if (getHeightTextPage(testString, maxWidth, true) < maxHeight) {
             acc[acc.length - 1] = testString;
           } else acc.push(cur);
         } else {
           let testString = acc[acc.length - 1] + " " + cur;
-          if (
-            getHeightNormalPage(
-              testString,
-              "Bookerly",
-              15,
-              400,
-              1.55,
-              maxWidth,
-            ) < maxHeight
-          ) {
+          if (getHeightTextPage(testString, maxWidth) < maxHeight) {
             acc[acc.length - 1] = testString;
           } else acc.push(cur);
         }
@@ -485,24 +391,34 @@
     visualProgress.target = 21;
     flipPages[index].zIndex = 999;
 
-    if (flipPages[index].rotate) {
-      flipPages[index].rotate = 0;
+    if (flipPages[index].rotate === 180) {
+      flipPages[index].rotate = 90;
+
+      flipTimeoutId = setTimeout(() => {
+        flipPages[index].rotate = 0;
+      }, 200);
+
       flipTimeoutId = setTimeout(() => {
         flipPages[index].zIndex = 4 + flipPages.length - index;
         keyPressed = false;
-      }, 600);
-    } else {
-      flipPages[index].rotate = 180;
+      }, 400);
+    } else if (flipPages[index].rotate === 0) {
+      flipPages[index].rotate = 90;
+
+      flipTimeoutId = setTimeout(() => {
+        flipPages[index].rotate = 180;
+      }, 200);
+
       flipTimeoutId = setTimeout(() => {
         flipPages[index].zIndex = 4 + index;
         keyPressed = false;
-      }, 600);
+      }, 400);
     }
 
     if (flipPages[0].rotate !== 0 && $bookmark!.like) {
       flagTimeoutId = setTimeout(() => {
         visualProgress.target = likeBookmark ? 580 : 480;
-      }, 600);
+      }, 400);
     }
   }
 
@@ -547,19 +463,8 @@
 
   function shadowIn(node: HTMLElement) {
     return {
-      delay: 300,
-      duration: 150,
-      easing: sineIn,
-      css: (t: number) => `
-        box-shadow: 1px ${9 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
-      `,
-    };
-  }
-
-  function shadowOut(node: HTMLElement) {
-    return {
-      duration: 150,
-      easing: sineOut,
+      duration: 200,
+      easing: linear,
       css: (t: number) => `
         box-shadow: 1px ${9 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
       `,
@@ -1099,18 +1004,22 @@
       {:else}
         <div
           class="flip normalPage"
-          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg); left: 50%; right: {page.rotate
+          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg); left: 50%; right: {page.rotate >
+          90
             ? 12 + 2 * i
             : 12 + 2 * (flipPages.length - i)}px;"
         >
-          <div class="pageFront frontPaper" class:firstPage={i === 1}>
+          <div
+            class="pageFront frontPaper"
+            class:highlightContentFirstPage={i === 1}
+          >
             <div
-              class="content"
+              class="highlightContent"
               style="width: {pageWidth(windowHeight) / 2 -
                 12 -
                 112}px; height: {pageHeight(windowHeight) -
                 24 -
-                96}px; margin: 3rem 3rem 3rem calc(4rem - {page.rotate
+                96}px; margin: 3rem 3rem 3rem calc(4rem - {page.rotate > 90
                 ? 2 * i
                 : 2 * (flipPages.length - i)}px);"
             >
@@ -1130,12 +1039,12 @@
           </div>
           <div class="pageBack backPaper">
             <div
-              class="content"
+              class="highlightContent"
               style="width: {pageWidth(windowHeight) / 2 -
                 12 -
                 112}px; height: {pageHeight(windowHeight) -
                 24 -
-                96}px; margin: 3rem calc(3rem - {page.rotate
+                96}px; margin: 3rem calc(3rem - {page.rotate > 90
                 ? 2 * i
                 : 2 * (flipPages.length - i)}px) 3rem 4rem;"
             >
@@ -1157,13 +1066,8 @@
       {/if}
     {/each}
 
-    {#if flipPages.length && flipPages[0].rotate}
-      <div
-        class="frontShadow"
-        style="z-index: 2;"
-        in:shadowIn
-        out:shadowOut
-      ></div>
+    {#if flipPages.length && flipPages[0].rotate === 180}
+      <div class="frontShadow" style="z-index: 2;" in:shadowIn></div>
     {/if}
 
     <div class="backShadow" style="z-index: 1;"></div>
@@ -1188,7 +1092,7 @@
       style="height: {visualProgress.current}px; z-index: {visualProgress.current >
       21
         ? 1001
-        : 1};"
+        : 4};"
       onclick={handleCheckBookmark}
     >
       {#if visualProgress.current > 240}
@@ -1211,7 +1115,7 @@
 
 <style lang="postcss">
   .book {
-    perspective: 4500px;
+    perspective: 6000px;
     position: relative;
   }
 
@@ -1308,7 +1212,7 @@
 
   .flip {
     transform-style: preserve-3d;
-    transition: transform 450ms ease-in-out;
+    transition: transform 200ms ease-out;
     transform-origin: left center;
   }
 
@@ -1354,49 +1258,6 @@
   .coverPage .pageFront {
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-  }
-
-  .content {
-    font-family: "Bookerly", sans-serif;
-    font-weight: 400;
-    font-size: 15px;
-    line-height: 1.55;
-    letter-spacing: 0px;
-    overflow: hidden;
-    text-align: left;
-    text-size-adjust: 100%;
-    color: #1e1915;
-  }
-
-  .content :global {
-    p {
-      text-indent: 1.5em;
-    }
-
-    cite {
-      display: block;
-      text-align: right;
-    }
-  }
-
-  .firstPage::first-letter {
-    font-family: "Baskervville";
-    font-size: 125px;
-    font-weight: 600;
-    color: #f0f0f0;
-    font-style: normal;
-    line-height: 100px;
-    text-transform: uppercase;
-    float: left;
-    margin: 6px 5px 0 0;
-    display: block;
-    background: url("/images/TheEndoftheDay.webp") 0 0 no-repeat;
-    background-size: cover;
-    background-position: center;
-    padding: 3px 6px 3px 6px;
-    border: 1px solid #111111;
-    text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
-    box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
   }
 
   .pageNumber {

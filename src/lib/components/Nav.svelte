@@ -180,9 +180,17 @@
         }}
       >
         {#if wakeEnable}
-          <Icon icon="tabler:moon-filled" width="13" height="13" />
+          <Icon
+            icon="material-symbols:dark-mode-rounded"
+            width="13"
+            height="13"
+          />
         {:else}
-          <Icon icon="tabler:moon" width="13" height="13" />
+          <Icon
+            icon="material-symbols:dark-mode-outline"
+            width="13"
+            height="13"
+          />
         {/if}
       </button>
 

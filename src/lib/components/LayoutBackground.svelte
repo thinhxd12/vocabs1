@@ -13,6 +13,12 @@
     place: "Snæfellsnes peninsula, Iceland",
   };
 
+  const readingImage = {
+    title: "",
+    url: "/images/joshua-bartell.avif",
+    place: "",
+  };
+
   let bgImage = $state<BackgroundImageType>(startedImage);
 
   async function changeBackgroundImg() {
@@ -99,6 +105,20 @@
       class="btn-menu light"
     >
       <Icon icon="material-symbols:imagesmode-rounded" width="13" height="13" />
+    </button>
+
+    <button
+      onclick={() => {
+        showVideoBackground = false;
+        bgImage = readingImage;
+      }}
+      class="btn-menu light"
+    >
+      <Icon
+        icon="material-symbols:book-ribbon-outline-rounded"
+        width="13"
+        height="13"
+      />
     </button>
   </div>
 {:else}
