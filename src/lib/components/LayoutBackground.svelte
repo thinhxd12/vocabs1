@@ -13,9 +13,15 @@
     place: "Snæfellsnes peninsula, Iceland",
   };
 
-  const readingImage = {
+  const table1 = {
     title: "",
     url: "/images/joshua-bartell.avif",
+    place: "",
+  };
+
+  const table2 = {
+    title: "",
+    url: "/images/engin-akyurt.avif",
     place: "",
   };
 
@@ -104,18 +110,32 @@
       }}
       class="btn-menu light"
     >
-      <Icon icon="material-symbols:imagesmode-rounded" width="13" height="13" />
+      <Icon icon="material-symbols:reset-image" width="13" height="13" />
     </button>
 
     <button
       onclick={() => {
         showVideoBackground = false;
-        bgImage = readingImage;
+        bgImage = table1;
       }}
       class="btn-menu light"
     >
       <Icon
-        icon="material-symbols:book-ribbon-outline-rounded"
+        icon="material-symbols:table-restaurant-outline-rounded"
+        width="13"
+        height="13"
+      />
+    </button>
+
+    <button
+      onclick={() => {
+        showVideoBackground = false;
+        bgImage = table2;
+      }}
+      class="btn-menu light"
+    >
+      <Icon
+        icon="material-symbols:table-restaurant-outline-rounded"
         width="13"
         height="13"
       />
