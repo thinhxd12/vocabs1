@@ -166,7 +166,7 @@
         onclick={() => (showReset = !showReset)}
       >
         <Icon
-          icon="material-symbols:edit-square-outline-rounded"
+          icon="material-symbols:settings-outline-rounded"
           width="16"
           height="16"
         />

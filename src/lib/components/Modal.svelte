@@ -26,9 +26,9 @@
   }}
 >
   <div class="header">
-    <div>{@render header?.()}</div>
+    {@render header?.()}
     <!-- svelte-ignore a11y_autofocus -->
-    <button onclick={() => dialog!.close()}>
+    <button class="closeBtn" onclick={() => dialog!.close()}>
       <Icon icon="material-symbols:close-rounded" width="14" height="14" />
     </button>
   </div>
@@ -37,10 +37,12 @@
   </div>
 </dialog>
 
-<style>
+<style lang="postcss">
   dialog {
     border: none;
     padding: 0;
+    border-radius: 3px;
+    overflow: hidden;
   }
 
   dialog::backdrop {
@@ -72,8 +74,8 @@
     }
   }
 
-  button {
-    display: block;
+  .closeBtn {
+    @apply size-24 flex justify-center items-center transition duration-100 text-white/60 hover:text-white;
   }
 
   .header {
@@ -82,7 +84,7 @@
     align-items: center;
     background-color: #000000;
     color: #ffffff;
-    padding: 6px 12px;
+    padding: 3px 6px;
   }
 
   .content {

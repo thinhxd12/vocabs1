@@ -7,7 +7,7 @@
   import { fly, fade } from "svelte/transition";
   import { page } from "$app/state";
   import { Tween } from "svelte/motion";
-  import { linear, quadInOut, sineOut } from "svelte/easing";
+  import { linear, quadInOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
   import { bookmark, bookInfo } from "$lib/store/highlightstore";

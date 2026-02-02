@@ -1,7 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import type { PageProps } from "./$types";
-  import { fade } from "svelte/transition";
   import { onDestroy, onMount } from "svelte";
   import Container from "$lib/components/Container.svelte";
   import {
@@ -30,6 +29,10 @@
   let pauseAudio = $state<boolean>(true);
   let srcAudio = $state<string>("/sounds/mp3_rest.ogg");
   let isMuted = $state<boolean>(false);
+  let currentPage = $state<number>(1);
+  let itemsPerPage = 21;
+  let totalItems = $state<number | undefined>(undefined);
+  let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 
   const minutesToSeconds = (minutes: number) => minutes * 60;
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -133,11 +136,6 @@
   async function submitReport() {
     await submitReportPomodoro($pomodoro, page.data.supabase);
   }
-
-  let currentPage = $state<number>(1);
-  let itemsPerPage = 15;
-  let totalItems = $state<number | undefined>(undefined);
-  let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 
   function onPageChange(page: number) {
     currentPage = page;
@@ -281,7 +279,7 @@
     </div>
     <Modal bind:showModal={showSetting}>
       {#snippet header()}
-        <span class="text-15">Setting</span>
+        <span class="text-14 leading-16">Setting</span>
       {/snippet}
       <div
         class="w-full rounded-2 overflow-hidden flex flex-col justify-center"
@@ -347,10 +345,10 @@
 
     <Modal bind:showModal={showReport}>
       {#snippet header()}
-        <span class="text-15">Report</span>
+        <span class="text-14 leading-16">Report</span>
       {/snippet}
       <div
-        class="w-full min-h-[80vh] rounded-2 overflow-hidden flex flex-col justify-between"
+        class="w-full h-[calc(100vh-120px)] rounded-2 overflow-hidden flex flex-col justify-between"
       >
         <table class="w-full">
           <thead>
@@ -362,12 +360,12 @@
           <tbody class="text-center text-12">
             {#each paginationItems as item}
               <tr>
-                <td class="w-90">{item.date}</td>
+                <td class="w-80">{item.date}</td>
                 <td class="flex items-center justify-between">
                   <span
-                    class="h-12 {todayDate === item.date
-                      ? 'bg-blue-500'
-                      : 'bg-blue-200'}"
+                    class="h-9 {todayDate === item.date
+                      ? 'bg-black'
+                      : 'bg-[#a8a8a8]'}"
                     style="width: {Math.round((item.time / 7) * 4)}px;"
                   ></span>
                   <span class="pr-6 min-w-45">
@@ -382,7 +380,7 @@
         </table>
 
         {#if totalItems}
-          <div class="w-full py-3 bg-gray-100">
+          <div class="w-full pb-6">
             <Pagination
               {totalItems}
               {itemsPerPage}
@@ -486,7 +484,7 @@
 
   td,
   th {
-    padding: 5px 0;
+    padding: 3px 0;
   }
 
   .square {

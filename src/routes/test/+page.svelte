@@ -99,18 +99,5 @@
 </section>
 
 <style lang="postcss">
-  .firstPage::first-letter {
-    initial-letter: 5;
-    background: url("/images/TheEndoftheDay.webp") 0 0 no-repeat;
-    background-size: cover;
-    background-position: center;
-    padding: 9px 12px;
-    margin: 12px 6px 0 0;
-    font-family: "Baskervville";
-    font-weight: 700;
-    color: #f0f0f0;
-    border: 1px solid #111111;
-    text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
-    box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
-  }
+
 </style>
