@@ -168,7 +168,7 @@
 
   async function handleShowReport() {
     await getTablePaginationLength();
-    getDataPaginationByIndex(1);
+    await getDataPaginationByIndex(1);
     showReport = true;
   }
 

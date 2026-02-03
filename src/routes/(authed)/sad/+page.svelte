@@ -12,7 +12,7 @@
 
   let currentPage = $state<number>(1);
   let itemsPerPage = Math.floor(
-    (innerHeight.current! - 30 - 36 - 42 - 30) / 30,
+    (innerHeight.current! - 46 - 30 - 42 - 30) / 30,
   );
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["saddays_table"][]>([]);
