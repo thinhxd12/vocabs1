@@ -5,12 +5,15 @@
   import { format } from "date-fns";
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
+  import { innerHeight } from "svelte/reactivity/window";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
   let currentPage = $state<number>(1);
-  let itemsPerPage = 18;
+  let itemsPerPage = Math.floor(
+    (innerHeight.current! - 30 - 36 - 42 - 30) / 30,
+  );
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["saddays_table"][]>([]);
 

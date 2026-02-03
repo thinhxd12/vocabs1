@@ -18,6 +18,8 @@
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
   import Modal from "$lib/components/Modal.svelte";
+  import { innerHeight } from "svelte/reactivity/window";
+
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
 
@@ -30,7 +32,7 @@
   let srcAudio = $state<string>("/sounds/mp3_rest.ogg");
   let isMuted = $state<boolean>(false);
   let currentPage = $state<number>(1);
-  let itemsPerPage = 21;
+  let itemsPerPage = Math.floor((innerHeight.current! - 120 - 25 - 28) / 25);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 

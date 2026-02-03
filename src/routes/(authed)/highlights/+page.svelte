@@ -11,6 +11,7 @@
   import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
+  import { innerHeight } from "svelte/reactivity/window";
 
   type PageContent = {
     zIndex: number;
@@ -30,14 +31,13 @@
   let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
   let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
   let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
-  let windowHeight = $state<number>(0);
   let expandDesc = $state<boolean>(false);
 
-  const pageWidth = (wHeight: number) => {
-    const width = Math.round(ratio * (wHeight - 150));
+  const pageWidth = () => {
+    const width = Math.round(ratio * (innerHeight.current! - 150));
     return width % 2 !== 0 ? width + 1 : width;
   };
-  const pageHeight = (wHeight: number) => wHeight - 150;
+  const pageHeight = () => innerHeight.current! - 150;
 
   async function handleGetCurrentId() {
     const { data } = await page.data.supabase
@@ -288,8 +288,8 @@
 
   function splitIntoBlocks(text: string) {
     const words = text.trim().split(" ");
-    let maxHeight = pageHeight(windowHeight) - 24 - 96;
-    let maxWidth = pageWidth(windowHeight) / 2 - 12 - 112;
+    let maxHeight = pageHeight() - 24 - 96;
+    let maxWidth = pageWidth() / 2 - 12 - 112;
 
     const flattenedArray = words.reduce(
       (acc: string[], cur: string, index: number) => {
@@ -463,10 +463,10 @@
 
   function shadowIn(node: HTMLElement) {
     return {
-      duration: 200,
+      duration: 150,
       easing: linear,
       css: (t: number) => `
-        box-shadow: 1px ${9 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
+        box-shadow: 1px ${3 + 6 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
       `,
     };
   }
@@ -768,12 +768,7 @@
     </div>
   {/if}
 
-  <div
-    class="book"
-    style="width: {pageWidth(windowHeight)}px; height:{pageHeight(
-      windowHeight,
-    )}px;"
-  >
+  <div class="book" style="width: {pageWidth()}px; height:{pageHeight()}px;">
     {#each flipPages as page, i}
       {#if i === 0}
         <div
@@ -1015,9 +1010,9 @@
           >
             <div
               class="highlightContent"
-              style="width: {pageWidth(windowHeight) / 2 -
+              style="width: {pageWidth() / 2 -
                 12 -
-                112}px; height: {pageHeight(windowHeight) -
+                112}px; height: {pageHeight() -
                 24 -
                 96}px; margin: 3rem 3rem 3rem calc(4rem - {page.rotate > 90
                 ? 2 * i
@@ -1040,9 +1035,9 @@
           <div class="pageBack backPaper">
             <div
               class="highlightContent"
-              style="width: {pageWidth(windowHeight) / 2 -
+              style="width: {pageWidth() / 2 -
                 12 -
-                112}px; height: {pageHeight(windowHeight) -
+                112}px; height: {pageHeight() -
                 24 -
                 96}px; margin: 3rem calc(3rem - {page.rotate > 90
                 ? 2 * i
@@ -1111,7 +1106,7 @@
   </div>
 </section>
 
-<svelte:window on:keydown={onKeyDown} bind:innerHeight={windowHeight} />
+<svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
   .book {
