@@ -18,31 +18,32 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 <dialog
-  class="w-main"
   bind:this={dialog}
   onclose={() => (showModal = false)}
   onclick={(e) => {
     if (e.target === dialog) dialog.close();
   }}
 >
-  <div class="header">
+  <div class="header w-main">
     {@render header?.()}
     <!-- svelte-ignore a11y_autofocus -->
     <button class="closeBtn" onclick={() => dialog!.close()}>
       <Icon icon="material-symbols:close-rounded" width="14" height="14" />
     </button>
   </div>
-  <div class="content">
+  <div class="content w-main">
     {@render children?.()}
   </div>
 </dialog>
 
 <style lang="postcss">
   dialog {
+    width: 382px;
     border: none;
     padding: 0;
     border-radius: 3px;
     overflow: hidden;
+    background: none;
   }
 
   dialog::backdrop {
@@ -79,6 +80,7 @@
   }
 
   .header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -88,6 +90,7 @@
   }
 
   .content {
+    width: 100%;
     background-color: #ffffff;
   }
 </style>

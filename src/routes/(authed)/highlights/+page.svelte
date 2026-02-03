@@ -31,6 +31,28 @@
   let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
   let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
   let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let currentPage = $state<number>(0);
+  let flipPages = $state<PageContent[]>([
+    {
+      zIndex: 6,
+      front: "",
+      back: "",
+      rotate: 0,
+    },
+    {
+      zIndex: 5,
+      front: "abc",
+      back: "cde",
+      rotate: 0,
+    },
+  ]);
+  let showEdit = $state<boolean>(false);
+  let showInsert = $state<boolean>(false);
+  let showDelete = $state<boolean>(false);
+  let insertData = $state<DBSelect["bookmark_table"][] | undefined>(undefined);
+  let isSubmitting = $state<boolean>(false);
+  let showTranslated = $state<boolean>(false);
+  let translatedContent = $state<string>("");
   let expandDesc = $state<boolean>(false);
 
   const pageWidth = () => {
@@ -225,10 +247,6 @@
     }
   }
 
-  let showEdit = $state<boolean>(false);
-  let showInsert = $state<boolean>(false);
-  let showDelete = $state<boolean>(false);
-
   async function handleDeleteBookmark() {
     if (!bookmark) return;
     const { error } = await page.data.supabase
@@ -315,9 +333,6 @@
     return flattenedArray;
   }
 
-  let currentPage = $state<number>(0);
-  let flipPages = $state<PageContent[]>([]);
-
   function setBookContent(content: string) {
     let pages = splitIntoBlocks(content);
     pages.unshift("", "");
@@ -337,8 +352,6 @@
     );
   }
 
-  let insertData = $state<DBSelect["bookmark_table"][] | undefined>(undefined);
-
   async function showInsertBookmark() {
     isSubmitting = false;
     showInsert = true;
@@ -349,10 +362,6 @@
       .limit(9);
     if (data) insertData = data;
   }
-
-  let isSubmitting = $state<boolean>(false);
-  let showTranslated = $state<boolean>(false);
-  let translatedContent = $state<string>("");
 
   async function translateContent() {
     if (!translatedContent.length) {

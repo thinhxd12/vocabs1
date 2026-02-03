@@ -14,7 +14,7 @@
     if ($weatherData) {
       weatherInfo = getWeatherInfo(
         $weatherData.current.weather_code,
-        $weatherData.current.is_day
+        $weatherData.current.is_day,
       );
     }
   });
@@ -22,9 +22,15 @@
 
 <div class="w-full h-full relative">
   {#if weatherInfo}
-    <div class="absolute top-0 left-0 z-[1] flex gap-3">
+    <div class="absolute top-3 right-3 z-[1] flex gap-3">
+      <img
+        src="/liquid/48/{weatherInfo.icon}.png"
+        alt="icon"
+        class="size-28 object-cover"
+        style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 1));"
+      />
       <div
-        class="flex flex-col items-end text-white text-8 leading-9 mt-3 ml-3 font-500"
+        class="flex flex-col items-end text-white text-8 leading-9 font-500"
         style="text-shadow: 0px 0px 3px #000000"
       >
         <span class="font-600 text-9">
@@ -41,12 +47,6 @@
           <span>{$weatherData?.current.snowfall} cm</span>
         {/if}
       </div>
-      <img
-        src="/liquid/48/{weatherInfo.icon}.png"
-        alt="icon"
-        class="size-28 object-cover"
-        style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 1));"
-      />
     </div>
 
     <img
