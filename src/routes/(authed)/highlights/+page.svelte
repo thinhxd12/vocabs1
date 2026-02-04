@@ -1130,8 +1130,8 @@
     top: 0;
     right: 0;
     background: #0a0905;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
     padding: 12px 12px 12px 0;
   }
 
@@ -1141,8 +1141,8 @@
     width: 50%;
     top: 0;
     right: 0;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
     box-shadow: -1px 9px 18px rgba(0, 0, 0, 0.8);
   }
 
@@ -1152,8 +1152,8 @@
     width: 50%;
     left: 0;
     top: 0;
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
     box-shadow: 1px 9px 18px rgba(0, 0, 0, 0.8);
   }
 
@@ -1255,13 +1255,13 @@
   }
 
   .coverPage .pageBack {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
   }
 
   .coverPage .pageFront {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
   }
 
   .pageNumber {

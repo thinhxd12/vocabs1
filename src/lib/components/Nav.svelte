@@ -20,11 +20,10 @@
   import { showTranslate } from "$lib/store/vocabstore";
   import WeatherButton from "./WeatherButton.svelte";
   import TimerButton from "./TimerButton.svelte";
+  import WakeLockButton from "./WakeLockButton.svelte";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
-  let wakeLockObj = $state<WakeLockSentinel | null>(null);
-  let wakeEnable = $state<boolean>(false);
 
   onMount(() => {
     getNavWeatherData();
@@ -67,31 +66,6 @@
   function handleGetList(numb: number) {
     $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
     handleGetListContent();
-  }
-
-  function handleWakeLockAbort() {
-    wakeLockObj = null;
-    wakeEnable = false;
-  }
-
-  async function toggleWakeLock(enable: boolean) {
-    if (enable) {
-      try {
-        wakeLockObj = await navigator.wakeLock.request("screen");
-        wakeEnable = true;
-        wakeLockObj.addEventListener("release", handleWakeLockAbort);
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      if (wakeLockObj) {
-        wakeLockObj.removeEventListener("release", handleWakeLockAbort);
-        wakeLockObj.release().then(() => {
-          wakeLockObj = null;
-          wakeEnable = false;
-        });
-      }
-    }
   }
 
   onDestroy(() => {
@@ -171,28 +145,7 @@
         <Icon icon="emojione-monotone:tomato" width="13" height="13" />
       </a>
 
-      <button
-        class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
-        class:active={wakeEnable}
-        onclick={(e) => {
-          toggleWakeLock(!wakeEnable);
-          e.currentTarget.blur();
-        }}
-      >
-        {#if wakeEnable}
-          <Icon
-            icon="material-symbols:dark-mode-rounded"
-            width="13"
-            height="13"
-          />
-        {:else}
-          <Icon
-            icon="material-symbols:dark-mode-outline"
-            width="13"
-            height="13"
-          />
-        {/if}
-      </button>
+      <WakeLockButton />
 
       <TimerButton />
     </div>

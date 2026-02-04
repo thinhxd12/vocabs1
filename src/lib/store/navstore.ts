@@ -12,6 +12,8 @@ export const isAutoPlay = writable<boolean>(false);
 export const showWeather = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
+export const wakeEnable = writable<boolean>(false);
+
 export const todaySchedule = writable<
   | {
       start: DBSelect["schedule_table"];
@@ -22,15 +24,15 @@ export const todaySchedule = writable<
 export const locationList = writable<DBSelect["weather_table"][]>([]);
 export const listContent = writable<DBSelect["vocab_table"][]>([]);
 export const currentSchedule = writable<DBSelect["schedule_table"] | undefined>(
-  undefined
+  undefined,
 );
 export const schedule = writable<DBSelect["schedule_table"][] | undefined>(
-  undefined
+  undefined,
 );
 
 export const listCount = writable<number>(0);
 export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
-  undefined
+  undefined,
 );
 export const vocabInput = writable<string>("");
 
@@ -232,7 +234,7 @@ async function checkSchedule() {
   };
 
   const allDone = schedule.every(
-    (item: DBSelect["schedule_table"]) => item.date !== null
+    (item: DBSelect["schedule_table"]) => item.date !== null,
   );
   if (allDone && lastProgress.length) {
     result = {

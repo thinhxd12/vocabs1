@@ -19,6 +19,7 @@
   import { format } from "date-fns";
   import Modal from "$lib/components/Modal.svelte";
   import { innerHeight } from "svelte/reactivity/window";
+  import { wakeEnable } from "$lib/store/navstore";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -29,10 +30,10 @@
   let interval: ReturnType<typeof setInterval>;
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
-  let srcAudio = $state<string>("/sounds/mp3_rest.ogg");
+  let srcAudio = $state<string>("/sounds/mp3_break.ogg");
   let isMuted = $state<boolean>(false);
   let currentPage = $state<number>(1);
-  let itemsPerPage = Math.floor((innerHeight.current! - 120 - 25 - 28) / 25);
+  let itemsPerPage = Math.floor((innerHeight.current! - 120 - 26 - 28) / 25);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 
@@ -47,6 +48,7 @@
   onMount(() => {
     if ($currentState === "focus" && !$countPomodoros)
       $countPomodoros = minutesToSeconds($pomodoro);
+    $wakeEnable = true;
   });
 
   function formatTime(timeInSeconds: number): string {
@@ -71,7 +73,7 @@
       angle = 0;
       $currentInterval++;
       completePomodoro();
-      srcAudio = "/sounds/mp3_rest.ogg";
+      srcAudio = "/sounds/mp3_break.ogg";
       pauseAudio = false;
     }
   }
@@ -180,6 +182,9 @@
     if (e.key === " ") {
       isPaused ? handleResume() : pausePomodoro();
     }
+    if (e.key.toLocaleLowerCase() === "f") {
+      $wakeEnable = !$wakeEnable;
+    }
   }
 </script>
 
@@ -202,7 +207,7 @@
     <div class="absolute top-0 left-0 right-0 z-10 flex justify-between py-3">
       <div class="flex gap-3">
         <button
-          class="setting-button"
+          class="setting-button light"
           class:active={$currentState === "focus"}
           onclick={() => {
             $countPomodoros = minutesToSeconds($pomodoro);
@@ -210,11 +215,11 @@
             isPaused = true;
           }}
         >
-          <Icon icon="material-symbols:adjust-outline" width="16" height="16" />
+          <Icon icon="material-symbols:adjust" width="16" height="16" />
         </button>
 
         <button
-          class="setting-button"
+          class="setting-button light"
           class:active={$currentState === "break"}
           onclick={() => {
             $countPomodoros = minutesToSeconds($shortBreak);
@@ -223,14 +228,14 @@
           }}
         >
           <Icon
-            icon="material-symbols:bedtime-outline"
+            icon="material-symbols:sleep-score-rounded"
             width="16"
             height="16"
           />
         </button>
 
         <button
-          class="setting-button"
+          class="setting-button light"
           class:active={$currentState === "longbreak"}
           onclick={() => {
             $countPomodoros = minutesToSeconds($longBreak);
@@ -239,14 +244,14 @@
           }}
         >
           <Icon
-            icon="material-symbols:sailing-outline"
+            icon="material-symbols:sailing-rounded"
             width="16"
             height="16"
           />
         </button>
       </div>
       <div class="flex gap-3">
-        <button class="setting-button" onclick={handleShowReport}>
+        <button class="setting-button light" onclick={handleShowReport}>
           <Icon
             icon="material-symbols:insert-chart-outline-rounded"
             width="16"
@@ -254,7 +259,10 @@
           />
         </button>
 
-        <button class="setting-button" onclick={() => (showSetting = true)}>
+        <button
+          class="setting-button light"
+          onclick={() => (showSetting = true)}
+        >
           <Icon
             icon="material-symbols:settings-outline-rounded"
             width="16"
@@ -262,7 +270,10 @@
           />
         </button>
 
-        <button class="setting-button" onclick={() => (isMuted = !isMuted)}>
+        <button
+          class="setting-button light"
+          onclick={() => (isMuted = !isMuted)}
+        >
           {#if isMuted}
             <Icon
               icon="material-symbols:volume-off-outline-rounded"
@@ -354,27 +365,27 @@
       >
         <table class="w-full">
           <thead>
-            <tr class="text-12 font-400 bg-gray-100 text-black">
-              <th>Date</th>
-              <th>Time(hh:mm)</th>
+            <tr class="text-12 leading-24 h-24 font-400 bg-gray-100 text-black">
+              <th colspan="1">Date</th>
+              <th colspan="2">Time(hh:mm)</th>
             </tr>
           </thead>
-          <tbody class="text-center text-12">
+          <tbody class="text-center">
             {#each paginationItems as item}
-              <tr>
-                <td class="w-80">{item.date}</td>
-                <td class="flex items-center justify-between">
-                  <span
+              <tr class="h-24 border-b border-[#f0f0f0] text-12">
+                <td class="w-80 pl-3">{item.date}</td>
+                <td>
+                  <div
                     class="h-9 {todayDate === item.date
-                      ? 'bg-black'
-                      : 'bg-[#a8a8a8]'}"
+                      ? 'bg-blue-400'
+                      : 'bg-blue-200'}"
                     style="width: {Math.round((item.time / 7) * 4)}px;"
-                  ></span>
-                  <span class="pr-6 min-w-45">
-                    {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                      item.time % 60,
-                    )}
-                  </span>
+                  ></div>
+                </td>
+                <td class="w-50 pr-3">
+                  {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
+                    item.time % 60,
+                  )}
                 </td>
               </tr>
             {/each}
@@ -445,7 +456,7 @@
     height: 50%;
     left: calc(50% - 0.5px);
     top: 0;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.6);
     z-index: 20;
   }
 
@@ -455,13 +466,13 @@
     height: calc(50% * 1.4142);
     left: calc(50% - 0.5px);
     bottom: 50%;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.6);
     z-index: 20;
     transform-origin: bottom;
   }
 
   .setting-button {
-    @apply h-24 w-26 flex justify-center items-center rounded-2 bg-black/45 text-white/80 hover:text-white shadow-sm shadow-black/60;
+    @apply h-22 w-24 flex justify-center items-center rounded-2 hover:bg-white/40 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .setting-button.active {
@@ -478,15 +489,6 @@
     color: #555;
     width: 100%;
     outline: 0;
-  }
-
-  tr {
-    border-bottom: 1px solid rgb(240, 240, 240);
-  }
-
-  td,
-  th {
-    padding: 3px 0;
   }
 
   .square {
