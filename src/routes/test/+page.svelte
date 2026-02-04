@@ -72,7 +72,6 @@
     document.body.appendChild(lDiv);
     lDiv.innerHTML = pText;
     const height = lDiv.clientHeight;
-    console.log("🚀 ~ test ~ height:", height);
     document.body.removeChild(lDiv);
   }
 
@@ -99,5 +98,4 @@
 </section>
 
 <style lang="postcss">
-
 </style>

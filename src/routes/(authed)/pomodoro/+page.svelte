@@ -185,6 +185,9 @@
     if (e.key.toLocaleLowerCase() === "f") {
       $wakeEnable = !$wakeEnable;
     }
+    if (e.key.toLocaleLowerCase() === "m") {
+      isMuted = !isMuted;
+    }
   }
 </script>
 
