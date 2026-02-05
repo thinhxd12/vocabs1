@@ -1,4 +1,5 @@
-import type { BackgroundImageType } from "$lib/types.js";
+import type { ImageBackgroundType } from "$lib/types.js";
+import { error } from "@sveltejs/kit";
 
 // https://github.com/ORelio/Spotlight-Downloader/blob/master/SpotlightAPI.md
 
@@ -14,18 +15,18 @@ export async function GET({ fetch }) {
 
   try {
     const response = await fetch(`${endpoint}?${params}`);
+    if (response.status !== 200) error(400, "not found");
     const data = await response.json();
     const item = JSON.parse(data.batchrsp.items[0].item).ad;
 
-    const images: BackgroundImageType = {
+    const images: ImageBackgroundType = {
       title: item.title,
       url: item.landscapeImage.asset,
       place: item.iconHoverText,
     };
 
     return new Response(JSON.stringify(images));
-  } catch (error) {
-    console.error("Error fetching Spotlight images:", error);
-    return new Response(JSON.stringify([]));
+  } catch (e) {
+    error(404);
   }
 }

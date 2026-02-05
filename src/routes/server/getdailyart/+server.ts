@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
-import type { LayoutImageType } from "$lib/types";
+import type { ArtImageType } from "$lib/types";
 import { DEFAULT_CORS_PROXY } from "$lib/utils/constants";
 
 export async function GET({ url }) {
@@ -62,5 +62,5 @@ const getImageData = async (url: string) => {
     content,
     nextImageUrl,
   };
-  return result as LayoutImageType;
+  return result as ArtImageType;
 };

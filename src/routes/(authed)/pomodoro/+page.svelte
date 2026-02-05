@@ -212,19 +212,21 @@
         <button
           class="setting-button light"
           class:active={$currentState === "focus"}
-          onclick={() => {
+          onclick={(e) => {
+            e.currentTarget.blur();
             $countPomodoros = minutesToSeconds($pomodoro);
             $currentState = "focus";
             isPaused = true;
           }}
         >
-          <Icon icon="material-symbols:adjust" width="16" height="16" />
+          <Icon icon="material-symbols:adjust" width="14" height="14" />
         </button>
 
         <button
           class="setting-button light"
           class:active={$currentState === "break"}
-          onclick={() => {
+          onclick={(e) => {
+            e.currentTarget.blur();
             $countPomodoros = minutesToSeconds($shortBreak);
             $currentState = "break";
             isPaused = true;
@@ -232,15 +234,16 @@
         >
           <Icon
             icon="material-symbols:sleep-score-rounded"
-            width="16"
-            height="16"
+            width="14"
+            height="14"
           />
         </button>
 
         <button
           class="setting-button light"
           class:active={$currentState === "longbreak"}
-          onclick={() => {
+          onclick={(e) => {
+            e.currentTarget.blur();
             $countPomodoros = minutesToSeconds($longBreak);
             $currentState = "longbreak";
             isPaused = true;
@@ -248,46 +251,60 @@
         >
           <Icon
             icon="material-symbols:sailing-rounded"
-            width="16"
-            height="16"
+            width="14"
+            height="14"
           />
         </button>
       </div>
       <div class="flex gap-3">
-        <button class="setting-button light" onclick={handleShowReport}>
+        <button
+          class="setting-button light"
+          class:active={showReport === true}
+          onclick={(e) => {
+            e.currentTarget.blur();
+            handleShowReport();
+          }}
+        >
           <Icon
             icon="material-symbols:insert-chart-outline-rounded"
-            width="16"
-            height="16"
+            width="14"
+            height="14"
           />
         </button>
 
         <button
           class="setting-button light"
-          onclick={() => (showSetting = true)}
+          class:active={showSetting === true}
+          onclick={(e) => {
+            e.currentTarget.blur();
+            showSetting = true;
+          }}
         >
           <Icon
             icon="material-symbols:settings-outline-rounded"
-            width="16"
-            height="16"
+            width="14"
+            height="14"
           />
         </button>
 
         <button
           class="setting-button light"
-          onclick={() => (isMuted = !isMuted)}
+          onclick={(e) => {
+            e.currentTarget.blur();
+            isMuted = !isMuted;
+          }}
         >
           {#if isMuted}
             <Icon
               icon="material-symbols:volume-off-outline-rounded"
-              width="16"
-              height="16"
+              width="14"
+              height="14"
             />
           {:else}
             <Icon
               icon="material-symbols:volume-up-outline-rounded"
-              width="16"
-              height="16"
+              width="14"
+              height="14"
             />
           {/if}
         </button>
@@ -436,7 +453,13 @@
           <div class="dynamic" style="transform: rotate({angle}deg);"></div>
         {/if}
 
-        <button class="time" onclick={isPaused ? handleResume : pausePomodoro}>
+        <button
+          class="time"
+          onclick={(e) => {
+            e.currentTarget.blur();
+            isPaused ? handleResume() : pausePomodoro();
+          }}
+        >
           <span class="w-1/2 text-right"
             >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
           >
@@ -475,7 +498,7 @@
   }
 
   .setting-button {
-    @apply h-22 w-24 flex justify-center items-center rounded-2 hover:bg-white/40 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30;
+    @apply size-18 flex items-center justify-center text-13 leading-16 appearance-none text-center cursor-pointer rounded-2 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30 disabled:opacity-15;
   }
 
   .setting-button.active {

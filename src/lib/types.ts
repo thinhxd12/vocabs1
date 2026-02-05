@@ -58,7 +58,7 @@ export interface CalendarDayType {
   count: number;
 }
 
-export interface LayoutImageType {
+export interface ArtImageType {
   mainImage: string;
   shareDate: string;
   title: string;
@@ -127,12 +127,6 @@ export interface WeatherCodeData {
   };
 }
 
-export type BackgroundImageType = {
-  title: string;
-  url: string;
-  place: string;
-};
-
 export type BookDetailType = {
   title: string | null;
   authors: string[];
@@ -146,7 +140,6 @@ export type BookDetailType = {
   firstPublished: string | null;
   numberOfPages: string | null;
 };
-
 
 export type TomorrowWeatherCurrentType = {
   cloudBase: number;
@@ -262,3 +255,14 @@ export interface WeatherQueryParams {
   longitude: number;
   tempUnit: "c" | "f";
 }
+
+export interface VideoBackgroundType {
+  label: string;
+  value: string;
+}
+
+export type ImageBackgroundType = {
+  title: string;
+  url: string;
+  place: string;
+};
