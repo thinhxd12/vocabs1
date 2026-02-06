@@ -470,7 +470,10 @@
 
       {#if !isPaused}
         <div class="static"></div>
-        <div class="dynamic" style="transform: rotate({-90 + angle}deg);"></div>
+        <div
+          class="dynamic"
+          style="transform: rotate({angle}deg) scaleX(2);"
+        ></div>
       {/if}
     </div>
   </div>
@@ -481,27 +484,25 @@
 <style lang="postcss">
   .static {
     position: absolute;
-    width: calc(50% - 3px);
-    height: 1px;
-    left: 50%;
-    top: 50%;
+    height: 50%;
+    width: 1px;
+    left: calc(50% - 1px);
+    transform-origin: bottom;
+    transform: scaleX(2);
+    top: 0;
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
-    transform-origin: left;
-    transform: rotate(-90deg);
-    box-shadow: 1px -1px 3px #000000;
   }
 
   .dynamic {
     position: absolute;
-    width: calc(50% - 3px);
-    height: 1px;
-    left: 50%;
-    top: 50%;
+    height: 50%;
+    width: 1px;
+    left: calc(50% - 1px);
+    transform-origin: bottom;
+    top: 0;
     background-color: rgba(0, 0, 0, 1);
-    z-index: 21;
-    transform-origin: left;
-    box-shadow: 1px 1px 3px #000000;
+    z-index: 20;
   }
 
   .setting-button {
@@ -528,6 +529,7 @@
     width: 100%;
     aspect-ratio: 1;
     border: 2px solid #000000;
+    position: relative;
   }
 
   .circle {

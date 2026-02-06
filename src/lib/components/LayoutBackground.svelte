@@ -62,25 +62,27 @@
 
 {#if page.url.pathname !== "/art"}
   {#if showImageLocal}
-    <img
-      src={$localImageStore.data[$currentImageIndex].url}
-      alt="main-layout-bg"
-      class="absolute w-full h-full object-cover z-[0]"
-      loading="lazy"
-    />
+    {#if $localImageStore.data.length}
+      <img
+        src={$localImageStore.data[$currentImageIndex].url}
+        alt="main-layout-bg"
+        class="absolute w-full h-full object-cover z-[0]"
+        loading="lazy"
+      />
 
-    <div
-      class="z-[9] absolute w-[calc(50vw-215px)] hidden md:flex flex-col items-start left-0 top-3 px-3 text-12 leading-16 text-white"
-    >
-      <p style="text-shadow: 0 0 3px black;" class="text-left">
-        {$localImageStore.data[$currentImageIndex].title || ""}
-      </p>
-      <p style="text-shadow: 0 0 3px black;" class="text-left">
-        {$localImageStore.data[$currentImageIndex].place
-          .split("©")[0]
-          .trim() || ""}
-      </p>
-    </div>
+      <div
+        class="z-[9] absolute w-[calc(50vw-215px)] hidden md:flex flex-col items-start left-0 top-3 px-3 text-12 leading-16 text-white"
+      >
+        <p style="text-shadow: 0 0 3px black;" class="text-left">
+          {$localImageStore.data[$currentImageIndex].title || ""}
+        </p>
+        <p style="text-shadow: 0 0 3px black;" class="text-left">
+          {$localImageStore.data[$currentImageIndex].place
+            .split("©")[0]
+            .trim() || ""}
+        </p>
+      </div>
+    {/if}
 
     <div class="z-[9] absolute hidden md:flex gap-3 right-3 top-3 text-white">
       <button
@@ -145,6 +147,16 @@
     </div>
 
     <div class="z-[9] absolute right-3 top-3 flex gap-2">
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          imageSrc = defaultImage[0];
+        }}
+      >
+        <Icon icon="material-symbols:reset-image" width="14" height="14" />
+      </button>
+      
       <button
         onclick={(e) => {
           e.currentTarget.blur();

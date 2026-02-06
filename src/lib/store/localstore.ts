@@ -23,13 +23,7 @@ export const localImageStore = writable<{
   data: ImageBackgroundType[];
 }>({
   loading: false,
-  data: [
-    {
-      title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
-      url: "/images/Icescape.jpg",
-      place: "Snæfellsnes peninsula, Iceland",
-    },
-  ],
+  data: [],
 });
 
 export function getCurrentImageBackground() {
@@ -75,6 +69,19 @@ export async function getNextImageBackground() {
         localStorage.setItem(LAYOUT_STORAGE, serialize(data));
         return { loading: false, data };
       });
+    }
+  } else if (images.data.length === 0) {
+    localImageStore.update((s) => ({ ...s, loading: true }));
+    const response = await fetch(`/server/getlayoutimage`);
+    if (response.status == 200) {
+      const json = await response.json();
+      localImageStore.update((s) => {
+        const data = [...s.data, json];
+        localStorage.setItem(LAYOUT_STORAGE, serialize(data));
+        return { loading: false, data };
+      });
+      currentImageIndex.set(0);
+      localStorage.setItem(LAYOUT_INDEX, String(0));
     }
   } else {
     currentImageIndex.update((n) => {
