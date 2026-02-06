@@ -142,7 +142,11 @@
         class:active={page.url.pathname === "/pomodoro"}
         class="btn-menu"
       >
-        <Icon icon="emojione-monotone:tomato" width="13" height="13" />
+        {#if page.url.pathname === "/pomodoro"}
+          <Icon icon="material-symbols:adjust" width="13" height="13" />
+        {:else}
+          <Icon icon="material-symbols:adjust-outline" width="13" height="13" />
+        {/if}
       </a>
 
       <WakeLockButton />

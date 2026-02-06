@@ -3,28 +3,11 @@ import { get, writable } from "svelte/store";
 
 const browser =
   typeof window !== "undefined" && typeof document !== "undefined";
-export const IMAGES_LENGTH = 12;
+export const IMAGES_LENGTH = 18;
 const LAYOUT_STORAGE = "layout-images";
 const LAYOUT_INDEX = "layout-index";
 const ART_STORAGE = "art-images";
 const ART_INDEX = "art-index";
-const defaultImage: ImageBackgroundType[] = [
-  {
-    title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
-    url: "/images/Icescape.jpg",
-    place: "Snæfellsnes peninsula, Iceland",
-  },
-  {
-    title: "",
-    url: "/images/joshua-bartell.avif",
-    place: "",
-  },
-  {
-    title: "",
-    url: "/images/engin-akyurt.avif",
-    place: "",
-  },
-];
 
 function serialize(value: any): string {
   return JSON.stringify(value);
@@ -38,7 +21,16 @@ export const currentImageIndex = writable<number>(0);
 export const localImageStore = writable<{
   loading: boolean;
   data: ImageBackgroundType[];
-}>({ loading: false, data: [defaultImage[0]] });
+}>({
+  loading: false,
+  data: [
+    {
+      title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
+      url: "/images/Icescape.jpg",
+      place: "Snæfellsnes peninsula, Iceland",
+    },
+  ],
+});
 
 export function getCurrentImageBackground() {
   if (!browser) return;
@@ -105,15 +97,6 @@ export async function getPrevImageBackground() {
   });
 }
 
-export function setImageBackground(index: number) {
-  currentImageIndex.set(0);
-  localImageStore.update((s) => {
-    s.data[0] = defaultImage[index];
-    localStorage.setItem(LAYOUT_STORAGE, serialize(s));
-    return s;
-  });
-}
-
 //---------------------------------//
 
 const defaultArtImage: ArtImageType = {
@@ -138,15 +121,10 @@ export const localArtStore = writable<{
 
 export function getCurrentArtImage() {
   if (!browser) return;
-  const images = localStorage.getItem(ART_STORAGE);
-  if (images) localArtStore.set({ loading: false, data: deserialize(images) });
-
+  localStorage.removeItem(ART_STORAGE);
+  localStorage.removeItem(ART_INDEX);
   currentArtImageIndex.set(0);
-  localArtStore.update((s) => {
-    s.data[0] = defaultArtImage;
-    localStorage.setItem(ART_STORAGE, serialize(s));
-    return s;
-  });
+  localArtStore.set({ loading: false, data: [defaultArtImage] });
 }
 
 export async function getNextArtImage() {

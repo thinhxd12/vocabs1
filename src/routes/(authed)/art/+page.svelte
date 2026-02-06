@@ -54,7 +54,6 @@
           e.currentTarget.blur();
           getNextArtImage();
         }}
-        class:active={$currentArtImageIndex === $localArtStore.data.length - 1}
       >
         {#if $localArtStore.loading}
           <Icon icon="eos-icons:loading" width="15" height="15" />
@@ -109,9 +108,5 @@
 <style lang="postcss">
   .btn-menu {
     @apply flex size-27 items-center justify-center rounded-full text-white/50 hover:text-white hover:bg-white/10 outline-none backdrop-blur-md disabled:opacity-15;
-  }
-
-  .btn-menu.active {
-    @apply !text-green-300;
   }
 </style>

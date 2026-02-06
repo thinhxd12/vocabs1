@@ -310,6 +310,7 @@
         </button>
       </div>
     </div>
+
     <Modal bind:showModal={showSetting}>
       {#snippet header()}
         <span class="text-14 leading-16">Setting</span>
@@ -448,9 +449,6 @@
           transparent {angle}deg 360deg
           );"
           />
-
-          <div class="static"></div>
-          <div class="dynamic" style="transform: rotate({angle}deg);"></div>
         {/if}
 
         <button
@@ -469,6 +467,11 @@
           >
         </button>
       </div>
+
+      {#if !isPaused}
+        <div class="static"></div>
+        <div class="dynamic" style="transform: rotate({-90 + angle}deg);"></div>
+      {/if}
     </div>
   </div>
 </Container>
@@ -478,23 +481,27 @@
 <style lang="postcss">
   .static {
     position: absolute;
-    width: 1px;
-    height: 50%;
-    left: calc(50% - 0.5px);
-    top: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    width: calc(50% - 3px);
+    height: 1px;
+    left: 50%;
+    top: 50%;
+    background-color: rgba(0, 0, 0, 1);
     z-index: 20;
+    transform-origin: left;
+    transform: rotate(-90deg);
+    box-shadow: 1px -1px 3px #000000;
   }
 
   .dynamic {
     position: absolute;
-    width: 1px;
-    height: calc(50% * 1.4142);
-    left: calc(50% - 0.5px);
-    bottom: 50%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 20;
-    transform-origin: bottom;
+    width: calc(50% - 3px);
+    height: 1px;
+    left: 50%;
+    top: 50%;
+    background-color: rgba(0, 0, 0, 1);
+    z-index: 21;
+    transform-origin: left;
+    box-shadow: 1px 1px 3px #000000;
   }
 
   .setting-button {
@@ -520,14 +527,14 @@
   .square {
     width: 100%;
     aspect-ratio: 1;
-    border: 2px solid #000;
+    border: 2px solid #000000;
   }
 
   .circle {
     width: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 2px solid #000;
+    border: 2px solid #000000;
     position: relative;
     overflow: hidden;
     display: flex;
