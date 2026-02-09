@@ -141,6 +141,13 @@ export type BookDetailType = {
   numberOfPages: string | null;
 };
 
+export type BookPageContentType = {
+  id: number;
+  flip: boolean;
+  front: string;
+  back: string;
+};
+
 export type TomorrowWeatherCurrentType = {
   cloudBase: number;
   cloudCeiling: number;

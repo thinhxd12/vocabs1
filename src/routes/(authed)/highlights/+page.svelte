@@ -1,49 +1,46 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { DBSelect } from "$lib/types";
+  import type { BookPageContentType, DBSelect } from "$lib/types";
   import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { toast } from "svelte-sonner";
   import { fly, fade } from "svelte/transition";
   import { page } from "$app/state";
-  import { Tween } from "svelte/motion";
-  import { linear, quadInOut } from "svelte/easing";
+  import { Spring, Tween } from "svelte/motion";
+  import { quadInOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
   import { innerHeight } from "svelte/reactivity/window";
-
-  type PageContent = {
-    zIndex: number;
-    rotate: number;
-    front: string;
-    back: string;
-  };
+  import HighlightPage from "$lib/components/HighlightPage.svelte";
 
   const ratio = 1.61803398875;
   let isRandomed = $state<boolean>(false);
   let likeBookmark = $state<boolean>(false);
   let keyPressed = $state<boolean>(false);
-  let visualProgress = new Tween(21, {
-    duration: 200,
+
+  const tweenCover = new Spring(0, {
+    stiffness: 0.06,
+    damping: 0.4,
+  });
+
+  const tweenRibbon = new Tween(21, {
+    duration: 150,
     easing: quadInOut,
   });
+
+  let flipCover = $state<boolean>(false);
+
   let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
   let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
   let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
   let currentPage = $state<number>(0);
-  let flipPages = $state<PageContent[]>([
+  let flipPages = $state<BookPageContentType[]>([
     {
-      zIndex: 6,
-      front: "",
-      back: "",
-      rotate: 0,
-    },
-    {
-      zIndex: 5,
+      id: 1,
+      flip: false,
       front: "abc",
       back: "cde",
-      rotate: 0,
     },
   ]);
   let showEdit = $state<boolean>(false);
@@ -141,43 +138,52 @@
 
   function handleCloseBook(data: DBSelect["bookmark_table"]) {
     keyPressed = true;
-    visualProgress.target = 21;
+    tweenRibbon.target = 21;
 
-    if (currentPage === 0) {
-      flipPages[0].zIndex = 1002;
-      flipPages[0].rotate = 90;
-
-      flipTimeoutId = setTimeout(() => {
-        flipPages[0].rotate = 0;
-      }, 200);
-
-      flipTimeoutId = setTimeout(() => {
-        bookmark.set(data);
-        setBookContent(data.content);
-        resetRenderBookmark();
-        currentPage = 0;
-        keyPressed = false;
-      }, 400);
-    } else {
-      for (let index = 0; index < flipPages.length; index++) {
-        flipTimeoutId = setTimeout(
+    if (flipPages[0].flip) {
+      flipPages.forEach((item, i) => {
+        setTimeout(
           () => {
-            flipPages[index].rotate = 0;
-            flipPages[index].zIndex = 4 + flipPages.length - index;
+            item.flip = false;
           },
-          (flipPages.length - index - 1) * 150,
+          (flipPages.length - i - 1) * 150,
         );
-      }
-      flipTimeoutId = setTimeout(
+      });
+      flipTimeoutId = setTimeout(() => {
+        tweenCover.target = 0;
+        flipCover = false;
+      }, flipPages.length * 150);
+
+      setTimeout(
         () => {
+          currentPage = 0;
           bookmark.set(data);
           setBookContent(data.content);
           resetRenderBookmark();
-          currentPage = 0;
           keyPressed = false;
         },
-        (flipPages.length - 1) * 150 + 200,
+        flipPages.length * 150 + 300,
       );
+    } else {
+      tweenCover.target = 0;
+      flipCover = false;
+      flipTimeoutId = setTimeout(() => {
+        currentPage = 0;
+        bookmark.set(data);
+        setBookContent(data.content);
+        resetRenderBookmark();
+        keyPressed = false;
+      }, 300);
+    }
+  }
+
+  function handleOpenBook() {
+    flipCover = true;
+    tweenCover.target = -180;
+    if ($bookmark!.like) {
+      setTimeout(() => {
+        tweenRibbon.target = likeBookmark ? 580 : 480;
+      }, 250);
     }
   }
 
@@ -208,7 +214,7 @@
     if (!bookmark) return;
     if (likeBookmark) {
       const newLike = $bookmark!.like - 1;
-      visualProgress.target = newLike === 0 ? 21 : 480;
+      tweenRibbon.target = newLike === 0 ? 21 : 480;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = false;
       const { error } = await page.data.supabase
@@ -217,7 +223,7 @@
         .eq("id", $bookmark!.id);
     } else {
       const newLike = $bookmark!.like + 1;
-      visualProgress.target = 580;
+      tweenRibbon.target = 580;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = true;
       const { error } = await page.data.supabase
@@ -335,15 +341,14 @@
 
   function setBookContent(content: string) {
     let pages = splitIntoBlocks(content);
-    pages.unshift("", "");
     flipPages = pages.reduce(
-      (acc: PageContent[], cur: string, index: number) => {
+      (acc: BookPageContentType[], cur: string, index: number) => {
         if (index % 2 === 0) {
           acc.push({
-            zIndex: 4 + pages.length / 2 - index / 2,
+            id: 1 + index / 2,
             front: cur,
             back: pages[index + 1],
-            rotate: 0,
+            flip: false,
           });
         }
         return acc;
@@ -371,10 +376,9 @@
       translatedContent = data[0][0];
     }
 
-    visualProgress.target = 21;
-
-    flipPages[0].rotate = 0;
-    flipPages[0].zIndex = 1002;
+    tweenRibbon.target = 21;
+    tweenCover.target = 0;
+    flipCover = false;
     flipTimeoutId = setTimeout(() => {
       if (showTranslated) {
         showTranslated = false;
@@ -394,39 +398,24 @@
     translatedContent = "";
   }
 
-  function handleFlipPage(index: number) {
+  function handleFlipPage(id: number) {
     keyPressed = true;
-    currentPage = index;
-    visualProgress.target = 21;
-    flipPages[index].zIndex = 999;
+    tweenRibbon.target = 21;
+    currentPage = id;
 
-    if (flipPages[index].rotate === 180) {
-      flipPages[index].rotate = 90;
-
-      flipTimeoutId = setTimeout(() => {
-        flipPages[index].rotate = 0;
-      }, 200);
-
-      flipTimeoutId = setTimeout(() => {
-        flipPages[index].zIndex = 4 + flipPages.length - index;
-        keyPressed = false;
-      }, 400);
-    } else if (flipPages[index].rotate === 0) {
-      flipPages[index].rotate = 90;
-
-      flipTimeoutId = setTimeout(() => {
-        flipPages[index].rotate = 180;
-      }, 200);
-
-      flipTimeoutId = setTimeout(() => {
-        flipPages[index].zIndex = 4 + index;
-        keyPressed = false;
-      }, 400);
+    if (flipPages[id - 1].flip) {
+      flipPages[id - 1].flip = false;
+    } else {
+      flipPages[id - 1].flip = true;
     }
 
-    if (flipPages[0].rotate !== 0 && $bookmark!.like) {
+    flipTimeoutId = setTimeout(() => {
+      keyPressed = false;
+    }, 400);
+
+    if (flipCover && $bookmark!.like) {
       flagTimeoutId = setTimeout(() => {
-        visualProgress.target = likeBookmark ? 580 : 480;
+        tweenRibbon.target = likeBookmark ? 580 : 480;
       }, 400);
     }
   }
@@ -438,31 +427,38 @@
     }
     if (e.key === "ArrowRight") {
       switch (currentPage) {
-        case flipPages.length - 1:
-          flipPages[currentPage].rotate === 0
-            ? handleFlipPage(currentPage)
-            : handleGetNextBookmark();
+        case 0:
+          if (flipCover) {
+            handleFlipPage(1);
+          } else {
+            handleOpenBook();
+          }
+          break;
+        case flipPages.length:
+          flipPages[currentPage - 1].flip
+            ? handleGetNextBookmark()
+            : handleFlipPage(currentPage);
           break;
         default:
-          flipPages[currentPage].rotate === 0
-            ? handleFlipPage(currentPage)
-            : handleFlipPage(currentPage + 1);
+          flipPages[currentPage - 1].flip
+            ? handleFlipPage(currentPage + 1)
+            : handleFlipPage(currentPage);
           break;
       }
     } else if (e.key === "ArrowLeft") {
       switch (currentPage) {
         case 0:
-          if (flipPages[0].rotate === 180) handleGetPrevBookmark();
+          if (flipCover) {
+            handleGetPrevBookmark();
+          }
           break;
         case 1:
-          flipPages[1].rotate === 0
-            ? handleGetPrevBookmark()
-            : handleFlipPage(1);
+          flipPages[0].flip ? handleFlipPage(1) : handleGetPrevBookmark();
           break;
         default:
-          flipPages[currentPage].rotate === 0
-            ? handleFlipPage(currentPage - 1)
-            : handleFlipPage(currentPage);
+          flipPages[currentPage - 1].flip
+            ? handleFlipPage(currentPage)
+            : handleFlipPage(currentPage - 1);
           break;
       }
     } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -472,10 +468,9 @@
 
   function shadowIn(node: HTMLElement) {
     return {
-      duration: 150,
-      easing: linear,
+      duration: 10,
       css: (t: number) => `
-        box-shadow: 1px ${3 + 6 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
+        box-shadow: ${1 * t}px ${6 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
       `,
     };
   }
@@ -777,336 +772,292 @@
     </div>
   {/if}
 
-  <div class="book" style="width: {pageWidth()}px; height:{pageHeight()}px;">
-    {#each flipPages as page, i}
-      {#if i === 0}
+  <div class="book" style="width: {pageWidth()}px; height: {pageHeight()}px;">
+    <div
+      class="flip flipCover"
+      style="z-index: {tweenCover.current <= -90
+        ? 4
+        : 4 + flipPages.length}; transform: rotateY({tweenCover.current}deg);"
+    >
+      <div class="frontPage">
         <div
-          class="flip coverPage"
-          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg);"
+          class="frontCover"
+          style="width: {pageWidth() / 2}px; height: {pageHeight()}px;"
         >
-          <div class="w-full h-full pageFront cover">
-            {#if $bookInfo}
-              <img
-                src={$bookInfo!.coverImage}
-                alt="book-cover"
-                class="w-full h-full object-contain"
-              />
-            {:else}
-              <div class="w-full h-full flex items-center p-45">
-                <p
-                  class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
-                >
-                  take a small step every day
-                </p>
-              </div>
-            {/if}
-            <button
-              class="pageButton"
-              aria-label="pageButton"
-              onclick={() => handleFlipPage(i)}
-            ></button>
-          </div>
-
-          <div class="w-full h-full pageBack p-12 pr-0 bg-[#0a0905]">
-            <div class="backCoverPaper w-full h-full flex flex-col">
-              <div
-                class="w-full flex-1 px-28 py-18 overflow-y-scroll no-scrollbar flex justify-start items-center flex-col"
+          {#if $bookInfo}
+            <img
+              src={$bookInfo!.coverImage}
+              alt="book-cover"
+              class="w-full h-full object-contain"
+            />
+          {:else}
+            <div class="w-full h-full flex items-center p-60">
+              <p
+                class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
               >
-                {#if $bookInfo}
-                  {#if $bookInfo.coverImage}
-                    <img
-                      src={$bookInfo.coverImage}
-                      alt="book-cover"
-                      class="h-2/5 object-contain"
-                      style="filter: drop-shadow(0 2px 8px rgba(0,0,0,.2));"
-                    />
-                  {/if}
+                take a small step every day
+              </p>
+            </div>
+          {/if}
+        </div>
+        <button
+          class="pageButton"
+          aria-label="pageButton"
+          onclick={() => handleOpenBook()}
+        ></button>
+      </div>
+      <div class="backPage">
+        <div
+          class="infoPage"
+          style="width: {pageWidth() / 2}px; height: {pageHeight()}px;"
+        >
+          <div class="infoPageContent frontCoverPaper">
+            <div
+              class="w-full flex-1 px-28 py-18 overflow-y-scroll no-scrollbar flex justify-start items-center flex-col"
+            >
+              {#if $bookInfo}
+                {#if $bookInfo.coverImage}
+                  <img
+                    src={$bookInfo.coverImage}
+                    alt="book-cover"
+                    class="h-2/5 object-contain"
+                    style="filter: drop-shadow(0 2px 8px rgba(0,0,0,.2));"
+                  />
+                {/if}
 
-                  {#if $bookInfo.title}
-                    <p
-                      class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
-                    >
-                      {$bookInfo.title}
-                    </p>
-                  {/if}
-
-                  {#if $bookInfo.authors}
-                    <p
-                      class="mb-3 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
-                    >
-                      {$bookInfo.authors.join(", ")}
-                    </p>
-                  {/if}
-
-                  {#if $bookInfo.numberOfRatings}
-                    <div class="mb-3 flex items-center justify-center">
-                      <StarRating
-                        rating={Number($bookInfo.rating)}
-                        size={20}
-                        gap={6}
-                      />
-                      <span
-                        class="ml-9 pt-9 text-18 font-copernicus leading-16 text-[#1e1915] font-600"
-                      >
-                        {$bookInfo.rating}
-                      </span>
-                    </div>
-                  {/if}
-
-                  <div class="mb-6 flex justify-center items-center gap-3">
-                    {#if $bookInfo.numberOfRatings}
-                      <span
-                        class="text-13 font-proxima leading-16 text-[#707070] font-400"
-                      >
-                        {Number($bookInfo.numberOfRatings).toLocaleString()} ratings
-                      </span>
-                    {/if}
-                    {#if $bookInfo.numberOfReviews}
-                      <span
-                        class="text-13 font-proxima leading-16 text-[#707070] font-400"
-                      >
-                        ·&#32; {Number(
-                          $bookInfo.numberOfReviews,
-                        ).toLocaleString()} reviews
-                      </span>
-                    {/if}
-                  </div>
-
-                  {#if $bookInfo.description}
-                    <div class="my-3">
-                      <p
-                        class:clamped={!expandDesc}
-                        class="text-13 font-proxima leading-16 text-[#1e1915] font-400"
-                      >
-                        {$bookInfo.description}
-                      </p>
-
-                      <button
-                        onclick={() => (expandDesc = !expandDesc)}
-                        class="text-11 font-proxima leading-12 text-[#1e1915] font-600 float-right"
-                      >
-                        {expandDesc ? "Show less" : "Show more"}
-                      </button>
-                    </div>
-                  {/if}
-
-                  {#if $bookInfo.numberOfPages}
-                    <p
-                      class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
-                    >
-                      {$bookInfo.numberOfPages} pages, Paperback
-                    </p>
-                  {/if}
-
-                  {#if $bookInfo.firstPublished}
-                    <p
-                      class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
-                    >
-                      First published {$bookInfo.firstPublished}
-                    </p>
-                  {/if}
-
-                  {#if $bookmark}
-                    <p
-                      class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
-                    >
-                      Bookmarked at {format(
-                        new Date($bookmark!.dateOfCreation),
-                        "p cccc, yyyy-MM-dd",
-                      )}
-                    </p>
-                  {/if}
-                {:else if $bookmark}
+                {#if $bookInfo.title}
                   <p
                     class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                   >
-                    {$bookmark.bookTile}
+                    {$bookInfo.title}
                   </p>
+                {/if}
+
+                {#if $bookInfo.authors}
                   <p
-                    class="mb-15 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
+                    class="mb-3 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
                   >
-                    {$bookmark.authors}
+                    {$bookInfo.authors.join(", ")}
                   </p>
+                {/if}
+
+                {#if $bookInfo.numberOfRatings}
+                  <div class="mb-3 flex items-center justify-center">
+                    <StarRating
+                      rating={Number($bookInfo.rating)}
+                      size={20}
+                      gap={6}
+                    />
+                    <span
+                      class="ml-9 pt-9 text-18 font-copernicus leading-16 text-[#1e1915] font-600"
+                    >
+                      {$bookInfo.rating}
+                    </span>
+                  </div>
+                {/if}
+
+                <div class="mb-6 flex justify-center items-center gap-3">
+                  {#if $bookInfo.numberOfRatings}
+                    <span
+                      class="text-13 font-proxima leading-16 text-[#707070] font-400"
+                    >
+                      {Number($bookInfo.numberOfRatings).toLocaleString()} ratings
+                    </span>
+                  {/if}
+                  {#if $bookInfo.numberOfReviews}
+                    <span
+                      class="text-13 font-proxima leading-16 text-[#707070] font-400"
+                    >
+                      ·&#32; {Number(
+                        $bookInfo.numberOfReviews,
+                      ).toLocaleString()} reviews
+                    </span>
+                  {/if}
+                </div>
+
+                {#if $bookInfo.description}
+                  <div class="my-3">
+                    <p
+                      class:clamped={!expandDesc}
+                      class="text-13 font-proxima leading-16 text-[#1e1915] font-400"
+                    >
+                      {$bookInfo.description}
+                    </p>
+
+                    <button
+                      onclick={() => (expandDesc = !expandDesc)}
+                      class="mt-3 text-11 font-proxima leading-12 text-[#1e1915] font-600 float-right"
+                    >
+                      {expandDesc ? "Show less" : "Show more"}
+                    </button>
+                  </div>
+                {/if}
+
+                {#if $bookInfo.numberOfPages}
                   <p
-                    class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
+                    class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
+                  >
+                    {$bookInfo.numberOfPages} pages, Paperback
+                  </p>
+                {/if}
+
+                {#if $bookInfo.firstPublished}
+                  <p
+                    class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
+                  >
+                    First published {$bookInfo.firstPublished}
+                  </p>
+                {/if}
+
+                {#if $bookmark}
+                  <p
+                    class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                   >
                     Bookmarked at {format(
-                      new Date($bookmark.dateOfCreation),
+                      new Date($bookmark!.dateOfCreation),
                       "p cccc, yyyy-MM-dd",
                     )}
                   </p>
                 {/if}
-              </div>
-              <div class="w-full py-6 flex justify-center items-baseline">
-                <button class="btn-menu" onclick={() => translateContent()}>
-                  <Icon
-                    icon="material-symbols:translate-rounded"
-                    width="15"
-                    height="15"
-                  />
-                </button>
-
-                <button class="btn-menu" onclick={copyBookMarkToClipboard}>
-                  <Icon
-                    icon="material-symbols:content-copy-outline-rounded"
-                    width="15"
-                    height="15"
-                  />
-                </button>
-
-                <button class="btn-menu" onclick={getRandomBookmark}>
-                  <Icon
-                    icon="material-symbols:shuffle-rounded"
-                    width="15"
-                    height="15"
-                  />
-                </button>
-
-                <button
-                  class="btn-menu"
-                  onclick={() => {
-                    showEdit = true;
-                    isSubmitting = false;
-                  }}
+              {:else if $bookmark}
+                <p
+                  class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                 >
-                  <Icon
-                    icon="material-symbols:edit-square-outline-rounded"
-                    width="15"
-                    height="15"
-                  />
-                </button>
-
-                <button class="btn-menu" onclick={showInsertBookmark}>
-                  <Icon
-                    icon="material-symbols:database-upload-outline-rounded"
-                    width="15"
-                    height="15"
-                  />
-                </button>
-
-                <button
-                  class="btn-menu"
-                  onclick={() => (showDelete = !showDelete)}
+                  {$bookmark.bookTile}
+                </p>
+                <p
+                  class="mb-15 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
                 >
-                  <Icon
-                    icon="material-symbols:delete-forever-outline-rounded"
-                    width="15"
-                    height="15"
-                  />
-                </button>
-              </div>
+                  {$bookmark.authors}
+                </p>
+                <p
+                  class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
+                >
+                  Bookmarked at {format(
+                    new Date($bookmark.dateOfCreation),
+                    "p cccc, yyyy-MM-dd",
+                  )}
+                </p>
+              {/if}
             </div>
-            <button
-              class="pageButton"
-              aria-label="pageButton"
-              onclick={handleGetPrevBookmark}
-              disabled={keyPressed || isRandomed}
-              class:disabled={keyPressed || isRandomed}
-            ></button>
+            <div class="w-full py-6 flex justify-center items-baseline">
+              <button class="btn-menu" onclick={() => translateContent()}>
+                <Icon
+                  icon="material-symbols:translate-rounded"
+                  width="15"
+                  height="15"
+                />
+              </button>
+
+              <button class="btn-menu" onclick={copyBookMarkToClipboard}>
+                <Icon
+                  icon="material-symbols:content-copy-outline-rounded"
+                  width="15"
+                  height="15"
+                />
+              </button>
+
+              <button class="btn-menu" onclick={getRandomBookmark}>
+                <Icon
+                  icon="material-symbols:shuffle-rounded"
+                  width="15"
+                  height="15"
+                />
+              </button>
+
+              <button
+                class="btn-menu"
+                onclick={() => {
+                  showEdit = true;
+                  isSubmitting = false;
+                }}
+              >
+                <Icon
+                  icon="material-symbols:edit-square-outline-rounded"
+                  width="15"
+                  height="15"
+                />
+              </button>
+
+              <button class="btn-menu" onclick={showInsertBookmark}>
+                <Icon
+                  icon="material-symbols:database-upload-outline-rounded"
+                  width="15"
+                  height="15"
+                />
+              </button>
+
+              <button
+                class="btn-menu"
+                onclick={() => (showDelete = !showDelete)}
+              >
+                <Icon
+                  icon="material-symbols:delete-forever-outline-rounded"
+                  width="15"
+                  height="15"
+                />
+              </button>
+            </div>
           </div>
         </div>
-      {:else}
-        <div
-          class="flip normalPage"
-          style="z-index: {page.zIndex}; transform: rotateY(-{page.rotate}deg); left: 50%; right: {page.rotate >
-          90
-            ? 12 + 2 * i
-            : 12 + 2 * (flipPages.length - i)}px;"
-        >
-          <div
-            class="pageFront frontPaper"
-            class:highlightContentFirstPage={i === 1}
-          >
-            <div
-              class="highlightContent"
-              style="width: {pageWidth() / 2 -
-                12 -
-                112}px; height: {pageHeight() -
-                24 -
-                96}px; margin: 3rem 3rem 3rem calc(4rem - {page.rotate > 90
-                ? 2 * i
-                : 2 * (flipPages.length - i)}px);"
-            >
-              {@html page.front}
-            </div>
-
-            <span class="pageNumber">{2 * i - 1}.</span>
-            <button
-              class="pageButton"
-              aria-label="pageButton"
-              onclick={() => handleFlipPage(i)}
-            >
-              {#if page.rotate === 0}
-                <div class="pageFold"></div>
-              {/if}
-            </button>
-          </div>
-          <div class="pageBack backPaper">
-            <div
-              class="highlightContent"
-              style="width: {pageWidth() / 2 -
-                12 -
-                112}px; height: {pageHeight() -
-                24 -
-                96}px; margin: 3rem calc(3rem - {page.rotate > 90
-                ? 2 * i
-                : 2 * (flipPages.length - i)}px) 3rem 4rem;"
-            >
-              {@html page.back}
-            </div>
-
-            <span class="pageNumber">{2 * i}.</span>
-            <button
-              class="pageButton"
-              aria-label="pageButton"
-              onclick={() => handleFlipPage(i)}
-            >
-              {#if page.rotate === 180}
-                <div class="pageFold"></div>
-              {/if}
-            </button>
-          </div>
-        </div>
-      {/if}
-    {/each}
-
-    {#if flipPages.length && flipPages[0].rotate === 180}
-      <div class="frontShadow" style="z-index: 2;" in:shadowIn></div>
-    {/if}
-
-    <div class="backShadow" style="z-index: 1;"></div>
-
-    <div class="backCover" style="z-index: 3;">
-      <div class="w-full h-full frontCoverPaper">
         <button
           class="pageButton"
           aria-label="pageButton"
-          onclick={handleGetNextBookmark}
+          onclick={handleGetPrevBookmark}
           disabled={keyPressed || isRandomed}
           class:disabled={keyPressed || isRandomed}
-        >
-        </button>
+        ></button>
       </div>
     </div>
 
+    {#each flipPages as item}
+      <HighlightPage
+        data={item}
+        innerWidth={pageWidth() / 2 - 12 - 112}
+        innerHeight={pageHeight() - 24 - 96}
+        length={flipPages.length}
+        handleFlip={handleFlipPage}
+      />
+    {/each}
+
+    {#if tweenCover.current < -170}
+      <div class="frontShadow" style="z-index: 2;" in:shadowIn></div>
+    {/if}
+    <div class="backShadow" style="z-index: 1;"></div>
+
+    <div class="backCover" style="z-index: 3;">
+      <div class="w-full h-full backCoverPaper"></div>
+      <button
+        class="pageButton"
+        aria-label="pageButton"
+        onclick={handleGetNextBookmark}
+        disabled={keyPressed || isRandomed}
+        class:disabled={keyPressed || isRandomed}
+      >
+      </button>
+    </div>
+
     <button
-      class="ribbon {visualProgress.current > 150
-        ? 'ribbonLong'
-        : 'ribbonShort'}"
-      style="height: {visualProgress.current}px; z-index: {visualProgress.current >
-      21
-        ? 1001
-        : 4};"
+      class="ribbon {tweenRibbon.current > 150 ? 'ribbonLong' : 'ribbonShort'}"
+      style="height: {tweenRibbon.current}px; {tweenRibbon.current > 21
+        ? 'box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); z-index: 4;'
+        : 'z-index: 3;'}"
       onclick={handleCheckBookmark}
     >
-      {#if visualProgress.current > 240}
-        <span class="ribbonContent">
+      {#if tweenRibbon.current > 240}
+        <span
+          class="ribbonContent"
+          style="font-size: {27 -
+            3 **
+              ($bookmark!.like &&
+                $bookmark!.like.toLocaleString().length - 1)}px;"
+        >
           {$bookmark!.like ? $bookmark!.like : ""}
         </span>
       {/if}
-      {#if visualProgress.current > 21}
+      {#if tweenRibbon.current > 21}
         <span
-          class="ribbonTail {visualProgress.current > 150
+          class="ribbonTail {tweenRibbon.current > 150
             ? 'ribbonTailLong'
             : 'ribbonTailShort'}"
         ></span>
@@ -1121,6 +1072,118 @@
   .book {
     perspective: 6000px;
     position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .flip {
+    transform-style: preserve-3d;
+    position: absolute;
+    bottom: 12px;
+    top: 12px;
+  }
+
+  .flipCover {
+    bottom: 0;
+    top: 0;
+  }
+
+  .frontPage {
+    position: absolute;
+    user-select: text;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    backface-visibility: hidden;
+    box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.45);
+  }
+
+  .backPage {
+    position: absolute;
+    user-select: text;
+    backface-visibility: hidden;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transform: rotateY(180deg);
+    box-shadow: -2px 0px 2px rgba(0, 0, 0, 0.45);
+  }
+
+  .flipCover .frontPage {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    overflow: hidden;
+  }
+
+  .flipCover .backPage {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    overflow: hidden;
+  }
+
+  .frontCoverPaper {
+    background: linear-gradient(
+      to right,
+      #efebe5 0%,
+      #efebe5 90%,
+      #e9e4dc 97%,
+      #d2cdc3 100%
+    );
+  }
+
+  .backCoverPaper {
+    background: linear-gradient(
+      to right,
+      #d2cdc3 0%,
+      #e9e4dc 3%,
+      #efebe5 10%,
+      #efebe5 100%
+    );
+  }
+
+  .backShadow {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    top: 0;
+    right: 0;
+    box-shadow: -1px 9px 18px rgba(0, 0, 0, 0.8);
+  }
+
+  .frontShadow {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    left: 0;
+    top: 0;
+    box-shadow: 1px 9px 18px rgba(0, 0, 0, 0.8);
+  }
+
+  .frontCover {
+    background: #0a0905;
+  }
+
+  .infoPage {
+    background: #0a0905;
+    padding: 12px 0 12px 12px;
+  }
+
+  .infoPageContent {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .frontCover::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 9px;
+    bottom: 0;
+    width: 2px;
+    background: rgba(81, 81, 81, 0.3);
+    box-shadow: 1px 0 3px rgba(255, 255, 255, 0.1);
   }
 
   .backCover {
@@ -1135,152 +1198,6 @@
     padding: 12px 12px 12px 0;
   }
 
-  .backShadow {
-    position: absolute;
-    height: 100%;
-    width: 50%;
-    top: 0;
-    right: 0;
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-    box-shadow: -1px 9px 18px rgba(0, 0, 0, 0.8);
-  }
-
-  .frontShadow {
-    position: absolute;
-    height: 100%;
-    width: 50%;
-    left: 0;
-    top: 0;
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-    box-shadow: 1px 9px 18px rgba(0, 0, 0, 0.8);
-  }
-
-  .frontPaper {
-    background: linear-gradient(
-      to right,
-      #d9d9d9 0%,
-      #f9f9f9 9%,
-      #ffffff 12%,
-      #ffffff 100%
-    );
-  }
-
-  .frontCoverPaper {
-    background: linear-gradient(
-      to right,
-      #d2cdc3 0%,
-      #e9e4dc 3%,
-      #efebe5 10%,
-      #efebe5 100%
-    );
-  }
-
-  .backPaper {
-    background: linear-gradient(
-      to right,
-      #ffffff 0%,
-      #ffffff 88%,
-      #f9f9f9 91%,
-      #d9d9d9 100%
-    );
-  }
-
-  .backCoverPaper {
-    background: linear-gradient(
-      to right,
-      #efebe5 0%,
-      #efebe5 90%,
-      #e9e4dc 97%,
-      #d2cdc3 100%
-    );
-  }
-
-  .cover {
-    border-radius: 0 3px 3px 0;
-    box-shadow: inset 4px 0 10px rgba(255, 255, 255, 0.1);
-    background: #0a0905;
-  }
-
-  .cover::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 9px;
-    bottom: 0;
-    width: 2px;
-    background: rgba(81, 81, 81, 0.3);
-    box-shadow: 1px 0 3px rgba(255, 255, 255, 0.1);
-  }
-
-  .flip {
-    transform-style: preserve-3d;
-    transition: transform 200ms ease-out;
-    transform-origin: left center;
-  }
-
-  .normalPage {
-    position: absolute;
-    bottom: 12px;
-    top: 12px;
-    box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.45);
-  }
-
-  .coverPage {
-    position: absolute;
-    height: 100%;
-    width: 50%;
-    right: 0;
-    top: 0;
-  }
-
-  .pageFront {
-    position: absolute;
-    user-select: text;
-    backface-visibility: hidden;
-    top: 0;
-    left: 0;
-    z-index: 1;
-  }
-
-  .pageBack {
-    position: absolute;
-    user-select: text;
-    backface-visibility: hidden;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    transform: rotateY(180deg);
-  }
-
-  .coverPage .pageBack {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-  }
-
-  .coverPage .pageFront {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-  }
-
-  .pageNumber {
-    position: absolute;
-    bottom: 1.5rem;
-    font-family: "Copernicus", sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1e1915;
-  }
-
-  .pageFront .pageNumber {
-    right: 2.5rem;
-  }
-
-  .pageBack .pageNumber {
-    left: 2.5rem;
-  }
-
   .pageButton {
     position: absolute;
     top: 0;
@@ -1292,98 +1209,38 @@
     cursor: not-allowed;
   }
 
-  .pageFront .pageButton,
-  .backCover .pageButton {
+  .frontPage .pageButton {
     right: 0;
   }
 
-  .pageBack .pageButton {
+  .backPage .pageButton {
     left: 0;
   }
 
-  .coverPage .pageBack .pageButton {
-    top: 9px;
-    bottom: 9px;
-    left: 9px;
+  .flipCover .backPage .pageButton {
+    top: 12px;
+    bottom: 12px;
+    left: 12px;
   }
 
   .backCover .pageButton {
-    top: 9px;
-    bottom: 9px;
-    right: 9px;
-  }
-
-  .pageFold {
-    position: absolute;
-    width: 0px;
-    height: 0px;
-    transition: all 150ms;
-  }
-
-  .pageFront .pageFold {
-    top: 0;
-    right: 0;
-    border-left-width: 1px;
-    border-left-color: #dddddd;
-    border-left-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: #dddddd;
-    border-bottom-style: solid;
-    box-shadow: -4px 4px 10px #a4a4a4;
-  }
-
-  .pageBack .pageFold {
-    top: 0;
-    left: 0;
-    border-right-width: 1px;
-    border-right-color: #dddddd;
-    border-right-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: #dddddd;
-    border-bottom-style: solid;
-    box-shadow: 4px 4px 10px #a4a4a4;
-  }
-
-  .pageFront .pageButton:hover .pageFold {
-    width: 60px;
-    height: 60px;
-    background-image: linear-gradient(
-      45deg,
-      rgb(254, 254, 254) 0%,
-      rgb(242, 242, 242) 49%,
-      rgb(255, 255, 255) 50%,
-      rgb(255, 255, 255) 100%
-    );
-  }
-
-  .pageBack .pageButton:hover .pageFold {
-    width: 60px;
-    height: 60px;
-    background-image: linear-gradient(
-      135deg,
-      rgb(255, 255, 255) 0%,
-      rgb(255, 255, 255) 50%,
-      rgb(242, 242, 242) 51%,
-      rgb(254, 254, 254) 100%
-    );
+    top: 12px;
+    bottom: 12px;
+    right: 12px;
   }
 
   .ribbon {
     position: relative;
     top: -9px;
-    left: calc(50% + 3px);
+    left: 21px;
     user-select: none;
     border-top-left-radius: 3px;
     width: 36px;
-    height: 18px;
-    font-size: 1em;
-    container-type: inline-size;
-    z-index: 3;
   }
 
   .ribbonContent {
     font-family: "Copernicus", sans-serif;
-    font-size: 60cqi;
+    font-size: 27px;
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     user-select: none;
@@ -1406,7 +1263,6 @@
   }
 
   .ribbonLong {
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
     background: linear-gradient(
       180deg,
       rgb(169, 9, 9) 0%,
@@ -1418,7 +1274,7 @@
 
   .ribbonTail {
     position: absolute;
-    bottom: -20px;
+    bottom: -21px;
     left: 0;
     width: 0;
     height: 0;
@@ -1429,11 +1285,11 @@
   }
 
   .ribbonTailLong {
-    border-top: 20px solid #e40900;
+    border-top: 21px solid #e40900;
   }
 
   .ribbonTailShort {
-    border-top: 20px solid #a90909;
+    border-top: 21px solid #a90909;
   }
 
   .clamped {
