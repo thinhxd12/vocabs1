@@ -107,7 +107,11 @@
           showImageBackground = true;
         }}
       >
-        <Icon icon="material-symbols:adjust-outline" width="14" height="14" />
+        <Icon
+          icon="material-symbols:triangle-circle-rounded"
+          width="16"
+          height="16"
+        />
       </button>
       <button
         class="btn-menu light"
@@ -156,7 +160,7 @@
       >
         <Icon icon="material-symbols:reset-image" width="14" height="14" />
       </button>
-      
+
       <button
         onclick={(e) => {
           e.currentTarget.blur();
@@ -208,7 +212,11 @@
           showVideoBackground = true;
         }}
       >
-        <Icon icon="material-symbols:adjust-outline" width="14" height="14" />
+        <Icon
+          icon="material-symbols:triangle-circle-rounded"
+          width="16"
+          height="16"
+        />
       </button>
     </div>
   {:else if showVideoBackground}

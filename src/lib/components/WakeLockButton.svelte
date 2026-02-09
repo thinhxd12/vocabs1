@@ -2,6 +2,7 @@
   import { wakeEnable } from "$lib/store/navstore";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
+  import { fly } from "svelte/transition";
 
   let wakeLock = $state<WakeLockSentinel | null>(null);
   let isDisabled = $state<boolean>(true);
@@ -59,15 +60,19 @@
   }}
 >
   {#if $wakeEnable}
-    <Icon icon="material-symbols:dark-mode-rounded" width="13" height="13" />
+    <div in:fly={{ duration: 150, y: -15 }}>
+      <Icon icon="material-symbols:sunny-rounded" width="13" height="13" />
+    </div>
   {:else}
-    <Icon icon="material-symbols:dark-mode-outline" width="13" height="13" />
+    <div in:fly={{ duration: 150, y: -15 }}>
+      <Icon icon="material-symbols:dark-mode-rounded" width="13" height="13" />
+    </div>
   {/if}
 </button>
 
 <style lang="postcss">
   .btn-menu {
-    @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30 disabled:cursor-not-allowed disabled:opacity-30;
+    @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 overflow-hidden bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30 disabled:cursor-not-allowed disabled:opacity-30;
   }
 
   .btn-menu.active {
