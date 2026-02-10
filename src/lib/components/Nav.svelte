@@ -158,11 +158,11 @@
         class="btn-menu"
       >
         {#if page.url.pathname === "/pomodoro"}
-          <span in:fly={{ duration: 150, y: -15 }}>
+          <span in:fly={{ duration: 300, y: -15 }}>
             <Icon icon="material-symbols:adjust" width="13" height="13" />
           </span>
         {:else}
-          <span in:fly={{ duration: 150, y: -15 }}>
+          <span in:fly={{ duration: 300, y: -15 }}>
             <Icon
               icon="material-symbols:adjust-outline"
               width="13"

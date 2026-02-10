@@ -6,6 +6,7 @@
 
   let wakeLock = $state<WakeLockSentinel | null>(null);
   let isDisabled = $state<boolean>(true);
+  let status = $state<boolean>(false);
 
   onMount(() => {
     if ("wakeLock" in navigator) {
@@ -18,9 +19,11 @@
   async function requestWakeLock() {
     try {
       wakeLock = await navigator.wakeLock.request("screen");
+      status = true;
     } catch (err) {
       $wakeEnable = false;
       isDisabled = true;
+      status = false;
     }
   }
 
@@ -32,6 +35,7 @@
         wakeLock.release().then(() => {
           wakeLock = null;
           $wakeEnable = false;
+          status = false;
         });
       }
     }
@@ -44,7 +48,10 @@
       if (document.visibilityState === "visible") {
         toggleWakeLock($wakeEnable);
       } else {
-        if (wakeLock) wakeLock = null;
+        if (wakeLock) {
+          wakeLock = null;
+          status = false;
+        }
       }
     });
   }
@@ -52,19 +59,19 @@
 
 <button
   class="btn-menu"
-  class:active={$wakeEnable}
+  class:active={status}
   disabled={isDisabled}
   onclick={(e) => {
     $wakeEnable = !$wakeEnable;
     e.currentTarget.blur();
   }}
 >
-  {#if $wakeEnable}
-    <span in:fly={{ duration: 150, y: -15 }}>
+  {#if status}
+    <span in:fly={{ duration: 300, y: -15 }}>
       <Icon icon="material-symbols:sunny-rounded" width="13" height="13" />
     </span>
   {:else}
-    <span in:fly={{ duration: 150, y: -15 }}>
+    <span in:fly={{ duration: 300, y: -15 }}>
       <Icon icon="material-symbols:dark-mode-rounded" width="13" height="13" />
     </span>
   {/if}

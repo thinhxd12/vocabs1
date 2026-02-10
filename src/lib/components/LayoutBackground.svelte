@@ -5,7 +5,11 @@
     getCurrentImageBackground,
     getNextImageBackground,
     getPrevImageBackground,
+    LAYOUT_SETTING,
     localImageStore,
+    showImageLocal,
+    showImageRemote,
+    showVideo,
   } from "$lib/store/localstore";
   import type { ImageBackgroundType, VideoBackgroundType } from "$lib/types";
   import Icon from "@iconify/svelte";
@@ -48,9 +52,6 @@
     },
   ];
 
-  let showImageLocal = $state<boolean>(true);
-  let showImageBackground = $state<boolean>(false);
-  let showVideoBackground = $state<boolean>(false);
   let imageSrc = $state<ImageBackgroundType>(defaultImage[0]);
   let videoSrc = $state<string>(videos[3].value);
   let isMuted = $state<boolean>(true);
@@ -58,10 +59,56 @@
   onMount(() => {
     getCurrentImageBackground();
   });
+
+  function handleShowLayout(type: "local" | "remote" | "video") {
+    switch (type) {
+      case "local":
+        $showImageLocal = true;
+        $showImageRemote = false;
+        $showVideo = false;
+        localStorage.setItem(
+          LAYOUT_SETTING,
+          JSON.stringify({
+            showImageLocal: true,
+            showImageRemote: false,
+            showVideo: false,
+          }),
+        );
+        break;
+      case "remote":
+        $showImageLocal = false;
+        $showImageRemote = true;
+        $showVideo = false;
+        localStorage.setItem(
+          LAYOUT_SETTING,
+          JSON.stringify({
+            showImageLocal: false,
+            showImageRemote: true,
+            showVideo: false,
+          }),
+        );
+        break;
+      case "video":
+        $showImageLocal = false;
+        $showImageRemote = false;
+        $showVideo = true;
+        localStorage.setItem(
+          LAYOUT_SETTING,
+          JSON.stringify({
+            showImageLocal: false,
+            showImageRemote: false,
+            showVideo: true,
+          }),
+        );
+        break;
+      default:
+        break;
+    }
+  }
 </script>
 
 {#if page.url.pathname !== "/art"}
-  {#if showImageLocal}
+  {#if $showImageRemote}
     {#if $localImageStore.data.length}
       <img
         src={$localImageStore.data[$currentImageIndex].url}
@@ -99,8 +146,7 @@
         class="btn-menu light"
         onclick={(e) => {
           e.currentTarget.blur();
-          showImageLocal = false;
-          showImageBackground = true;
+          handleShowLayout("video");
         }}
       >
         <Icon
@@ -123,7 +169,7 @@
         {/if}
       </button>
     </div>
-  {:else if showImageBackground}
+  {:else if $showImageLocal}
     <img
       src={imageSrc.url}
       alt="main-layout-bg"
@@ -184,8 +230,7 @@
       <button
         onclick={(e) => {
           e.currentTarget.blur();
-          showImageBackground = false;
-          showImageLocal = true;
+          handleShowLayout("remote");
         }}
         class="btn-menu light"
       >
@@ -200,8 +245,7 @@
         class="btn-menu light"
         onclick={(e) => {
           e.currentTarget.blur();
-          showImageBackground = false;
-          showVideoBackground = true;
+          handleShowLayout("video");
         }}
       >
         <Icon
@@ -211,7 +255,7 @@
         />
       </button>
     </div>
-  {:else if showVideoBackground}
+  {:else if $showVideo}
     <video
       src="/gif/{videoSrc}"
       autoplay
@@ -252,8 +296,7 @@
         class="btn-menu light"
         onclick={(e) => {
           e.currentTarget.blur();
-          showVideoBackground = false;
-          showImageBackground = true;
+          handleShowLayout("local");
         }}
       >
         <Icon icon="material-symbols:reset-image" width="14" height="14" />
@@ -263,8 +306,7 @@
         class="btn-menu light"
         onclick={(e) => {
           e.currentTarget.blur();
-          showVideoBackground = false;
-          showImageLocal = true;
+          handleShowLayout("remote");
         }}
       >
         <Icon

@@ -6,6 +6,7 @@ const browser =
 export const IMAGES_LENGTH = 18;
 const LAYOUT_STORAGE = "layout-images";
 const LAYOUT_INDEX = "layout-index";
+export const LAYOUT_SETTING = "layout-setting";
 const ART_STORAGE = "art-images";
 const ART_INDEX = "art-index";
 
@@ -26,13 +27,24 @@ export const localImageStore = writable<{
   data: [],
 });
 
+export const showImageLocal = writable<boolean>(true);
+export const showImageRemote = writable<boolean>(false);
+export const showVideo = writable<boolean>(false);
+
 export function getCurrentImageBackground() {
   if (!browser) return;
   const index = localStorage.getItem(LAYOUT_INDEX);
   const images = localStorage.getItem(LAYOUT_STORAGE);
+  const settings = localStorage.getItem(LAYOUT_SETTING);
   if (index) currentImageIndex.set(Number(index));
   if (images)
     localImageStore.set({ loading: false, data: deserialize(images) });
+  if (settings) {
+    const value = deserialize(settings);
+    showImageLocal.set(value.showImageLocal);
+    showImageRemote.set(value.showImageRemote);
+    showVideo.set(value.showVideo);
+  }
 }
 
 export async function getNextImageBackground() {
