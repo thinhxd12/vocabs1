@@ -93,11 +93,7 @@
         }}
         disabled={$currentImageIndex === 0}
       >
-        <Icon
-          icon="material-symbols:arrow-left-alt-rounded"
-          width="14"
-          height="14"
-        />
+        <Icon icon="solar:arrow-left-bold" width="14" height="14" />
       </button>
       <button
         class="btn-menu light"
@@ -109,8 +105,8 @@
       >
         <Icon
           icon="material-symbols:triangle-circle-rounded"
-          width="16"
-          height="16"
+          width="15"
+          height="15"
         />
       </button>
       <button
@@ -123,11 +119,7 @@
         {#if $localImageStore.loading}
           <Icon icon="eos-icons:loading" width="14" height="14" />
         {:else}
-          <Icon
-            icon="material-symbols:arrow-right-alt-rounded"
-            width="14"
-            height="14"
-          />
+          <Icon icon="solar:arrow-right-bold" width="14" height="14" />
         {/if}
       </button>
     </div>
@@ -214,8 +206,8 @@
       >
         <Icon
           icon="material-symbols:triangle-circle-rounded"
-          width="16"
-          height="16"
+          width="15"
+          height="15"
         />
       </button>
     </div>

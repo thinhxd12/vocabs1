@@ -1,6 +1,7 @@
 <script lang="ts">
   import { weatherData } from "$lib/store/navstore";
   import { getWeatherInfo } from "$lib/utils/w-conditions";
+  import { fly } from "svelte/transition";
 
   interface WeatherInfo {
     description: string;
@@ -20,7 +21,7 @@
   });
 </script>
 
-<div class="w-full h-full relative">
+<div class="w-full h-full relative dark">
   {#if weatherInfo}
     <div class="absolute top-3 right-3 z-[1] flex gap-3">
       <img
@@ -49,11 +50,14 @@
       </div>
     </div>
 
-    <img
-      src="/navweather/{weatherInfo.background}.webp"
-      alt="wtb"
-      class="absolute top-0 left-0 w-90 h-full object-cover"
-    />
+    {#key weatherInfo.background}
+      <img
+        src="/navweather/{weatherInfo.background}.webp"
+        alt="wtb"
+        class="absolute top-0 left-0 w-90 h-full object-cover"
+        in:fly={{ y: "-100%", duration: 600 }}
+      />
+    {/key}
 
     <!-- svelte-ignore a11y_distracting_elements -->
     <marquee

@@ -59,9 +59,11 @@ function notificationAlert() {
     body: currentScheduleValue
       ? `${currentScheduleValue.count + 1}`
       : "No current schedule.",
-    icon: "https://cdn-icons-png.flaticon.com/512/2617/2617511.png",
+    icon: "/images/clover.webp",
+    // icon: "https://cdn-icons-png.flaticon.com/512/2617/2617511.png",
   });
   notification.onclose = async () => {
+    clearInterval(intervalAutoplay);
     handleAutoplay();
   };
 }

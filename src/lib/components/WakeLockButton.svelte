@@ -60,13 +60,13 @@
   }}
 >
   {#if $wakeEnable}
-    <div in:fly={{ duration: 150, y: -15 }}>
+    <span in:fly={{ duration: 150, y: -15 }}>
       <Icon icon="material-symbols:sunny-rounded" width="13" height="13" />
-    </div>
+    </span>
   {:else}
-    <div in:fly={{ duration: 150, y: -15 }}>
+    <span in:fly={{ duration: 150, y: -15 }}>
       <Icon icon="material-symbols:dark-mode-rounded" width="13" height="13" />
-    </div>
+    </span>
   {/if}
 </button>
 

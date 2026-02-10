@@ -21,6 +21,7 @@
   import WeatherButton from "./WeatherButton.svelte";
   import TimerButton from "./TimerButton.svelte";
   import WakeLockButton from "./WakeLockButton.svelte";
+  import { fly } from "svelte/transition";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
@@ -75,23 +76,37 @@
 
 <div class="w-main flex items-center gap-2">
   <div class="relative w-12 h-full flex flex-col">
+    {#if $todaySchedule}
+      <div
+        class="w-full h-14 flex justify-center text-9 leading-12 text-white/90 text-center overflow-hidden pt-2 bg-black/80 backdrop-blur-md"
+      >
+        {#key $todaySchedule.start.count}
+          <span in:fly={{ y: -12, duration: 300 }}>
+            {$todaySchedule.start.count}
+          </span>
+        {/key}
+      </div>
+      <div
+        class="w-full h-14 flex justify-center text-9 leading-12 text-white/90 text-center overflow-hidden bg-black/80 backdrop-blur-md"
+      >
+        {#key $todaySchedule.end.count}
+          <span in:fly={{ y: -12, duration: 300 }}>
+            {$todaySchedule.end.count}
+          </span>
+        {/key}
+      </div>
+    {:else}
+      <span
+        class="text-9 leading-14 text-white/90 text-center bg-black/80 backdrop-blur-md"
+        >N</span
+      >
+      <span
+        class="text-9 leading-14 text-white/90 text-center bg-black/80 backdrop-blur-md"
+        >N</span
+      >
+    {/if}
     <div
-      class="flex-1 flex flex-col justify-center text-center text-white/90 bg-black/80 backdrop-blur-md"
-    >
-      {#if $todaySchedule}
-        <span class="text-9 leading-11">
-          {$todaySchedule.start.count}
-        </span>
-        <span class="text-9 leading-11">
-          {$todaySchedule.end.count}
-        </span>
-      {:else}
-        <span class="text-9 leading-11">N</span>
-        <span class="text-9 leading-11">N</span>
-      {/if}
-    </div>
-    <div
-      class="relative w-12 h-15 overflow-hidden bg-white/60 backdrop-blur-md"
+      class="relative w-12 h-14 overflow-hidden bg-white/60 backdrop-blur-md"
     >
       <span
         class="uppercase text-8 font-900 text-black leading-12 text-center absolute w-15 h-full transform -rotate-90 origin-center"
@@ -143,9 +158,17 @@
         class="btn-menu"
       >
         {#if page.url.pathname === "/pomodoro"}
-          <Icon icon="material-symbols:adjust" width="13" height="13" />
+          <span in:fly={{ duration: 150, y: -15 }}>
+            <Icon icon="material-symbols:adjust" width="13" height="13" />
+          </span>
         {:else}
-          <Icon icon="material-symbols:adjust-outline" width="13" height="13" />
+          <span in:fly={{ duration: 150, y: -15 }}>
+            <Icon
+              icon="material-symbols:adjust-outline"
+              width="13"
+              height="13"
+            />
+          </span>
         {/if}
       </a>
 
@@ -245,18 +268,25 @@
   </div>
 
   <div
-    class="h-full flex flex-col items-center justify-center px-2 text-white/90 bg-black/80 backdrop-blur-md"
+    class="h-full px-2 overflow-hidden text-white/90 bg-black/80 backdrop-blur-md"
   >
-    <span class="font-tupa text-18 font-600 leading-20">
-      {Math.floor($totalMemories / 100) < 10
-        ? "0" + Math.floor($totalMemories / 100)
-        : Math.floor($totalMemories / 100)}
-    </span>
-    <span class="font-tupa text-18 font-600 leading-20">
-      {$totalMemories % 100 < 10
-        ? "0" + ($totalMemories % 100)
-        : $totalMemories % 100}
-    </span>
+    {#key $totalMemories}
+      <div
+        class="flex flex-col items-center justify-center"
+        in:fly={{ y: -50, duration: 600 }}
+      >
+        <span class="font-tupa text-18 font-600 leading-20">
+          {Math.floor($totalMemories / 100) < 10
+            ? "0" + Math.floor($totalMemories / 100)
+            : Math.floor($totalMemories / 100)}
+        </span>
+        <span class="font-tupa text-18 font-600 leading-20">
+          {$totalMemories % 100 < 10
+            ? "0" + ($totalMemories % 100)
+            : $totalMemories % 100}
+        </span>
+      </div>
+    {/key}
   </div>
 
   <a href="/weather" class="outline-none relative w-90 h-full overflow-hidden">

@@ -1040,7 +1040,7 @@
     <button
       class="ribbon {tweenRibbon.current > 150 ? 'ribbonLong' : 'ribbonShort'}"
       style="height: {tweenRibbon.current}px; {tweenRibbon.current > 21
-        ? 'box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); z-index: 4;'
+        ? 'box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); z-index: 999;'
         : 'z-index: 3;'}"
       onclick={handleCheckBookmark}
     >
