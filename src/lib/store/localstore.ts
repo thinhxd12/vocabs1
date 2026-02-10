@@ -1,4 +1,8 @@
-import type { ArtImageType, ImageBackgroundType } from "$lib/types";
+import type {
+  ArtImageType,
+  ImageBackgroundType,
+  LayoutSettingType,
+} from "$lib/types";
 import { get, writable } from "svelte/store";
 
 const browser =
@@ -27,9 +31,7 @@ export const localImageStore = writable<{
   data: [],
 });
 
-export const showImageLocal = writable<boolean>(true);
-export const showImageRemote = writable<boolean>(false);
-export const showVideo = writable<boolean>(false);
+export const layoutSetting = writable<LayoutSettingType | null>();
 
 export function getCurrentImageBackground() {
   if (!browser) return;
@@ -40,10 +42,7 @@ export function getCurrentImageBackground() {
   if (images)
     localImageStore.set({ loading: false, data: deserialize(images) });
   if (settings) {
-    const value = deserialize(settings);
-    showImageLocal.set(value.showImageLocal);
-    showImageRemote.set(value.showImageRemote);
-    showVideo.set(value.showVideo);
+    layoutSetting.set(deserialize(settings));
   }
 }
 

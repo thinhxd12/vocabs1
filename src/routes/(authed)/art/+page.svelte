@@ -21,9 +21,9 @@
   <meta name="art" content="Some painting" />
 </svelte:head>
 
-<section class="absolute top-0 left-0 w-screen h-screen flex z-[5]">
+<section class="absolute top-0 left-0 w-screen h-screen flex z-[5] bg-[#19191c]">
   <div
-    class="relative bg-[#19191C] overflow-hidden flex-1 h-full flex items-center justify-center pt-60 pb-80 px-40"
+    class="relative overflow-hidden flex-1 h-full flex items-center justify-center pt-60 pb-80 px-40"
   >
     <img
       src={$localArtStore.data[$currentArtImageIndex].mainImage}
@@ -63,7 +63,7 @@
       </button>
     </div>
   </div>
-  <div class="w-[360px] h-full dark !bg-[#19191C] flex flex-col p-15">
+  <div class="w-[360px] h-full dark flex flex-col p-15">
     <div class="w-full mb-9">
       <p class="mb-6 text-13 font-500 leading-15 text-secondary-white">
         {$localArtStore.data[$currentArtImageIndex].shareDate}

@@ -7,11 +7,13 @@
     getPrevImageBackground,
     LAYOUT_SETTING,
     localImageStore,
-    showImageLocal,
-    showImageRemote,
-    showVideo,
+    layoutSetting,
   } from "$lib/store/localstore";
-  import type { ImageBackgroundType, VideoBackgroundType } from "$lib/types";
+  import type {
+    ImageBackgroundType,
+    LayoutSettingType,
+    VideoBackgroundType,
+  } from "$lib/types";
   import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
 
@@ -61,54 +63,37 @@
   });
 
   function handleShowLayout(type: "local" | "remote" | "video") {
-    switch (type) {
-      case "local":
-        $showImageLocal = true;
-        $showImageRemote = false;
-        $showVideo = false;
-        localStorage.setItem(
-          LAYOUT_SETTING,
-          JSON.stringify({
-            showImageLocal: true,
-            showImageRemote: false,
-            showVideo: false,
-          }),
-        );
-        break;
-      case "remote":
-        $showImageLocal = false;
-        $showImageRemote = true;
-        $showVideo = false;
-        localStorage.setItem(
-          LAYOUT_SETTING,
-          JSON.stringify({
-            showImageLocal: false,
-            showImageRemote: true,
-            showVideo: false,
-          }),
-        );
-        break;
-      case "video":
-        $showImageLocal = false;
-        $showImageRemote = false;
-        $showVideo = true;
-        localStorage.setItem(
-          LAYOUT_SETTING,
-          JSON.stringify({
-            showImageLocal: false,
-            showImageRemote: false,
-            showVideo: true,
-          }),
-        );
-        break;
-      default:
-        break;
+    if (type === "local") {
+      const setting: LayoutSettingType = {
+        showImageRemote: false,
+        showVideo: false,
+        showImageLocal: true,
+      };
+      layoutSetting.set(setting);
+      localStorage.setItem(LAYOUT_SETTING, JSON.stringify(setting));
+    } else if (type === "remote") {
+      const setting: LayoutSettingType = {
+        showImageRemote: true,
+        showVideo: false,
+        showImageLocal: false,
+      };
+      layoutSetting.set(setting);
+      localStorage.setItem(LAYOUT_SETTING, JSON.stringify(setting));
+    }
+    if (type === "video") {
+      const setting: LayoutSettingType = {
+        showImageRemote: false,
+        showVideo: true,
+        showImageLocal: false,
+      };
+      layoutSetting.set(setting);
+      localStorage.setItem(LAYOUT_SETTING, JSON.stringify(setting));
     }
   }
 </script>
 
 {#if page.url.pathname !== "/art"}
-  {#if $showImageRemote}
+  {#if $layoutSetting && $layoutSetting.showImageRemote}
     {#if $localImageStore.data.length}
       <img
         src={$localImageStore.data[$currentImageIndex].url}
@@ -140,7 +125,7 @@
         }}
         disabled={$currentImageIndex === 0}
       >
-        <Icon icon="solar:arrow-left-bold" width="14" height="14" />
+        <Icon icon="solar:arrow-left-bold" width="16" height="16" />
       </button>
       <button
         class="btn-menu light"
@@ -151,8 +136,8 @@
       >
         <Icon
           icon="material-symbols:triangle-circle-rounded"
-          width="15"
-          height="15"
+          width="16"
+          height="16"
         />
       </button>
       <button
@@ -163,13 +148,74 @@
         }}
       >
         {#if $localImageStore.loading}
-          <Icon icon="eos-icons:loading" width="14" height="14" />
+          <Icon icon="eos-icons:loading" width="16" height="16" />
         {:else}
-          <Icon icon="solar:arrow-right-bold" width="14" height="14" />
+          <Icon icon="solar:arrow-right-bold" width="16" height="16" />
         {/if}
       </button>
     </div>
-  {:else if $showImageLocal}
+  {:else if $layoutSetting && $layoutSetting.showVideo}
+    <video
+      src="/gif/{videoSrc}"
+      autoplay
+      loop
+      muted={isMuted}
+      playsinline
+      class="absolute w-full h-full object-cover z-[0]"
+    >
+      Your browser does not support the video tag.
+    </video>
+
+    <div class="z-[9] absolute right-3 top-3 flex gap-2">
+      <select bind:value={videoSrc} class="btn-menu light">
+        {#each videos as item}
+          <option value={item.value}>
+            {item.label}
+          </option>
+        {/each}
+      </select>
+
+      <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
+        {#if isMuted}
+          <Icon
+            icon="material-symbols:volume-off-outline-rounded"
+            width="16"
+            height="16"
+          />
+        {:else}
+          <Icon
+            icon="material-symbols:volume-up-outline-rounded"
+            width="16"
+            height="16"
+          />
+        {/if}
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("local");
+        }}
+      >
+        <Icon
+          icon="material-symbols:cloud-download-outline-rounded"
+          width="16"
+          height="16"
+        />
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("remote");
+        }}
+      >
+        <Icon icon="material-symbols:link-2-rounded" width="16" height="16" />
+      </button>
+    </div>
+  {:else if $layoutSetting && $layoutSetting.showImageLocal}
     <img
       src={imageSrc.url}
       alt="main-layout-bg"
@@ -196,7 +242,11 @@
           imageSrc = defaultImage[0];
         }}
       >
-        <Icon icon="material-symbols:reset-image" width="14" height="14" />
+        <Icon
+          icon="material-symbols-light:directory-sync"
+          width="16"
+          height="16"
+        />
       </button>
 
       <button
@@ -206,11 +256,7 @@
         }}
         class="btn-menu light"
       >
-        <Icon
-          icon="material-symbols:table-restaurant-outline-rounded"
-          width="14"
-          height="14"
-        />
+        <Icon icon="fluent:surface-hub-24-filled" width="16" height="16" />
       </button>
 
       <button
@@ -220,11 +266,7 @@
         }}
         class="btn-menu light"
       >
-        <Icon
-          icon="material-symbols:table-restaurant-outline-rounded"
-          width="14"
-          height="14"
-        />
+        <Icon icon="fluent:surface-hub-24-regular" width="16" height="16" />
       </button>
 
       <button
@@ -234,11 +276,7 @@
         }}
         class="btn-menu light"
       >
-        <Icon
-          icon="material-symbols:imagesmode-outline-rounded"
-          width="14"
-          height="14"
-        />
+        <Icon icon="material-symbols:link-2-rounded" width="16" height="16" />
       </button>
 
       <button
@@ -250,48 +288,14 @@
       >
         <Icon
           icon="material-symbols:triangle-circle-rounded"
-          width="15"
-          height="15"
+          width="16"
+          height="16"
         />
       </button>
     </div>
-  {:else if $showVideo}
-    <video
-      src="/gif/{videoSrc}"
-      autoplay
-      loop
-      muted={isMuted}
-      playsinline
-      class="absolute w-full h-full object-cover z-[0]"
-    >
-      Your browser does not support the video tag.
-    </video>
-
+  {:else}
+    <div class="absolute w-full h-full z-[0] bg-[#f1f1f1]"></div>
     <div class="z-[9] absolute right-3 top-3 flex gap-2">
-      <select bind:value={videoSrc} class="btn-menu light">
-        {#each videos as item}
-          <option value={item.value}>
-            {item.label}
-          </option>
-        {/each}
-      </select>
-
-      <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
-        {#if isMuted}
-          <Icon
-            icon="material-symbols:volume-off-outline-rounded"
-            width="14"
-            height="14"
-          />
-        {:else}
-          <Icon
-            icon="material-symbols:volume-up-outline-rounded"
-            width="14"
-            height="14"
-          />
-        {/if}
-      </button>
-
       <button
         class="btn-menu light"
         onclick={(e) => {
@@ -299,21 +303,7 @@
           handleShowLayout("local");
         }}
       >
-        <Icon icon="material-symbols:reset-image" width="14" height="14" />
-      </button>
-
-      <button
-        class="btn-menu light"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleShowLayout("remote");
-        }}
-      >
-        <Icon
-          icon="material-symbols:imagesmode-outline-rounded"
-          width="14"
-          height="14"
-        />
+        <Icon icon="material-symbols:reset-image" width="16" height="16" />
       </button>
     </div>
   {/if}

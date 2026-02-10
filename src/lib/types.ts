@@ -273,3 +273,9 @@ export type ImageBackgroundType = {
   url: string;
   place: string;
 };
+
+export type LayoutSettingType = {
+  showImageRemote: boolean;
+  showVideo: boolean;
+  showImageLocal: boolean;
+};
