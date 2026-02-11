@@ -11,6 +11,11 @@
   function onKeyDown(e: KeyboardEvent) {}
 
   let count = $state(9);
+
+  let dum = `<h1>Introduction to Programming</h1>
+        <p>Programming is a way to talk to computers. A language like Hindi, English, or Bengali can be used to talk to a human, but for computers, we need straightforward instructions.</p>
+        <h2>Computer is Dumb!</h2>
+        <p>When was the last time you ordered some cereal and got DVDs of a serial?</p>`;
 </script>
 
 <svelte:head>
@@ -24,27 +29,6 @@
   <button class="text-white text-36 absolute bottom-0" onclick={name}>
     close
   </button>
-
-  <div class="relative w-12 h-full flex flex-col">
-    <div
-      class="w-full h-14 flex justify-center text-9 leading-12 text-white/90 text-center overflow-hidden pt-2 bg-black/80 backdrop-blur-md"
-    >
-      {#key count}
-        <span class="" in:fly={{ y: -12, duration: 150 }}>
-          {count}
-        </span>
-      {/key}
-    </div>
-    <div
-      class="w-full h-14 flex justify-center text-9 leading-12 text-white/90 text-center overflow-hidden bg-black/80 backdrop-blur-md"
-    >
-      {#key count}
-        <span class="" in:fly={{ y: -12, duration: 150 }}>
-          {count}
-        </span>
-      {/key}
-    </div>
-  </div>
 </section>
 
 <svelte:window on:keydown={onKeyDown} />

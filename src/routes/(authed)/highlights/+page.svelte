@@ -51,6 +51,7 @@
   let showTranslated = $state<boolean>(false);
   let translatedContent = $state<string>("");
   let expandDesc = $state<boolean>(false);
+  let noteContent = $state<string>("");
 
   const pageWidth = () => {
     const width = Math.round(ratio * (innerHeight.current! - 150));
@@ -79,6 +80,7 @@
       handleGetBookInfo(data[0]);
       bookmark.set(data[0]);
       setBookContent(data[0].content);
+      noteContent = data[0].note;
       resetRenderBookmark();
     }
   }
@@ -159,6 +161,7 @@
           currentPage = 0;
           bookmark.set(data);
           setBookContent(data.content);
+          noteContent = data.note;
           resetRenderBookmark();
           keyPressed = false;
         },
@@ -171,6 +174,7 @@
         currentPage = 0;
         bookmark.set(data);
         setBookContent(data.content);
+        noteContent = data.note;
         resetRenderBookmark();
         keyPressed = false;
       }, 300);
@@ -190,7 +194,9 @@
   async function handleSetBookmark(data: DBSelect["bookmark_table"]) {
     // Update id - Get book cover - Set state bookmark - Close book - Set page content and reset ribbon, translate,...
     handleCloseBook(data);
-    handleGetBookInfo(data);
+    if (data.bookTile !== $bookmark?.bookTile) {
+      handleGetBookInfo(data);
+    }
     const { error } = await page.data.supabase
       .from("bookmark_progress")
       .update({ currentId: data.id })
@@ -473,6 +479,27 @@
         box-shadow: ${1 * t}px ${6 * t}px ${18 * t}px rgba(0, 0, 0, ${0.8 * t});
       `,
     };
+  }
+
+  async function handleUpdateNote() {
+    if (noteContent !== $bookmark!.note) {
+      $bookmark!.note = noteContent;
+      const { error } = await page.data.supabase
+        .from("bookmark_table")
+        .update({ note: noteContent })
+        .eq("id", $bookmark!.id);
+
+      if (error) {
+        toast.error("Error!", {
+          description: error.message as string,
+          class: "my-toast-error",
+          classes: {
+            title: "text-[#f70000] text-14",
+            description: "text-black/80 text-12",
+          },
+        });
+      }
+    }
   }
 
   onDestroy(() => {
@@ -1064,6 +1091,20 @@
       {/if}
     </button>
   </div>
+
+  {#if $bookmark}
+    <div
+      class="note-page absolute top-60 right-[-270px] bottom-[300px] w-[300px] hover:right-0 transition-all duration-150 ease-in-out"
+    >
+      <textarea
+        class="style-scrollbar"
+        name="note"
+        bind:value={noteContent}
+        onmouseleave={handleUpdateNote}
+        onkeydown={(e) => e.stopPropagation()}
+      ></textarea>
+    </div>
+  {/if}
 </section>
 
 <svelte:window on:keydown={onKeyDown} />
@@ -1297,6 +1338,38 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .note-page {
+    background-color: #fff;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .note-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(#d3d3d3 0.5px, transparent 1px);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .note-page textarea {
+    width: 100%;
+    min-height: 100%;
+    padding: 15px 18px;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    outline: none;
+    resize: vertical;
+    overflow-y: auto;
+    resize: none;
   }
 
   .btn-menu {

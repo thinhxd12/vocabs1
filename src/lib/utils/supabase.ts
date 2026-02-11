@@ -65,6 +65,7 @@ export type Database = {
           location: string;
           page: number;
           type: string;
+          note: string;
         };
         Insert: {
           authors: string;
@@ -87,6 +88,7 @@ export type Database = {
           location?: string;
           page?: number;
           type?: string;
+          note?: string;
         };
         Relationships: [];
       };
