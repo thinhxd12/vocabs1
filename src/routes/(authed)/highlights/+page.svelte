@@ -90,6 +90,7 @@
       handleGetCurrentBookmark();
     } else {
       setBookContent($bookmark.content);
+      noteContent = $bookmark.note;
       resetRenderBookmark();
     }
   });
@@ -1100,7 +1101,7 @@
         class="style-scrollbar"
         name="note"
         bind:value={noteContent}
-        onmouseleave={handleUpdateNote}
+        onblur={handleUpdateNote}
         onkeydown={(e) => e.stopPropagation()}
       ></textarea>
     </div>
