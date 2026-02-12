@@ -98,6 +98,8 @@
 
   async function handleGetNextBookmark() {
     if (!bookmark || isRandomed) return;
+    showNote = false;
+    handleUpdateNote();
 
     const { data } = await page.data.supabase
       .from("bookmark_table")
@@ -120,6 +122,8 @@
 
   async function handleGetPrevBookmark() {
     if (!bookmark || isRandomed) return;
+    showNote = false;
+    handleUpdateNote();
 
     const { data } = await page.data.supabase
       .from("bookmark_table")
@@ -194,7 +198,6 @@
   }
 
   async function handleSetBookmark(data: DBSelect["bookmark_table"]) {
-    // Update id - Get book cover - Set state bookmark - Close book - Set page content and reset ribbon, translate,...
     handleCloseBook(data);
     if (data.bookTile !== $bookmark?.bookTile) {
       handleGetBookInfo(data);
@@ -250,6 +253,9 @@
   }
 
   async function getRandomBookmark() {
+    showNote = false;
+    handleUpdateNote();
+
     isRandomed = true;
     const { data, error } = await page.data.supabase.rpc("get_random_bookmark");
 
@@ -404,7 +410,6 @@
     likeBookmark = false;
     showTranslated = false;
     translatedContent = "";
-    showNote = false;
   }
 
   function handleFlipPage(id: number) {
