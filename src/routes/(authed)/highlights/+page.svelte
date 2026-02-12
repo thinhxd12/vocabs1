@@ -51,6 +51,7 @@
   let showTranslated = $state<boolean>(false);
   let translatedContent = $state<string>("");
   let expandDesc = $state<boolean>(false);
+  let showNote = $state<boolean>(false);
   let noteContent = $state<string>("");
 
   const pageWidth = () => {
@@ -403,6 +404,7 @@
     likeBookmark = false;
     showTranslated = false;
     translatedContent = "";
+    showNote = false;
   }
 
   function handleFlipPage(id: number) {
@@ -1094,16 +1096,31 @@
   </div>
 
   {#if $bookmark}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="note-page absolute top-60 right-[-270px] bottom-[300px] w-[300px] hover:right-0 transition-all duration-150 ease-in-out"
+      class="note-page absolute top-60 {showNote
+        ? 'right-0'
+        : 'right-[-270px]'}  bottom-[300px] w-[300px] transition-all duration-150 ease-in-out"
+      onmouseenter={() => {
+        showNote = true;
+      }}
     >
       <textarea
         class="style-scrollbar"
         name="note"
         bind:value={noteContent}
-        onblur={handleUpdateNote}
         onkeydown={(e) => e.stopPropagation()}
       ></textarea>
+
+      <button
+        class="note-button"
+        aria-label="note-button"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          showNote = false;
+          handleUpdateNote();
+        }}
+      ></button>
     </div>
   {/if}
 </section>
@@ -1359,10 +1376,21 @@
     pointer-events: none;
   }
 
+  .note-button {
+    position: absolute;
+    display: block;
+    background-color: rgba(108, 212, 255, 0.6);
+    width: 120px;
+    height: 35px;
+    left: 50%;
+    top: -18px;
+    transform: translateX(-50%) rotate(3deg);
+  }
+
   .note-page textarea {
     width: 100%;
     min-height: 100%;
-    padding: 15px 18px;
+    padding: 30px 18px 15px;
     font-family: "Comic Sans MS", cursive, sans-serif;
     font-size: 14px;
     line-height: 1.5;
