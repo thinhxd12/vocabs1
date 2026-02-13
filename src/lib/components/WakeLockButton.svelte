@@ -22,7 +22,6 @@
       status = true;
     } catch (err) {
       $wakeEnable = false;
-      isDisabled = true;
       status = false;
     }
   }
