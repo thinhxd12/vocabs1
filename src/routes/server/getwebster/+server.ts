@@ -40,6 +40,17 @@ async function getOedSoundURL(text: string) {
   }
 }
 
+async function getLearnersMp3(text: string) {
+  const searchUrl = `https://www.oxfordlearnersdictionaries.com/definition/english/${text}?q=${text}`;
+  const data = await fetchGetText(searchUrl);
+  const doc = load(data);
+  const sound = doc(".audio_play_button.pron-us.icon-audio").attr(
+    "data-src-mp3",
+  );
+  if (sound) return sound;
+  return "";
+}
+
 export async function GET({ url }) {
   const text = url.searchParams.get("word");
   if (!text) error(404);
@@ -56,7 +67,7 @@ export async function GET({ url }) {
   try {
     const data = await Promise.all([
       fetchGetText(urlWebter),
-      getOedSoundURL(text),
+      getLearnersMp3(text),
     ]);
     const $ = load(data[0]);
     result.word = $("h1.hword").text();
@@ -137,7 +148,11 @@ export async function GET({ url }) {
         .find("li")
         .slice(0, 12)
         .each((ind, item) => {
-          content.push($(item).text().replace(/[\n\r]+|\s{2,}/g, ""));
+          content.push(
+            $(item)
+              .text()
+              .replace(/[\n\r]+|\s{2,}/g, ""),
+          );
         });
       synonymArray.push({ type, content });
     } else {
@@ -149,7 +164,11 @@ export async function GET({ url }) {
           .find("li")
           .slice(0, 12)
           .each((ind, item) => {
-            content.push($(item).text().replace(/[\n\r]+|\s{2,}/g, ""));
+            content.push(
+              $(item)
+                .text()
+                .replace(/[\n\r]+|\s{2,}/g, ""),
+            );
           });
         synonymArray.push({ type, content });
       });
