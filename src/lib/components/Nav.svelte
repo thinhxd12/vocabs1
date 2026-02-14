@@ -22,6 +22,8 @@
   import TimerButton from "./TimerButton.svelte";
   import WakeLockButton from "./WakeLockButton.svelte";
   import { fly } from "svelte/transition";
+  import MaterialSymbolsAdjustOutline from "~icons/material-symbols/adjust-outline";
+  import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
@@ -159,15 +161,11 @@
       >
         {#if page.url.pathname === "/pomodoro"}
           <span in:fly={{ duration: 300, y: -15 }}>
-            <Icon icon="material-symbols:adjust" width="13" height="13" />
+            <MaterialSymbolsAdjust width="13" height="13" />
           </span>
         {:else}
           <span in:fly={{ duration: 300, y: -15 }}>
-            <Icon
-              icon="material-symbols:adjust-outline"
-              width="13"
-              height="13"
-            />
+            <MaterialSymbolsAdjustOutline width="13" height="13" />
           </span>
         {/if}
       </a>

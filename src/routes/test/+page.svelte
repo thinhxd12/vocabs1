@@ -16,6 +16,9 @@
         <p>Programming is a way to talk to computers. A language like Hindi, English, or Bengali can be used to talk to a human, but for computers, we need straightforward instructions.</p>
         <h2>Computer is Dumb!</h2>
         <p>When was the last time you ordered some cereal and got DVDs of a serial?</p>`;
+
+  import TwitterIcon from "~icons/devicon/twitter";
+  import PhSolarRoofDuotone from '~icons/ph/solar-roof-duotone';
 </script>
 
 <svelte:head>
@@ -27,7 +30,8 @@
   class="absolute top-0 left-0 w-screen h-screen flex items-center justify-center pt-60 px-60 pb-90 z-[5]"
 >
   <button class="text-white text-36 absolute bottom-0" onclick={name}>
-    close
+    <PhSolarRoofDuotone width={24} height={24}/>
+    <!-- <iconify-icon icon="ph:solar-roof-duotone" width="256" height="256"></iconify-icon> -->
   </button>
 </section>
 
