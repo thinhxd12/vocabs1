@@ -1,8 +1,9 @@
 <script lang="ts">
   import { wakeEnable } from "$lib/store/navstore";
-  import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
+  import MaterialSymbolsSunnyRounded from "~icons/material-symbols/sunny-rounded";
+  import MaterialSymbolsDarkModeRounded from "~icons/material-symbols/dark-mode-rounded";
 
   let wakeLock = $state<WakeLockSentinel | null>(null);
   let isDisabled = $state<boolean>(true);
@@ -67,11 +68,11 @@
 >
   {#if status}
     <span in:fly={{ duration: 300, y: -15 }}>
-      <Icon icon="material-symbols:sunny-rounded" width="13" height="13" />
+      <MaterialSymbolsSunnyRounded width="13" height="13" />
     </span>
   {:else}
     <span in:fly={{ duration: 300, y: -15 }}>
-      <Icon icon="material-symbols:dark-mode-rounded" width="13" height="13" />
+      <MaterialSymbolsDarkModeRounded width="13" height="13" />
     </span>
   {/if}
 </button>

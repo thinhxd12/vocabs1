@@ -10,7 +10,6 @@
     showEdit,
     showTranslate,
   } from "$lib/store/vocabstore";
-  import Icon from "@iconify/svelte";
   import { onDestroy, untrack } from "svelte";
   import { showTimer, vocabInput } from "$lib/store/navstore";
   import { toast } from "svelte-sonner";
@@ -18,6 +17,8 @@
   import { archiveVocab } from "$lib/utils/functions";
   import { page } from "$app/state";
   import Container from "$lib/components/Container.svelte";
+  import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
+  import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
 
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
@@ -260,8 +261,7 @@
                 class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
                 onclick={() => handleEditFromSearch(item.id)}
               >
-                <Icon
-                  icon="material-symbols:edit-square-outline-rounded"
+                <MaterialSymbolsEditSquareOutlineRounded
                   width="18"
                   height="18"
                 />
@@ -272,19 +272,16 @@
                   handleSelectWordFromSearch(item.id);
                 }}
               >
-                <span class="">
-                  <strong>{$searchTerm}</strong>{item.word.replace(
-                    $searchTerm,
-                    "",
-                  )}
+                <span>
+                  <strong>{$searchTerm.toLowerCase()}</strong>
+                  {item.word.replace($searchTerm.toLowerCase(), "")}
                 </span>
               </button>
               <button
                 class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
                 onclick={() => confirmDelete(item.id)}
               >
-                <Icon
-                  icon="material-symbols:delete-forever-outline-rounded"
+                <MaterialSymbolsDeleteForeverOutlineRounded
                   width="18"
                   height="18"
                 />

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { cachedDiary } from "$lib/store/vocabstore";
   import type { CalendarDayType } from "$lib/types";
-  import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { untrack } from "svelte";
+  import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
+  import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
+
   type DayType = {
     enabled: boolean;
     date: number;
@@ -81,7 +83,7 @@
         (obj) =>
           obj.date === obj1.date &&
           obj.month === obj1.month &&
-          obj.year === obj1.year
+          obj.year === obj1.year,
       );
       return { ...obj1, ...obj2 };
     });
@@ -136,14 +138,14 @@
   <div class="calendar">
     <div class="calendar-month flex items-center justify-between">
       <button onclick={prev} class="size-27 flex items-center justify-center">
-        <Icon icon="solar:alt-arrow-left-linear" width="15" height="15" />
+        <SolarAltArrowLeftLinear width="15" height="15" />
       </button>
       <h1 class="font-rubik text-18 select-none leading-18 mt-3 font-400">
         {monthNames[month]}
         {year}
       </h1>
       <button onclick={next} class="size-27 flex items-center justify-center">
-        <Icon icon="solar:alt-arrow-right-linear" width="15" height="15" />
+        <SolarAltArrowRightLinear width="15" height="15" />
       </button>
     </div>
 

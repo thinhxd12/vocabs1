@@ -2,10 +2,9 @@
   import RainRenderer from "$lib/utils/rain-renderer";
   import Raindrops from "$lib/utils/raindrop";
   import { showLayout } from "$lib/store/layoutstore";
-  import type { BackgroundImageType } from "$lib/types";
-  import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
   import { innerWidth, innerHeight } from "svelte/reactivity/window";
+  import type { ImageBackgroundType } from "$lib/types";
 
   function loadImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
@@ -25,7 +24,7 @@
     return Promise.all(
       images.map((item, i) => {
         return loadImage(item.src);
-      })
+      }),
     );
   }
 
@@ -65,7 +64,7 @@
       0,
       0,
       textureFgSize.width,
-      textureFgSize.height
+      textureFgSize.height,
     );
     textureBgCtx!.globalAlpha = alpha;
     textureBgCtx!.drawImage(
@@ -73,7 +72,7 @@
       0,
       0,
       textureBgSize.width,
-      textureBgSize.height
+      textureBgSize.height,
     );
   }
 
@@ -103,7 +102,7 @@
         innerHeight.current!,
         dpi,
         dropColor,
-        dropAlpha
+        dropAlpha,
       );
 
       textureFg = createCanvas(textureFgSize.width, textureFgSize.height);
@@ -123,7 +122,7 @@
           brightness: 1.04,
           alphaMultiply: 6,
           alphaSubtract: 3,
-        }
+        },
       );
     });
   }
@@ -216,7 +215,7 @@
   }
 
   let showBg = $state<boolean>(true);
-  let bgImage = $state<BackgroundImageType | undefined>(undefined);
+  let bgImage = $state<ImageBackgroundType | undefined>(undefined);
 
   async function changeBackground() {
     raindrops && raindrops.clearDrops();
@@ -261,25 +260,25 @@
 {#if !$showLayout}
   <div class=" absolute z-50 top-0 left-0 hidden sm:flex">
     <button onclick={() => updateWeather("rain")} class="btn-menu layout-white">
-      <Icon icon="mingcute:rainstorm-line" width="15" height="15" />
+      rain
     </button>
 
     <button
       onclick={() => updateWeather("storm")}
       class="btn-menu layout-white"
     >
-      <Icon icon="mingcute:thunderstorm-line" width="15" height="15" />
+      storm
     </button>
 
     <button
       onclick={() => updateWeather("drizzle")}
       class="btn-menu layout-white"
     >
-      <Icon icon="mingcute:drizzle-line" width="15" height="15" />
+      drizzle
     </button>
 
     <button onclick={changeBackground} class="btn-menu layout-white">
-      <Icon icon="mingcute:sun-line" width="15" height="15" />
+      default
     </button>
   </div>
 {/if}

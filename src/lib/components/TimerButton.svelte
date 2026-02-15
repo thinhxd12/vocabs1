@@ -5,8 +5,8 @@
     sendNotification,
     showTimer,
   } from "$lib/store/navstore";
-  import Icon from "@iconify/svelte";
   import { onDestroy } from "svelte";
+  import MaterialSymbolsAlarmOutlineRounded from "~icons/material-symbols/alarm-outline-rounded";
 
   let interval: ReturnType<typeof setInterval>;
 
@@ -73,11 +73,7 @@
   </button>
 {:else}
   <button onclick={startCountdown} class="btn-menu">
-    <Icon
-      icon="material-symbols:alarm-outline-rounded"
-      width="13"
-      height="13"
-    />
+    <MaterialSymbolsAlarmOutlineRounded width="13" height="13" />
   </button>
 {/if}
 

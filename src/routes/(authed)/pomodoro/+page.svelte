@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
   import type { PageProps } from "./$types";
   import { onDestroy, onMount } from "svelte";
   import Container from "$lib/components/Container.svelte";
@@ -20,6 +19,13 @@
   import Modal from "$lib/components/Modal.svelte";
   import { innerHeight } from "svelte/reactivity/window";
   import { wakeEnable } from "$lib/store/navstore";
+  import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
+  import MaterialSymbolsDarkModeRounded from "~icons/material-symbols/dark-mode-rounded";
+  import MaterialSymbolsSailingRounded from "~icons/material-symbols/sailing-rounded";
+  import MaterialSymbolsInsertChartOutlineRounded from "~icons/material-symbols/insert-chart-outline-rounded";
+  import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
+  import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
+  import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -219,7 +225,7 @@
             isPaused = true;
           }}
         >
-          <Icon icon="material-symbols:adjust" width="14" height="14" />
+          <MaterialSymbolsAdjust width="14" height="14" />
         </button>
 
         <button
@@ -232,11 +238,7 @@
             isPaused = true;
           }}
         >
-          <Icon
-            icon="material-symbols:sleep-score-rounded"
-            width="14"
-            height="14"
-          />
+          <MaterialSymbolsDarkModeRounded width="14" height="14" />
         </button>
 
         <button
@@ -249,11 +251,7 @@
             isPaused = true;
           }}
         >
-          <Icon
-            icon="material-symbols:sailing-rounded"
-            width="14"
-            height="14"
-          />
+          <MaterialSymbolsSailingRounded width="14" height="14" />
         </button>
       </div>
       <div class="flex gap-3">
@@ -265,11 +263,7 @@
             handleShowReport();
           }}
         >
-          <Icon
-            icon="material-symbols:insert-chart-outline-rounded"
-            width="14"
-            height="14"
-          />
+          <MaterialSymbolsInsertChartOutlineRounded width="14" height="14" />
         </button>
 
         <button
@@ -280,11 +274,7 @@
             showSetting = true;
           }}
         >
-          <Icon
-            icon="material-symbols:settings-outline-rounded"
-            width="14"
-            height="14"
-          />
+          <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
         </button>
 
         <button
@@ -295,17 +285,9 @@
           }}
         >
           {#if isMuted}
-            <Icon
-              icon="material-symbols:volume-off-outline-rounded"
-              width="14"
-              height="14"
-            />
+            <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
           {:else}
-            <Icon
-              icon="material-symbols:volume-up-outline-rounded"
-              width="14"
-              height="14"
-            />
+            <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
           {/if}
         </button>
       </div>

@@ -15,7 +15,6 @@
   import type { WeatherQueryParams } from "$lib/types";
   import { format } from "date-fns";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
-  import Icon from "@iconify/svelte";
   import { onDestroy, onMount } from "svelte";
   import { showTranslate } from "$lib/store/vocabstore";
   import WeatherButton from "./WeatherButton.svelte";
@@ -24,6 +23,15 @@
   import { fly } from "svelte/transition";
   import MaterialSymbolsAdjustOutline from "~icons/material-symbols/adjust-outline";
   import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
+  import SolarCloseCircleLinear from "~icons/solar/close-circle-linear";
+  import MaterialSymbolsDocumentSearchOutlineRounded from "~icons/material-symbols/document-search-outline-rounded";
+  import MaterialSymbolsCalendarMonthRounded from "~icons/material-symbols/calendar-month-rounded";
+  import MaterialSymbolsTranslateRounded from "~icons/material-symbols/translate-rounded";
+  import MaterialSymbolsBookRibbonOutlineRounded from "~icons/material-symbols/book-ribbon-outline-rounded";
+  import GravityUiFrames from "~icons/gravity-ui/frames";
+  import MaterialSymbolsSentimentNeutralOutlineRounded from "~icons/material-symbols/sentiment-neutral-outline-rounded";
+  import MaterialSymbolsLockOpenRightOutlineRounded from "~icons/material-symbols/lock-open-right-outline-rounded";
+  import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
@@ -133,7 +141,7 @@
         {#if $todaySchedule}
           <span>{$todaySchedule.start.index}</span>
         {:else}
-          <Icon icon="solar:close-circle-linear" width="13" height="13" />
+          <SolarCloseCircleLinear width="13" height="13" />
         {/if}
       </button>
 
@@ -150,7 +158,7 @@
         {#if $todaySchedule}
           <span>{$todaySchedule.end.index}</span>
         {:else}
-          <Icon icon="solar:close-circle-linear" width="13" height="13" />
+          <SolarCloseCircleLinear width="13" height="13" />
         {/if}
       </button>
 
@@ -181,11 +189,7 @@
         class:active={page.url.pathname === "/vocab"}
         class="btn-nav"
       >
-        <Icon
-          icon="material-symbols:document-search-outline-rounded"
-          width="13"
-          height="13"
-        />
+        <MaterialSymbolsDocumentSearchOutlineRounded width="13" height="13" />
       </a>
 
       <a
@@ -193,11 +197,7 @@
         class:active={page.url.pathname === "/schedule"}
         class="btn-nav"
       >
-        <Icon
-          icon="material-symbols:calendar-month-rounded"
-          width="13"
-          height="13"
-        />
+        <MaterialSymbolsCalendarMonthRounded width="13" height="13" />
       </a>
 
       <a
@@ -205,7 +205,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <Icon icon="hugeicons:quiz-02" width="13" height="13" />
+        <HugeiconsQuiz02 width="13" height="13" />
       </a>
 
       <a
@@ -214,11 +214,7 @@
         onclick={() => ($showTranslate = !$showTranslate)}
         class:active={$showTranslate}
       >
-        <Icon
-          icon="material-symbols:translate-rounded"
-          width="13"
-          height="13"
-        />
+        <MaterialSymbolsTranslateRounded width="13" height="13" />
       </a>
 
       <a
@@ -226,11 +222,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/highlights"}
       >
-        <Icon
-          icon="material-symbols:book-ribbon-outline-rounded"
-          width="13"
-          height="13"
-        />
+        <MaterialSymbolsBookRibbonOutlineRounded width="13" height="13" />
       </a>
 
       <a
@@ -238,7 +230,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/art"}
       >
-        <Icon icon="gravity-ui:frames" width="13" height="13" />
+        <GravityUiFrames width="13" height="13" />
       </a>
 
       <a
@@ -246,20 +238,12 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <Icon
-          icon="material-symbols:sentiment-neutral-outline-rounded"
-          width="13"
-          height="13"
-        />
+        <MaterialSymbolsSentimentNeutralOutlineRounded width="13" height="13" />
       </a>
 
       <form method="post" action="/login?/signout">
         <button class="btn-menu">
-          <Icon
-            icon="material-symbols:lock-open-right-outline-rounded"
-            width="13"
-            height="13"
-          />
+          <MaterialSymbolsLockOpenRightOutlineRounded width="13" height="13" />
         </button>
       </form>
     </div>

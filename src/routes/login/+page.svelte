@@ -1,7 +1,8 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import Icon from "@iconify/svelte";
   import { fade } from "svelte/transition";
+  import MaterialSymbolsReleaseAlert from "~icons/material-symbols/release-alert";
+
   let password = $state("");
   let { form } = $props();
   let creating = $state(false);
@@ -55,7 +56,7 @@
         <div
           class="ml-3 text-[#e30000] text-12 leading-16 flex items-top gap-3"
         >
-          <Icon icon="cuida:alert-outline" width="16" height="16" />
+          <MaterialSymbolsReleaseAlert width="16" height="16" />
           <span> {form.error}</span>
         </div>
       {/if}

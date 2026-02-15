@@ -4,7 +4,6 @@
   import { schedule, todaySchedule } from "$lib/store/navstore";
   import { cachedDiary } from "$lib/store/vocabstore";
   import type { CalendarDayType, DBSelect } from "$lib/types.js";
-  import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
@@ -12,6 +11,9 @@
   import type { PageProps } from "./$types";
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
+  import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
+  import MaterialSymbolsCalendarAddOnRounded from "~icons/material-symbols/calendar-add-on-rounded";
+  import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -165,21 +167,13 @@
         class="calendar-button light"
         onclick={() => (showReset = !showReset)}
       >
-        <Icon
-          icon="material-symbols:settings-outline-rounded"
-          width="16"
-          height="16"
-        />
+        <MaterialSymbolsSettingsOutlineRounded width="16" height="16" />
       </button>
       <button
         class="calendar-button light"
         onclick={() => (showCreate = !showCreate)}
       >
-        <Icon
-          icon="material-symbols:calendar-add-on-rounded"
-          width="16"
-          height="16"
-        />
+        <MaterialSymbolsCalendarAddOnRounded width="16" height="16" />
       </button>
     </div>
 
@@ -201,11 +195,7 @@
               onclick={() => (showReset = !showReset)}
               class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
             >
-              <Icon
-                icon="material-symbols:close-rounded"
-                width="14"
-                height="14"
-              />
+              <MaterialSymbolsCloseRounded width="14" height="14" />
             </button>
           </div>
 
@@ -331,11 +321,7 @@
               onclick={() => (showCreate = !showCreate)}
               class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
             >
-              <Icon
-                icon="material-symbols:close-rounded"
-                width="14"
-                height="14"
-              />
+              <MaterialSymbolsCloseRounded width="14" height="14" />
             </button>
           </div>
 

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { showTranslate } from "$lib/store/vocabstore";
-  import Icon from "@iconify/svelte";
   import { toast } from "svelte-sonner";
   import type { DBInsert, TranslateType, VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/utils/functions";
@@ -10,6 +9,7 @@
   import { page } from "$app/state";
   import { dev } from "$app/environment";
   import { format } from "date-fns";
+  import SolarMagniferLinear from "~icons/solar/magnifer-linear";
 
   const { supabase } = page.data;
 
@@ -157,7 +157,7 @@
       }}
       class="size-36 text-white/30 hover:text-white transition duration-100 absolute top-0 right-0 flex justify-center items-center"
     >
-      <Icon icon="solar:magnifer-outline" width="16" height="16" />
+      <SolarMagniferLinear width="16" height="16" />
     </button>
   </div>
 

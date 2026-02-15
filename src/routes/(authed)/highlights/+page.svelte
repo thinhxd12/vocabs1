@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import type { BookPageContentType, DBSelect } from "$lib/types";
-  import Icon from "@iconify/svelte";
   import { format } from "date-fns";
   import { toast } from "svelte-sonner";
   import { fly, fade } from "svelte/transition";
@@ -13,6 +12,16 @@
   import { bookmark, bookInfo } from "$lib/store/highlightstore";
   import { innerHeight } from "svelte/reactivity/window";
   import HighlightPage from "$lib/components/HighlightPage.svelte";
+  import PhCaretLeftFill from "~icons/ph/caret-left-fill";
+  import PhCaretRightFill from "~icons/ph/caret-right-fill";
+  import MingcuteQuoteLeftFill from "~icons/mingcute/quote-left-fill";
+  import MingcuteQuoteRightFill from "~icons/mingcute/quote-right-fill";
+  import MaterialSymbolsTranslateRounded from "~icons/material-symbols/translate-rounded";
+  import MaterialSymbolsContentCopyOutlineRounded from "~icons/material-symbols/content-copy-outline-rounded";
+  import MaterialSymbolsShuffleRounded from "~icons/material-symbols/shuffle-rounded";
+  import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
+  import MaterialSymbolsDatabaseUploadOutlineRounded from "~icons/material-symbols/database-upload-outline-rounded";
+  import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
 
   const ratio = 1.61803398875;
   let isRandomed = $state<boolean>(false);
@@ -612,25 +621,25 @@
                 type="button"
                 onclick={() => navigator.clipboard.writeText("<p>")}
               >
-                <Icon icon="ph:caret-left-fill" width="16" height="16" />
+                <PhCaretLeftFill width="16" height="16" />
               </button>
               <button
                 type="button"
                 onclick={() => navigator.clipboard.writeText("</p>")}
               >
-                <Icon icon="ph:caret-right-fill" width="16" height="16" />
+                <PhCaretRightFill width="16" height="16" />
               </button>
               <button
                 type="button"
                 onclick={() => navigator.clipboard.writeText("<cite>")}
               >
-                <Icon icon="mingcute:quote-left-fill" width="16" height="16" />
+                <MingcuteQuoteLeftFill width="16" height="16" />
               </button>
               <button
                 type="button"
                 onclick={() => navigator.clipboard.writeText("</cite>")}
               >
-                <Icon icon="mingcute:quote-right-fill" width="16" height="16" />
+                <MingcuteQuoteRightFill width="16" height="16" />
               </button>
             </div>
             <div class="mt-2">
@@ -977,27 +986,18 @@
             </div>
             <div class="w-full py-6 flex justify-center items-baseline">
               <button class="btn-menu" onclick={() => translateContent()}>
-                <Icon
-                  icon="material-symbols:translate-rounded"
-                  width="15"
-                  height="15"
-                />
+                <MaterialSymbolsTranslateRounded width="15" height="15" />
               </button>
 
               <button class="btn-menu" onclick={copyBookMarkToClipboard}>
-                <Icon
-                  icon="material-symbols:content-copy-outline-rounded"
+                <MaterialSymbolsContentCopyOutlineRounded
                   width="15"
                   height="15"
                 />
               </button>
 
               <button class="btn-menu" onclick={getRandomBookmark}>
-                <Icon
-                  icon="material-symbols:shuffle-rounded"
-                  width="15"
-                  height="15"
-                />
+                <MaterialSymbolsShuffleRounded width="15" height="15" />
               </button>
 
               <button
@@ -1007,16 +1007,14 @@
                   isSubmitting = false;
                 }}
               >
-                <Icon
-                  icon="material-symbols:edit-square-outline-rounded"
+                <MaterialSymbolsEditSquareOutlineRounded
                   width="15"
                   height="15"
                 />
               </button>
 
               <button class="btn-menu" onclick={showInsertBookmark}>
-                <Icon
-                  icon="material-symbols:database-upload-outline-rounded"
+                <MaterialSymbolsDatabaseUploadOutlineRounded
                   width="15"
                   height="15"
                 />
@@ -1026,8 +1024,7 @@
                 class="btn-menu"
                 onclick={() => (showDelete = !showDelete)}
               >
-                <Icon
-                  icon="material-symbols:delete-forever-outline-rounded"
+                <MaterialSymbolsDeleteForeverOutlineRounded
                   width="15"
                   height="15"
                 />

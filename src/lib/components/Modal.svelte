@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
+  import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
   let { showModal = $bindable(), header, children }: Props = $props();
 
@@ -28,7 +28,7 @@
     {@render header?.()}
     <!-- svelte-ignore a11y_autofocus -->
     <button class="closeBtn" onclick={() => dialog!.close()}>
-      <Icon icon="material-symbols:close-rounded" width="14" height="14" />
+      <MaterialSymbolsCloseRounded width="14" height="14" />
     </button>
   </div>
   <div class="content w-main">

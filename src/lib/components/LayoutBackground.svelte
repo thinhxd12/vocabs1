@@ -14,8 +14,19 @@
     LayoutSettingType,
     VideoBackgroundType,
   } from "$lib/types";
-  import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
+  import SolarArrowLeftBold from "~icons/solar/arrow-left-bold";
+  import MaterialSymbolsTriangleCircleRounded from "~icons/material-symbols/triangle-circle-rounded";
+  import EosIconsLoading from "~icons/eos-icons/loading";
+  import SolarArrowRightBold from "~icons/solar/arrow-right-bold";
+  import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
+  import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
+  import MaterialSymbolsCloudDownloadOutlineRounded from "~icons/material-symbols/cloud-download-outline-rounded";
+  import MaterialSymbolsLink2Rounded from "~icons/material-symbols/link-2-rounded";
+  import MaterialSymbolsLightDirectorySyncRounded from "~icons/material-symbols-light/directory-sync-rounded";
+  import FluentSurfaceHub24Filled from "~icons/fluent/surface-hub-24-filled";
+  import FluentSurfaceHub24Regular from "~icons/fluent/surface-hub-24-regular";
+  import MaterialSymbolsResetImage from "~icons/material-symbols/reset-image";
 
   const defaultImage: ImageBackgroundType[] = [
     {
@@ -125,7 +136,7 @@
         }}
         disabled={$currentImageIndex === 0}
       >
-        <Icon icon="solar:arrow-left-bold" width="16" height="16" />
+        <SolarArrowLeftBold width="16" height="16" />
       </button>
       <button
         class="btn-menu light"
@@ -134,11 +145,7 @@
           handleShowLayout("video");
         }}
       >
-        <Icon
-          icon="material-symbols:triangle-circle-rounded"
-          width="16"
-          height="16"
-        />
+        <MaterialSymbolsTriangleCircleRounded width="16" height="16" />
       </button>
       <button
         class="btn-menu light"
@@ -148,9 +155,9 @@
         }}
       >
         {#if $localImageStore.loading}
-          <Icon icon="eos-icons:loading" width="16" height="16" />
+          <EosIconsLoading width="16" height="16" />
         {:else}
-          <Icon icon="solar:arrow-right-bold" width="16" height="16" />
+          <SolarArrowRightBold width="16" height="16" />
         {/if}
       </button>
     </div>
@@ -177,17 +184,9 @@
 
       <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
         {#if isMuted}
-          <Icon
-            icon="material-symbols:volume-off-outline-rounded"
-            width="16"
-            height="16"
-          />
+          <MaterialSymbolsVolumeOffOutlineRounded width="16" height="16" />
         {:else}
-          <Icon
-            icon="material-symbols:volume-up-outline-rounded"
-            width="16"
-            height="16"
-          />
+          <MaterialSymbolsVolumeUpOutlineRounded width="16" height="16" />
         {/if}
       </button>
 
@@ -198,11 +197,7 @@
           handleShowLayout("local");
         }}
       >
-        <Icon
-          icon="material-symbols:cloud-download-outline-rounded"
-          width="16"
-          height="16"
-        />
+        <MaterialSymbolsCloudDownloadOutlineRounded width="16" height="16" />
       </button>
 
       <button
@@ -212,7 +207,7 @@
           handleShowLayout("remote");
         }}
       >
-        <Icon icon="material-symbols:link-2-rounded" width="16" height="16" />
+        <MaterialSymbolsLink2Rounded width="16" height="16" />
       </button>
     </div>
   {:else if $layoutSetting && $layoutSetting.showImageLocal}
@@ -242,11 +237,7 @@
           imageSrc = defaultImage[0];
         }}
       >
-        <Icon
-          icon="material-symbols-light:directory-sync"
-          width="16"
-          height="16"
-        />
+        <MaterialSymbolsLightDirectorySyncRounded width="16" height="16" />
       </button>
 
       <button
@@ -256,7 +247,7 @@
         }}
         class="btn-menu light"
       >
-        <Icon icon="fluent:surface-hub-24-filled" width="16" height="16" />
+        <FluentSurfaceHub24Filled width="16" height="16" />
       </button>
 
       <button
@@ -266,7 +257,7 @@
         }}
         class="btn-menu light"
       >
-        <Icon icon="fluent:surface-hub-24-regular" width="16" height="16" />
+        <FluentSurfaceHub24Regular width="16" height="16" />
       </button>
 
       <button
@@ -276,7 +267,7 @@
         }}
         class="btn-menu light"
       >
-        <Icon icon="material-symbols:link-2-rounded" width="16" height="16" />
+        <MaterialSymbolsLink2Rounded width="16" height="16" />
       </button>
 
       <button
@@ -286,11 +277,7 @@
           handleShowLayout("video");
         }}
       >
-        <Icon
-          icon="material-symbols:triangle-circle-rounded"
-          width="16"
-          height="16"
-        />
+        <MaterialSymbolsTriangleCircleRounded width="16" height="16" />
       </button>
     </div>
   {:else}
@@ -303,7 +290,7 @@
           handleShowLayout("local");
         }}
       >
-        <Icon icon="material-symbols:reset-image" width="16" height="16" />
+        <MaterialSymbolsResetImage width="16" height="16" />
       </button>
     </div>
   {/if}

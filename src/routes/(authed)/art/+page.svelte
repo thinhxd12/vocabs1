@@ -6,8 +6,10 @@
     getPrevArtImage,
     localArtStore,
   } from "$lib/store/localstore";
-  import Icon from "@iconify/svelte";
   import { onMount } from "svelte";
+  import SolarArrowLeftBold from "~icons/solar/arrow-left-bold";
+  import SolarArrowRightBold from "~icons/solar/arrow-right-bold";
+  import EosIconsLoading from "~icons/eos-icons/loading";
 
   onMount(() => {
     getCurrentArtImage();
@@ -21,7 +23,9 @@
   <meta name="art" content="Some painting" />
 </svelte:head>
 
-<section class="absolute top-0 left-0 w-screen h-screen flex z-[5] bg-[#19191c]">
+<section
+  class="absolute top-0 left-0 w-screen h-screen flex z-[5] bg-[#19191c]"
+>
   <div
     class="relative overflow-hidden flex-1 h-full flex items-center justify-center pt-60 pb-80 px-40"
   >
@@ -46,7 +50,7 @@
         }}
         disabled={$currentArtImageIndex === 0}
       >
-        <Icon icon="solar:arrow-left-bold" width="15" height="15" />
+        <SolarArrowLeftBold width="15" height="15" />
       </button>
       <button
         class="btn-menu"
@@ -56,9 +60,9 @@
         }}
       >
         {#if $localArtStore.loading}
-          <Icon icon="eos-icons:loading" width="15" height="15" />
+          <EosIconsLoading width="15" height="15" />
         {:else}
-          <Icon icon="solar:arrow-right-bold" width="15" height="15" />
+          <SolarArrowRightBold width="15" height="15" />
         {/if}
       </button>
     </div>
