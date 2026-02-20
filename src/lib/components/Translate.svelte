@@ -41,8 +41,7 @@
     const { data: dataMemories } = await supabase
       .from("memories_table")
       .select("*")
-      .like("word", `${translateWord.word}%`)
-      .limit(1);
+      .eq("word", translateWord.word);
 
     if (dataMemories.length)
       toast.error(`Memorized "${dataMemories[0].word}"!`, {

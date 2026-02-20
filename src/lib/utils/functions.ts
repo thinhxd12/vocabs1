@@ -198,9 +198,11 @@ export const archiveVocab = async (
     });
     return;
   }
+
   const { count: lengthVocabTable } = await supabase
     .from("vocab_table")
     .select("*", { count: "exact", head: true });
+
   if (!lengthVocabTable || lengthVocabTable % 200 === 0) {
     totalMemories.update((n) => n + 1);
     return;

@@ -196,7 +196,7 @@ export const updateTodayScheduleLocal = async () => {
   currentScheduleValue = get(currentSchedule);
 
   if (currentScheduleValue) {
-    if (currentScheduleValue.count <= 11) showTimer.set(true);
+    if (currentScheduleValue.count < 12) showTimer.set(true);
 
     if (todayScheduleValue.start.id === currentScheduleValue.id) {
       todaySchedule.set({
@@ -205,8 +205,13 @@ export const updateTodayScheduleLocal = async () => {
       });
     } else {
       todaySchedule.set({ ...todayScheduleValue, end: currentScheduleValue });
-      if (currentScheduleValue.count > 11) checkSchedule();
     }
+
+    if (
+      todayScheduleValue.start.count > 11 &&
+      todayScheduleValue.end.count > 11
+    )
+      checkSchedule();
   }
 };
 
