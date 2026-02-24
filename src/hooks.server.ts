@@ -17,7 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
           });
         },
       },
-    }
+    },
   );
 
   event.locals.safeGetSession = async () => {
@@ -55,7 +55,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     };
   }
 
-  return resolve(event, {
+  return await resolve(event, {
     filterSerializedResponseHeaders(name) {
       return name === "content-range" || name === "x-supabase-api-version";
     },

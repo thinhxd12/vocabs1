@@ -26,6 +26,8 @@
   import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
   import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
   import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
+  import { linear } from "svelte/easing";
+  import { Tween } from "svelte/motion";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -49,7 +51,11 @@
 
   let now = $state<number>(0);
   let end = $state<number>(0);
-  let angle = $state<number>(0);
+
+  const progress = new Tween(0, {
+    duration: 1000,
+    easing: linear,
+  });
 
   onMount(() => {
     if ($currentState === "focus" && !$countPomodoros)
@@ -74,9 +80,9 @@
   function updatePomodoro() {
     now = Date.now();
     $countPomodoros = Math.round((end - now) / 1000);
-    angle = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
+    progress.target = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
     if (now >= end) {
-      angle = 0;
+      progress.set(0);
       $currentInterval++;
       completePomodoro();
       srcAudio = "/sounds/mp3_break.ogg";
@@ -110,10 +116,12 @@
     now = Date.now();
     $countPomodoros = Math.round((end - now) / 1000);
     if ($currentState === "break") {
-      angle = (($shortBreak * 60 - $countPomodoros) / $shortBreak) * 6;
-    } else angle = (($longBreak * 60 - $countPomodoros) / $longBreak) * 6;
+      progress.target =
+        (($shortBreak * 60 - $countPomodoros) / $shortBreak) * 6;
+    } else
+      progress.target = (($longBreak * 60 - $countPomodoros) / $longBreak) * 6;
     if (now >= end) {
-      angle = 0;
+      progress.set(0);
       $countPomodoros = minutesToSeconds($pomodoro);
       $currentState = "focus";
       startPomodoro();
@@ -220,9 +228,10 @@
           class:active={$currentState === "focus"}
           onclick={(e) => {
             e.currentTarget.blur();
+            progress.set(0);
             $countPomodoros = minutesToSeconds($pomodoro);
             $currentState = "focus";
-            isPaused = true;
+            handleResume();
           }}
         >
           <MaterialSymbolsAdjust width="14" height="14" />
@@ -233,9 +242,10 @@
           class:active={$currentState === "break"}
           onclick={(e) => {
             e.currentTarget.blur();
+            progress.set(0);
             $countPomodoros = minutesToSeconds($shortBreak);
             $currentState = "break";
-            isPaused = true;
+            handleResume();
           }}
         >
           <MaterialSymbolsDarkModeRounded width="14" height="14" />
@@ -246,9 +256,10 @@
           class:active={$currentState === "longbreak"}
           onclick={(e) => {
             e.currentTarget.blur();
+            progress.set(0);
             $countPomodoros = minutesToSeconds($longBreak);
             $currentState = "longbreak";
-            isPaused = true;
+            handleResume();
           }}
         >
           <MaterialSymbolsSailingRounded width="14" height="14" />
@@ -415,7 +426,8 @@
             ? "/images/Laugee George The End of the Day.avif"
             : "/images/Van_Gogh_La Sieste.avif"}
           alt="bg"
-          class="absolute z-10 object-cover w-full h-full grayscale-[1]"
+          class="absolute z-10 object-cover w-full h-full"
+          style="filter: grayscale(1) contrast(1.2);"
         />
 
         {#if !isPaused}
@@ -427,9 +439,9 @@
             class="absolute z-20 object-cover w-full h-full"
             style="mask-image: conic-gradient(
           from 0deg,
-          black 0deg {angle}deg,
-          transparent {angle}deg 360deg
-          );"
+          black 0deg {progress.current}deg,
+          transparent {progress.current}deg 360deg
+          ); filter: contrast(1.2);"
           />
         {/if}
 
@@ -443,7 +455,7 @@
           <span class="w-1/2 text-right"
             >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
           >
-          <span class="pb-15">:</span>
+          <span class="min-w-30"></span>
           <span class="w-1/2 text-left"
             >{padWithZeroes($countPomodoros % 60)}</span
           >
@@ -454,7 +466,7 @@
         <div class="static"></div>
         <div
           class="dynamic"
-          style="transform: rotate({angle}deg) scaleX(2);"
+          style="transform: rotate({progress.current}deg) scaleX(3);"
         ></div>
       {/if}
     </div>
@@ -467,10 +479,9 @@
   .static {
     position: absolute;
     height: 50%;
-    width: 1px;
-    left: calc(50% - 1px);
+    width: 3px;
+    left: calc(50% - 1.5px);
     transform-origin: bottom;
-    transform: scaleX(2);
     top: 0;
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
@@ -480,7 +491,7 @@
     position: absolute;
     height: 50%;
     width: 1px;
-    left: calc(50% - 1px);
+    left: calc(50% - 1.5px);
     transform-origin: bottom;
     top: 0;
     background-color: rgba(0, 0, 0, 1);
@@ -510,7 +521,7 @@
   .square {
     width: 100%;
     aspect-ratio: 1;
-    border: 2px solid #000000;
+    border: 3px solid #000000;
     position: relative;
   }
 
@@ -518,7 +529,7 @@
     width: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 2px solid #000000;
+    border: 3px solid #000000;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -530,10 +541,10 @@
     width: 100%;
     position: inherit;
     z-index: 30;
-    color: #ffffff;
-    font-size: 8rem;
-    line-height: 8rem;
-    font-weight: 200;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 9rem;
+    line-height: 9rem;
+    font-weight: 300;
     text-shadow: 0 3px 6px rgba(0, 0, 0, 1);
     display: flex;
     justify-content: center;
