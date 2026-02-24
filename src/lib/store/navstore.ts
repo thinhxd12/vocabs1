@@ -207,9 +207,11 @@ export const updateTodayScheduleLocal = async () => {
       todaySchedule.set({ ...todayScheduleValue, end: currentScheduleValue });
     }
 
+    const newTodayScheduleValue = get(todaySchedule);
+
     if (
-      todayScheduleValue.start.count > 11 &&
-      todayScheduleValue.end.count > 11
+      newTodayScheduleValue!.start.count > 11 &&
+      newTodayScheduleValue!.end.count > 11
     )
       checkSchedule();
   }
