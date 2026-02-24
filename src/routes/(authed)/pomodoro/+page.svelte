@@ -422,32 +422,21 @@
 
     <div class="square">
       <div class="circle">
-        <!-- <img
-          src={$currentState === "focus"
-            ? "/images/Laugee George The End of the Day.avif"
-            : "/images/Van_Gogh_La Sieste.avif"}
+        <img
+          src="/images/Van_Gogh_La Sieste.avif"
           alt="bg"
           class="absolute z-10 object-cover w-full h-full"
           style="filter: grayscale(1) contrast(1.2);"
-        /> -->
+        />
 
         {#if $currentState === "focus"}
           <img
             src="/images/Laugee George The End of the Day.avif"
             alt="bg"
-            class="absolute z-10 object-cover w-full h-full"
+            class="absolute z-[15] object-cover w-full h-full"
             style="filter: grayscale(1) contrast(1.2);"
-            in:fade={{ duration: 300, easing: linear }}
-            out:fade={{ duration: 300, easing: linear }}
-          />
-        {:else}
-          <img
-            src="/images/Van_Gogh_La Sieste.avif"
-            alt="bg"
-            class="absolute z-10 object-cover w-full h-full"
-            style="filter: grayscale(1) contrast(1.2);"
-            in:fade={{ duration: 300, easing: linear }}
-            out:fade={{ duration: 300, easing: linear }}
+            in:fade={{ duration: 1000, easing: linear }}
+            out:fade={{ duration: 1000, easing: linear }}
           />
         {/if}
 
@@ -461,7 +450,7 @@
           from 0deg,
           black 0deg {progress.current}deg,
           transparent {progress.current}deg 360deg
-          ); filter: contrast(1.2);"
+          );"
         />
 
         <button
@@ -481,6 +470,7 @@
         </button>
       </div>
 
+      <div class="center"></div>
       <div class="static"></div>
       <div
         class="dynamic"
@@ -493,25 +483,37 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
+  .center {
+    position: absolute;
+    height: 1px;
+    width: 1px;
+    left: calc(50% - 0.5px);
+    top: calc(50% - 0.5px);
+    transform: scale(3);
+    background-color: rgba(0, 0, 0, 1);
+    border-radius: 50%;
+    z-index: 21;
+  }
+
   .static {
     position: absolute;
-    height: 50%;
+    height: calc(50% - 2px);
     width: 1px;
-    transform: scaleX(3);
-    left: calc(50% - 1.5px);
+    left: calc(50% - 0.5px);
     transform-origin: bottom;
-    top: 0;
+    top: 2px;
+    transform: scaleX(3);
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
   }
 
   .dynamic {
     position: absolute;
-    height: 50%;
+    height: calc(50% - 2px);
     width: 1px;
-    left: calc(50% - 1.5px);
+    left: calc(50% - 0.5px);
     transform-origin: bottom;
-    top: 0;
+    top: 2px;
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
   }
@@ -559,11 +561,11 @@
     width: 100%;
     position: inherit;
     z-index: 30;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 1);
     font-size: 9rem;
     line-height: 9rem;
     font-weight: 300;
-    text-shadow: 0 3px 3px rgba(0, 0, 0, 1);
+    text-shadow: 0 3px 3px rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
