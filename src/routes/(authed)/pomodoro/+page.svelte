@@ -480,7 +480,7 @@
     position: absolute;
     height: 50%;
     width: 1px;
-    transform: scale(3);
+    transform: scaleX(3);
     left: calc(50% - 1.5px);
     transform-origin: bottom;
     top: 0;
