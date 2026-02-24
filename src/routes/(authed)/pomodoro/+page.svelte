@@ -28,6 +28,7 @@
   import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
   import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
+  import { fade } from "svelte/transition";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -421,29 +422,47 @@
 
     <div class="square">
       <div class="circle">
-        <img
+        <!-- <img
           src={$currentState === "focus"
             ? "/images/Laugee George The End of the Day.avif"
             : "/images/Van_Gogh_La Sieste.avif"}
           alt="bg"
           class="absolute z-10 object-cover w-full h-full"
           style="filter: grayscale(1) contrast(1.2);"
-        />
+        /> -->
 
-        {#if !isPaused}
+        {#if $currentState === "focus"}
           <img
-            src={$currentState === "focus"
-              ? "/images/Laugee George The End of the Day.avif"
-              : "/images/Van_Gogh_La Sieste.avif"}
-            alt="pbg"
-            class="absolute z-20 object-cover w-full h-full"
-            style="mask-image: conic-gradient(
+            src="/images/Laugee George The End of the Day.avif"
+            alt="bg"
+            class="absolute z-10 object-cover w-full h-full"
+            style="filter: grayscale(1) contrast(1.2);"
+            in:fade={{ duration: 300, easing: linear }}
+            out:fade={{ duration: 300, easing: linear }}
+          />
+        {:else}
+          <img
+            src="/images/Van_Gogh_La Sieste.avif"
+            alt="bg"
+            class="absolute z-10 object-cover w-full h-full"
+            style="filter: grayscale(1) contrast(1.2);"
+            in:fade={{ duration: 300, easing: linear }}
+            out:fade={{ duration: 300, easing: linear }}
+          />
+        {/if}
+
+        <img
+          src={$currentState === "focus"
+            ? "/images/Laugee George The End of the Day.avif"
+            : "/images/Van_Gogh_La Sieste.avif"}
+          alt="pbg"
+          class="absolute z-20 object-cover w-full h-full"
+          style="mask-image: conic-gradient(
           from 0deg,
           black 0deg {progress.current}deg,
           transparent {progress.current}deg 360deg
           ); filter: contrast(1.2);"
-          />
-        {/if}
+        />
 
         <button
           class="time"
@@ -455,20 +474,18 @@
           <span class="w-1/2 text-right"
             >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
           >
-          <span class="min-w-30"></span>
+          <span class="min-w-30 pb-36">:</span>
           <span class="w-1/2 text-left"
             >{padWithZeroes($countPomodoros % 60)}</span
           >
         </button>
       </div>
 
-      {#if !isPaused}
-        <div class="static"></div>
-        <div
-          class="dynamic"
-          style="transform: rotate({progress.current}deg) scaleX(3);"
-        ></div>
-      {/if}
+      <div class="static"></div>
+      <div
+        class="dynamic"
+        style="transform: rotate({progress.current}deg) scaleX(3);"
+      ></div>
     </div>
   </div>
 </Container>
@@ -546,7 +563,7 @@
     font-size: 9rem;
     line-height: 9rem;
     font-weight: 300;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 1);
+    text-shadow: 0 3px 3px rgba(0, 0, 0, 1);
     display: flex;
     justify-content: center;
     align-items: center;
