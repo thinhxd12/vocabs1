@@ -1,9 +1,11 @@
 import type {
   ArtImageType,
+  DBSelect,
   ImageBackgroundType,
   LayoutSettingType,
 } from "$lib/types";
 import { get, writable } from "svelte/store";
+import { page } from "$app/state";
 
 const browser =
   typeof window !== "undefined" && typeof document !== "undefined";
@@ -13,6 +15,7 @@ const LAYOUT_INDEX = "layout-index";
 export const LAYOUT_SETTING = "layout-setting";
 const ART_STORAGE = "art-images";
 const ART_INDEX = "art-index";
+const CALENDAR_RECORD = "calendar-record";
 
 function serialize(value: any): string {
   return JSON.stringify(value);
@@ -32,6 +35,9 @@ export const localImageStore = writable<{
 });
 
 export const layoutSetting = writable<LayoutSettingType | null>();
+export const localCalendarStore = writable<DBSelect["diary_table"][] | null>();
+
+//----------------LAYOUT IMAGE-----------------//
 
 export function getCurrentImageBackground() {
   if (!browser) return;
@@ -115,7 +121,7 @@ export async function getPrevImageBackground() {
   });
 }
 
-//---------------------------------//
+//--------------ART-------------------//
 
 const defaultArtImage: ArtImageType = {
   mainImage: "/images/main-image.webp",
@@ -204,4 +210,24 @@ export async function getPrevArtImage() {
     localStorage.setItem(ART_INDEX, String(newIndex));
     return newIndex;
   });
+}
+
+//----------------CALENDAR-----------------//
+
+export async function getCalendarRecord() {
+  if (!browser) return;
+  const record = localStorage.getItem(CALENDAR_RECORD);
+
+  if (record) {
+    localCalendarStore.set(deserialize(record));
+  } else {
+    const { data } = await page.data.supabase
+      .from("diary_table")
+      .select("*")
+      .order("id", { ascending: true });
+    if (data) {
+      localCalendarStore.set(data);
+      localStorage.setItem(CALENDAR_RECORD, serialize(data));
+    }
+  }
 }

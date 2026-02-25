@@ -140,6 +140,7 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
+    width: 100%;
   }
 
   .pagination button {

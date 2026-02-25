@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
           global: {
             fetch,
           },
-        }
+        },
       )
     : createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
         global: {

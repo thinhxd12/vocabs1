@@ -463,7 +463,7 @@
           <span class="w-1/2 text-right"
             >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
           >
-          <span class="min-w-30 pb-36">:</span>
+          <span class="min-w-30 pb-40">:</span>
           <span class="w-1/2 text-left"
             >{padWithZeroes($countPomodoros % 60)}</span
           >

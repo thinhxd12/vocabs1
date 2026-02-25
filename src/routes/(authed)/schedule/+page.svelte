@@ -2,7 +2,6 @@
   import { enhance } from "$app/forms";
   import Calendar from "$lib/components/Calendar.svelte";
   import { schedule, todaySchedule } from "$lib/store/navstore";
-  import { cachedDiary } from "$lib/store/vocabstore";
   import type { CalendarDayType, DBSelect } from "$lib/types.js";
   import { format } from "date-fns";
   import { onMount } from "svelte";
@@ -14,6 +13,7 @@
   import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
   import MaterialSymbolsCalendarAddOnRounded from "~icons/material-symbols/calendar-add-on-rounded";
   import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+  import { getCalendarRecord } from "$lib/store/localstore";
 
   let { data: layoutData }: PageProps = $props();
   const { supabase } = layoutData;
@@ -77,15 +77,7 @@
   }
 
   onMount(async () => {
-    if (!$cachedDiary) {
-      const { data } = await supabase
-        .from("diary_table")
-        .select("*")
-        .order("id", { ascending: true });
-      if (data) {
-        $cachedDiary = data;
-      }
-    }
+    getCalendarRecord();
     await getTablePaginationLength();
     getDataPaginationByIndex(1);
   });
@@ -160,7 +152,7 @@
 
 <audio {src} bind:paused preload="auto"></audio>
 
-<Container zIndex={6}>
+<Container zIndex={6} scrollable>
   <div class="absolute w-main golden z-10">
     <div class="flex justify-center items-center absolute right-0 top-0 gap-3">
       <button
@@ -375,7 +367,7 @@
   <Calendar schedule={calendarData} />
 
   <p
-    class="light !bg-green-400/15 font-garamond text-12 font-500 leading-14 p-6"
+    class="light !bg-green-400/15 font-garamond text-12 font-500 leading-14 px-6 py-3"
   >
     The tree that is supposed to grow to a proud height can dispense with bad
     weather and storms. Whether misfortune and external resistance, some kinds
@@ -385,27 +377,27 @@
     they call it poison.
   </p>
 
-  <div class="w-full flex flex-col items-center min-h-[135px]">
+  {#if totalItems}
+    <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
+  {/if}
+
+  <div class="w-full flex flex-col gap-1 items-center min-h-[135px]">
     {#each paginationItems as item}
-      <div
-        class="w-full gap-2 font-rubik text-12 h-24 flex items-center mb-2 select-none"
-      >
-        <div class="dark min-w-[120px] text-center leading-22 pt-2">
+      <div class="w-full font-rubik text-12 h-24 flex items-center select-none">
+        <div class="dark min-w-[120px] indent-30 leading-22 pt-2">
           {item.index + 1} - {item.index + 200}
         </div>
-        <div class="light flex-1 text-center leading-22 pt-2">
-          {format(new Date(item.start_date), "yyyy-MM-dd")}
-        </div>
-        <div class="light flex-1 text-center leading-22 pt-2">
-          {format(new Date(item.end_date), "yyyy-MM-dd")}
+        <div class="flex-1 light flex justify-center items-center">
+          <div class="indent-30 leading-22 pt-2 w-1/2">
+            {format(new Date(item.start_date), "yyyy-MM-dd")}
+          </div>
+          <div class="indent-30 leading-22 pt-2 w-1/2">
+            {format(new Date(item.end_date), "yyyy-MM-dd")}
+          </div>
         </div>
       </div>
     {/each}
   </div>
-
-  {#if totalItems}
-    <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
-  {/if}
 </Container>
 
 <style lang="postcss">
