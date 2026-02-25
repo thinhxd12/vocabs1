@@ -152,9 +152,9 @@
 
 <audio {src} bind:paused preload="auto"></audio>
 
-<Container zIndex={6} scrollable>
+<Container zIndex={6}>
   <div class="absolute w-main golden z-10">
-    <div class="flex justify-center items-center absolute right-0 top-0 gap-3">
+    <div class="flex justify-center items-center absolute right-3 top-2 gap-3">
       <button
         class="calendar-button light"
         onclick={() => (showReset = !showReset)}
@@ -367,7 +367,7 @@
   <Calendar schedule={calendarData} />
 
   <p
-    class="light !bg-green-400/15 font-garamond text-12 font-500 leading-14 px-6 py-3"
+    class="light !bg-green-400/15 font-garamond text-10 font-400 leading-9 px-6 py-4"
   >
     The tree that is supposed to grow to a proud height can dispense with bad
     weather and storms. Whether misfortune and external resistance, some kinds
@@ -381,17 +381,19 @@
     <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
   {/if}
 
-  <div class="w-full flex flex-col gap-1 items-center min-h-[135px]">
+  <div class="w-full flex flex-col gap-2 items-center min-h-[135px]">
     {#each paginationItems as item}
-      <div class="w-full font-rubik text-12 h-24 flex items-center select-none">
-        <div class="dark min-w-[120px] indent-30 leading-22 pt-2">
+      <div
+        class="w-full font-rubik text-12 leading-20 h-20 flex items-center select-none"
+      >
+        <div class="dark min-w-[120px] indent-30 h-full">
           {item.index + 1} - {item.index + 200}
         </div>
-        <div class="flex-1 light flex justify-center items-center">
-          <div class="indent-30 leading-22 pt-2 w-1/2">
+        <div class="flex-1 light flex justify-center items-center h-full">
+          <div class="indent-30 w-1/2">
             {format(new Date(item.start_date), "yyyy-MM-dd")}
           </div>
-          <div class="indent-30 leading-22 pt-2 w-1/2">
+          <div class="indent-30 w-1/2">
             {format(new Date(item.end_date), "yyyy-MM-dd")}
           </div>
         </div>

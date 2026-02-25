@@ -5,6 +5,7 @@
   import { untrack } from "svelte";
   import MingcuteUpLine from "~icons/mingcute/up-line";
   import MingcuteDownLine from "~icons/mingcute/down-line";
+  import { fly } from "svelte/transition";
 
   type DayType = {
     enabled: boolean;
@@ -38,6 +39,7 @@
   let now = new Date();
   let year = $state<number>(now.getFullYear());
   let month = $state<number>(now.getMonth());
+  let isNext = $state<boolean>(true);
 
   function initMonth() {
     days = [];
@@ -97,6 +99,7 @@
   });
 
   function next() {
+    isNext = true;
     month++;
     if (month == 12) {
       year++;
@@ -104,7 +107,9 @@
     }
     initMonth();
   }
+
   function prev() {
+    isNext = false;
     if (month == 0) {
       month = 11;
       year--;
@@ -115,41 +120,45 @@
   }
 </script>
 
-<div class="w-full">
-  <div class="relative w-full golden">
-    <img
-      src="/images/{month + 1}.webp"
-      alt="calendar-bg"
-      class="w-full h-full object-cover brightness-95"
-    />
+<div class="w-full border border-[#2f3336]">
+  <div class="relative w-full golden overflow-hidden calendar">
+    {#key month}
+      <img
+        src="/images/{month + 1}.webp"
+        alt="calendar-bg"
+        class="w-full h-full object-cover"
+        in:fly={{ x: isNext ? 30 : -30, duration: 150, delay: 150 }}
+        out:fly={{ x: isNext ? -30 : 30, duration: 150 }}
+      />
+    {/key}
   </div>
 
   <div class="calendar">
-    <div class="flex justify-between items-center px-6 pt-9 mb-3">
-      <div class="flex items-center gap-6 select-none">
-        <h3 class="font-rubik text-54 leading-50 text-white/60">
+    <div class="flex justify-between items-center px-6 pt-6">
+      <div class="flex items-center gap-6 select-none text-[#71767b]">
+        <h3 class="font-rubik font-300 text-54 leading-40">
           {now.getDate()}
         </h3>
         <div class="flex flex-col">
-          <div class="font-rubik text-18 leading-16 text-white/60">
+          <div class="font-rubik font-300 text-18 leading-16">
             {format(now, "EEEE")}
           </div>
-          <div class="flex items-center text-white/60">
-            <span class="font-rubik text-12 leading-24 min-w-90">
+          <div class="flex items-center">
+            <span class="font-rubik font-300 text-12 leading-24 min-w-90">
               {monthNames[month]}
               {year}</span
             >
             <span class="flex items-center">
               <button
                 onclick={prev}
-                class="size-24 flex items-center justify-center"
+                class="size-24 flex items-center justify-center hover:text-white"
               >
                 <MingcuteUpLine width="16" height="16" />
               </button>
 
               <button
                 onclick={next}
-                class="size-24 flex items-center justify-center"
+                class="size-24 flex items-center justify-center hover:text-white"
               >
                 <MingcuteDownLine width="16" height="16" />
               </button>
@@ -158,7 +167,7 @@
         </div>
       </div>
 
-      <div class="font-rubik text-8 leading-10 font-300 text-white/60 pb-6">
+      <div class="font-rubik text-8 leading-10 font-300 pb-6 text-[#71767b]">
         {#if $localCalendarStore}
           {#each $localCalendarStore as item}
             <p class="flex gap-6">
@@ -172,11 +181,11 @@
 
     <div class="w-full">
       <div
-        class="mb-6 grid w-full grid-cols-7 justify-items-center border-b border-t border-white/15"
+        class="mb-6 grid w-full grid-cols-7 justify-items-center border-b border-t border-[#2f3336]"
       >
         {#each dayNames as date}
           <span
-            class="w-50 h-27 text-secondary-white text-center font-rubik leading-24 pt-3 select-none text-13 font-400 first-of-type:text-[#ff3333]"
+            class="w-50 h-24 text-white text-center font-rubik leading-22 pt-2 select-none text-13 font-300 first-of-type:text-[#ff3333]"
           >
             {date}
           </span>
@@ -188,12 +197,12 @@
           <div
             class="day {day.enabled
               ? 'opacity-100'
-              : 'opacity-30'} text-secondary-white w-50 h-full flex justify-center items-center relative font-rubik leading-20 text-12 select-none"
+              : 'opacity-30'} text-white w-50 h-full flex justify-center items-center relative font-rubik font-300 leading-22 text-12 select-none"
           >
             {day.date}
             {#if day.count}
               <span
-                class="schedule absolute right-6 top-0 text-8 font-rubik font-600 leading-8"
+                class="schedule absolute right-6 top-0 text-8 font-rubik font-300 leading-8"
               >
                 {day.count}
               </span>
@@ -212,9 +221,8 @@
 
 <style>
   .calendar {
-    background-color: rgba(17, 25, 40, 0.74);
-    backdrop-filter: blur(18px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.125);
+    background: rgba(15, 20, 25, 0.75);
+    backdrop-filter: blur(4px);
   }
 
   .calendarDate {
@@ -225,7 +233,7 @@
     overflow: auto;
     align-items: center;
     justify-items: center;
-    padding-bottom: 6px;
+    padding-bottom: 3px;
   }
 
   .day:nth-of-type(7n + 1) {
