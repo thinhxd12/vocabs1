@@ -15,15 +15,16 @@
   import { toast } from "svelte-sonner";
   import { timerString } from "$lib/store/layoutstore";
   import { archiveVocab } from "$lib/utils/functions";
-  import { page } from "$app/state";
   import Container from "$lib/components/Container.svelte";
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
+  import type { PageProps } from "./$types";
 
+  let { data: layoutData }: PageProps = $props();
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
   const trigger = debounce(async (text: string) => {
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("vocab_table")
       .select("id,word")
       .like("word", `${text}%`)
@@ -115,7 +116,7 @@
     $searchTerm = "";
     $searchResults = [];
 
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("vocab_table")
       .select("*")
       .eq("id", id)
@@ -125,12 +126,12 @@
       $renderWord = data[0];
       $vocabInput = data[0].word;
       if (data[0].number > 1) {
-        await page.data.supabase
+        await layoutData.supabase
           .from("vocab_table")
           .update({ number: data[0].number - 1 })
           .eq("id", id);
       } else {
-        await archiveVocab(data[0].id, data[0].word, page.data.supabase);
+        await archiveVocab(data[0].id, data[0].word);
       }
     }
   }
@@ -166,7 +167,7 @@
   }
 
   async function confirmDelete(id: string) {
-    const { error } = await page.data.supabase
+    const { error } = await layoutData.supabase
       .from("vocab_table")
       .delete()
       .eq("id", id);
@@ -272,8 +273,8 @@
                   handleSelectWordFromSearch(item.id);
                 }}
               >
-                <span>
-                  <strong>{$searchTerm.toLowerCase()}</strong>
+                <strong>{$searchTerm.toLowerCase()}</strong>
+                <span class="-ml-3">
                   {item.word.replace($searchTerm.toLowerCase(), "")}
                 </span>
               </button>

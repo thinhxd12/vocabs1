@@ -9,6 +9,7 @@ import { v7 as uuidv7 } from "uuid";
 import { totalMemories } from "$lib/store/navstore";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { format } from "date-fns";
+import { page } from "$app/state";
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);
@@ -161,12 +162,8 @@ export const getHourlyWeatherTomorrowData = async (
   }
 };
 
-export const archiveVocab = async (
-  id: string,
-  word: string,
-  supabase: SupabaseClient,
-) => {
-  const { error: errorMemories } = await supabase
+export const archiveVocab = async (id: string, word: string) => {
+  const { error: errorMemories } = await page.data.supabase
     .from("memories_table")
     .insert({ id: uuidv7(), word: word });
 
@@ -182,7 +179,7 @@ export const archiveVocab = async (
     return;
   }
 
-  const { error: errorDeleteVocab } = await supabase
+  const { error: errorDeleteVocab } = await page.data.supabase
     .from("vocab_table")
     .delete()
     .eq("id", id);
@@ -199,7 +196,7 @@ export const archiveVocab = async (
     return;
   }
 
-  const { count: lengthVocabTable } = await supabase
+  const { count: lengthVocabTable } = await page.data.supabase
     .from("vocab_table")
     .select("*", { count: "exact", head: true });
 
@@ -214,7 +211,7 @@ export const archiveVocab = async (
   }
 
   const endOfIndex = Math.floor(lengthVocabTable / 200) * 200;
-  const { data: rangeResults } = await supabase
+  const { data: rangeResults } = await page.data.supabase
     .from("vocab_table")
     .select("id,number")
     .order("id", { ascending: true })
@@ -222,40 +219,16 @@ export const archiveVocab = async (
 
   if (!rangeResults) return;
   const smallestRow = rangeResults.reduce(
-    (min, row) => (row.number < min.number ? row : min),
+    (min: any, row: any) => (row.number < min.number ? row : min),
     rangeResults[0],
   );
 
-  const { error: lastError } = await supabase
+  const { error: lastError } = await page.data.supabase
     .from("vocab_table")
     .update({ id: id })
     .eq("id", smallestRow.id);
 
   if (!lastError) totalMemories.update((n) => n + 1);
-};
-
-export const submitReportPomodoro = async (
-  time: number,
-  supabase: SupabaseClient,
-) => {
-  const today = new Date();
-  const date = format(today, "yyyy-MM-dd");
-
-  const { data } = await supabase
-    .from("pomodoro_table")
-    .select("time")
-    .eq("date", date);
-
-  if (data && data.length) {
-    await supabase
-      .from("pomodoro_table")
-      .update({
-        time: data[0].time + time,
-      })
-      .eq("date", date);
-  } else {
-    await supabase.from("pomodoro_table").insert({ date, time });
-  }
 };
 
 /**

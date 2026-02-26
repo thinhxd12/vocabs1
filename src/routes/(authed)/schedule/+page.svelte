@@ -16,7 +16,6 @@
   import { getCalendarRecord } from "$lib/store/localstore";
 
   let { data: layoutData }: PageProps = $props();
-  const { supabase } = layoutData;
 
   let calendarData = $state<CalendarDayType[]>([]);
 
@@ -50,7 +49,7 @@
   let paginationItems = $state<DBSelect["progress_table"][] | null>(null);
 
   async function getTablePaginationLength() {
-    const { count } = await supabase
+    const { count } = await layoutData.supabase
       .from("progress_table")
       .select("id", { count: "exact", head: true });
     if (count) totalItems = count;
@@ -65,7 +64,7 @@
     const totalPages = Math.ceil(totalItems! / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
-    const { data } = await supabase
+    const { data } = await layoutData.supabase
       .from("progress_table")
       .select("*")
       .order("id", { ascending: true })
@@ -84,7 +83,7 @@
 
   async function reloadScheduleData() {
     const todayDate = format(new Date(), "yyyy-MM-dd");
-    const { data: schedule } = await supabase
+    const { data: schedule } = await layoutData.supabase
       .from("schedule_table")
       .select("*")
       .order("id", { ascending: true });
@@ -367,7 +366,7 @@
   <Calendar schedule={calendarData} />
 
   <p
-    class="light !bg-green-400/15 font-garamond text-10 font-400 leading-9 px-6 py-4"
+    class="light !bg-green-400/15 font-garamond text-10 font-400 leading-10 px-6 py-4"
   >
     The tree that is supposed to grow to a proud height can dispense with bad
     weather and storms. Whether misfortune and external resistance, some kinds
@@ -378,13 +377,20 @@
   </p>
 
   {#if totalItems}
-    <Pagination {totalItems} {itemsPerPage} {currentPage} {onPageChange} />
+    <Pagination
+      {totalItems}
+      {itemsPerPage}
+      {currentPage}
+      {onPageChange}
+      --width="21px"
+      --height="21px"
+    />
   {/if}
 
-  <div class="w-full flex flex-col gap-2 items-center min-h-[135px]">
+  <div class="w-full flex flex-col gap-1 items-center min-h-[135px]">
     {#each paginationItems as item}
       <div
-        class="w-full font-rubik text-12 leading-20 h-20 flex items-center select-none"
+        class="w-full font-rubik text-12 leading-22 h-21 flex items-center select-none"
       >
         <div class="dark min-w-[120px] indent-30 h-full">
           {item.index + 1} - {item.index + 200}

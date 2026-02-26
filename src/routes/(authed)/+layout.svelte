@@ -10,8 +10,11 @@
 
   let { data, children } = $props();
   const todayDate = format(new Date(), "yyyy-MM-dd");
+
+  // svelte-ignore state_referenced_locally
   $totalMemories = data.totalMemories || 0;
 
+  // svelte-ignore state_referenced_locally
   if (data.schedule) {
     let index = data.schedule.findIndex(
       (item) =>
@@ -26,6 +29,7 @@
     } else $todaySchedule = undefined;
   }
 
+  // svelte-ignore state_referenced_locally
   $locationList = data.weatherList || [];
 </script>
 

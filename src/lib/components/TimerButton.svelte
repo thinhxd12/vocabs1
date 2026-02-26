@@ -61,7 +61,9 @@
     onclick={stopCountdown}
     class:timerPlay={$showTimer}
   >
-    <span class="absolute text-9 leading-15 text-white group-hover:opacity-0">
+    <span
+      class="absolute w-full text-center text-9 leading-15 text-white group-hover:opacity-0"
+    >
       {$timerString}
     </span>
     <span
@@ -87,6 +89,6 @@
   }
 
   .timerPlay {
-    @apply min-w-50 bg-[#101213] px-5;
+    @apply min-w-36 bg-[#101213] px-5;
   }
 </style>

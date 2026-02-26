@@ -13,7 +13,8 @@
   let pageInputPrev = $state<number>(1);
   let pageInputNext = $state<number>(1);
 
-  let totalPages = Math.ceil(totalItems / itemsPerPage);
+  // svelte-ignore state_referenced_locally
+    let totalPages = Math.ceil(totalItems / itemsPerPage);
 
   function changePage(page: number) {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
@@ -144,18 +145,19 @@
   }
 
   .pagination button {
-    padding: 6px 8px 4px;
-    min-width: 24px;
-    height: 22px;
+    padding: var(--padding, 6px);
+    min-width: var(--width, 24px);
+    height: var(--height, 22px);
     transition: color 0.1s;
-    font-size: 12px;
+    font-size: var(--fontSize, 12px);
     line-height: 1;
-    font-family: "Rubik", sans-serif;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.6);
-    background-color: rgba(250, 250, 252, 0.3);
+    font-family: var(--fontFamily, "Rubik");
+    font-weight: var(--fontWeight, 400);
+    text-align: center;
+    color: var(--color, #00000099);
+    background-color: var(--bg, #fafafc4d);
     backdrop-filter: blur(6px);
-    border-radius: 2px;
+    border-radius: 1px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 

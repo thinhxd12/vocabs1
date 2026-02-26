@@ -191,7 +191,7 @@
       const { icon: current_icon, description: current_description } =
         getWeatherInfo(
           $weatherData.current.weather_code,
-          $weatherData.current.is_day
+          $weatherData.current.is_day,
         );
       let forecastStatement = generateForecastStatement($weatherData);
       const now = Date.now();
@@ -269,7 +269,7 @@
           ? Math.max(0, Math.min(100, ((pressureHpa - 1000) / 40) * 100))
           : Math.max(
               0,
-              Math.min(100, ((Number(pressureValue) - 29.53) / 1.18) * 100)
+              Math.min(100, ((Number(pressureValue) - 29.53) / 1.18) * 100),
             );
 
       let pressureDescription = getPressureDescription(pressureHpa);
@@ -307,7 +307,7 @@
       const visibilityUnit = tempUnit === "c" ? "km" : "mi";
       const visibilityDescription = getVisibilityDescription(
         visibilityValue,
-        tempUnit === "c"
+        tempUnit === "c",
       );
 
       visibilityValues = {
@@ -323,7 +323,7 @@
       const sunPosition = calculateSunPosition(
         $weatherData.current.time,
         sunriseISO,
-        sunsetISO
+        sunsetISO,
       );
 
       sunValues = {
@@ -439,7 +439,7 @@
       (_, i) => {
         let { icon, description } = getWeatherInfo(
           $weatherData!.hourly.weather_code[i],
-          $weatherData!.hourly.is_day[i]
+          $weatherData!.hourly.is_day[i],
         );
         return {
           time: $weatherData!.hourly.time[i],
@@ -449,7 +449,7 @@
           precipitation_probability:
             $weatherData!.hourly.precipitation_probability[i],
         };
-      }
+      },
     ).filter((item): item is HourlyForecast => item !== null);
     // Skip "Today" in daily forecast if it's after 8 PM (late evening)
     // At this point, users are more interested in tomorrow's forecast
@@ -458,7 +458,7 @@
       (date, index) => {
         let { icon } = getWeatherInfo(
           $weatherData!.daily.weather_code[index],
-          1
+          1,
         );
         return {
           date,
@@ -474,7 +474,7 @@
           precipitation_probability:
             $weatherData!.daily.precipitation_probability_max[index],
         };
-      }
+      },
     );
     // Filter out today if it's late evening
     const dailyForecasts = skipToday
@@ -488,7 +488,7 @@
       f.temp_current,
     ]);
     const validTemps = allTemps.filter(
-      (t): t is number => typeof t === "number" && !Number.isNaN(t)
+      (t): t is number => typeof t === "number" && !Number.isNaN(t),
     );
     const minTempScale = Math.floor(Math.min(...validTemps) - 5);
     const maxTempScale = Math.ceil(Math.max(...validTemps) + 5);

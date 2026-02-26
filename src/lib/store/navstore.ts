@@ -6,6 +6,7 @@ import { renderWord } from "$lib/store/vocabstore";
 import type { DBInsert, DBSelect, OpenMeteoResponse } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
 import { archiveVocab } from "$lib/utils/functions";
+import cloverImage from "$lib/assets/images/clover.webp";
 
 export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
 export const isAutoPlay = writable<boolean>(false);
@@ -59,7 +60,7 @@ function notificationAlert() {
     body: currentScheduleValue
       ? `${currentScheduleValue.count + 1}`
       : "No current schedule.",
-    icon: "/images/clover.webp",
+    icon: cloverImage,
     // icon: "https://cdn-icons-png.flaticon.com/512/2617/2617511.png",
   });
   notification.onclose = async () => {
@@ -112,7 +113,7 @@ const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
       .update({ number: word.number - 1 })
       .eq("id", word.id);
   } else {
-    await archiveVocab(word.id, word.word, page.data.supabase);
+    await archiveVocab(word.id, word.word);
   }
 };
 

@@ -11,8 +11,6 @@
     pomodoro,
     shortBreak,
   } from "$lib/store/layoutstore";
-  import { submitReportPomodoro } from "$lib/utils/functions";
-  import { page } from "$app/state";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
   import { format } from "date-fns";
@@ -29,9 +27,10 @@
   import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
   import { fade } from "svelte/transition";
+  import focusImage from "$lib/assets/images/Laugee George The End of the Day.avif";
+  import breakImage from "$lib/assets/images/Van_Gogh_La Sieste.avif";
 
   let { data: layoutData }: PageProps = $props();
-  const { supabase } = layoutData;
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let showSetting = $state<boolean>(false);
@@ -153,7 +152,26 @@
   }
 
   async function submitReport() {
-    await submitReportPomodoro($pomodoro, page.data.supabase);
+    const today = new Date();
+    const date = format(today, "yyyy-MM-dd");
+
+    const { data } = await layoutData.supabase
+      .from("pomodoro_table")
+      .select("time")
+      .eq("date", date);
+
+    if (data && data.length) {
+      await layoutData.supabase
+        .from("pomodoro_table")
+        .update({
+          time: data[0].time + $pomodoro,
+        })
+        .eq("date", date);
+    } else {
+      await layoutData.supabase
+        .from("pomodoro_table")
+        .insert({ date, time: $pomodoro });
+    }
   }
 
   function onPageChange(page: number) {
@@ -162,7 +180,7 @@
   }
 
   async function getTablePaginationLength() {
-    const { count } = await supabase
+    const { count } = await layoutData.supabase
       .from("pomodoro_table")
       .select("date", { count: "exact", head: true });
     if (count) totalItems = count;
@@ -172,7 +190,7 @@
     const totalPages = Math.ceil(totalItems! / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
-    const { data } = await supabase
+    const { data } = await layoutData.supabase
       .from("pomodoro_table")
       .select("*")
       .order("date", { ascending: true })
@@ -264,6 +282,33 @@
           }}
         >
           <MaterialSymbolsSailingRounded width="14" height="14" />
+        </button>
+
+        <button
+          class="btn-timer group relative"
+          onclick={(e) => {
+            e.currentTarget.blur();
+            isPaused ? handleResume() : pausePomodoro();
+          }}
+          class:timerPause={isPaused}
+        >
+          <span
+            class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
+          >
+            <span class="w-1/2 text-right">
+              {padWithZeroes(secondsToMinutes($countPomodoros))}
+            </span>
+            <span class="min-w-6">:</span>
+            <span class="w-1/2 text-left">
+              {padWithZeroes($countPomodoros % 60)}
+            </span>
+          </span>
+          <span
+            class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
+            style="text-shadow: 0 0 1px #ea504a;"
+          >
+            PAUSE
+          </span>
         </button>
       </div>
       <div class="flex gap-3">
@@ -423,7 +468,7 @@
     <div class="square">
       <div class="circle">
         <img
-          src="/images/Van_Gogh_La Sieste.avif"
+          src={breakImage}
           alt="bg"
           class="absolute z-10 object-cover w-full h-full"
           style="filter: grayscale(1) contrast(1.2);"
@@ -431,7 +476,7 @@
 
         {#if $currentState === "focus"}
           <img
-            src="/images/Laugee George The End of the Day.avif"
+            src={focusImage}
             alt="bg"
             class="absolute z-[15] object-cover w-full h-full"
             style="filter: grayscale(1) contrast(1.2);"
@@ -441,9 +486,7 @@
         {/if}
 
         <img
-          src={$currentState === "focus"
-            ? "/images/Laugee George The End of the Day.avif"
-            : "/images/Van_Gogh_La Sieste.avif"}
+          src={$currentState === "focus" ? focusImage : breakImage}
           alt="pbg"
           class="absolute z-20 object-cover w-full h-full"
           style="mask-image: conic-gradient(
@@ -452,22 +495,6 @@
           transparent {progress.current}deg 360deg
           );"
         />
-
-        <button
-          class="time"
-          onclick={(e) => {
-            e.currentTarget.blur();
-            isPaused ? handleResume() : pausePomodoro();
-          }}
-        >
-          <span class="w-1/2 text-right"
-            >{padWithZeroes(secondsToMinutes($countPomodoros))}</span
-          >
-          <span class="min-w-30 pb-40">:</span>
-          <span class="w-1/2 text-left"
-            >{padWithZeroes($countPomodoros % 60)}</span
-          >
-        </button>
       </div>
 
       <div class="center"></div>
@@ -524,6 +551,18 @@
 
   .setting-button.active {
     @apply !bg-green-400/60 !text-black;
+  }
+
+  .btn-timer {
+    @apply flex items-center justify-center h-18 min-w-36 rounded-2 bg-[#101213] ring-1 ring-black/5 shadow shadow-black/30;
+  }
+
+  .timerPause span:first-child {
+    opacity: 0%;
+  }
+
+  .timerPause span:last-child {
+    opacity: 100%;
   }
 
   .input-setting {

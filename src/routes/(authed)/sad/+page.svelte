@@ -8,7 +8,6 @@
   import { innerHeight } from "svelte/reactivity/window";
 
   let { data: layoutData }: PageProps = $props();
-  const { supabase } = layoutData;
 
   let currentPage = $state<number>(1);
   let itemsPerPage = Math.floor(
@@ -23,7 +22,7 @@
   }
 
   async function getTablePaginationLength() {
-    const { count } = await supabase
+    const { count } = await layoutData.supabase
       .from("saddays_table")
       .select("*", { count: "exact", head: true });
     if (count) totalItems = count;
@@ -38,7 +37,7 @@
     const totalPages = Math.ceil(totalItems! / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
-    const { data } = await supabase
+    const { data } = await layoutData.supabase
       .from("saddays_table")
       .select("*")
       .order("created_at", { ascending: true })
@@ -50,12 +49,14 @@
   }
 
   async function addDay() {
-    const { data, error } = await supabase.from("saddays_table").insert({});
+    const { data, error } = await layoutData.supabase
+      .from("saddays_table")
+      .insert({});
     getDataPaginationByIndex(currentPage);
   }
 
   async function deleteDay(day: string) {
-    const { error } = await supabase
+    const { error } = await layoutData.supabase
       .from("saddays_table")
       .delete()
       .eq("created_at", day);

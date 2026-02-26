@@ -6,6 +6,8 @@ import type {
 } from "$lib/types";
 import { get, writable } from "svelte/store";
 import { page } from "$app/state";
+import mainImage from "$lib/assets/images/main-image.webp";
+import mainAuthor from "$lib/assets/images/main-author.webp";
 
 const browser =
   typeof window !== "undefined" && typeof document !== "undefined";
@@ -124,11 +126,11 @@ export async function getPrevImageBackground() {
 //--------------ART-------------------//
 
 const defaultArtImage: ArtImageType = {
-  mainImage: "/images/main-image.webp",
+  mainImage: mainImage,
   shareDate: "01 July 2023",
   title: "The Red Buoy, Saint-Tropez",
   attr: "Oil on canvas • 81 × 65 cm",
-  authorImage: "/images/main-author.webp",
+  authorImage: mainAuthor,
   author: "Paul Signac",
   authorYears: "1895",
   content:

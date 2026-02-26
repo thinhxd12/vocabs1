@@ -4,7 +4,6 @@
   import { format } from "date-fns";
   import { toast } from "svelte-sonner";
   import { fly, fade } from "svelte/transition";
-  import { page } from "$app/state";
   import { Spring, Tween } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
@@ -22,6 +21,9 @@
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
   import MaterialSymbolsDatabaseUploadOutlineRounded from "~icons/material-symbols/database-upload-outline-rounded";
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
+  import type { PageProps } from "./$types";
+
+  let { data: layoutData }: PageProps = $props();
 
   const ratio = 1.61803398875;
   let isRandomed = $state<boolean>(false);
@@ -70,7 +72,7 @@
   const pageHeight = () => innerHeight.current! - 150;
 
   async function handleGetCurrentId() {
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("bookmark_progress")
       .select("*")
       .eq("id", 1);
@@ -80,13 +82,13 @@
   async function handleGetCurrentBookmark() {
     const idData = await handleGetCurrentId();
     if (!idData) return;
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("bookmark_table")
       .select("*")
       .eq("id", idData.currentId)
       .limit(1);
 
-    if (data.length) {
+    if (data) {
       handleGetBookInfo(data[0]);
       bookmark.set(data[0]);
       setBookContent(data[0].content);
@@ -110,22 +112,22 @@
     showNote = false;
     handleUpdateNote();
 
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("bookmark_table")
       .select()
       .order("id", { ascending: true })
       .gt("id", $bookmark!.id)
       .limit(1);
 
-    if (data.length) {
+    if (data) {
       handleSetBookmark(data[0]);
     } else {
-      const { data } = await page.data.supabase
+      const { data } = await layoutData.supabase
         .from("bookmark_table")
         .select()
         .order("id", { ascending: true })
         .limit(1);
-      handleSetBookmark(data[0]);
+      if (data) handleSetBookmark(data[0]);
     }
   }
 
@@ -134,22 +136,22 @@
     showNote = false;
     handleUpdateNote();
 
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("bookmark_table")
       .select()
       .order("id", { ascending: false })
       .lt("id", $bookmark!.id)
       .limit(1);
 
-    if (data.length) {
+    if (data) {
       handleSetBookmark(data[0]);
     } else {
-      const { data } = await page.data.supabase
+      const { data } = await layoutData.supabase
         .from("bookmark_table")
         .select()
         .order("id", { ascending: false })
         .limit(1);
-      handleSetBookmark(data[0]);
+      if (data) handleSetBookmark(data[0]);
     }
   }
 
@@ -211,7 +213,7 @@
     if (data.bookTile !== $bookmark?.bookTile) {
       handleGetBookInfo(data);
     }
-    const { error } = await page.data.supabase
+    const { error } = await layoutData.supabase
       .from("bookmark_progress")
       .update({ currentId: data.id })
       .eq("id", 1);
@@ -237,7 +239,7 @@
       tweenRibbon.target = newLike === 0 ? 21 : 480;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = false;
-      const { error } = await page.data.supabase
+      const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", $bookmark!.id);
@@ -246,7 +248,7 @@
       tweenRibbon.target = 580;
       bookmark.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = true;
-      const { error } = await page.data.supabase
+      const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", $bookmark!.id);
@@ -266,7 +268,9 @@
     handleUpdateNote();
 
     isRandomed = true;
-    const { data, error } = await page.data.supabase.rpc("get_random_bookmark");
+    const { data, error } = await layoutData.supabase.rpc(
+      "get_random_bookmark",
+    );
 
     if (data.length) {
       if (data.bookTile !== $bookmark?.bookTile) {
@@ -278,7 +282,7 @@
 
   async function handleDeleteBookmark() {
     if (!bookmark) return;
-    const { error } = await page.data.supabase
+    const { error } = await layoutData.supabase
       .from("bookmark_table")
       .delete()
       .eq("id", $bookmark!.id);
@@ -383,7 +387,7 @@
   async function showInsertBookmark() {
     isSubmitting = false;
     showInsert = true;
-    const { data } = await page.data.supabase
+    const { data } = await layoutData.supabase
       .from("bookmark_table")
       .select("*")
       .order("id", { ascending: false })
@@ -501,7 +505,7 @@
   async function handleUpdateNote() {
     if (noteContent !== $bookmark!.note) {
       $bookmark!.note = noteContent;
-      const { error } = await page.data.supabase
+      const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ note: noteContent })
         .eq("id", $bookmark!.id);

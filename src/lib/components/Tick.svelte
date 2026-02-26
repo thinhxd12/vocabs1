@@ -8,11 +8,13 @@
   import { Tween } from "svelte/motion";
   import { bounceOut } from "svelte/easing";
   import { untrack } from "svelte";
+  import cup from "$lib/assets/images/cup.webp";
 
   let { number, duration = 900, delay = 0, image = false }: Props = $props();
   let fromNumber = $state(0);
   let toNumber = $state(0);
 
+  // svelte-ignore state_referenced_locally
   let visualProgress = new Tween(0, {
     duration: duration,
     delay: delay,
@@ -70,7 +72,7 @@
       <span class="tick-flip-panel-front-text">
         <span class="tick-flip-panel-text-wrapper">
           {#if image}
-            <img alt="cup" src="/images/cup.webp" />
+            <img alt="cup" src={cup} />
           {:else}
             {toNumber}
           {/if}
@@ -115,7 +117,7 @@
         <span class="tick-flip-panel-back-text">
           <span class="tick-flip-panel-text-wrapper">
             {#if image}
-              <img alt="cup" src="/images/cup.webp" />
+              <img alt="cup" src={cup} />
             {:else}
               {toNumber}
             {/if}
@@ -147,7 +149,7 @@
       <span class="tick-flip-panel-back-text">
         <span class="tick-flip-panel-text-wrapper">
           {#if image && visualProgress.current === 1}
-            <img alt="cup" src="/images/cup.webp" />
+            <img alt="cup" src={cup} />
           {:else}
             {fromNumber}
           {/if}

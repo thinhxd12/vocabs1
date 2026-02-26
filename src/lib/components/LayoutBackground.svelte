@@ -27,21 +27,24 @@
   import FluentSurfaceHub24Filled from "~icons/fluent/surface-hub-24-filled";
   import FluentSurfaceHub24Regular from "~icons/fluent/surface-hub-24-regular";
   import MaterialSymbolsResetImage from "~icons/material-symbols/reset-image";
+  import icescape from "$lib/assets/images/Icescape.jpg";
+  import joshuabartell from "$lib/assets/images/joshua-bartell.avif";
+  import enginakyurt from "$lib/assets/images/engin-akyurt.avif";
 
   const defaultImage: ImageBackgroundType[] = [
     {
       title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
-      url: "/images/Icescape.jpg",
+      url: icescape,
       place: "Snæfellsnes peninsula, Iceland",
     },
     {
       title: "",
-      url: "/images/joshua-bartell.avif",
+      url: joshuabartell,
       place: "",
     },
     {
       title: "",
-      url: "/images/engin-akyurt.avif",
+      url: enginakyurt,
       place: "",
     },
   ];

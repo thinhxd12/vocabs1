@@ -12,8 +12,10 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { timerString } from "$lib/store/layoutstore";
   import { archiveVocab } from "$lib/utils/functions";
-  import { page } from "$app/state";
   import Container from "$lib/components/Container.svelte";
+  import type { PageProps } from "./$types";
+
+  let { data: layoutData }: PageProps = $props();
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -89,12 +91,12 @@
   async function handleCheckQuizWord() {
     if (!$quizRender) return;
     if ($quizRender.number > 1) {
-      await page.data.supabase
+      await layoutData.supabase
         .from("vocab_table")
         .update({ number: $quizRender.number - 1 })
         .eq("id", $quizRender.id);
     } else {
-      await archiveVocab($quizRender.id, $quizRender.word, page.data.supabase);
+      await archiveVocab($quizRender.id, $quizRender.word);
     }
   }
 

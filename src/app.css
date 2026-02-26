@@ -106,7 +106,7 @@ input.layout-main {
 
 .highlightContentFirstPage::first-letter {
   initial-letter: 5;
-  background: url("/images/TheEndoftheDay.webp") 0 0 no-repeat;
+  background: url("$lib/assets/images/TheEndoftheDay.webp") 0 0 no-repeat;
   background-size: cover;
   background-position: center;
   padding: 9px 12px;

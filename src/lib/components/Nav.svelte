@@ -32,6 +32,7 @@
   import MaterialSymbolsSentimentNeutralOutlineRounded from "~icons/material-symbols/sentiment-neutral-outline-rounded";
   import MaterialSymbolsLockOpenRightOutlineRounded from "~icons/material-symbols/lock-open-right-outline-rounded";
   import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
+  import sunrise from "$lib/assets/images/sunrise.webp";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
@@ -282,13 +283,13 @@
   >
     {#if $isAutoPlay && page.url.pathname === "/vocab"}
       <img
-        src="/images/sunrise.webp"
+        src={sunrise}
         alt="btn-play"
         class="w-90 h-full object-cover object-[-10px]"
       />
     {:else}
       <img
-        src="/images/sunrise.webp"
+        src={sunrise}
         alt="btn-pause"
         class="grayscale w-90 h-full object-cover object-[-10px]"
       />
@@ -296,7 +297,7 @@
 
     {#if ["/vocab", "/quiz"].includes(page.url.pathname)}
       <img
-        src="/images/sunrise.webp"
+        src={sunrise}
         alt="btn-play"
         class="absolute top-0 left-0 w-0 h-full z-[1] object-cover object-[-10px] transition-all duration-300"
         style="box-shadow: rgba(0, 0, 0, 0.9) 3px 0px 7px; width: {($listCount /

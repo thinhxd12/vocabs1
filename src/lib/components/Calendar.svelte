@@ -7,6 +7,19 @@
   import MingcuteDownLine from "~icons/mingcute/down-line";
   import { fly } from "svelte/transition";
 
+  import January from "$lib/assets/images/1.webp";
+  import February from "$lib/assets/images/2.webp";
+  import March from "$lib/assets/images/3.webp";
+  import April from "$lib/assets/images/4.webp";
+  import May from "$lib/assets/images/5.webp";
+  import June from "$lib/assets/images/6.webp";
+  import July from "$lib/assets/images/7.webp";
+  import August from "$lib/assets/images/8.webp";
+  import September from "$lib/assets/images/9.webp";
+  import October from "$lib/assets/images/10.webp";
+  import November from "$lib/assets/images/11.webp";
+  import December from "$lib/assets/images/12.webp";
+
   type DayType = {
     enabled: boolean;
     date: number;
@@ -35,6 +48,20 @@
     "October",
     "November",
     "December",
+  ];
+  const monthImages = [
+    January,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December,
   ];
   let now = new Date();
   let year = $state<number>(now.getFullYear());
@@ -124,7 +151,7 @@
   <div class="relative w-full golden overflow-hidden calendar">
     {#key month}
       <img
-        src="/images/{month + 1}.webp"
+        src={monthImages[month]}
         alt="calendar-bg"
         class="w-full h-full object-cover"
         in:fly={{ x: isNext ? 30 : -30, duration: 150, delay: 150 }}
@@ -167,7 +194,7 @@
         </div>
       </div>
 
-      <div class="font-rubik text-8 leading-10 font-300 pb-6 text-[#71767b]">
+      <div class="font-rubik text-8 leading-9 font-300 pb-6 text-[#71767b]">
         {#if $localCalendarStore}
           {#each $localCalendarStore as item}
             <p class="flex gap-6">
@@ -181,7 +208,7 @@
 
     <div class="w-full">
       <div
-        class="mb-6 grid w-full grid-cols-7 justify-items-center border-b border-t border-[#2f3336]"
+        class="mb-3 grid w-full grid-cols-7 justify-items-center border-b border-t border-[#424c56]"
       >
         {#each dayNames as date}
           <span
