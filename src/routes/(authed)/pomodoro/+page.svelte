@@ -511,7 +511,7 @@
     width: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 6px solid #000000;
+    border: 3px solid #000000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -520,7 +520,7 @@
   .square {
     width: 70.7107%;
     aspect-ratio: 1;
-    border: 6px solid #000000;
+    border: 3px solid #000000;
     position: relative;
     overflow: hidden;
   }
