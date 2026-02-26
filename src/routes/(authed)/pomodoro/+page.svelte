@@ -26,8 +26,7 @@
   import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
   import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
-  import { fade } from "svelte/transition";
-  import focusImage from "$lib/assets/images/Laugee George The End of the Day.avif";
+  import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
   import breakImage from "$lib/assets/images/Van_Gogh_La Sieste.avif";
 
   let { data: layoutData }: PageProps = $props();
@@ -283,34 +282,35 @@
         >
           <MaterialSymbolsSailingRounded width="14" height="14" />
         </button>
-
-        <button
-          class="btn-timer group relative"
-          onclick={(e) => {
-            e.currentTarget.blur();
-            isPaused ? handleResume() : pausePomodoro();
-          }}
-          class:timerPause={isPaused}
-        >
-          <span
-            class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
-          >
-            <span class="w-1/2 text-right">
-              {padWithZeroes(secondsToMinutes($countPomodoros))}
-            </span>
-            <span class="min-w-6">:</span>
-            <span class="w-1/2 text-left">
-              {padWithZeroes($countPomodoros % 60)}
-            </span>
-          </span>
-          <span
-            class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
-            style="text-shadow: 0 0 1px #ea504a;"
-          >
-            PAUSE
-          </span>
-        </button>
       </div>
+
+      <button
+        class="btn-timer group relative"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          isPaused ? handleResume() : pausePomodoro();
+        }}
+        class:timerPause={isPaused}
+      >
+        <span
+          class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
+        >
+          <span class="w-1/2 text-right">
+            {padWithZeroes(secondsToMinutes($countPomodoros))}
+          </span>
+          <span class="min-w-6">:</span>
+          <span class="w-1/2 text-left">
+            {padWithZeroes($countPomodoros % 60)}
+          </span>
+        </span>
+        <span
+          class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
+          style="text-shadow: 0 0 1px #ea504a;"
+        >
+          PAUSE
+        </span>
+      </button>
+
       <div class="flex gap-3">
         <button
           class="setting-button light"
@@ -465,23 +465,20 @@
       </div>
     </Modal>
 
-    <div class="square">
-      <div class="circle">
+    <div class="circle">
+      <div class="square">
         <img
           src={breakImage}
           alt="bg"
           class="absolute z-10 object-cover w-full h-full"
           style="filter: grayscale(1) contrast(1.2);"
         />
-
         {#if $currentState === "focus"}
           <img
             src={focusImage}
             alt="bg"
             class="absolute z-[15] object-cover w-full h-full"
             style="filter: grayscale(1) contrast(1.2);"
-            in:fade={{ duration: 1000, easing: linear }}
-            out:fade={{ duration: 1000, easing: linear }}
           />
         {/if}
 
@@ -495,14 +492,14 @@
           transparent {progress.current}deg 360deg
           );"
         />
-      </div>
 
-      <div class="center"></div>
-      <div class="static"></div>
-      <div
-        class="dynamic"
-        style="transform: rotate({progress.current}deg) scaleX(3);"
-      ></div>
+        <div class="center"></div>
+        <div class="static"></div>
+        <div
+          class="dynamic"
+          style="transform: rotate({progress.current}deg) scaleX(3);"
+        ></div>
+      </div>
     </div>
   </div>
 </Container>
@@ -510,6 +507,47 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
+  .circle {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 6px solid #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .square {
+    width: 70.7107%;
+    aspect-ratio: 1;
+    border: 6px solid #000000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .static {
+    position: absolute;
+    height: 50%;
+    width: 1px;
+    left: calc(50% - 0.5px);
+    bottom: 50%;
+    transform-origin: bottom;
+    transform: scaleX(3);
+    background-color: rgba(0, 0, 0, 1);
+    z-index: 20;
+  }
+
+  .dynamic {
+    position: absolute;
+    height: 90%;
+    width: 1px;
+    left: calc(50% - 0.5px);
+    transform-origin: bottom;
+    bottom: 50%;
+    background-color: rgba(0, 0, 0, 1);
+    z-index: 20;
+  }
+
   .center {
     position: absolute;
     height: 1px;
@@ -520,29 +558,6 @@
     background-color: rgba(0, 0, 0, 1);
     border-radius: 50%;
     z-index: 21;
-  }
-
-  .static {
-    position: absolute;
-    height: calc(50% - 2px);
-    width: 1px;
-    left: calc(50% - 0.5px);
-    transform-origin: bottom;
-    top: 2px;
-    transform: scaleX(3);
-    background-color: rgba(0, 0, 0, 1);
-    z-index: 20;
-  }
-
-  .dynamic {
-    position: absolute;
-    height: calc(50% - 2px);
-    width: 1px;
-    left: calc(50% - 0.5px);
-    transform-origin: bottom;
-    top: 2px;
-    background-color: rgba(0, 0, 0, 1);
-    z-index: 20;
   }
 
   .setting-button {
@@ -575,39 +590,5 @@
     color: #555;
     width: 100%;
     outline: 0;
-  }
-
-  .square {
-    width: 100%;
-    aspect-ratio: 1;
-    border: 3px solid #000000;
-    position: relative;
-  }
-
-  .circle {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 3px solid #000000;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .time {
-    width: 100%;
-    position: inherit;
-    z-index: 30;
-    color: rgba(255, 255, 255, 1);
-    font-size: 9rem;
-    line-height: 9rem;
-    font-weight: 300;
-    text-shadow: 0 3px 3px rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.1s ease-in-out;
   }
 </style>
