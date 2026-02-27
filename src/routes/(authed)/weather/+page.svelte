@@ -543,7 +543,7 @@
         bind:value={location}
         onchange={(e) =>
           handleChangeDefaultLocation(e.currentTarget.selectedIndex)}
-        class="location-list mb-18"
+        class="location-list mb-6"
       >
         {#each $locationList as item}
           <option value={item} class="hover:bg-red-500 hover:text-white">
@@ -552,20 +552,23 @@
         {/each}
       </select>
 
-      <div class="flex justify-center items-center gap-9 h-50">
+      <h1
+        class="indent-30 text-[120px] font-300 leading-100 h-100 overflow-hidden mb-9 text-center"
+      >
+        {currentValues.actual}°
+      </h1>
+
+      <div class="flex justify-center items-center gap-9 h-50 mb-6">
         <img
           src="/liquid/128/{currentValues.icon}.png"
           alt="icon"
-          class="size-100 object-cover"
+          class="size-60 object-cover"
         />
         <span class="text-[#212529] text-21 font-400"
           >{currentValues.actualDescription}</span
         >
       </div>
 
-      <h1 class="indent-45 text-[120px] font-300 leading-100 mb-6 text-center">
-        {currentValues.actual}°
-      </h1>
       <p class="text-center text-16 mb-6">
         Feels Like: {currentValues.feelsLike}°C
       </p>
