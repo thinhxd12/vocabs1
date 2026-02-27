@@ -10,7 +10,6 @@
     currentSchedule,
     handleGetListContent,
     weatherData,
-    locationList,
   } from "$lib/store/navstore";
   import type { WeatherQueryParams } from "$lib/types";
   import { format } from "date-fns";
@@ -33,9 +32,15 @@
   import MaterialSymbolsLockOpenRightOutlineRounded from "~icons/material-symbols/lock-open-right-outline-rounded";
   import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
   import sunrise from "$lib/assets/images/sunrise.webp";
+  import {
+    currentWeatherIndex,
+    getWeatherList,
+    locationList,
+  } from "$lib/store/localstore";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
+  let timeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
     getNavWeatherData();
@@ -58,15 +63,15 @@
 
   const startInterval = () => {
     const delay = calculateNextInterval();
-    setTimeout(() => {
+    timeout = setTimeout(() => {
       getNavWeatherData();
       interval = setInterval(getNavWeatherData, 15 * 60 * 1000);
     }, delay);
   };
 
   async function getNavWeatherData() {
-    const defaultLocation =
-      $locationList.find((item) => item.default) || $locationList[0];
+    await getWeatherList();
+    const defaultLocation = $locationList[$currentWeatherIndex];
     let param: WeatherQueryParams = {
       latitude: defaultLocation.lat,
       longitude: defaultLocation.lon,
@@ -82,6 +87,7 @@
 
   onDestroy(() => {
     clearInterval(interval);
+    clearTimeout(timeout);
   });
 </script>
 
@@ -285,21 +291,22 @@
       <img
         src={sunrise}
         alt="btn-play"
-        class="w-90 h-full object-cover object-[-10px]"
-      />
-    {:else}
-      <img
-        src={sunrise}
-        alt="btn-pause"
-        class="grayscale w-90 h-full object-cover object-[-10px]"
+        class="absolute top-0 left-0 z-[2] w-90 h-full object-cover object-[-10px]"
+        in:fly={{ y: -42, duration: 300 }}
       />
     {/if}
+
+    <img
+      src={sunrise}
+      alt="btn-pause"
+      class="absolute top-0 left-0 z-[1] grayscale w-90 h-full object-cover object-[-10px]"
+    />
 
     {#if ["/vocab", "/quiz"].includes(page.url.pathname)}
       <img
         src={sunrise}
         alt="btn-play"
-        class="absolute top-0 left-0 w-0 h-full z-[1] object-cover object-[-10px] transition-all duration-300"
+        class="absolute top-0 left-0 w-0 h-full z-[3] object-cover object-[-10px] transition-all duration-300"
         style="box-shadow: rgba(0, 0, 0, 0.9) 3px 0px 7px; width: {($listCount /
           $listContent.length) *
           90}px;"

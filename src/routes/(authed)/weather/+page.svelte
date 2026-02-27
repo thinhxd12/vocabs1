@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
-  import { locationList, weatherData } from "$lib/store/navstore";
+  import { weatherData } from "$lib/store/navstore";
   import {
     getAQIDescription,
     getAQILevel,
@@ -30,6 +30,11 @@
     formatTimeWithMinutes,
   } from "$lib/utils/w-formatting";
   import type { DBSelect, WeatherQueryParams } from "$lib/types";
+  import {
+    currentWeatherIndex,
+    handleChangeWeatherLocation,
+    locationList,
+  } from "$lib/store/localstore";
 
   type HourlyForecast = {
     time: string;
@@ -509,9 +514,12 @@
     getCurrentConditions();
   });
 
-  let location = $state<DBSelect["weather_table"] | undefined>(undefined);
+  let location = $state<DBSelect["weather_table"] | undefined>(
+    $locationList[$currentWeatherIndex],
+  );
 
-  async function handleChangeDefaultLocation() {
+  async function handleChangeDefaultLocation(index: number) {
+    handleChangeWeatherLocation(index);
     let param: WeatherQueryParams = {
       latitude: location!.lat,
       longitude: location!.lon,
@@ -533,7 +541,8 @@
       <select
         name="location"
         bind:value={location}
-        onchange={() => handleChangeDefaultLocation()}
+        onchange={(e) =>
+          handleChangeDefaultLocation(e.currentTarget.selectedIndex)}
         class="location-list mb-18"
       >
         {#each $locationList as item}
@@ -549,12 +558,12 @@
           alt="icon"
           class="size-100 object-cover"
         />
-        <span class="text-[#212529] text-24"
+        <span class="text-[#212529] text-21 font-400"
           >{currentValues.actualDescription}</span
         >
       </div>
 
-      <h1 class="indent-45 text-[120px] font-400 leading-[110px] text-center">
+      <h1 class="indent-45 text-[120px] font-300 leading-100 mb-6 text-center">
         {currentValues.actual}°
       </h1>
       <p class="text-center text-16 mb-6">

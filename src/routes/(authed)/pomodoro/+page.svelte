@@ -27,7 +27,8 @@
   import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
-  import breakImage from "$lib/assets/images/Van_Gogh_La Sieste.avif";
+  import shortbreakImage from "$lib/assets/images/Van_Gogh_La Sieste.avif";
+  import longbreakImage from "$lib/assets/images/James_Tissot_Holyday.avif";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -237,116 +238,118 @@
 <audio src={srcAudio} muted={isMuted} bind:paused={pauseAudio} preload="auto"
 ></audio>
 
-<Container zIndex={6}>
-  <div class="w-full h-full flex items-center relative">
-    <div class="absolute top-0 left-0 right-0 z-10 flex justify-between py-3">
-      <div class="flex gap-3">
-        <button
-          class="setting-button light"
-          class:active={$currentState === "focus"}
-          onclick={(e) => {
-            e.currentTarget.blur();
-            progress.set(0);
-            $countPomodoros = minutesToSeconds($pomodoro);
-            $currentState = "focus";
-            handleResume();
-          }}
-        >
-          <MaterialSymbolsAdjust width="14" height="14" />
-        </button>
+<Container zIndex={6} fullscreen>
+  <div class="w-full h-full flex items-center justify-center relative">
+    <div class="absolute top-0 left-0 right-0 z-10 flex justify-center">
+      <div class="w-main flex justify-between py-3">
+        <div class="flex gap-3">
+          <button
+            class="setting-button light"
+            class:active={$currentState === "focus"}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              progress.set(0);
+              $countPomodoros = minutesToSeconds($pomodoro);
+              $currentState = "focus";
+              handleResume();
+            }}
+          >
+            <MaterialSymbolsAdjust width="14" height="14" />
+          </button>
+
+          <button
+            class="setting-button light"
+            class:active={$currentState === "break"}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              progress.set(0);
+              $countPomodoros = minutesToSeconds($shortBreak);
+              $currentState = "break";
+              handleResume();
+            }}
+          >
+            <MaterialSymbolsDarkModeRounded width="14" height="14" />
+          </button>
+
+          <button
+            class="setting-button light"
+            class:active={$currentState === "longbreak"}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              progress.set(0);
+              $countPomodoros = minutesToSeconds($longBreak);
+              $currentState = "longbreak";
+              handleResume();
+            }}
+          >
+            <MaterialSymbolsSailingRounded width="14" height="14" />
+          </button>
+        </div>
 
         <button
-          class="setting-button light"
-          class:active={$currentState === "break"}
+          class="btn-timer group relative"
           onclick={(e) => {
             e.currentTarget.blur();
-            progress.set(0);
-            $countPomodoros = minutesToSeconds($shortBreak);
-            $currentState = "break";
-            handleResume();
+            isPaused ? handleResume() : pausePomodoro();
           }}
+          class:timerPause={isPaused}
         >
-          <MaterialSymbolsDarkModeRounded width="14" height="14" />
-        </button>
-
-        <button
-          class="setting-button light"
-          class:active={$currentState === "longbreak"}
-          onclick={(e) => {
-            e.currentTarget.blur();
-            progress.set(0);
-            $countPomodoros = minutesToSeconds($longBreak);
-            $currentState = "longbreak";
-            handleResume();
-          }}
-        >
-          <MaterialSymbolsSailingRounded width="14" height="14" />
-        </button>
-      </div>
-
-      <button
-        class="btn-timer group relative"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          isPaused ? handleResume() : pausePomodoro();
-        }}
-        class:timerPause={isPaused}
-      >
-        <span
-          class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
-        >
-          <span class="w-1/2 text-right">
-            {padWithZeroes(secondsToMinutes($countPomodoros))}
+          <span
+            class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
+          >
+            <span class="w-1/2 text-right">
+              {padWithZeroes(secondsToMinutes($countPomodoros))}
+            </span>
+            <span class="min-w-6">:</span>
+            <span class="w-1/2 text-left">
+              {padWithZeroes($countPomodoros % 60)}
+            </span>
           </span>
-          <span class="min-w-6">:</span>
-          <span class="w-1/2 text-left">
-            {padWithZeroes($countPomodoros % 60)}
+          <span
+            class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
+            style="text-shadow: 0 0 1px #ea504a;"
+          >
+            PAUSE
           </span>
-        </span>
-        <span
-          class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
-          style="text-shadow: 0 0 1px #ea504a;"
-        >
-          PAUSE
-        </span>
-      </button>
-
-      <div class="flex gap-3">
-        <button
-          class="setting-button light"
-          class:active={showReport === true}
-          onclick={(e) => {
-            e.currentTarget.blur();
-            handleShowReport();
-          }}
-        >
-          <MaterialSymbolsInsertChartOutlineRounded width="14" height="14" />
         </button>
 
-        <button
-          class="setting-button light"
-          class:active={showSetting === true}
-          onclick={(e) => {
-            e.currentTarget.blur();
-            showSetting = true;
-          }}
-        >
-          <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
-        </button>
+        <div class="flex gap-3">
+          <button
+            class="setting-button light"
+            class:active={showReport === true}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              handleShowReport();
+            }}
+          >
+            <MaterialSymbolsInsertChartOutlineRounded width="14" height="14" />
+          </button>
 
-        <button
-          class="setting-button light"
-          onclick={(e) => {
-            e.currentTarget.blur();
-            isMuted = !isMuted;
-          }}
-        >
-          {#if isMuted}
-            <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
-          {:else}
-            <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
-          {/if}
-        </button>
+          <button
+            class="setting-button light"
+            class:active={showSetting === true}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              showSetting = true;
+            }}
+          >
+            <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
+          </button>
+
+          <button
+            class="setting-button light"
+            onclick={(e) => {
+              e.currentTarget.blur();
+              isMuted = !isMuted;
+            }}
+          >
+            {#if isMuted}
+              <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
+            {:else}
+              <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
+            {/if}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -468,22 +471,22 @@
     <div class="circle">
       <div class="square">
         <img
-          src={breakImage}
+          src={$currentState === "focus"
+            ? focusImage
+            : $currentState === "break"
+              ? shortbreakImage
+              : longbreakImage}
           alt="bg"
           class="absolute z-10 object-cover w-full h-full"
           style="filter: grayscale(1) contrast(1.2);"
         />
-        {#if $currentState === "focus"}
-          <img
-            src={focusImage}
-            alt="bg"
-            class="absolute z-[15] object-cover w-full h-full"
-            style="filter: grayscale(1) contrast(1.2);"
-          />
-        {/if}
 
         <img
-          src={$currentState === "focus" ? focusImage : breakImage}
+          src={$currentState === "focus"
+            ? focusImage
+            : $currentState === "break"
+              ? shortbreakImage
+              : longbreakImage}
           alt="pbg"
           class="absolute z-20 object-cover w-full h-full"
           style="mask-image: conic-gradient(
@@ -497,7 +500,7 @@
         <div class="static"></div>
         <div
           class="dynamic"
-          style="transform: rotate({progress.current}deg) scaleX(3);"
+          style="transform: rotate({progress.current}deg) scaleX(2);"
         ></div>
       </div>
     </div>
@@ -508,17 +511,19 @@
 
 <style lang="postcss">
   .circle {
-    width: 100%;
+    width: 540px;
     aspect-ratio: 1;
     border-radius: 50%;
     border: 3px solid #000000;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
   }
 
   .square {
-    width: 70.7107%;
+    width: 381px;
     aspect-ratio: 1;
     border: 3px solid #000000;
     position: relative;
@@ -527,19 +532,19 @@
 
   .static {
     position: absolute;
-    height: 50%;
+    height: 270px;
     width: 1px;
     left: calc(50% - 0.5px);
     bottom: 50%;
     transform-origin: bottom;
-    transform: scaleX(3);
+    transform: scaleX(2);
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
   }
 
   .dynamic {
     position: absolute;
-    height: 90%;
+    height: 270px;
     width: 1px;
     left: calc(50% - 0.5px);
     transform-origin: bottom;
@@ -554,7 +559,7 @@
     width: 1px;
     left: calc(50% - 0.5px);
     top: calc(50% - 0.5px);
-    transform: scale(3);
+    transform: scale(2);
     background-color: rgba(0, 0, 0, 1);
     border-radius: 50%;
     z-index: 21;

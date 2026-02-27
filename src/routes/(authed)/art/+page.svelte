@@ -14,6 +14,15 @@
   onMount(() => {
     getCurrentArtImage();
   });
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key === "ArrowLeft") {
+      getPrevArtImage();
+    }
+    if (e.key === "ArrowRight") {
+      getNextArtImage();
+    }
+  }
 </script>
 
 <svelte:head>
@@ -22,6 +31,8 @@
   </title>
   <meta name="art" content="Some painting" />
 </svelte:head>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <section
   class="absolute top-0 left-0 w-screen h-screen flex z-[5] bg-[#19191c]"

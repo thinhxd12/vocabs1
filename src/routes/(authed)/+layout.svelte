@@ -1,10 +1,6 @@
 <script lang="ts">
   import Nav from "$lib/components/Nav.svelte";
-  import {
-    todaySchedule,
-    totalMemories,
-    locationList,
-  } from "$lib/store/navstore";
+  import { todaySchedule, totalMemories } from "$lib/store/navstore";
   import { format } from "date-fns";
   import { Toaster } from "svelte-sonner";
 
@@ -28,9 +24,6 @@
       };
     } else $todaySchedule = undefined;
   }
-
-  // svelte-ignore state_referenced_locally
-  $locationList = data.weatherList || [];
 </script>
 
 <Toaster

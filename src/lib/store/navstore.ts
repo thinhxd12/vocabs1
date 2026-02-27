@@ -22,7 +22,6 @@ export const todaySchedule = writable<
     }
   | undefined
 >(undefined);
-export const locationList = writable<DBSelect["weather_table"][]>([]);
 export const listContent = writable<DBSelect["vocab_table"][]>([]);
 export const currentSchedule = writable<DBSelect["schedule_table"] | undefined>(
   undefined,

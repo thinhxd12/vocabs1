@@ -15,9 +15,6 @@ export const IMAGES_LENGTH = 18;
 const LAYOUT_STORAGE = "layout-images";
 const LAYOUT_INDEX = "layout-index";
 export const LAYOUT_SETTING = "layout-setting";
-const ART_STORAGE = "art-images";
-const ART_INDEX = "art-index";
-const CALENDAR_RECORD = "calendar-record";
 
 function serialize(value: any): string {
   return JSON.stringify(value);
@@ -37,7 +34,6 @@ export const localImageStore = writable<{
 });
 
 export const layoutSetting = writable<LayoutSettingType | null>();
-export const localCalendarStore = writable<DBSelect["diary_table"][] | null>();
 
 //----------------LAYOUT IMAGE-----------------//
 
@@ -124,6 +120,8 @@ export async function getPrevImageBackground() {
 }
 
 //--------------ART-------------------//
+const ART_STORAGE = "art-images";
+const ART_INDEX = "art-index";
 
 const defaultArtImage: ArtImageType = {
   mainImage: mainImage,
@@ -215,6 +213,8 @@ export async function getPrevArtImage() {
 }
 
 //----------------CALENDAR-----------------//
+export const localCalendarStore = writable<DBSelect["diary_table"][] | null>();
+const CALENDAR_RECORD = "calendar-record";
 
 export async function getCalendarRecord() {
   if (!browser) return;
@@ -232,4 +232,40 @@ export async function getCalendarRecord() {
       localStorage.setItem(CALENDAR_RECORD, serialize(data));
     }
   }
+}
+
+//----------------WEATHER-----------------//
+
+export const locationList = writable<DBSelect["weather_table"][]>([]);
+export const currentWeatherIndex = writable<number>(0);
+const WEATHER_LIST = "weather-list";
+const WEATHER_INDEX = "weather-index";
+
+export async function getWeatherList() {
+  if (!browser) return;
+  const list = localStorage.getItem(WEATHER_LIST);
+  const index = localStorage.getItem(WEATHER_INDEX);
+  if (index) currentWeatherIndex.set(Number(index));
+  else {
+    currentWeatherIndex.set(0);
+    localStorage.setItem(WEATHER_INDEX, "0");
+  }
+
+  if (list) {
+    locationList.set(deserialize(list));
+  } else {
+    const { data } = await page.data.supabase
+      .from("weather_table")
+      .select("*")
+      .order("id", { ascending: true });
+    if (data) {
+      locationList.set(data);
+      localStorage.setItem(WEATHER_LIST, serialize(data));
+    }
+  }
+}
+
+export async function handleChangeWeatherLocation(index: number) {
+  localStorage.setItem(WEATHER_INDEX, String(index));
+  currentWeatherIndex.set(index);
 }
