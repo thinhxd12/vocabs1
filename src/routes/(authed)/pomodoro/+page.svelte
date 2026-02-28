@@ -27,8 +27,8 @@
   import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
-  import shortbreakImage from "$lib/assets/images/Julien-Dupré-Haymakers-Break.avif";
-  import longbreakImage from "$lib/assets/images/Julien-Dupré-Shadow-and-Sunlight.avif";
+  import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
+  import longbreakImage from "$lib/assets/images/Julien-Dupré-Resting-in-the-Fields.avif";
 
   let { data: layoutData }: PageProps = $props();
 
