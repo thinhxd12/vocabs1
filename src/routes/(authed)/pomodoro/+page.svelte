@@ -27,8 +27,8 @@
   import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
-  import shortbreakImage from "$lib/assets/images/Van_Gogh_La Sieste.avif";
-  import longbreakImage from "$lib/assets/images/James_Tissot_Holyday.avif";
+  import shortbreakImage from "$lib/assets/images/Julien-Dupré-Haymakers-Break.avif";
+  import longbreakImage from "$lib/assets/images/Julien-Dupré-Shadow-and-Sunlight.avif";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -58,8 +58,6 @@
   });
 
   onMount(() => {
-    if ($currentState === "focus" && !$countPomodoros)
-      $countPomodoros = minutesToSeconds($pomodoro);
     $wakeEnable = true;
   });
 
@@ -94,11 +92,15 @@
     submitReport();
     if ($currentInterval > $longBreakInterval) {
       $currentInterval = 1;
-      $currentState = "longbreak";
+      setTimeout(() => {
+        $currentState = "longbreak";
+      }, 1000);
       $countPomodoros = minutesToSeconds($longBreak);
       rest();
     } else {
-      $currentState = "break";
+      setTimeout(() => {
+        $currentState = "break";
+      }, 1000);
       $countPomodoros = minutesToSeconds($shortBreak);
       rest();
     }
@@ -123,7 +125,9 @@
     if (now >= end) {
       progress.set(0);
       $countPomodoros = minutesToSeconds($pomodoro);
-      $currentState = "focus";
+      setTimeout(() => {
+        $currentState = "focus";
+      }, 1000);
       startPomodoro();
       srcAudio = "/sounds/mp3_focus.ogg";
       pauseAudio = false;
