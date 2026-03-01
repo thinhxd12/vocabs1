@@ -43,7 +43,7 @@
   let srcAudio = $state<string>("/sounds/mp3_break.ogg");
   let isMuted = $state<boolean>(false);
   let currentPage = $state<number>(1);
-  let itemsPerPage = Math.floor((innerHeight.current! - 120 - 26 - 28) / 25);
+  let itemsPerPage = Math.floor((innerHeight.current! - 45 - 27 - 27) / 25);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 
@@ -393,17 +393,17 @@
 
     <Modal bind:showModal={showSetting}>
       {#snippet header()}
-        <span class="text-14 leading-16">Setting</span>
+        <span class="text-13 leading-16">Setting</span>
       {/snippet}
       <div
         class="w-full rounded-2 overflow-hidden flex flex-col justify-center"
       >
         <div class="flex flex-col p-6">
-          <p class="text-15 mb-6">Time (minutes)</p>
+          <p class="text-13 mb-6 font-500">Time (minutes)</p>
           <div class="grid grid-cols-3 gap-3">
-            <p class="text-14 font-500">Pomodoro</p>
-            <p class="text-14 font-500">Short Break</p>
-            <p class="text-14 font-500">Long Break</p>
+            <p class="text-12 font-500">Pomodoro</p>
+            <p class="text-12 font-500">Short Break</p>
+            <p class="text-12 font-500">Long Break</p>
             <input
               name="pomodoro"
               autocomplete="off"
@@ -431,7 +431,7 @@
               bind:value={$longbreakMinutes}
               class="input-setting"
             />
-            <p class="text-14 font-500 col-span-3">Long Break interval</p>
+            <p class="text-12 font-500 col-span-3">Long Break interval</p>
             <input
               name="longBreakInterval"
               autocomplete="off"
@@ -441,7 +441,7 @@
               bind:value={$intervals}
               class="input-setting"
             />
-            <p class="text-14 font-500 col-span-3">Current interval</p>
+            <p class="text-12 font-500 col-span-3">Current interval</p>
             <input
               name="longBreakInterval"
               autocomplete="off"
@@ -459,10 +459,10 @@
 
     <Modal bind:showModal={showReport}>
       {#snippet header()}
-        <span class="text-14 leading-16">Report</span>
+        <span class="text-13 leading-16">Report</span>
       {/snippet}
       <div
-        class="w-full h-[calc(100vh-120px)] rounded-2 overflow-hidden flex flex-col justify-between"
+        class="w-full h-full rounded-2 overflow-hidden flex flex-col justify-between"
       >
         <table class="w-full">
           <thead>
@@ -494,12 +494,14 @@
         </table>
 
         {#if totalItems}
-          <div class="w-full pb-6">
+          <div class="w-full pb-3">
             <Pagination
               {totalItems}
               {itemsPerPage}
               {currentPage}
               {onPageChange}
+              --width="21px"
+              --height="21px"
             />
           </div>
         {/if}
@@ -508,11 +510,9 @@
 
     <Modal bind:showModal={showHeatmap}>
       {#snippet header()}
-        <span class="text-14 leading-16">Heatmap</span>
+        <span class="text-13 leading-16">Heatmap</span>
       {/snippet}
-      <div
-        class="w-full h-[calc(100vh-60px)] rounded-2 overflow-hidden flex gap-6 p-3"
-      >
+      <div class="w-full h-full overflow-hidden flex p-3">
         <Heatmap />
       </div>
     </Modal>
@@ -635,10 +635,12 @@
   }
 
   .input-setting {
-    border-radius: 3px;
+    border-radius: 2px;
+    height: 24px;
     background-color: #efefef;
-    font-size: 14px;
-    padding: 4px 6px 4px 10px;
+    font-size: 12px;
+    line-height: 24px;
+    padding: 3px 0px 3px 6px;
     box-shadow: none;
     border: none;
     color: #555;

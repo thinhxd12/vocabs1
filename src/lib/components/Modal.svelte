@@ -24,6 +24,7 @@
     onclick={(e) => {
       if (e.target === dialog) dialog.close();
     }}
+    class="w-main"
   >
     <div class="header w-main">
       {@render header?.()}
@@ -40,12 +41,15 @@
 
 <style lang="postcss">
   dialog {
-    width: 382px;
+    height: calc(100vh - 48px);
+    margin: 3px auto 45px;
     border: none;
     padding: 0;
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
     background: none;
+    display: flex;
+    flex-direction: column;
   }
 
   dialog::backdrop {
@@ -53,7 +57,7 @@
   }
 
   dialog[open] {
-    animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: zoom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   @keyframes zoom {
@@ -65,7 +69,7 @@
     }
   }
   dialog[open]::backdrop {
-    animation: fade 0.2s ease-out;
+    animation: fade 0.1s ease-out;
   }
 
   @keyframes fade {
@@ -94,6 +98,7 @@
 
   .content {
     width: 100%;
+    flex-grow: 1;
     background-color: #ffffff;
   }
 </style>

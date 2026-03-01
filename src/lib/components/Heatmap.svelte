@@ -112,7 +112,7 @@
     type="number"
     bind:value={year}
     min="2025"
-    class="hidden-cursor select-none h-24 w-70 text-14 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
+    class="hidden-cursor select-none h-24 w-70 text-13 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
     onchange={() => getAllDays()}
   />
 
