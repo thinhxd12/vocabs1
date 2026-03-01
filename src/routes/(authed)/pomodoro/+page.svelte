@@ -46,7 +46,6 @@
   let itemsPerPage = Math.floor((innerHeight.current! - 120 - 26 - 28) / 25);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
-  let heatmapYear = $state<number>(new Date().getFullYear());
 
   const minutesToSeconds = (minutes: number) => minutes * 60;
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -514,14 +513,7 @@
       <div
         class="w-full h-[calc(100vh-60px)] rounded-2 overflow-hidden flex gap-6 p-3"
       >
-        <input
-          name="heatmapyear"
-          type="number"
-          bind:value={heatmapYear}
-          min="2025"
-          class="hidden-cursor select-none h-24 w-70 text-14 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
-        />
-        <Heatmap year={heatmapYear} />
+        <Heatmap />
       </div>
     </Modal>
 

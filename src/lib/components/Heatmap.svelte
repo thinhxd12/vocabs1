@@ -1,12 +1,8 @@
 <script lang="ts">
-  import { untrack } from "svelte";
+  import { onMount } from "svelte";
   import { page } from "$app/state";
   import { format } from "date-fns";
   import type { DBSelect } from "$lib/types";
-
-  interface Props {
-    year: number;
-  }
 
   type DayType = {
     date: string;
@@ -14,7 +10,7 @@
     enabled: boolean;
   };
 
-  let { year }: Props = $props();
+  let year = $state<number>(new Date().getFullYear());
 
   let days = $state<DayType[]>([]);
   let tooltip = $state<string>("");
@@ -105,15 +101,21 @@
     } minutes on ${format(date, "MMMM do")}.`;
   }
 
-  $effect(() => {
-    const v = year;
-    untrack(() => {
-      getAllDays();
-    });
+  onMount(() => {
+    getAllDays();
   });
 </script>
 
 <div class="w-full h-full relative flex gap-24">
+  <input
+    name="heatmapyear"
+    type="number"
+    bind:value={year}
+    min="2025"
+    class="hidden-cursor select-none h-24 w-70 text-14 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
+    onchange={() => getAllDays()}
+  />
+
   <div class="calendarMonth">
     {#each monthNames as month}
       <div class="text-12 font-400 leading-10">{month.slice(0, 3)}</div>
