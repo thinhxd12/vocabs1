@@ -24,16 +24,19 @@
   import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
   import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
   import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
+  import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
   import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
   import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
   import longbreakImage from "$lib/assets/images/Julien-Dupré-Resting-in-the-Fields.avif";
+  import Heatmap from "$lib/components/Heatmap.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let showSetting = $state<boolean>(false);
   let showReport = $state<boolean>(false);
+  let showHeatmap = $state<boolean>(false);
   let interval: ReturnType<typeof setInterval>;
   let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
@@ -43,6 +46,7 @@
   let itemsPerPage = Math.floor((innerHeight.current! - 120 - 26 - 28) / 25);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
+  let heatmapYear = $state<number>(new Date().getFullYear());
 
   const minutesToSeconds = (minutes: number) => minutes * 60;
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -348,6 +352,20 @@
 
           <button
             class="setting-button light"
+            class:active={showHeatmap === true}
+            onclick={(e) => {
+              e.currentTarget.blur();
+              showHeatmap = true;
+            }}
+          >
+            <MaterialSymbolsLightBackgroundGridSmallSharp
+              width="14"
+              height="14"
+            />
+          </button>
+
+          <button
+            class="setting-button light"
             class:active={showSetting === true}
             onclick={(e) => {
               e.currentTarget.blur();
@@ -489,6 +507,24 @@
       </div>
     </Modal>
 
+    <Modal bind:showModal={showHeatmap}>
+      {#snippet header()}
+        <span class="text-14 leading-16">Heatmap</span>
+      {/snippet}
+      <div
+        class="w-full h-[calc(100vh-60px)] rounded-2 overflow-hidden flex gap-6 p-3"
+      >
+        <input
+          name="heatmapyear"
+          type="number"
+          bind:value={heatmapYear}
+          min="2025"
+          class="hidden-cursor select-none h-24 w-70 text-14 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
+        />
+        <Heatmap year={heatmapYear} />
+      </div>
+    </Modal>
+
     <div class="circle">
       <div class="square">
         <img
@@ -616,5 +652,9 @@
     color: #555;
     width: 100%;
     outline: 0;
+  }
+
+  .hidden-cursor {
+    caret-color: transparent;
   }
 </style>

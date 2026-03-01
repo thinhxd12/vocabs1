@@ -9,7 +9,7 @@
 </svelte:head>
 
 <Container zIndex={6}>
-  <Heatmap year={2025} />
+  <Heatmap year={2026} />
 </Container>
 
 <style lang="postcss">

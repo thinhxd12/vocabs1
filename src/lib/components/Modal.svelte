@@ -81,6 +81,7 @@
 
   .header {
     width: 100%;
+    height: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
