@@ -4,12 +4,12 @@
   import Container from "$lib/components/Container.svelte";
   import {
     currentInterval,
-    countPomodoros,
-    currentState,
-    longBreak,
-    longBreakInterval,
-    pomodoro,
-    shortBreak,
+    currentMode,
+    secondsRemaining,
+    focusMinutes,
+    shortbreakMinutes,
+    longbreakMinutes,
+    intervals,
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
@@ -24,7 +24,6 @@
   import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
   import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
   import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
-  import { linear } from "svelte/easing";
   import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
   import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
@@ -54,11 +53,11 @@
 
   const progress = new Tween(0, {
     duration: 1000,
-    easing: linear,
   });
 
   onMount(() => {
     $wakeEnable = true;
+    updateDisplay(true);
   });
 
   function formatTime(timeInSeconds: number): string {
@@ -67,92 +66,119 @@
     return `${padWithZeroes(minutes)}:${padWithZeroes(remainingSeconds)}`;
   }
 
-  function startPomodoro() {
+  function startTimer() {
     clearInterval(interval);
-    now = Date.now();
-    end = now + $countPomodoros * 1000;
     isPaused = false;
-    interval = setInterval(updatePomodoro, 1000);
+    now = Date.now();
+    end = now + $secondsRemaining * 1000;
+    interval = setInterval(updateTimer, 1000);
   }
 
-  function updatePomodoro() {
+  function updateTimer() {
     now = Date.now();
-    $countPomodoros = Math.round((end - now) / 1000);
-    progress.target = (($pomodoro * 60 - $countPomodoros) / $pomodoro) * 6;
+    $secondsRemaining = Math.round((end - now) / 1000);
+    updateDisplay();
     if (now >= end) {
-      progress.set(0);
-      $currentInterval++;
-      completePomodoro();
-      srcAudio = "/sounds/mp3_break.ogg";
-      pauseAudio = false;
+      endTimer();
     }
   }
 
-  function completePomodoro() {
-    submitReport();
-    if ($currentInterval > $longBreakInterval) {
-      $currentInterval = 1;
-      setTimeout(() => {
-        $currentState = "longbreak";
-      }, 1000);
-      $countPomodoros = minutesToSeconds($longBreak);
-      rest();
-    } else {
-      setTimeout(() => {
-        $currentState = "break";
-      }, 1000);
-      $countPomodoros = minutesToSeconds($shortBreak);
-      rest();
-    }
-  }
-
-  function rest() {
-    clearInterval(interval);
-    now = Date.now();
-    end = now + $countPomodoros * 1000;
-    isPaused = false;
-    interval = setInterval(updateRest, 1000);
-  }
-
-  function updateRest() {
-    now = Date.now();
-    $countPomodoros = Math.round((end - now) / 1000);
-    if ($currentState === "break") {
-      progress.target =
-        (($shortBreak * 60 - $countPomodoros) / $shortBreak) * 6;
-    } else
-      progress.target = (($longBreak * 60 - $countPomodoros) / $longBreak) * 6;
-    if (now >= end) {
-      progress.set(0);
-      $countPomodoros = minutesToSeconds($pomodoro);
-      setTimeout(() => {
-        $currentState = "focus";
-      }, 1000);
-      startPomodoro();
-      srcAudio = "/sounds/mp3_focus.ogg";
-      pauseAudio = false;
-    }
-  }
-
-  function pausePomodoro() {
+  function pauseTimer() {
     clearInterval(interval);
     isPaused = true;
   }
 
-  function handleResume() {
-    switch ($currentState) {
+  function endTimer() {
+    progress.target = 0;
+
+    switch ($currentMode) {
       case "focus":
-        startPomodoro();
+        srcAudio = "/sounds/mp3_break.ogg";
+        pauseAudio = false;
+        $currentInterval++;
+        if ($currentInterval > $intervals) {
+          $currentInterval = 1;
+          setTimeout(() => {
+            $currentMode = "longbreak";
+          }, 1000);
+          $secondsRemaining = minutesToSeconds($longbreakMinutes);
+        } else {
+          setTimeout(() => {
+            $currentMode = "shortbreak";
+          }, 1000);
+          $secondsRemaining = minutesToSeconds($shortbreakMinutes);
+        }
+        submitReport();
+        startTimer();
         break;
-      case "break":
-        rest();
+      case "shortbreak":
+        srcAudio = "/sounds/mp3_focus.ogg";
+        pauseAudio = false;
+        setTimeout(() => {
+          $currentMode = "focus";
+        }, 1000);
+        $secondsRemaining = minutesToSeconds($focusMinutes);
+        startTimer();
         break;
       case "longbreak":
-        rest();
+        srcAudio = "/sounds/mp3_focus.ogg";
+        pauseAudio = false;
+        setTimeout(() => {
+          $currentMode = "focus";
+        }, 1000);
+        $secondsRemaining = minutesToSeconds($focusMinutes);
+        startTimer();
         break;
       default:
         break;
     }
+  }
+
+  function updateDisplay(set: boolean = false) {
+    let target = 0;
+    switch ($currentMode) {
+      case "focus":
+        target = (($focusMinutes * 60 - $secondsRemaining) / $focusMinutes) * 6;
+
+        break;
+      case "shortbreak":
+        target =
+          (($shortbreakMinutes * 60 - $secondsRemaining) / $shortbreakMinutes) *
+          6;
+        break;
+      case "longbreak":
+        target =
+          (($longbreakMinutes * 60 - $secondsRemaining) / $longbreakMinutes) *
+          6;
+        break;
+      default:
+        break;
+    }
+
+    if (set) progress.set(target, { duration: 0 });
+    else progress.target = target;
+  }
+
+  function handleChangeMode(mode: typeof $currentMode) {
+    progress.set(0, { duration: 0 });
+
+    switch (mode) {
+      case "focus":
+        $secondsRemaining = minutesToSeconds($focusMinutes);
+        $currentMode = "focus";
+        break;
+      case "shortbreak":
+        $secondsRemaining = minutesToSeconds($shortbreakMinutes);
+        $currentMode = "shortbreak";
+        break;
+      case "longbreak":
+        $secondsRemaining = minutesToSeconds($longbreakMinutes);
+        $currentMode = "longbreak";
+        break;
+      default:
+        break;
+    }
+    startTimer();
   }
 
   async function submitReport() {
@@ -168,13 +194,13 @@
       await layoutData.supabase
         .from("pomodoro_table")
         .update({
-          time: data[0].time + $pomodoro,
+          time: data[0].time + $focusMinutes,
         })
         .eq("date", date);
     } else {
       await layoutData.supabase
         .from("pomodoro_table")
-        .insert({ date, time: $pomodoro });
+        .insert({ date, time: $focusMinutes });
     }
   }
 
@@ -217,7 +243,7 @@
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key === " ") {
-      isPaused ? handleResume() : pausePomodoro();
+      isPaused ? startTimer() : pauseTimer();
     }
     if (e.key.toLocaleLowerCase() === "f") {
       $wakeEnable = !$wakeEnable;
@@ -231,10 +257,10 @@
 <svelte:head>
   {#if isPaused}
     <title>🍅 Paused</title>
-  {:else if $currentState === "focus"}
-    <title>{formatTime($countPomodoros)} - Time to focus!</title>
+  {:else if $currentMode === "focus"}
+    <title>{formatTime($secondsRemaining)} - Time to focus!</title>
   {:else}
-    <title>{formatTime($countPomodoros)} - Time for a break!</title>
+    <title>{formatTime($secondsRemaining)} - Time for a break!</title>
   {/if}
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
@@ -249,13 +275,10 @@
         <div class="flex gap-3">
           <button
             class="setting-button light"
-            class:active={$currentState === "focus"}
+            class:active={$currentMode === "focus"}
             onclick={(e) => {
               e.currentTarget.blur();
-              progress.set(0);
-              $countPomodoros = minutesToSeconds($pomodoro);
-              $currentState = "focus";
-              handleResume();
+              handleChangeMode("focus");
             }}
           >
             <MaterialSymbolsAdjust width="14" height="14" />
@@ -263,13 +286,10 @@
 
           <button
             class="setting-button light"
-            class:active={$currentState === "break"}
+            class:active={$currentMode === "shortbreak"}
             onclick={(e) => {
               e.currentTarget.blur();
-              progress.set(0);
-              $countPomodoros = minutesToSeconds($shortBreak);
-              $currentState = "break";
-              handleResume();
+              handleChangeMode("shortbreak");
             }}
           >
             <MaterialSymbolsDarkModeRounded width="14" height="14" />
@@ -277,13 +297,10 @@
 
           <button
             class="setting-button light"
-            class:active={$currentState === "longbreak"}
+            class:active={$currentMode === "longbreak"}
             onclick={(e) => {
               e.currentTarget.blur();
-              progress.set(0);
-              $countPomodoros = minutesToSeconds($longBreak);
-              $currentState = "longbreak";
-              handleResume();
+              handleChangeMode("longbreak");
             }}
           >
             <MaterialSymbolsSailingRounded width="14" height="14" />
@@ -294,7 +311,7 @@
           class="btn-timer group relative"
           onclick={(e) => {
             e.currentTarget.blur();
-            isPaused ? handleResume() : pausePomodoro();
+            isPaused ? startTimer() : pauseTimer();
           }}
           class:timerPause={isPaused}
         >
@@ -302,11 +319,11 @@
             class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
           >
             <span class="w-1/2 text-right">
-              {padWithZeroes(secondsToMinutes($countPomodoros))}
+              {padWithZeroes(secondsToMinutes($secondsRemaining))}
             </span>
             <span class="min-w-6">:</span>
             <span class="w-1/2 text-left">
-              {padWithZeroes($countPomodoros % 60)}
+              {padWithZeroes($secondsRemaining % 60)}
             </span>
           </span>
           <span
@@ -376,7 +393,7 @@
               type="number"
               min="1"
               step="1"
-              bind:value={$pomodoro}
+              bind:value={$focusMinutes}
               class="input-setting"
             />
             <input
@@ -385,7 +402,7 @@
               type="number"
               min="1"
               step="1"
-              bind:value={$shortBreak}
+              bind:value={$shortbreakMinutes}
               class="input-setting"
             />
             <input
@@ -394,7 +411,7 @@
               type="number"
               min="1"
               step="1"
-              bind:value={$longBreak}
+              bind:value={$longbreakMinutes}
               class="input-setting"
             />
             <p class="text-14 font-500 col-span-3">Long Break interval</p>
@@ -404,7 +421,7 @@
               type="number"
               min="1"
               step="1"
-              bind:value={$longBreakInterval}
+              bind:value={$intervals}
               class="input-setting"
             />
             <p class="text-14 font-500 col-span-3">Current interval</p>
@@ -413,7 +430,7 @@
               autocomplete="off"
               type="number"
               min="1"
-              max={$longBreakInterval}
+              max={$intervals}
               step="1"
               bind:value={$currentInterval}
               class="input-setting"
@@ -475,9 +492,9 @@
     <div class="circle">
       <div class="square">
         <img
-          src={$currentState === "focus"
+          src={$currentMode === "focus"
             ? focusImage
-            : $currentState === "break"
+            : $currentMode === "shortbreak"
               ? shortbreakImage
               : longbreakImage}
           alt="bg"
@@ -486,9 +503,9 @@
         />
 
         <img
-          src={$currentState === "focus"
+          src={$currentMode === "focus"
             ? focusImage
-            : $currentState === "break"
+            : $currentMode === "shortbreak"
               ? shortbreakImage
               : longbreakImage}
           alt="pbg"
