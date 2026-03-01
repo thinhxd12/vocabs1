@@ -645,8 +645,4 @@
     width: 100%;
     outline: 0;
   }
-
-  .hidden-cursor {
-    caret-color: transparent;
-  }
 </style>

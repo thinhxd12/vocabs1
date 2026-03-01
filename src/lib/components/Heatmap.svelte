@@ -212,4 +212,8 @@
     fill: #116329;
     background-color: #116329;
   }
+
+  .hidden-cursor {
+    caret-color: transparent;
+  }
 </style>
