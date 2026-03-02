@@ -391,6 +391,21 @@
       </div>
     </div>
 
+    <div
+      class="absolute bottom-0 left-0 right-0 z-10 h-24 flex justify-center items-center gap-6"
+    >
+      {#each { length: $currentInterval } as item, i}
+        <div
+          class="size-4 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
+        ></div>
+      {/each}
+      {#each { length: $intervals - $currentInterval } as item, i}
+        <div
+          class="size-4 rounded-full bg-white shadow shadow-black/30 ring-1 ring-black"
+        ></div>
+      {/each}
+    </div>
+
     <Modal bind:showModal={showSetting}>
       {#snippet header()}
         <span class="text-13 leading-16">Setting</span>
