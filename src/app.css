@@ -27,6 +27,10 @@ button:focus {
   width: 382px;
 }
 
+.min-w-main {
+  min-width: 382px;
+}
+
 .w-content {
   width: 378px;
 }

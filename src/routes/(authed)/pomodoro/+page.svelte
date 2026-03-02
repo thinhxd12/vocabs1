@@ -274,8 +274,8 @@
 <Container zIndex={6} fullscreen>
   <div class="w-full h-full flex items-center justify-center relative">
     <div class="absolute top-0 left-0 right-0 z-10 flex justify-center">
-      <div class="w-main flex justify-between py-3">
-        <div class="flex gap-3">
+      <div class="min-w-main flex justify-between py-3">
+        <div class="flex gap-3 {$intervals > 15 ? 'pr-18' : ''}">
           <button
             class="setting-button light"
             class:active={$currentMode === "focus"}
@@ -308,36 +308,49 @@
           >
             <MaterialSymbolsSailingRounded width="14" height="14" />
           </button>
+
+          <button
+            class="btn-timer light group relative"
+            onclick={(e) => {
+              e.currentTarget.blur();
+              isPaused ? startTimer() : pauseTimer();
+            }}
+            class:timerPause={isPaused}
+          >
+            <span
+              class="absolute w-full flex items-center justify-center text-9 leading-18 font-600 group-hover:opacity-0"
+            >
+              <span class="w-1/2 text-right">
+                {padWithZeroes(secondsToMinutes($secondsRemaining))}
+              </span>
+              <span class="min-w-6">:</span>
+              <span class="w-1/2 text-left">
+                {padWithZeroes($secondsRemaining % 60)}
+              </span>
+            </span>
+            <span
+              class="absolute text-9 leading-15 font-500 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
+              style="text-shadow: 0 0 1px #ea504a;"
+            >
+              PAUSE
+            </span>
+          </button>
         </div>
 
-        <button
-          class="btn-timer group relative"
-          onclick={(e) => {
-            e.currentTarget.blur();
-            isPaused ? startTimer() : pauseTimer();
-          }}
-          class:timerPause={isPaused}
-        >
-          <span
-            class="absolute w-full flex items-center justify-center text-9 leading-18 text-white group-hover:opacity-0"
-          >
-            <span class="w-1/2 text-right">
-              {padWithZeroes(secondsToMinutes($secondsRemaining))}
-            </span>
-            <span class="min-w-6">:</span>
-            <span class="w-1/2 text-left">
-              {padWithZeroes($secondsRemaining % 60)}
-            </span>
-          </span>
-          <span
-            class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
-            style="text-shadow: 0 0 1px #ea504a;"
-          >
-            PAUSE
-          </span>
-        </button>
+        <div class="h-18 flex justify-center items-center gap-6">
+          {#each { length: $currentInterval } as item, i}
+            <div
+              class="size-4 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
+            ></div>
+          {/each}
+          {#each { length: $intervals - $currentInterval } as item, i}
+            <div
+              class="size-4 rounded-full shadow shadow-black/30 ring-1 ring-black"
+            ></div>
+          {/each}
+        </div>
 
-        <div class="flex gap-3">
+        <div class="flex gap-3 pl-18">
           <button
             class="setting-button light"
             class:active={showReport === true}
@@ -389,21 +402,6 @@
           </button>
         </div>
       </div>
-    </div>
-
-    <div
-      class="absolute bottom-0 left-0 right-0 z-10 h-24 flex justify-center items-center gap-6"
-    >
-      {#each { length: $currentInterval } as item, i}
-        <div
-          class="size-4 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
-        ></div>
-      {/each}
-      {#each { length: $intervals - $currentInterval } as item, i}
-        <div
-          class="size-4 rounded-full bg-white shadow shadow-black/30 ring-1 ring-black"
-        ></div>
-      {/each}
     </div>
 
     <Modal bind:showModal={showSetting}>
@@ -638,7 +636,11 @@
   }
 
   .btn-timer {
-    @apply flex items-center justify-center h-18 min-w-36 rounded-2 bg-[#101213] ring-1 ring-black/5 shadow shadow-black/30;
+    @apply flex items-center justify-center h-18 min-w-36 rounded-2 ring-1 ring-black/5 shadow shadow-black/30 hover:bg-[#101213];
+  }
+
+  .timerPause {
+    background-color: #101213;
   }
 
   .timerPause span:first-child {
