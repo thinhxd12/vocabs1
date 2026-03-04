@@ -41,7 +41,7 @@ async function getOedSoundURL(text: string) {
 }
 
 async function getLearnersMp3(text: string) {
-  const searchUrl = `https://www.oxfordlearnersdictionaries.com/definition/english/${text}?q=${text}`;
+  const searchUrl = `https://www.oxfordlearnersdictionaries.com/definition/english/${text}`;
   const data = await fetchGetText(searchUrl);
   const doc = load(data);
   const sound = doc(".audio_play_button.pron-us.icon-audio").attr(

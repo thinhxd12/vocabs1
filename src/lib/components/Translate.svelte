@@ -45,11 +45,11 @@
     }
   }
 
-  async function handleGetTranslateWord() {
+  async function handleGetTranslateWord(word: string) {
     const { data: dataMemories } = await supabase
       .from("memories_table")
       .select("*")
-      .eq("word", translateWord.word);
+      .eq("word", word.toLowerCase());
 
     if (dataMemories.length)
       toast.error(`Memorized "${dataMemories[0].word}"!`, {
@@ -58,8 +58,8 @@
         position: "bottom-right",
       });
     const data = await Promise.all([
-      getTextDataWebster(translateWord.word),
-      getTranslateData(translateWord.word),
+      getTextDataWebster(word.toLowerCase()),
+      getTranslateData(word.toLowerCase()),
     ]);
     if (data[0]) {
       translateWord = {
@@ -139,11 +139,12 @@
         name="word"
         autocomplete="off"
         autofocus
+        type="text"
         onkeydown={(e) => {
           e.stopPropagation();
           if (e.key === "Enter") {
             e.preventDefault();
-            handleGetTranslateWord();
+            handleGetTranslateWord(e.currentTarget.value);
           }
         }}
         bind:value={translateWord.word}
@@ -153,7 +154,7 @@
         type="button"
         onclick={(e) => {
           e.stopPropagation();
-          handleGetTranslateWord();
+          handleGetTranslateWord(translateWord.word);
         }}
         class="size-36 text-white/30 hover:text-white transition duration-100 absolute top-0 right-0 flex justify-center items-center"
       >
