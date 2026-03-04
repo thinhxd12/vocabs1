@@ -340,12 +340,12 @@
         <div class="h-18 flex justify-center items-center gap-6">
           {#each { length: $currentInterval } as item, i}
             <div
-              class="size-4 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
+              class="size-3 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
             ></div>
           {/each}
           {#each { length: $intervals - $currentInterval } as item, i}
             <div
-              class="size-4 rounded-full shadow shadow-black/30 ring-1 ring-black"
+              class="size-3 rounded-full shadow shadow-black/30 ring-1 ring-black"
             ></div>
           {/each}
         </div>
@@ -574,7 +574,7 @@
         <div class="static"></div>
         <div
           class="dynamic"
-          style="transform: rotate({progress.current}deg) scaleX(3);"
+          style="transform: rotate({progress.current}deg) scaleX(2);"
         ></div>
       </div>
     </div>
@@ -611,7 +611,7 @@
     left: calc(50% - 0.5px);
     bottom: 50%;
     transform-origin: bottom;
-    transform: scaleX(3);
+    transform: scaleX(2);
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
   }
