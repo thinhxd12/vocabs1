@@ -170,11 +170,7 @@ export const archiveVocab = async (id: string, word: string) => {
   if (errorMemories) {
     toast.error("Error!", {
       description: errorMemories.message as string,
-      class: "my-toast-error",
-      classes: {
-        title: "text-[#f70000] text-14",
-        description: "text-black/80 text-12",
-      },
+      class: "my-toast my-toast-error",
     });
     return;
   }
@@ -187,11 +183,7 @@ export const archiveVocab = async (id: string, word: string) => {
   if (errorDeleteVocab) {
     toast.error("Error!", {
       description: errorDeleteVocab.message as string,
-      class: "my-toast-error",
-      classes: {
-        title: "text-[#f70000] text-14",
-        description: "text-black/80 text-12",
-      },
+      class: "my-toast my-toast-error",
     });
     return;
   }

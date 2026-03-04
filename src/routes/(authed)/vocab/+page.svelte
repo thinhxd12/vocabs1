@@ -19,6 +19,7 @@
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
   import type { PageProps } from "./$types";
+  import Modal from "$lib/components/Modal.svelte";
 
   let { data: layoutData }: PageProps = $props();
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
@@ -175,20 +176,12 @@
     if (error) {
       toast.error("Error!", {
         description: error.message as string,
-        class: "my-toast-error",
-        classes: {
-          title: "text-[#f70000] text-14",
-          description: "text-black/80 text-12",
-        },
+        class: "my-toast my-toast-error",
       });
     } else
       toast.success("Success!", {
         description: "Delete successfully.",
-        class: "my-toast-success",
-        classes: {
-          title: "text-[#00c441] text-15 font-500",
-          description: "text-black/70 text-12 font-400",
-        },
+        class: "my-toast my-toast-success",
       });
     searchTermFounded = true;
     $searchTerm = "";
@@ -242,9 +235,14 @@
 </audio>
 
 {#if $showTranslate}
-  <Container zIndex={6} scrollable>
+  <Modal
+    bind:showModal={$showTranslate}
+    --height="calc(100vh - 45px)"
+    --bg="transparent"
+    --backdrop="transparent"
+  >
     <Translate />
-  </Container>
+  </Modal>
 {:else if $searchTerm}
   <Container zIndex={6}>
     <p
@@ -294,9 +292,14 @@
     {/if}
   </Container>
 {:else if $showEdit}
-  <Container zIndex={6} scrollable>
+  <Modal
+    bind:showModal={$showEdit}
+    --height="calc(100vh - 45px)"
+    --bg="transparent"
+    --backdrop="transparent"
+  >
     <Edit id={editId} />
-  </Container>
+  </Modal>
 {:else if $renderWord}
   <Container zIndex={6} scrollable>
     <div class="h-36 w-full flex gap-3">

@@ -289,20 +289,12 @@
     if (error) {
       toast.error("Error!", {
         description: error.message as string,
-        class: "my-toast-error",
-        classes: {
-          title: "text-[#f70000] text-14",
-          description: "text-black/80 text-12",
-        },
+        class: "my-toast my-toast-error",
       });
     } else {
       toast.success("Success!", {
         description: "Delete successfully.",
-        class: "my-toast-success",
-        classes: {
-          title: "text-[#00c441] text-15 font-500",
-          description: "text-black/70 text-12 font-400",
-        },
+        class: "my-toast my-toast-success",
       });
     }
     handleGetNextBookmark();
@@ -513,11 +505,7 @@
       if (error) {
         toast.error("Error!", {
           description: error.message as string,
-          class: "my-toast-error",
-          classes: {
-            title: "text-[#f70000] text-14",
-            description: "text-black/80 text-12",
-          },
+          class: "my-toast my-toast-error",
         });
       }
     }
@@ -557,20 +545,12 @@
               if (result.type === "failure") {
                 toast.error("Error!", {
                   description: result.data?.error as string,
-                  class: "my-toast-error",
-                  classes: {
-                    title: "text-[#f70000] text-14",
-                    description: "text-black/80 text-12",
-                  },
+                  class: "my-toast my-toast-error",
                 });
               } else {
                 toast.success("Success!", {
                   description: "Edit successfully.",
-                  class: "my-toast-success",
-                  classes: {
-                    title: "text-[#00c441] text-15 font-500",
-                    description: "text-black/70 text-12 font-400",
-                  },
+                  class: "my-toast my-toast-success",
                 });
                 handleCloseBook($bookmark!);
               }
@@ -707,20 +687,12 @@
               if (result.type === "failure") {
                 toast.error("Error!", {
                   description: result.data?.error as string,
-                  class: "my-toast-error",
-                  classes: {
-                    title: "text-[#f70000] text-14",
-                    description: "text-black/80 text-12",
-                  },
+                  class: "my-toast my-toast-error",
                 });
               } else {
                 toast.success("Success!", {
                   description: "Insert successfully.",
-                  class: "my-toast-success",
-                  classes: {
-                    title: "text-[#00c441] text-15 font-500",
-                    description: "text-black/70 text-12 font-400",
-                  },
+                  class: "my-toast my-toast-success",
                 });
               }
               isSubmitting = false;
@@ -1106,7 +1078,7 @@
     <div
       class="note-page absolute top-60 {showNote
         ? 'right-0'
-        : 'right-[-270px]'}  bottom-[300px] w-[300px] transition-all duration-150 ease-in-out"
+        : 'right-[-270px]'}  bottom-[300px] w-[300px] transition-all duration-300 ease-in-out"
       onmouseenter={() => {
         showNote = true;
       }}
@@ -1385,7 +1357,7 @@
   .note-button {
     position: absolute;
     display: block;
-    background-color: rgba(108, 212, 255, 0.6);
+    background-color: rgba(108, 212, 255, 0.9);
     width: 120px;
     height: 35px;
     left: 50%;

@@ -201,20 +201,12 @@
                   if (result.type === "failure") {
                     toast.error("Error!", {
                       description: result.data?.error as string,
-                      class: "my-toast-error",
-                      classes: {
-                        title: "text-[#f70000] text-14",
-                        description: "text-black/80 text-12",
-                      },
+                      class: "my-toast my-toast-error",
                     });
                   } else {
                     toast.success("Success!", {
                       description: "Edit successfully.",
-                      class: "my-toast-success",
-                      classes: {
-                        title: "text-[#00c441] text-15 font-500",
-                        description: "text-black/70 text-12 font-400",
-                      },
+                      class: "my-toast my-toast-success",
                     });
                     updateScheduleLocal(
                       {
@@ -326,20 +318,12 @@
                 if (result.type === "failure") {
                   toast.error("Error!", {
                     description: result.data?.error as string,
-                    class: "my-toast-error",
-                    classes: {
-                      title: "text-[#f70000] text-14",
-                      description: "text-black/80 text-12",
-                    },
+                    class: "my-toast my-toast-error",
                   });
                 } else {
                   toast.success("Success!", {
                     description: "Create successfully.",
-                    class: "my-toast-success",
-                    classes: {
-                      title: "text-[#00c441] text-15 font-500",
-                      description: "text-black/70 text-12 font-400",
-                    },
+                    class: "my-toast my-toast-success",
                   });
                   reloadScheduleData();
                 }

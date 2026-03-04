@@ -161,7 +161,7 @@
   </div>
 
   <div class="calendar">
-    <div class="flex justify-between items-center px-6 pt-6">
+    <div class="flex justify-between items-center px-6 pt-9 pb-2">
       <div class="flex items-center gap-6 select-none text-[#71767b]">
         <h3 class="font-rubik font-300 text-54 leading-40">
           {now.getDate()}

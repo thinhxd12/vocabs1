@@ -79,12 +79,45 @@ input.layout-main {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-.my-toast-error {
-  @apply font-sfpro flex items-center gap-9 w-full bg-white/30 backdrop-blur-md border-white/45 text-[#f70000] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
+.my-toast {
+  font-family: "SF Pro Display", sans-serif;
+  min-width: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 9px 15px rgba(0, 0, 0, 0.3);
 }
 
-.my-toast-success {
-  @apply font-sfpro flex items-center gap-9 w-full bg-white/30 backdrop-blur-md border-white/45 text-[#00c441] px-15 py-6 rounded-2 shadow-black/30 shadow-lg;
+.my-toast-error div[data-icon] {
+  color: #f70000;
+}
+
+.my-toast-error div[data-title] {
+  color: #f70000;
+  font-size: 14px;
+  font-weight: 500px;
+}
+
+.my-toast-success div[data-icon] {
+  color: #00c441;
+}
+
+.my-toast-success div[data-title] {
+  color: #00c441;
+  font-size: 14px;
+  font-weight: 500px;
+}
+
+.my-toast-error div[data-description],
+.my-toast-success div[data-description] {
+  color: #000000cc;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .highlightContent {

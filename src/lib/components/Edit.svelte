@@ -101,7 +101,7 @@
   }
 </script>
 
-<div class="w-full h-full no-scrollbar overflow-x-scroll flex flex-wrap gap-2">
+<div class="w-full h-full no-scrollbar overflow-y-scroll flex flex-col gap-2">
   <form
     name="editvocab"
     action="?/editVocab"
@@ -112,20 +112,14 @@
         if (result.type === "failure") {
           toast.error("Error!", {
             description: result.data?.error as string,
-            class: "my-toast-error",
-            classes: {
-              title: "text-[#f70000] text-14",
-              description: "text-black/80 text-12",
-            },
+            class: "my-toast my-toast-error",
+            position: "bottom-right",
           });
         } else {
           toast.success("Success!", {
             description: "Edit successfully.",
-            class: "my-toast-success",
-            classes: {
-              title: "text-[#00c441] text-15 font-500",
-              description: "text-black/70 text-12 font-400",
-            },
+            class: "my-toast my-toast-success",
+            position: "bottom-right",
           });
 
           if ($renderWord && $renderWord.id === editWord.id) {

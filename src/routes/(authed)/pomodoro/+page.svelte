@@ -98,9 +98,7 @@
       case "focus":
         srcAudio = "/sounds/mp3_break.ogg";
         pauseAudio = false;
-        $currentInterval++;
-        if ($currentInterval > $intervals) {
-          $currentInterval = 1;
+        if ($currentInterval >= $intervals) {
           setTimeout(() => {
             $currentMode = "longbreak";
           }, 1000);
@@ -117,6 +115,7 @@
       case "shortbreak":
         srcAudio = "/sounds/mp3_focus.ogg";
         pauseAudio = false;
+        $currentInterval++;
         setTimeout(() => {
           $currentMode = "focus";
         }, 1000);
@@ -126,6 +125,7 @@
       case "longbreak":
         srcAudio = "/sounds/mp3_focus.ogg";
         pauseAudio = false;
+        $currentInterval = 1;
         setTimeout(() => {
           $currentMode = "focus";
         }, 1000);
@@ -404,7 +404,11 @@
       </div>
     </div>
 
-    <Modal bind:showModal={showSetting}>
+    <Modal
+      bind:showModal={showSetting}
+      --height="calc(100vh - 48px)"
+      --margin="3px auto"
+    >
       {#snippet header()}
         <span class="text-13 leading-16">Setting</span>
       {/snippet}
@@ -470,7 +474,11 @@
       </div>
     </Modal>
 
-    <Modal bind:showModal={showReport}>
+    <Modal
+      bind:showModal={showReport}
+      --height="calc(100vh - 48px)"
+      --margin="3px auto"
+    >
       {#snippet header()}
         <span class="text-13 leading-16">Report</span>
       {/snippet}
@@ -521,7 +529,11 @@
       </div>
     </Modal>
 
-    <Modal bind:showModal={showHeatmap}>
+    <Modal
+      bind:showModal={showHeatmap}
+      --height="calc(100vh - 48px)"
+      --margin="3px auto"
+    >
       {#snippet header()}
         <span class="text-13 leading-16">Heatmap</span>
       {/snippet}
@@ -562,7 +574,7 @@
         <div class="static"></div>
         <div
           class="dynamic"
-          style="transform: rotate({progress.current}deg) scaleX(2);"
+          style="transform: rotate({progress.current}deg) scaleX(3);"
         ></div>
       </div>
     </div>
@@ -599,7 +611,7 @@
     left: calc(50% - 0.5px);
     bottom: 50%;
     transform-origin: bottom;
-    transform: scaleX(2);
+    transform: scaleX(3);
     background-color: rgba(0, 0, 0, 1);
     z-index: 20;
   }

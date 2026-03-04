@@ -26,13 +26,16 @@
     }}
     class="w-main"
   >
-    <div class="header w-main">
-      {@render header?.()}
-      <!-- svelte-ignore a11y_autofocus -->
-      <button class="closeBtn" onclick={() => dialog!.close()}>
-        <MaterialSymbolsCloseRounded width="14" height="14" />
-      </button>
-    </div>
+    {#if header}
+      <div class="header w-main">
+        {@render header?.()}
+        <!-- svelte-ignore a11y_autofocus -->
+        <button class="closeBtn" onclick={() => dialog!.close()}>
+          <MaterialSymbolsCloseRounded width="14" height="14" />
+        </button>
+      </div>
+    {/if}
+
     <div class="content w-main">
       {@render children?.()}
     </div>
@@ -41,8 +44,9 @@
 
 <style lang="postcss">
   dialog {
-    height: calc(100vh - 48px);
-    margin: 3px auto 45px;
+    height: var(--height, 100vh);
+    min-height: var(--height, 100vh);
+    margin: var(--margin, 0 auto);
     border: none;
     padding: 0;
     border-radius: 2px;
@@ -50,14 +54,36 @@
     background: none;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
+  }
+
+  dialog::-webkit-scrollbar {
+    display: none;
   }
 
   dialog::backdrop {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--backdrop, #0000004d);
   }
 
   dialog[open] {
     animation: zoom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .header {
+    width: 100%;
+    height: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 3px 6px;
+  }
+
+  .content {
+    width: 100%;
+    flex-grow: 1;
+    background-color: var(--bg, #ffffff);
   }
 
   @keyframes zoom {
@@ -83,22 +109,5 @@
 
   .closeBtn {
     @apply size-24 flex justify-center items-center transition duration-100 text-white/60 hover:text-white;
-  }
-
-  .header {
-    width: 100%;
-    height: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #000000;
-    color: #ffffff;
-    padding: 3px 6px;
-  }
-
-  .content {
-    width: 100%;
-    flex-grow: 1;
-    background-color: #ffffff;
   }
 </style>

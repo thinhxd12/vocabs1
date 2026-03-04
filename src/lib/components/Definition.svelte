@@ -14,7 +14,7 @@
 </script>
 
 {#each item.meanings as entry}
-  <div class="w-full overflow-hidden py-3 light">
+  <div class="definition w-full overflow-hidden py-3 light">
     <div class="flex justify-between px-9">
       <button
         class="cursor-pointer font-roslindale text-24 leading-28 font-500"

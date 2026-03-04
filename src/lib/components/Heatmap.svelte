@@ -181,7 +181,6 @@
   .day {
     width: 10px;
     height: 10px;
-    fill: #eff2f5;
     shape-rendering: geometricPrecision;
     background-color: #eff2f5;
     border: 0.5px solid #1f23280d;
@@ -189,27 +188,22 @@
   }
 
   .day[data-level="0"] {
-    fill: #eff2f5;
     background-color: #eff2f5;
   }
 
   .day[data-level="1"] {
-    fill: #aceebb;
     background-color: #aceebb;
   }
 
   .day[data-level="2"] {
-    fill: #4ac26b;
     background-color: #4ac26b;
   }
 
   .day[data-level="3"] {
-    fill: #2da44e;
     background-color: #2da44e;
   }
 
   .day[data-level="4"] {
-    fill: #116329;
     background-color: #116329;
   }
 
