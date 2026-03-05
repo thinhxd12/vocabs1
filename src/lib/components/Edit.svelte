@@ -9,8 +9,6 @@
   import { page } from "$app/state";
   import SolarMagniferLinear from "~icons/solar/magnifer-linear";
 
-  const { supabase } = page.data;
-
   let editWord = $state<DBSelect["vocab_table"]>({
     id: "",
     number: 0,
@@ -35,7 +33,7 @@
     const v = $showEdit;
     untrack(async () => {
       if (id && $showEdit) {
-        const { data } = await supabase
+        const { data } = await page.data.supabase
           .from("vocab_table")
           .select("*")
           .eq("id", id)
@@ -101,7 +99,7 @@
   }
 </script>
 
-<div class="w-full h-full no-scrollbar overflow-y-scroll flex flex-col gap-2">
+<div class="w-main h-[calc(100vh-45px)] no-scrollbar overflow-y-scroll">
   <form
     name="editvocab"
     action="?/editVocab"
@@ -113,13 +111,11 @@
           toast.error("Error!", {
             description: result.data?.error as string,
             class: "my-toast my-toast-error",
-            position: "bottom-right",
           });
         } else {
           toast.success("Success!", {
             description: "Edit successfully.",
             class: "my-toast my-toast-success",
-            position: "bottom-right",
           });
 
           if ($renderWord && $renderWord.id === editWord.id) {
@@ -210,7 +206,7 @@
       }}
     />
 
-    <div class="w-full flex items-center justify-center gap-24 my-6">
+    <div class="w-full flex items-center justify-center gap-24 py-6 mb-2">
       <button
         type="button"
         onclick={() => ($showEdit = false)}

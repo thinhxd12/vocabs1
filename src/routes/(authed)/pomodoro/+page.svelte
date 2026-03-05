@@ -404,23 +404,85 @@
       </div>
     </div>
 
-    <Modal
-      bind:showModal={showSetting}
-      --height="calc(100vh - 48px)"
-      --margin="3px auto"
-    >
-      {#snippet header()}
-        <span class="text-13 leading-16">Setting</span>
-      {/snippet}
+    <Modal bind:showModal={showReport}>
       <div
-        class="w-full rounded-2 overflow-hidden flex flex-col justify-center"
+        class="w-main h-[calc(100vh-45px)] bg-white rounded-2 overflow-hidden flex flex-col"
       >
+        <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+          Report
+        </div>
+        <div class="w-full flex-1 flex flex-col justify-between">
+          <table class="w-full">
+            <thead>
+              <tr
+                class="text-12 leading-24 h-24 font-400 bg-gray-100 text-black"
+              >
+                <th colspan="1">Date</th>
+                <th colspan="2">Time(hh:mm)</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              {#each paginationItems as item}
+                <tr class="h-24 border-b border-[#f0f0f0] text-12">
+                  <td class="w-80 pl-3">{item.date}</td>
+                  <td>
+                    <div
+                      class="h-9 {todayDate === item.date
+                        ? 'bg-blue-400'
+                        : 'bg-blue-200'}"
+                      style="width: {Math.round((item.time / 7) * 4)}px;"
+                    ></div>
+                  </td>
+                  <td class="w-50 pr-3">
+                    {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
+                      item.time % 60,
+                    )}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+
+          {#if totalItems}
+            <div class="w-full pb-3">
+              <Pagination
+                {totalItems}
+                {itemsPerPage}
+                {currentPage}
+                {onPageChange}
+                --width="21px"
+                --height="21px"
+              />
+            </div>
+          {/if}
+        </div>
+      </div>
+    </Modal>
+
+    <Modal bind:showModal={showHeatmap}>
+      <div
+        class="w-main h-[calc(100vh-45px)] bg-white rounded-2 overflow-hidden flex flex-col"
+      >
+        <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+          Heatmap
+        </div>
+        <Heatmap />
+      </div>
+    </Modal>
+
+    <Modal bind:showModal={showSetting}>
+      <div
+        class="w-main h-[calc(100vh-45px)] bg-white rounded-2 overflow-hidden flex flex-col"
+      >
+        <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+          Setting
+        </div>
         <div class="flex flex-col p-6">
           <p class="text-13 mb-6 font-500">Time (minutes)</p>
           <div class="grid grid-cols-3 gap-3">
-            <p class="text-12 font-500">Pomodoro</p>
-            <p class="text-12 font-500">Short Break</p>
-            <p class="text-12 font-500">Long Break</p>
+            <p class="text-13 font-500">Pomodoro</p>
+            <p class="text-13 font-500">Short Break</p>
+            <p class="text-13 font-500">Long Break</p>
             <input
               name="pomodoro"
               autocomplete="off"
@@ -448,7 +510,7 @@
               bind:value={$longbreakMinutes}
               class="input-setting"
             />
-            <p class="text-12 font-500 col-span-3">Long Break interval</p>
+            <p class="text-13 font-500 col-span-3">Long Break interval</p>
             <input
               name="longBreakInterval"
               autocomplete="off"
@@ -458,7 +520,7 @@
               bind:value={$intervals}
               class="input-setting"
             />
-            <p class="text-12 font-500 col-span-3">Current interval</p>
+            <p class="text-13 font-500 col-span-3">Current interval</p>
             <input
               name="longBreakInterval"
               autocomplete="off"
@@ -471,74 +533,6 @@
             />
           </div>
         </div>
-      </div>
-    </Modal>
-
-    <Modal
-      bind:showModal={showReport}
-      --height="calc(100vh - 48px)"
-      --margin="3px auto"
-    >
-      {#snippet header()}
-        <span class="text-13 leading-16">Report</span>
-      {/snippet}
-      <div
-        class="w-full h-full rounded-2 overflow-hidden flex flex-col justify-between"
-      >
-        <table class="w-full">
-          <thead>
-            <tr class="text-12 leading-24 h-24 font-400 bg-gray-100 text-black">
-              <th colspan="1">Date</th>
-              <th colspan="2">Time(hh:mm)</th>
-            </tr>
-          </thead>
-          <tbody class="text-center">
-            {#each paginationItems as item}
-              <tr class="h-24 border-b border-[#f0f0f0] text-12">
-                <td class="w-80 pl-3">{item.date}</td>
-                <td>
-                  <div
-                    class="h-9 {todayDate === item.date
-                      ? 'bg-blue-400'
-                      : 'bg-blue-200'}"
-                    style="width: {Math.round((item.time / 7) * 4)}px;"
-                  ></div>
-                </td>
-                <td class="w-50 pr-3">
-                  {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                    item.time % 60,
-                  )}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-
-        {#if totalItems}
-          <div class="w-full pb-3">
-            <Pagination
-              {totalItems}
-              {itemsPerPage}
-              {currentPage}
-              {onPageChange}
-              --width="21px"
-              --height="21px"
-            />
-          </div>
-        {/if}
-      </div>
-    </Modal>
-
-    <Modal
-      bind:showModal={showHeatmap}
-      --height="calc(100vh - 48px)"
-      --margin="3px auto"
-    >
-      {#snippet header()}
-        <span class="text-13 leading-16">Heatmap</span>
-      {/snippet}
-      <div class="w-full h-full overflow-hidden flex p-3">
-        <Heatmap />
       </div>
     </Modal>
 

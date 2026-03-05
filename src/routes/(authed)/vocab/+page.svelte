@@ -73,6 +73,7 @@
   }
 
   function onKeyDown(e: KeyboardEvent) {
+    if ($showTranslate || $showEdit) return;
     if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
 
     clearTimeout(debouncetimeout);
@@ -203,13 +204,6 @@
     $searchResults = [];
   }
 
-  function handleSearchInput() {
-    clearTimeout(debouncetimeout);
-    if ($vocabInput.length > 2) {
-      trigger($vocabInput.toLowerCase());
-    }
-  }
-
   onDestroy(() => {
     renderWord.set(undefined);
   });
@@ -235,12 +229,7 @@
 </audio>
 
 {#if $showTranslate}
-  <Modal
-    bind:showModal={$showTranslate}
-    --height="calc(100vh - 45px)"
-    --bg="transparent"
-    --backdrop="transparent"
-  >
+  <Modal bind:showModal={$showTranslate}>
     <Translate />
   </Modal>
 {:else if $searchTerm}
@@ -292,12 +281,7 @@
     {/if}
   </Container>
 {:else if $showEdit}
-  <Modal
-    bind:showModal={$showEdit}
-    --height="calc(100vh - 45px)"
-    --bg="transparent"
-    --backdrop="transparent"
-  >
+  <Modal bind:showModal={$showEdit}>
     <Edit id={editId} />
   </Modal>
 {:else if $renderWord}

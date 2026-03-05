@@ -3,7 +3,7 @@
   import type { BookPageContentType, DBSelect } from "$lib/types";
   import { format } from "date-fns";
   import { toast } from "svelte-sonner";
-  import { fly, fade } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import { Spring, Tween } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
@@ -22,6 +22,7 @@
   import MaterialSymbolsDatabaseUploadOutlineRounded from "~icons/material-symbols/database-upload-outline-rounded";
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
   import type { PageProps } from "./$types";
+  import Modal from "$lib/components/Modal.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -531,246 +532,244 @@
 <section
   class="absolute top-0 left-0 w-screen h-screen flex items-center justify-center pt-60 px-60 pb-90 z-[5]"
 >
-  {#if showEdit}
-    <div class="popup" transition:fade={{ duration: 100 }}>
-      {#if bookmark}
-        <form
-          name="editbookmark"
-          action="?/editBookmark"
-          method="post"
-          class="bg-[#f5f5f5] h-full golden rounded-2 overflow-hidden p-15"
-          use:enhance={({ formElement, formData, action, cancel }) => {
-            isSubmitting = true;
-            return async ({ result, update }) => {
-              if (result.type === "failure") {
-                toast.error("Error!", {
-                  description: result.data?.error as string,
-                  class: "my-toast my-toast-error",
-                });
-              } else {
-                toast.success("Success!", {
-                  description: "Edit successfully.",
-                  class: "my-toast my-toast-success",
-                });
-                handleCloseBook($bookmark!);
-              }
-              isSubmitting = false;
-            };
-          }}
-        >
-          <input hidden name="id" autocomplete="off" value={$bookmark!.id} />
-          <div class="mb-6">
-            <p class="form-title">Book title</p>
-            <div class="mt-2">
-              <input
-                type="text"
-                name="bookTile"
-                autocomplete="off"
-                class="form-input"
-                bind:value={$bookmark!.bookTile}
-                onkeydown={(e) => e.stopPropagation()}
-              />
-            </div>
+  <Modal bind:showModal={showEdit}>
+    {#if bookmark}
+      <form
+        name="editbookmark"
+        action="?/editBookmark"
+        method="post"
+        class="bg-[#f5f5f5] h-[calc(100vh-150px)] mt-60 golden rounded-2 overflow-hidden p-15"
+        use:enhance={({ formElement, formData, action, cancel }) => {
+          isSubmitting = true;
+          return async ({ result, update }) => {
+            if (result.type === "failure") {
+              toast.error("Error!", {
+                description: result.data?.error as string,
+                class: "my-toast my-toast-error",
+              });
+            } else {
+              toast.success("Success!", {
+                description: "Edit successfully.",
+                class: "my-toast my-toast-success",
+              });
+              handleCloseBook($bookmark!);
+            }
+            isSubmitting = false;
+          };
+        }}
+      >
+        <input hidden name="id" autocomplete="off" value={$bookmark!.id} />
+        <div class="mb-6">
+          <p class="form-title">Book title</p>
+          <div class="mt-2">
+            <input
+              type="text"
+              name="bookTile"
+              autocomplete="off"
+              class="form-input"
+              bind:value={$bookmark!.bookTile}
+              onkeydown={(e) => e.stopPropagation()}
+            />
           </div>
-          <div class="mb-6">
-            <p class="form-title">Authors</p>
-            <div class="mt-2">
-              <input
-                type="text"
-                name="authors"
-                autocomplete="off"
-                class="form-input"
-                bind:value={$bookmark!.authors}
-                onkeydown={(e) => e.stopPropagation()}
-              />
-            </div>
+        </div>
+        <div class="mb-6">
+          <p class="form-title">Authors</p>
+          <div class="mt-2">
+            <input
+              type="text"
+              name="authors"
+              autocomplete="off"
+              class="form-input"
+              bind:value={$bookmark!.authors}
+              onkeydown={(e) => e.stopPropagation()}
+            />
           </div>
-          <div class="mb-6">
-            <p class="form-title">Date of Creation</p>
-            <div class="mt-2">
-              <input
-                type="text"
-                name="dateOfCreation"
-                autocomplete="off"
-                class="form-input"
-                bind:value={$bookmark!.dateOfCreation}
-                onkeydown={(e) => e.stopPropagation()}
-              />
-            </div>
+        </div>
+        <div class="mb-6">
+          <p class="form-title">Date of Creation</p>
+          <div class="mt-2">
+            <input
+              type="text"
+              name="dateOfCreation"
+              autocomplete="off"
+              class="form-input"
+              bind:value={$bookmark!.dateOfCreation}
+              onkeydown={(e) => e.stopPropagation()}
+            />
           </div>
-          <div>
-            <div class="flex items-center gap-12">
-              <p class="form-title">Content</p>
-              <button
-                type="button"
-                onclick={() => navigator.clipboard.writeText("<p>")}
-              >
-                <PhCaretLeftFill width="16" height="16" />
-              </button>
-              <button
-                type="button"
-                onclick={() => navigator.clipboard.writeText("</p>")}
-              >
-                <PhCaretRightFill width="16" height="16" />
-              </button>
-              <button
-                type="button"
-                onclick={() => navigator.clipboard.writeText("<cite>")}
-              >
-                <MingcuteQuoteLeftFill width="16" height="16" />
-              </button>
-              <button
-                type="button"
-                onclick={() => navigator.clipboard.writeText("</cite>")}
-              >
-                <MingcuteQuoteRightFill width="16" height="16" />
-              </button>
-            </div>
-            <div class="mt-2">
-              <textarea
-                name="content"
-                autocomplete="off"
-                rows="9"
-                class="form-input"
-                bind:value={$bookmark!.content}
-                onkeydown={(e) => e.stopPropagation()}
-              ></textarea>
-            </div>
-          </div>
-          <div class="border-b border-gray-900/10 mb-15 pb-20">
-            <p class="form-title">Like</p>
-            <div class="mt-2">
-              <input
-                type="number"
-                name="like"
-                min={0}
-                autocomplete="off"
-                class="form-input"
-                bind:value={$bookmark!.like}
-                onkeydown={(e) => e.stopPropagation()}
-              />
-            </div>
-          </div>
-
-          <div class="flex items-center justify-start gap-6">
+        </div>
+        <div>
+          <div class="flex items-center gap-12">
+            <p class="form-title">Content</p>
             <button
-              type="submit"
-              class="form-submit-button"
-              disabled={isSubmitting}
+              type="button"
+              onclick={() => navigator.clipboard.writeText("<p>")}
             >
-              Save
+              <PhCaretLeftFill width="16" height="16" />
             </button>
             <button
               type="button"
-              class="text-14 leading-18 py-4 px-12 font-500"
-              onclick={() => (showEdit = false)}
+              onclick={() => navigator.clipboard.writeText("</p>")}
             >
-              Cancel
+              <PhCaretRightFill width="16" height="16" />
+            </button>
+            <button
+              type="button"
+              onclick={() => navigator.clipboard.writeText("<cite>")}
+            >
+              <MingcuteQuoteLeftFill width="16" height="16" />
+            </button>
+            <button
+              type="button"
+              onclick={() => navigator.clipboard.writeText("</cite>")}
+            >
+              <MingcuteQuoteRightFill width="16" height="16" />
             </button>
           </div>
-        </form>
+          <div class="mt-2">
+            <textarea
+              name="content"
+              autocomplete="off"
+              rows="9"
+              class="form-input"
+              bind:value={$bookmark!.content}
+              onkeydown={(e) => e.stopPropagation()}
+            ></textarea>
+          </div>
+        </div>
+        <div class="border-b border-gray-900/10 mb-12 pb-12">
+          <p class="form-title">Like</p>
+          <div class="mt-2">
+            <input
+              type="number"
+              name="like"
+              min={0}
+              autocomplete="off"
+              class="form-input"
+              bind:value={$bookmark!.like}
+              onkeydown={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-start gap-6">
+          <button
+            type="submit"
+            class="form-submit-button"
+            disabled={isSubmitting}
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            class="text-14 leading-18 py-4 px-12 font-500"
+            onclick={() => (showEdit = false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    {/if}
+  </Modal>
+
+  <Modal bind:showModal={showInsert}>
+    <div
+      class="bg-[#f5f5f5] h-[calc(100vh-150px)] mt-60 golden rounded-2 overflow-hidden p-9"
+    >
+      <form
+        class="w-full mb-8"
+        name="insertbookmark"
+        action="?/insertBookmark"
+        method="post"
+        use:enhance={({ formElement, formData, action, cancel }) => {
+          isSubmitting = true;
+          return async ({ result }) => {
+            if (result.type === "failure") {
+              toast.error("Error!", {
+                description: result.data?.error as string,
+                class: "my-toast my-toast-error",
+              });
+            } else {
+              toast.success("Success!", {
+                description: "Insert successfully.",
+                class: "my-toast my-toast-success",
+              });
+            }
+            isSubmitting = false;
+          };
+        }}
+      >
+        <div>
+          <p class="form-title">Highlights</p>
+          <div class="mt-3">
+            <textarea
+              name="content"
+              autocomplete="off"
+              rows="9"
+              class="form-input"
+              onkeydown={(e) => e.stopPropagation()}
+            ></textarea>
+          </div>
+        </div>
+        <div class="flex items-center justify-start gap-6 mt-1">
+          <button
+            type="submit"
+            class="form-submit-button"
+            disabled={isSubmitting}
+          >
+            Import
+          </button>
+          <button
+            type="button"
+            class="text-14 leading-18 py-4 px-12 font-500"
+            onclick={() => (showInsert = false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+      {#if insertData}
+        <table
+          class="w-full text-left table-auto min-w-max rounded-3 shadow-sm shadow-black/30"
+        >
+          <thead>
+            <tr class="text-12 font-400 bg-gray-50 text-black">
+              <th>Book title</th>
+              <th>Authors</th>
+              <th>Date of Creation</th>
+              <th>Content</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each insertData as item}
+              <tr>
+                <td
+                  class="max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis"
+                >
+                  {item.bookTile}
+                </td>
+                <td
+                  class="max-w-[140px] overflow-hidden whitespace-nowrap text-ellipsis"
+                >
+                  {item.authors}
+                </td>
+                <td
+                  class="max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis"
+                >
+                  {format(new Date(item.dateOfCreation), "P")}
+                </td>
+                <td
+                  class="max-w-[28vw] overflow-hidden whitespace-nowrap text-ellipsis"
+                >
+                  {item.content}
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
       {/if}
     </div>
-  {/if}
-
-  {#if showInsert}
-    <div class="popup" transition:fade={{ duration: 100 }}>
-      <div class="bg-[#f5f5f5] h-full golden rounded-2 overflow-hidden p-15">
-        <form
-          class="w-full border-b border-gray-900/10 mb-9 pb-9"
-          name="insertbookmark"
-          action="?/insertBookmark"
-          method="post"
-          use:enhance={({ formElement, formData, action, cancel }) => {
-            isSubmitting = true;
-            return async ({ result }) => {
-              if (result.type === "failure") {
-                toast.error("Error!", {
-                  description: result.data?.error as string,
-                  class: "my-toast my-toast-error",
-                });
-              } else {
-                toast.success("Success!", {
-                  description: "Insert successfully.",
-                  class: "my-toast my-toast-success",
-                });
-              }
-              isSubmitting = false;
-            };
-          }}
-        >
-          <div>
-            <p class="form-title">Highlights</p>
-            <div class="mt-2">
-              <textarea
-                name="content"
-                autocomplete="off"
-                rows="9"
-                class="form-input"
-                onkeydown={(e) => e.stopPropagation()}
-              ></textarea>
-            </div>
-          </div>
-          <div class="flex items-center justify-start gap-6">
-            <button
-              type="submit"
-              class="form-submit-button"
-              disabled={isSubmitting}
-            >
-              Import
-            </button>
-            <button
-              type="button"
-              class="text-14 leading-18 py-4 px-12 font-500"
-              onclick={() => (showInsert = false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-        {#if insertData}
-          <table
-            class="w-full text-left table-auto min-w-max rounded-3 shadow-sm shadow-black/30"
-          >
-            <thead>
-              <tr class="text-12 font-400 bg-gray-50 text-black">
-                <th>Book title</th>
-                <th>Authors</th>
-                <th>Date of Creation</th>
-                <th>Content</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each insertData as item}
-                <tr>
-                  <td
-                    class="max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis"
-                  >
-                    {item.bookTile}
-                  </td>
-                  <td
-                    class="max-w-[140px] overflow-hidden whitespace-nowrap text-ellipsis"
-                  >
-                    {item.authors}
-                  </td>
-                  <td
-                    class="max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis"
-                  >
-                    {format(new Date(item.dateOfCreation), "P")}
-                  </td>
-                  <td
-                    class="max-w-[28vw] overflow-hidden whitespace-nowrap text-ellipsis"
-                  >
-                    {item.content}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        {/if}
-      </div>
-    </div>
-  {/if}
+  </Modal>
 
   {#if showDelete}
     <div
@@ -1388,15 +1387,11 @@
   }
 
   .btn-delete {
-    @apply h-24 w-[60px] rounded-3 bg-black/15 text-center font-proxima text-12 font-600 leading-18 text-black/75 transition duration-100 first-of-type:mr-6 hover:bg-black/10;
-  }
-
-  .popup {
-    @apply absolute top-0 left-0 z-20 w-screen h-screen py-60 px-90 flex justify-center bg-black/80;
+    @apply h-24 w-60 rounded-3 bg-black/15 text-center font-proxima text-12 font-600 leading-18 text-black/75 transition duration-100 first-of-type:mr-6 hover:bg-black/10;
   }
 
   .form-title {
-    @apply text-14 font-600 text-gray-900;
+    @apply text-14 font-600 leading-20 text-gray-900;
   }
 
   .form-input {

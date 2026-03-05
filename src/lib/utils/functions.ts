@@ -7,9 +7,15 @@ import type {
 } from "../types";
 import { v7 as uuidv7 } from "uuid";
 import { totalMemories } from "$lib/store/navstore";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { format } from "date-fns";
 import { page } from "$app/state";
+
+export function autofocus(node: HTMLElement) {
+  node.focus();
+
+  return {
+    destroy() {},
+  };
+}
 
 export function base64ToUint8Array(base64String: string) {
   const binaryString = atob(base64String);

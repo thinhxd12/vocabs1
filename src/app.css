@@ -60,6 +60,7 @@ input.layout-main {
 
 .style-scrollbar {
   overflow-y: auto;
+  cursor: default !important;
 }
 
 .style-scrollbar::-webkit-scrollbar-track {

@@ -106,7 +106,7 @@
   });
 </script>
 
-<div class="w-full h-full relative flex gap-24">
+<div class="w-full h-full relative flex gap-24 p-3">
   <input
     name="heatmapyear"
     type="number"

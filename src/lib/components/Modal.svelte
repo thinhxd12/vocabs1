@@ -1,89 +1,60 @@
 <script lang="ts">
-  import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
-
-  let { showModal = $bindable(), header, children }: Props = $props();
+  import { type Snippet } from "svelte";
 
   interface Props {
-    showModal: any;
-    header?: any;
-    children: any;
+    showModal: boolean;
+    children?: Snippet;
   }
 
-  let dialog = $state<HTMLDialogElement>(); // HTMLDialogElement
-
-  $effect(() => {
-    if (showModal) dialog!.showModal();
-  });
+  let { showModal = $bindable(), children }: Props = $props();
 </script>
 
 {#if showModal}
-  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-  <dialog
-    bind:this={dialog}
-    onclose={() => (showModal = false)}
-    onclick={(e) => {
-      if (e.target === dialog) dialog.close();
-    }}
-    class="w-main"
-  >
-    {#if header}
-      <div class="header w-main">
-        {@render header?.()}
-        <!-- svelte-ignore a11y_autofocus -->
-        <button class="closeBtn" onclick={() => dialog!.close()}>
-          <MaterialSymbolsCloseRounded width="14" height="14" />
-        </button>
-      </div>
-    {/if}
-
-    <div class="content w-main">
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <div class="modal" tabindex="-1">
+    <div
+      class="backdrop"
+      onclick={(e) => {
+        showModal = false;
+      }}
+    ></div>
+    <div class="content" data-open={showModal}>
       {@render children?.()}
     </div>
-  </dialog>
+  </div>
 {/if}
 
 <style lang="postcss">
-  dialog {
-    height: var(--height, 100vh);
-    min-height: var(--height, 100vh);
-    margin: var(--margin, 0 auto);
-    border: none;
-    padding: 0;
-    border-radius: 2px;
-    overflow: hidden;
-    background: none;
+  .modal {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    inset: 0;
+    z-index: 9999;
     display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-  }
-
-  dialog::-webkit-scrollbar {
-    display: none;
-  }
-
-  dialog::backdrop {
-    background: var(--backdrop, #0000004d);
-  }
-
-  dialog[open] {
-    animation: zoom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .header {
-    width: 100%;
-    height: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #000000;
-    color: #ffffff;
-    padding: 3px 6px;
+    justify-content: center;
+    align-items: start;
   }
 
   .content {
-    width: 100%;
-    flex-grow: 1;
-    background-color: var(--bg, #ffffff);
+    position: relative;
+    z-index: inherit;
+    outline: none;
+  }
+
+  .content[data-open] {
+    animation: zoom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .backdrop {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    inset: 0;
+    z-index: 9998;
+    background: var(--backdrop, #0000004d);
+    animation: fade 0.1s ease-out;
   }
 
   @keyframes zoom {
@@ -94,9 +65,6 @@
       transform: scale(1);
     }
   }
-  dialog[open]::backdrop {
-    animation: fade 0.1s ease-out;
-  }
 
   @keyframes fade {
     from {
@@ -105,9 +73,5 @@
     to {
       opacity: 1;
     }
-  }
-
-  .closeBtn {
-    @apply size-24 flex justify-center items-center transition duration-100 text-white/60 hover:text-white;
   }
 </style>

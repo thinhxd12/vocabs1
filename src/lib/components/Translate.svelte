@@ -11,8 +11,6 @@
   import { format } from "date-fns";
   import SolarMagniferLinear from "~icons/solar/magnifer-linear";
 
-  const { supabase } = page.data;
-
   let translateWord = $state<DBInsert["vocab_table"]>({
     id: uuidv7(),
     word: "",
@@ -40,13 +38,12 @@
       toast.error("Error", {
         description: "Not found!",
         class: "my-toast my-toast-error",
-        position: "bottom-right",
       });
     }
   }
 
   async function handleGetTranslateWord(word: string) {
-    const { data: dataMemories } = await supabase
+    const { data: dataMemories } = await page.data.supabase
       .from("memories_table")
       .select("*")
       .eq("word", word.toLowerCase());
@@ -55,7 +52,6 @@
       toast.error(`Memorized "${dataMemories[0].word}"!`, {
         description: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}`,
         class: "my-toast my-toast-error",
-        position: "bottom-right",
       });
     const data = await Promise.all([
       getTextDataWebster(word.toLowerCase()),
@@ -107,7 +103,7 @@
   }
 </script>
 
-<div class="w-full h-full no-scrollbar overflow-y-scroll flex flex-col gap-2">
+<div class="w-main h-[calc(100vh-45px)] no-scrollbar overflow-y-scroll">
   <form
     name="insertvocab"
     action="?/insertNewVocab"
@@ -119,22 +115,20 @@
           toast.error("Error!", {
             description: result.data?.error as string,
             class: "my-toast my-toast-error",
-            position: "bottom-right",
           });
         } else if (result.type === "success") {
           toast.success("Success!", {
             description: "Add word successfully.",
             class: "my-toast my-toast-success",
-            position: "bottom-right",
           });
         }
       };
     }}
   >
-    <!-- svelte-ignore a11y_autofocus -->
     <div
       class="w-full h-36 mb-3 relative bg-black/15 shadow-[0_0_3px_0px_#00000054_inset]"
     >
+      <!-- svelte-ignore a11y_autofocus -->
       <input
         name="word"
         autocomplete="off"
