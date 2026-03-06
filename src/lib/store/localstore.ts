@@ -8,6 +8,7 @@ import { get, writable } from "svelte/store";
 import { page } from "$app/state";
 import mainImage from "$lib/assets/images/main-image.webp";
 import mainAuthor from "$lib/assets/images/main-author.webp";
+import icescape from "$lib/assets/images/Icescape.jpg";
 
 const browser =
   typeof window !== "undefined" && typeof document !== "undefined";
@@ -15,6 +16,11 @@ export const IMAGES_LENGTH = 18;
 const LAYOUT_STORAGE = "layout-images";
 const LAYOUT_INDEX = "layout-index";
 export const LAYOUT_SETTING = "layout-setting";
+const defaultImage: ImageBackgroundType = {
+  title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
+  url: icescape,
+  place: "Snæfellsnes peninsula, Iceland",
+};
 
 function serialize(value: any): string {
   return JSON.stringify(value);
@@ -48,6 +54,9 @@ export function getCurrentImageBackground() {
   if (index) currentImageIndex.set(Number(index));
   if (images)
     localImageStore.set({ loading: false, data: deserialize(images) });
+  else {
+    localImageStore.set({ loading: false, data: [defaultImage] });
+  }
   if (settings) {
     layoutSetting.set(deserialize(settings));
   }
