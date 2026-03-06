@@ -99,12 +99,12 @@
   }
 </script>
 
-<div class="w-main h-[calc(100vh-45px)] no-scrollbar overflow-y-scroll">
+<div class="w-main h-[calc(100vh-44px)] overflow-hidden flex flex-col gap-2">
   <form
     name="editvocab"
     action="?/editVocab"
     method="post"
-    class="w-full h-fit dark"
+    class="w-full dark"
     use:enhance={({ formElement, formData, action, cancel }) => {
       return async ({ result }) => {
         if (result.type === "failure") {
@@ -171,7 +171,7 @@
     />
 
     <textarea
-      class="w-full style-scrollbar border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
+      class="w-full style-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
       name="meanings"
       autocomplete="off"
       onkeydown={(e) => e.stopPropagation()}
@@ -206,7 +206,7 @@
       }}
     />
 
-    <div class="w-full flex items-center justify-center gap-24 py-6 mb-2">
+    <div class="w-full flex items-center justify-center gap-24 pt-3 pb-5">
       <button
         type="button"
         onclick={() => ($showEdit = false)}
@@ -223,5 +223,9 @@
     </div>
   </form>
 
-  <Definition item={editRenderWord} isEdit={true} onCheck={handleCheckEdit} />
+  <div
+    class="w-full h-[calc(100vh-404px-44px)] flex flex-col gap-2 no-scrollbar overflow-y-scroll"
+  >
+    <Definition item={editRenderWord} isEdit={true} onCheck={handleCheckEdit} />
+  </div>
 </div>

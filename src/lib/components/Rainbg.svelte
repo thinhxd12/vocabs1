@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import RainRenderer from "$lib/utils/rain-renderer";
   import Raindrops from "$lib/utils/raindrop";
   import { showLayout } from "$lib/store/layoutstore";
@@ -287,4 +287,4 @@
   .btn-menu {
     @apply m-3 flex size-27 items-center justify-center rounded-3 !bg-white/5 hover:!bg-white/15 transition duration-300 text-black/90;
   }
-</style>
+</style> -->

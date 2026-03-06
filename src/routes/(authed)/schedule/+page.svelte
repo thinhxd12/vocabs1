@@ -6,14 +6,13 @@
   import { format } from "date-fns";
   import { onMount } from "svelte";
   import { toast } from "svelte-sonner";
-  import { fade } from "svelte/transition";
   import type { PageProps } from "./$types";
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
   import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
   import MaterialSymbolsCalendarAddOnRounded from "~icons/material-symbols/calendar-add-on-rounded";
-  import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
   import { getCalendarRecord } from "$lib/store/localstore";
+  import Modal from "$lib/components/Modal.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -151,201 +150,167 @@
 
 <audio {src} bind:paused preload="auto"></audio>
 
-<Container zIndex={6}>
-  <div class="absolute w-main golden z-10">
-    <div class="flex justify-center items-center absolute right-3 top-2 gap-3">
-      <button
-        class="calendar-button light"
-        onclick={() => (showReset = !showReset)}
-      >
-        <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
-      </button>
-      <button
-        class="calendar-button light"
-        onclick={() => (showCreate = !showCreate)}
-      >
-        <MaterialSymbolsCalendarAddOnRounded width="14" height="14" />
-      </button>
-    </div>
-
-    {#if showReset}
-      <div
-        class="absolute z-20 w-full h-full bg-black/30 p-50"
-        transition:fade={{ duration: 100 }}
-      >
-        <div
-          class="bg-white w-full h-full rounded-2 overflow-hidden flex flex-col"
-        >
-          <div
-            class="w-full min-h-36 px-6 flex items-center justify-between bg-black"
-          >
-            <p class="text-12 font-rubik text-white leading-21 pl-6">
-              Set today task
-            </p>
-            <button
-              onclick={() => (showReset = !showReset)}
-              class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
-            >
-              <MaterialSymbolsCloseRounded width="14" height="14" />
-            </button>
-          </div>
-
-          {#if $todaySchedule}
-            <form
-              name="editprogress"
-              action="?/setProgress"
-              method="post"
-              class="w-full h-full grid grid-cols-3 grid-rows-3 gap-3 p-3"
-              use:enhance={({ formElement, formData, action, cancel }) => {
-                return async ({ result }) => {
-                  if (result.type === "failure") {
-                    toast.error("Error!", {
-                      description: result.data?.error as string,
-                      class: "my-toast my-toast-error",
-                    });
-                  } else {
-                    toast.success("Success!", {
-                      description: "Edit successfully.",
-                      class: "my-toast my-toast-success",
-                    });
-                    updateScheduleLocal(
-                      {
-                        id: formData.get("id0"),
-                        date: formData.get("date0"),
-                        count: Number(formData.get("count0")),
-                      },
-                      {
-                        id: formData.get("id1"),
-                        date: formData.get("date1"),
-                        count: Number(formData.get("count1")),
-                      },
-                    );
-                    showReset = false;
-                  }
-                };
-              }}
-            >
-              <input
-                hidden
-                name="id0"
-                autocomplete="off"
-                value={$todaySchedule.start.id}
-              />
-              <input
-                hidden
-                name="id1"
-                autocomplete="off"
-                value={$todaySchedule.end.id}
-              />
-
-              <input
-                name="date0"
-                autocomplete="off"
-                type="date"
-                bind:value={$todaySchedule.start.date}
-                class="form-date"
-              />
-              <input
-                name="count0"
-                autocomplete="off"
-                type="number"
-                min="0"
-                bind:value={$todaySchedule.start.count}
-                class="form-number"
-              />
-
-              <input
-                name="date1"
-                autocomplete="off"
-                type="date"
-                bind:value={$todaySchedule.end.date}
-                class="form-date"
-              />
-
-              <input
-                name="count1"
-                autocomplete="off"
-                type="number"
-                min="0"
-                bind:value={$todaySchedule.end.count}
-                class="form-number"
-              />
-
-              <div class="form-buttons">
-                <button
-                  type="button"
-                  class="form-button"
-                  onclick={() => (showReset = !showReset)}
-                >
-                  Cancle
-                </button>
-
-                <button type="submit" class="form-button"> Submit </button>
-              </div>
-            </form>
-          {/if}
-        </div>
-      </div>
-    {/if}
-
-    {#if showCreate}
-      <div
-        class="absolute z-20 w-full h-full bg-black/30 p-50"
-        transition:fade={{ duration: 100 }}
-      >
-        <div class="bg-white w-full rounded-2 overflow-hidden flex flex-col">
-          <div
-            class="w-full min-h-36 px-6 flex items-center justify-between bg-black"
-          >
-            <p class="text-12 font-rubik text-white leading-21 pl-6">
-              Create new schedule
-            </p>
-            <button
-              onclick={() => (showCreate = !showCreate)}
-              class=" flex size-24 items-center justify-center text-white/30 outline-none transition duration-100 hover:text-white"
-            >
-              <MaterialSymbolsCloseRounded width="14" height="14" />
-            </button>
-          </div>
-
-          <form
-            name="createschedule"
-            action="?/setSchedule"
-            method="post"
-            class="w-full h-36 flex items-center justify-center"
-            use:enhance={({ formElement, formData, action, cancel }) => {
-              return async ({ result }) => {
-                if (result.type === "failure") {
-                  toast.error("Error!", {
-                    description: result.data?.error as string,
-                    class: "my-toast my-toast-error",
-                  });
-                } else {
-                  toast.success("Success!", {
-                    description: "Create successfully.",
-                    class: "my-toast my-toast-success",
-                  });
-                  reloadScheduleData();
-                }
-              };
-            }}
-          >
-            <div class="flex gap-30 py-6">
-              <button
-                type="button"
-                class="form-button"
-                onclick={() => (showCreate = !showCreate)}
-              >
-                Cancle
-              </button>
-
-              <button type="submit" class="form-button"> Create </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    {/if}
+<Container>
+  <div
+    class="absolute z-3 flex justify-center items-center right-3 top-3 gap-3"
+  >
+    <button
+      class="calendar-button light"
+      onclick={() => (showReset = !showReset)}
+    >
+      <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
+    </button>
+    <button
+      class="calendar-button light"
+      onclick={() => (showCreate = !showCreate)}
+    >
+      <MaterialSymbolsCalendarAddOnRounded width="14" height="14" />
+    </button>
   </div>
+
+  <Modal bind:showModal={showReset}>
+    <div class="w-main p-45 h-120 flex flex-col rounded-2">
+      <p class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+        Set today task
+      </p>
+      {#if $todaySchedule}
+        <form
+          name="editprogress"
+          action="?/setProgress"
+          method="post"
+          class="w-full bg-white grid grid-cols-3 grid-rows-3 gap-3 p-3"
+          use:enhance={({ formElement, formData, action, cancel }) => {
+            return async ({ result }) => {
+              if (result.type === "failure") {
+                toast.error("Error!", {
+                  description: result.data?.error as string,
+                  class: "my-toast my-toast-error",
+                });
+              } else {
+                toast.success("Success!", {
+                  description: "Edit successfully.",
+                  class: "my-toast my-toast-success",
+                });
+                updateScheduleLocal(
+                  {
+                    id: formData.get("id0"),
+                    date: formData.get("date0"),
+                    count: Number(formData.get("count0")),
+                  },
+                  {
+                    id: formData.get("id1"),
+                    date: formData.get("date1"),
+                    count: Number(formData.get("count1")),
+                  },
+                );
+                showReset = false;
+              }
+            };
+          }}
+        >
+          <input
+            hidden
+            name="id0"
+            autocomplete="off"
+            value={$todaySchedule.start.id}
+          />
+          <input
+            hidden
+            name="id1"
+            autocomplete="off"
+            value={$todaySchedule.end.id}
+          />
+
+          <input
+            name="date0"
+            autocomplete="off"
+            type="date"
+            bind:value={$todaySchedule.start.date}
+            class="form-date"
+          />
+          <input
+            name="count0"
+            autocomplete="off"
+            type="number"
+            min="0"
+            bind:value={$todaySchedule.start.count}
+            class="form-number"
+          />
+
+          <input
+            name="date1"
+            autocomplete="off"
+            type="date"
+            bind:value={$todaySchedule.end.date}
+            class="form-date"
+          />
+
+          <input
+            name="count1"
+            autocomplete="off"
+            type="number"
+            min="0"
+            bind:value={$todaySchedule.end.count}
+            class="form-number"
+          />
+
+          <div class="form-buttons">
+            <button
+              type="button"
+              class="form-button"
+              onclick={() => (showReset = !showReset)}
+            >
+              Cancle
+            </button>
+
+            <button type="submit" class="form-button"> Submit </button>
+          </div>
+        </form>
+      {/if}
+    </div>
+  </Modal>
+
+  <Modal bind:showModal={showCreate}>
+    <div class="w-main p-45 h-120 flex flex-col rounded-2">
+      <p class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+        Set today task
+      </p>
+      <form
+        name="createschedule"
+        action="?/setSchedule"
+        method="post"
+        class="w-full bg-white flex items-center justify-center"
+        use:enhance={({ formElement, formData, action, cancel }) => {
+          return async ({ result }) => {
+            if (result.type === "failure") {
+              toast.error("Error!", {
+                description: result.data?.error as string,
+                class: "my-toast my-toast-error",
+              });
+            } else {
+              toast.success("Success!", {
+                description: "Create successfully.",
+                class: "my-toast my-toast-success",
+              });
+              reloadScheduleData();
+            }
+          };
+        }}
+      >
+        <div class="flex gap-30 py-6">
+          <button
+            type="button"
+            class="form-button"
+            onclick={() => (showCreate = !showCreate)}
+          >
+            Cancle
+          </button>
+
+          <button type="submit" class="form-button"> Create </button>
+        </div>
+      </form>
+    </div>
+  </Modal>
 
   <Calendar schedule={calendarData} />
 
@@ -371,12 +336,12 @@
     />
   {/if}
 
-  <div class="w-full flex flex-col gap-1 items-center min-h-[135px]">
+  <div class="w-full flex flex-col gap-1 items-center">
     {#each paginationItems as item}
       <div
         class="w-full font-rubik text-12 leading-22 h-21 flex items-center select-none"
       >
-        <div class="dark min-w-[120px] indent-30 h-full">
+        <div class="dark min-w-120 indent-30 h-full">
           {item.index + 1} - {item.index + 200}
         </div>
         <div class="flex-1 light flex justify-center items-center h-full">

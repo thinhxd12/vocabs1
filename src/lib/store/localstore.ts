@@ -33,7 +33,10 @@ export const localImageStore = writable<{
   data: [],
 });
 
-export const layoutSetting = writable<LayoutSettingType | null>();
+export const layoutSetting = writable<LayoutSettingType>({
+  showImage: true,
+  showVideo: false,
+});
 
 //----------------LAYOUT IMAGE-----------------//
 

@@ -535,7 +535,7 @@
   <meta name="Weather" content="Weather" />
 </svelte:head>
 
-<Container zIndex={6} scrollable>
+<Container scrollable>
   {#if $weatherData}
     <div class="current">
       <select
@@ -553,7 +553,7 @@
       </select>
 
       <h1
-        class="indent-30 text-[120px] font-300 leading-100 h-100 overflow-hidden mb-9 text-center"
+        class="indent-30 text-120 font-300 leading-100 h-100 overflow-hidden mb-9 text-center"
       >
         {currentValues.actual}°
       </h1>
@@ -591,7 +591,7 @@
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Wind</p>
-        <div class="relative w-[120px] h-[120px] ml-30 mb-6">
+        <div class="relative size-120 ml-30 mb-6">
           <span
             class="absolute -top-5 left-1/2 -translate-x-1/2 text-12 leading-12"
             >N</span

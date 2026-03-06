@@ -27,7 +27,7 @@
 
 <div class="w-full h-full relative dark">
   {#if weatherInfo}
-    <div class="absolute top-3 right-3 z-[1] flex gap-3">
+    <div class="absolute top-3 right-3 z-1 flex gap-3">
       <img
         src="/liquid/48/{weatherInfo.icon}.png"
         alt="icon"

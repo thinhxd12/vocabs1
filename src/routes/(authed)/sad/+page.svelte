@@ -69,7 +69,7 @@
   <meta name="sad" content="Sad day!" />
 </svelte:head>
 
-<Container zIndex={6}>
+<Container>
   <h1 class="font-copernicus text-24 text-center mt-10 uppercase font-600">
     Sad <span class="font-garamond lowercase italic">days</span>
   </h1>

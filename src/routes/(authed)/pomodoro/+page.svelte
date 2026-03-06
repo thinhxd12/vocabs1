@@ -10,6 +10,8 @@
     shortbreakMinutes,
     longbreakMinutes,
     intervals,
+    isMuted,
+    isPaused,
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
@@ -38,10 +40,8 @@
   let showReport = $state<boolean>(false);
   let showHeatmap = $state<boolean>(false);
   let interval: ReturnType<typeof setInterval>;
-  let isPaused = $state<boolean>(true);
   let pauseAudio = $state<boolean>(true);
   let srcAudio = $state<string>("/sounds/mp3_break.ogg");
-  let isMuted = $state<boolean>(false);
   let currentPage = $state<number>(1);
   let itemsPerPage = Math.floor((innerHeight.current! - 45 - 27 - 27) / 25);
   let totalItems = $state<number | undefined>(undefined);
@@ -61,6 +61,9 @@
   onMount(() => {
     $wakeEnable = true;
     updateDisplay(true);
+    if (!$isPaused) {
+      startTimer();
+    }
   });
 
   function formatTime(timeInSeconds: number): string {
@@ -71,7 +74,7 @@
 
   function startTimer() {
     clearInterval(interval);
-    isPaused = false;
+    $isPaused = false;
     now = Date.now();
     end = now + $secondsRemaining * 1000;
     interval = setInterval(updateTimer, 1000);
@@ -88,7 +91,7 @@
 
   function pauseTimer() {
     clearInterval(interval);
-    isPaused = true;
+    $isPaused = true;
   }
 
   function endTimer() {
@@ -246,19 +249,19 @@
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key === " ") {
-      isPaused ? startTimer() : pauseTimer();
+      $isPaused ? startTimer() : pauseTimer();
     }
     if (e.key.toLocaleLowerCase() === "f") {
       $wakeEnable = !$wakeEnable;
     }
     if (e.key.toLocaleLowerCase() === "m") {
-      isMuted = !isMuted;
+      $isMuted = !$isMuted;
     }
   }
 </script>
 
 <svelte:head>
-  {#if isPaused}
+  {#if $isPaused}
     <title>🍅 Paused</title>
   {:else if $currentMode === "focus"}
     <title>{formatTime($secondsRemaining)} - Time to focus!</title>
@@ -268,274 +271,267 @@
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
 
-<audio src={srcAudio} muted={isMuted} bind:paused={pauseAudio} preload="auto"
+<audio src={srcAudio} muted={$isMuted} bind:paused={pauseAudio} preload="auto"
 ></audio>
 
-<Container zIndex={6} fullscreen>
-  <div class="w-full h-full flex items-center justify-center relative">
-    <div class="absolute top-0 left-0 right-0 z-10 flex justify-center">
-      <div class="min-w-main flex justify-between py-3">
-        <div class="flex gap-3 {$intervals > 15 ? 'pr-18' : ''}">
-          <button
-            class="setting-button light"
-            class:active={$currentMode === "focus"}
-            onclick={(e) => {
-              e.currentTarget.blur();
-              handleChangeMode("focus");
-            }}
-          >
-            <MaterialSymbolsAdjust width="14" height="14" />
-          </button>
+<Container fullscreen>
+  <div class="min-w-main flex justify-between py-3">
+    <div class="flex gap-3 {$intervals > 15 ? 'pr-18' : ''}">
+      <button
+        class="setting-button light"
+        class:active={$currentMode === "focus"}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleChangeMode("focus");
+        }}
+      >
+        <MaterialSymbolsAdjust width="14" height="14" />
+      </button>
 
-          <button
-            class="setting-button light"
-            class:active={$currentMode === "shortbreak"}
-            onclick={(e) => {
-              e.currentTarget.blur();
-              handleChangeMode("shortbreak");
-            }}
-          >
-            <MaterialSymbolsDarkModeRounded width="14" height="14" />
-          </button>
+      <button
+        class="setting-button light"
+        class:active={$currentMode === "shortbreak"}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleChangeMode("shortbreak");
+        }}
+      >
+        <MaterialSymbolsDarkModeRounded width="14" height="14" />
+      </button>
 
-          <button
-            class="setting-button light"
-            class:active={$currentMode === "longbreak"}
-            onclick={(e) => {
-              e.currentTarget.blur();
-              handleChangeMode("longbreak");
-            }}
-          >
-            <MaterialSymbolsSailingRounded width="14" height="14" />
-          </button>
+      <button
+        class="setting-button light"
+        class:active={$currentMode === "longbreak"}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleChangeMode("longbreak");
+        }}
+      >
+        <MaterialSymbolsSailingRounded width="14" height="14" />
+      </button>
 
-          <button
-            class="btn-timer light group relative"
-            onclick={(e) => {
-              e.currentTarget.blur();
-              isPaused ? startTimer() : pauseTimer();
-            }}
-            class:timerPause={isPaused}
-          >
-            <span
-              class="absolute w-full flex items-center justify-center text-9 leading-18 font-600 group-hover:opacity-0"
-            >
-              <span class="w-1/2 text-right">
-                {padWithZeroes(secondsToMinutes($secondsRemaining))}
-              </span>
-              <span class="min-w-6">:</span>
-              <span class="w-1/2 text-left">
-                {padWithZeroes($secondsRemaining % 60)}
-              </span>
-            </span>
-            <span
-              class="absolute text-9 leading-15 font-500 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
-              style="text-shadow: 0 0 1px #ea504a;"
-            >
-              PAUSE
-            </span>
-          </button>
-        </div>
+      <button
+        class="btn-timer light group relative"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          $isPaused ? startTimer() : pauseTimer();
+        }}
+        class:timerPause={$isPaused}
+      >
+        <span
+          class="absolute w-full flex items-center justify-center text-9 leading-18 font-600 group-hover:opacity-0"
+        >
+          <span class="w-1/2 text-right">
+            {padWithZeroes(secondsToMinutes($secondsRemaining))}
+          </span>
+          <span class="min-w-6">:</span>
+          <span class="w-1/2 text-left">
+            {padWithZeroes($secondsRemaining % 60)}
+          </span>
+        </span>
+        <span
+          class="absolute text-9 leading-15 font-500 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
+          style="text-shadow: 0 0 1px #ea504a;"
+        >
+          PAUSE
+        </span>
+      </button>
+    </div>
 
-        <div class="h-18 flex justify-center items-center gap-6">
-          {#each { length: $currentInterval } as item, i}
-            <div
-              class="size-3 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
-            ></div>
-          {/each}
-          {#each { length: $intervals - $currentInterval } as item, i}
-            <div
-              class="size-3 rounded-full shadow shadow-black/30 ring-1 ring-black"
-            ></div>
-          {/each}
-        </div>
+    <div class="h-18 flex justify-center items-center gap-6">
+      {#each { length: $currentInterval } as item, i}
+        <div
+          class="size-3 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
+        ></div>
+      {/each}
+      {#each { length: $intervals - $currentInterval } as item, i}
+        <div
+          class="size-3 rounded-full shadow shadow-black/30 ring-1 ring-black"
+        ></div>
+      {/each}
+    </div>
 
-        <div class="flex gap-3 pl-18">
-          <button
-            class="setting-button light"
-            class:active={showReport === true}
-            onclick={(e) => {
-              e.currentTarget.blur();
-              handleShowReport();
-            }}
-          >
-            <MaterialSymbolsInsertChartOutlineRounded width="14" height="14" />
-          </button>
+    <div class="flex gap-3 pl-18">
+      <button
+        class="setting-button light"
+        class:active={showReport === true}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowReport();
+        }}
+      >
+        <MaterialSymbolsInsertChartOutlineRounded width="14" height="14" />
+      </button>
 
-          <button
-            class="setting-button light"
-            class:active={showHeatmap === true}
-            onclick={(e) => {
-              e.currentTarget.blur();
-              showHeatmap = true;
-            }}
-          >
-            <MaterialSymbolsLightBackgroundGridSmallSharp
-              width="14"
-              height="14"
+      <button
+        class="setting-button light"
+        class:active={showHeatmap === true}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          showHeatmap = true;
+        }}
+      >
+        <MaterialSymbolsLightBackgroundGridSmallSharp width="14" height="14" />
+      </button>
+
+      <button
+        class="setting-button light"
+        class:active={showSetting === true}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          showSetting = true;
+        }}
+      >
+        <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
+      </button>
+
+      <button
+        class="setting-button light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          $isMuted = !$isMuted;
+        }}
+      >
+        {#if $isMuted}
+          <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
+        {:else}
+          <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
+        {/if}
+      </button>
+    </div>
+  </div>
+
+  <Modal bind:showModal={showReport}>
+    <div
+      class="w-main h-[calc(100vh-44px)] bg-white rounded-2 overflow-hidden flex flex-col"
+    >
+      <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+        Report
+      </div>
+      <div class="w-full flex-1 flex flex-col justify-between">
+        <table class="w-full">
+          <thead>
+            <tr class="text-12 leading-24 h-24 font-400 bg-gray-100 text-black">
+              <th colspan="1">Date</th>
+              <th colspan="2">Time(hh:mm)</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            {#each paginationItems as item}
+              <tr class="h-24 border-b border-[#f0f0f0] text-12">
+                <td class="w-80 pl-3">{item.date}</td>
+                <td>
+                  <div
+                    class="h-9 {todayDate === item.date
+                      ? 'bg-blue-400'
+                      : 'bg-blue-200'}"
+                    style="width: {Math.round((item.time / 7) * 4)}px;"
+                  ></div>
+                </td>
+                <td class="w-50 pr-3">
+                  {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
+                    item.time % 60,
+                  )}
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+
+        {#if totalItems}
+          <div class="w-full pb-3">
+            <Pagination
+              {totalItems}
+              {itemsPerPage}
+              {currentPage}
+              {onPageChange}
+              --width="21px"
+              --height="21px"
             />
-          </button>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </Modal>
 
-          <button
-            class="setting-button light"
-            class:active={showSetting === true}
-            onclick={(e) => {
-              e.currentTarget.blur();
-              showSetting = true;
-            }}
-          >
-            <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
-          </button>
+  <Modal bind:showModal={showHeatmap}>
+    <div
+      class="w-main h-[calc(100vh-44px)] bg-white rounded-2 overflow-hidden flex flex-col"
+    >
+      <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+        Heatmap
+      </div>
+      <Heatmap />
+    </div>
+  </Modal>
 
-          <button
-            class="setting-button light"
-            onclick={(e) => {
-              e.currentTarget.blur();
-              isMuted = !isMuted;
-            }}
-          >
-            {#if isMuted}
-              <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
-            {:else}
-              <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
-            {/if}
-          </button>
+  <Modal bind:showModal={showSetting}>
+    <div
+      class="w-main h-[calc(100vh-44px)] bg-white rounded-2 overflow-hidden flex flex-col"
+    >
+      <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
+        Setting
+      </div>
+      <div class="flex flex-col p-6">
+        <p class="text-13 mb-6 font-500">Time (minutes)</p>
+        <div class="grid grid-cols-3 gap-3">
+          <p class="text-13 font-500">Pomodoro</p>
+          <p class="text-13 font-500">Short Break</p>
+          <p class="text-13 font-500">Long Break</p>
+          <input
+            name="pomodoro"
+            autocomplete="off"
+            type="number"
+            min="1"
+            step="1"
+            bind:value={$focusMinutes}
+            class="input-setting"
+          />
+          <input
+            name="shortBreak"
+            autocomplete="off"
+            type="number"
+            min="1"
+            step="1"
+            bind:value={$shortbreakMinutes}
+            class="input-setting"
+          />
+          <input
+            name="longBreak"
+            autocomplete="off"
+            type="number"
+            min="1"
+            step="1"
+            bind:value={$longbreakMinutes}
+            class="input-setting"
+          />
+          <p class="text-13 font-500 col-span-3">Long Break interval</p>
+          <input
+            name="longBreakInterval"
+            autocomplete="off"
+            type="number"
+            min="1"
+            step="1"
+            bind:value={$intervals}
+            class="input-setting"
+          />
+          <p class="text-13 font-500 col-span-3">Current interval</p>
+          <input
+            name="longBreakInterval"
+            autocomplete="off"
+            type="number"
+            min="1"
+            max={$intervals}
+            step="1"
+            bind:value={$currentInterval}
+            class="input-setting"
+          />
         </div>
       </div>
     </div>
+  </Modal>
 
-    <Modal bind:showModal={showReport}>
-      <div
-        class="w-main h-[calc(100vh-45px)] bg-white rounded-2 overflow-hidden flex flex-col"
-      >
-        <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
-          Report
-        </div>
-        <div class="w-full flex-1 flex flex-col justify-between">
-          <table class="w-full">
-            <thead>
-              <tr
-                class="text-12 leading-24 h-24 font-400 bg-gray-100 text-black"
-              >
-                <th colspan="1">Date</th>
-                <th colspan="2">Time(hh:mm)</th>
-              </tr>
-            </thead>
-            <tbody class="text-center">
-              {#each paginationItems as item}
-                <tr class="h-24 border-b border-[#f0f0f0] text-12">
-                  <td class="w-80 pl-3">{item.date}</td>
-                  <td>
-                    <div
-                      class="h-9 {todayDate === item.date
-                        ? 'bg-blue-400'
-                        : 'bg-blue-200'}"
-                      style="width: {Math.round((item.time / 7) * 4)}px;"
-                    ></div>
-                  </td>
-                  <td class="w-50 pr-3">
-                    {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                      item.time % 60,
-                    )}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-
-          {#if totalItems}
-            <div class="w-full pb-3">
-              <Pagination
-                {totalItems}
-                {itemsPerPage}
-                {currentPage}
-                {onPageChange}
-                --width="21px"
-                --height="21px"
-              />
-            </div>
-          {/if}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal bind:showModal={showHeatmap}>
-      <div
-        class="w-main h-[calc(100vh-45px)] bg-white rounded-2 overflow-hidden flex flex-col"
-      >
-        <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
-          Heatmap
-        </div>
-        <Heatmap />
-      </div>
-    </Modal>
-
-    <Modal bind:showModal={showSetting}>
-      <div
-        class="w-main h-[calc(100vh-45px)] bg-white rounded-2 overflow-hidden flex flex-col"
-      >
-        <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
-          Setting
-        </div>
-        <div class="flex flex-col p-6">
-          <p class="text-13 mb-6 font-500">Time (minutes)</p>
-          <div class="grid grid-cols-3 gap-3">
-            <p class="text-13 font-500">Pomodoro</p>
-            <p class="text-13 font-500">Short Break</p>
-            <p class="text-13 font-500">Long Break</p>
-            <input
-              name="pomodoro"
-              autocomplete="off"
-              type="number"
-              min="1"
-              step="1"
-              bind:value={$focusMinutes}
-              class="input-setting"
-            />
-            <input
-              name="shortBreak"
-              autocomplete="off"
-              type="number"
-              min="1"
-              step="1"
-              bind:value={$shortbreakMinutes}
-              class="input-setting"
-            />
-            <input
-              name="longBreak"
-              autocomplete="off"
-              type="number"
-              min="1"
-              step="1"
-              bind:value={$longbreakMinutes}
-              class="input-setting"
-            />
-            <p class="text-13 font-500 col-span-3">Long Break interval</p>
-            <input
-              name="longBreakInterval"
-              autocomplete="off"
-              type="number"
-              min="1"
-              step="1"
-              bind:value={$intervals}
-              class="input-setting"
-            />
-            <p class="text-13 font-500 col-span-3">Current interval</p>
-            <input
-              name="longBreakInterval"
-              autocomplete="off"
-              type="number"
-              min="1"
-              max={$intervals}
-              step="1"
-              bind:value={$currentInterval}
-              class="input-setting"
-            />
-          </div>
-        </div>
-      </div>
-    </Modal>
-
+  <div class="flex-1 w-full flex justify-center items-center">
     <div class="circle">
       <div class="square">
         <img

@@ -73,7 +73,6 @@
   }
 
   function onKeyDown(e: KeyboardEvent) {
-    if ($showTranslate || $showEdit) return;
     if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
 
     clearTimeout(debouncetimeout);
@@ -233,7 +232,7 @@
     <Translate />
   </Modal>
 {:else if $searchTerm}
-  <Container zIndex={6}>
+  <Container>
     <p
       style="color: {searchTermFounded ? 'black' : 'white'}"
       class="light h-36 w-full truncate text-center font-constantine text-21 font-700 uppercase leading-36"
@@ -241,10 +240,12 @@
       {$searchTerm}
     </p>
     {#if $searchResults.length}
-      <div class="h-[calc(100vh-80px)] w-full no-scrollbar overflow-y-scroll">
+      <div
+        class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+      >
         <ol>
           {#each $searchResults as item, i}
-            <li class="{i === activeIndex ? 'light' : 'dark'} flex mb-2">
+            <li class="{i === activeIndex ? 'light' : 'dark'} flex">
               <button
                 class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
                 onclick={() => handleEditFromSearch(item.id)}
@@ -285,7 +286,7 @@
     <Edit id={editId} />
   </Modal>
 {:else if $renderWord}
-  <Container zIndex={6} scrollable>
+  <Container>
     <div class="h-36 w-full flex gap-3">
       <Flipcard number={flipNumber} />
       <div class="light flex-1 flex flex-col h-full">
@@ -301,7 +302,11 @@
         </p>
       </div>
     </div>
-    <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
+    <div
+      class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+    >
+      <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
+    </div>
   </Container>
 {/if}
 

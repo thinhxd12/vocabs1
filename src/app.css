@@ -25,6 +25,7 @@ button:focus {
 
 .w-main {
   width: 382px;
+  min-width: 382px;
 }
 
 .min-w-main {
@@ -33,6 +34,7 @@ button:focus {
 
 .w-content {
   width: 378px;
+  min-width: 378px;
 }
 
 .layout-main {
@@ -60,7 +62,6 @@ input.layout-main {
 
 .style-scrollbar {
   overflow-y: auto;
-  cursor: default !important;
 }
 
 .style-scrollbar::-webkit-scrollbar-track {

@@ -14,7 +14,7 @@
   let pageInputNext = $state<number>(1);
 
   // svelte-ignore state_referenced_locally
-    let totalPages = Math.ceil(totalItems / itemsPerPage);
+  let totalPages = Math.ceil(totalItems / itemsPerPage);
 
   function changePage(page: number) {
     if (page >= 1 && page <= totalPages && page !== currentPage) {

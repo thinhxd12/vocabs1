@@ -20,7 +20,6 @@
   import TimerButton from "./TimerButton.svelte";
   import WakeLockButton from "./WakeLockButton.svelte";
   import { fly } from "svelte/transition";
-  import MaterialSymbolsAdjustOutline from "~icons/material-symbols/adjust-outline";
   import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
   import SolarCloseCircleLinear from "~icons/solar/close-circle-linear";
   import MaterialSymbolsDocumentSearchOutlineRounded from "~icons/material-symbols/document-search-outline-rounded";
@@ -91,7 +90,7 @@
   });
 </script>
 
-<div class="w-main flex items-center gap-2">
+<div class="w-main h-full flex items-center gap-2">
   <div class="relative w-12 h-full flex flex-col">
     {#if $todaySchedule}
       <div
@@ -174,15 +173,7 @@
         class:active={page.url.pathname === "/pomodoro"}
         class="btn-menu"
       >
-        {#if page.url.pathname === "/pomodoro"}
-          <span in:fly={{ duration: 300, y: -15 }}>
-            <MaterialSymbolsAdjust width="13" height="13" />
-          </span>
-        {:else}
-          <span in:fly={{ duration: 300, y: -15 }}>
-            <MaterialSymbolsAdjustOutline width="13" height="13" />
-          </span>
-        {/if}
+        <MaterialSymbolsAdjust width="13" height="13" />
       </a>
 
       <WakeLockButton />

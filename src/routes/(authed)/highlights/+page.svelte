@@ -23,6 +23,7 @@
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
   import type { PageProps } from "./$types";
   import Modal from "$lib/components/Modal.svelte";
+  import Container from "$lib/components/Container.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -529,9 +530,7 @@
   <meta name="bookmark" content="Some bookmark" />
 </svelte:head>
 
-<section
-  class="absolute top-0 left-0 w-screen h-screen flex items-center justify-center pt-60 px-60 pb-90 z-[5]"
->
+<Container fullscreen>
   <Modal bind:showModal={showEdit}>
     {#if bookmark}
       <form
@@ -744,22 +743,22 @@
             {#each insertData as item}
               <tr>
                 <td
-                  class="max-w-[200px] overflow-hidden whitespace-nowrap text-ellipsis"
+                  class="max-w-200 overflow-hidden whitespace-nowrap text-ellipsis"
                 >
                   {item.bookTile}
                 </td>
                 <td
-                  class="max-w-[140px] overflow-hidden whitespace-nowrap text-ellipsis"
+                  class="max-w-140 overflow-hidden whitespace-nowrap text-ellipsis"
                 >
                   {item.authors}
                 </td>
                 <td
-                  class="max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis"
+                  class="max-w-120 overflow-hidden whitespace-nowrap text-ellipsis"
                 >
                   {format(new Date(item.dateOfCreation), "P")}
                 </td>
                 <td
-                  class="max-w-[28vw] overflow-hidden whitespace-nowrap text-ellipsis"
+                  class="max-w-[420px] overflow-hidden whitespace-nowrap text-ellipsis"
                 >
                   {item.content}
                 </td>
@@ -773,8 +772,8 @@
 
   {#if showDelete}
     <div
-      class="dark absolute top-0 left-1/2 -translate-x-[200%] z-[6] flex flex-col items-center justify-center rounded-3 p-6"
-      transition:fly={{ y: "-100%", duration: 100 }}
+      class="dark absolute top-0 left-1/2 -translate-x-1/2 z-[1001] flex flex-col items-center justify-center rounded-3 p-6"
+      transition:fly={{ y: "-100%", duration: 300 }}
     >
       <p class="mb-6 text-12 text-white">Delete this bookmark?</p>
       <div class="flex items-center justify-center">
@@ -812,7 +811,7 @@
           {:else}
             <div class="w-full h-full flex items-center p-60">
               <p
-                class="text-[#d0c9c5] text-500 text-[45px] leading-[50px] font-copernicus"
+                class="text-[#d0c9c5] text-500 text-45 leading-50 font-copernicus"
               >
                 take a small step every day
               </p>
@@ -1077,7 +1076,7 @@
     <div
       class="note-page absolute top-60 {showNote
         ? 'right-0'
-        : 'right-[-270px]'}  bottom-[300px] w-[300px] transition-all duration-300 ease-in-out"
+        : '-right-270'}  bottom-300 w-300 transition-all duration-300 ease-in-out"
       onmouseenter={() => {
         showNote = true;
       }}
@@ -1100,7 +1099,7 @@
       ></button>
     </div>
   {/if}
-</section>
+</Container>
 
 <svelte:window on:keydown={onKeyDown} />
 
@@ -1110,6 +1109,7 @@
     position: relative;
     display: flex;
     justify-content: center;
+    margin-top: 60px;
   }
 
   .flip {

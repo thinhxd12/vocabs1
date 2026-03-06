@@ -275,7 +275,6 @@ export type ImageBackgroundType = {
 };
 
 export type LayoutSettingType = {
-  showImageRemote: boolean;
+  showImage: boolean;
   showVideo: boolean;
-  showImageLocal: boolean;
 };

@@ -151,12 +151,12 @@
 <audio src={src1} bind:paused={paused1} preload="auto"></audio>
 
 {#if $quizRender}
-  <Container zIndex={6}>
+  <Container>
     <div
-      class="min-h-[120px] w-full mx-auto relative flex no-scrollbar dark select-none items-center overflow-hidden rounded-2"
+      class="min-h-120 h-120 w-full mx-auto relative flex no-scrollbar dark select-none items-center overflow-hidden rounded-2"
     >
       <h1
-        class="absolute z-10 left-1/2 -translate-x-1/2 bg-transparent text-center text-[168px] leading-[120px] text-white/30 font-200"
+        class="absolute z-10 left-1/2 -translate-x-1/2 bg-transparent text-center text-168 leading-120 text-white/30 font-200"
       >
         {$quizRender.number}
       </h1>
@@ -187,7 +187,7 @@
     </div>
 
     <div
-      class="flex flex-1 flex-col mx-auto overflow-y-scroll no-scrollbar gap-2"
+      class="h-[calc(100vh-122px-100px-44px)] flex flex-col gap-2 overflow-y-scroll no-scrollbar"
     >
       {#each $quizRender.meanings as entry}
         {#each entry.definitions as el}
@@ -199,7 +199,7 @@
                 imageSrc={el.image}
                 hash={el.hash}
                 word={$quizRender}
-                className="rounded-2"
+                className="min-h-215 rounded-2"
               />
             {/if}
           {/if}
@@ -243,14 +243,14 @@
 
 <style lang="postcss">
   .quiz-choice {
-    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
+    @apply cursor-pointer w-full h-48 select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
   }
 
   .quiz-choice-true {
-    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 !bg-green-400/60 font-400;
+    @apply cursor-pointer w-full h-48 select-none overflow-hidden text-center text-14 leading-21 !bg-green-400/60 font-400;
   }
 
   .quiz-choice-false {
-    @apply cursor-pointer w-full h-[48px] select-none overflow-hidden text-center text-14 leading-21 !bg-red-500/60 font-400;
+    @apply cursor-pointer w-full h-48 select-none overflow-hidden text-center text-14 leading-21 !bg-red-500/60 font-400;
   }
 </style>

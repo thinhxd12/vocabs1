@@ -142,7 +142,7 @@
     {/each}
   </div>
 
-  <div class="flex flex-col items-start max-w-[150px] gap-6">
+  <div class="flex flex-col items-start max-w-150 gap-6">
     <div class="flex items-center justify-center gap-2">
       <div class="text-12 leading-14 mr-3">Less</div>
       <div class="day" data-level="0"></div>

@@ -35,10 +35,10 @@
   }}
 />
 
-<main class="absolute w-full h-full z-[3]">
+<main class="flex-1 w-full flex justify-center items-start">
   {@render children()}
 </main>
 
-<nav class="absolute w-full h-42 bottom-0 left-0 flex justify-center z-[5]">
+<nav class="sticky h-42 w-full flex justify-center">
   <Nav />
 </nav>
