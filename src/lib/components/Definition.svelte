@@ -36,20 +36,13 @@
             {#if isEdit}
               <img
                 alt="..."
-                width={378}
-                height={212}
+                width={382}
+                height={215}
                 src={el.image}
                 class="!absolute !h-full !w-full object-cover brightness-75"
               />
             {:else}
-              <ImageLoader
-                width={378}
-                height={212}
-                imageSrc={el.image}
-                hash={el.hash}
-                word={item}
-                className="!absolute !h-full !w-full object-cover brightness-75"
-              />
+              <ImageLoader width={382} height={215} imageSrc={el.image} />
             {/if}
           {/if}
           {#if el.example.sentence}
@@ -104,7 +97,7 @@
         <MingcuteCornerDownRightLine
           width="15"
           height="15"
-          class="min-w-15"
+          class="min-w-15 -mt-1"
         />
         <span class="pl-3 text-12 font-500 leading-14 text-black">
           {entry.synonyms.join(", ")}

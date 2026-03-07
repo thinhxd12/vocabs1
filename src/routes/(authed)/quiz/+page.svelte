@@ -193,14 +193,7 @@
         {#each entry.definitions as el}
           {#if el.image}
             {#if el.image}
-              <ImageLoader
-                width={382}
-                height={215}
-                imageSrc={el.image}
-                hash={el.hash}
-                word={$quizRender}
-                className="min-h-215 rounded-2"
-              />
+              <ImageLoader width={382} height={215} imageSrc={el.image} />
             {/if}
           {/if}
         {/each}

@@ -100,12 +100,12 @@
   }
 
   onMount(() => {
-    if (!$bookmark) {
-      handleGetCurrentBookmark();
-    } else {
+    if ($bookmark) {
       setBookContent($bookmark.content);
       noteContent = $bookmark.note;
       resetRenderBookmark();
+    } else {
+      handleGetCurrentBookmark();
     }
   });
 
@@ -230,7 +230,11 @@
     );
     if (response.status === 200) {
       let data = await response.json();
-      bookInfo.set(data);
+      if (data.coverImage) {
+        bookInfo.set(data);
+      } else {
+        bookInfo.set(undefined);
+      }
     }
   }
 
@@ -804,7 +808,7 @@
         >
           {#if $bookInfo}
             <img
-              src={$bookInfo!.coverImage}
+              src={$bookInfo.coverImage}
               alt="book-cover"
               class="w-full h-full object-contain"
             />
@@ -932,19 +936,19 @@
                     class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                   >
                     Bookmarked at {format(
-                      new Date($bookmark!.dateOfCreation),
+                      new Date($bookmark.dateOfCreation),
                       "p cccc, yyyy-MM-dd",
                     )}
                   </p>
                 {/if}
               {:else if $bookmark}
                 <p
-                  class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
+                  class="mt-12 mb-6 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                 >
                   {$bookmark.bookTile}
                 </p>
                 <p
-                  class="mb-15 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
+                  class="mb-6 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
                 >
                   {$bookmark.authors}
                 </p>
