@@ -418,11 +418,11 @@
           </thead>
           <tbody class="text-center">
             {#each paginationItems as item}
-              <tr class="h-24 border-b border-[#f0f0f0] text-12">
+              <tr class="h-24 border-b border-[#f0f0f0] text-12 leading-14">
                 <td class="w-80 pl-3">{item.date}</td>
                 <td>
                   <div
-                    class="h-9 {todayDate === item.date
+                    class="h-9 rounded-2 {todayDate === item.date
                       ? 'bg-blue-400'
                       : 'bg-blue-200'}"
                     style="width: {Math.round((item.time / 7) * 4)}px;"
@@ -461,7 +461,9 @@
       <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
         Heatmap
       </div>
-      <Heatmap />
+      <div class="w-full flex-1">
+        <Heatmap />
+      </div>
     </div>
   </Modal>
 

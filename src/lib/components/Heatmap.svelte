@@ -54,7 +54,7 @@
     }
 
     //	fill the last days after the end day of year
-    for (let i = lastDay; i < 7; i++) {
+    for (let i = lastDay + 1; i < 7; i++) {
       days.push({
         date: "",
         time: 0,
@@ -106,43 +106,47 @@
   });
 </script>
 
-<div class="w-full h-full relative flex gap-24 p-3">
+<div class="w-full h-full relative flex justify-between gap-24 p-3">
   <input
     name="heatmapyear"
     type="number"
     bind:value={year}
     min="2025"
-    class="hidden-cursor select-none h-24 w-70 text-13 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
+    class="hidden-cursor select-none h-24 w-60 text-13 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
     onchange={() => getAllDays()}
   />
 
-  <div class="calendarMonth">
-    {#each monthNames as month}
-      <div class="text-12 font-400 leading-10">{month.slice(0, 3)}</div>
-    {/each}
+  <div class="flex">
+    <div class="calendarMonth">
+      {#each monthNames as month}
+        <div class="text-12 font-400 leading-10">{month.slice(0, 3)}</div>
+      {/each}
+    </div>
+
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="calendarDate" onmouseleave={() => (tooltip = "")}>
+      <div class="calendarDay">
+        <span>Sun</span>
+        <span>Wed</span>
+        <span>Sat</span>
+      </div>
+      {#each days as day}
+        {#if day.enabled}
+          <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+          <!-- svelte-ignore a11y_no_static_element_interactions -->
+          <div
+            class="day"
+            data-level={calculateLevel(day.time)}
+            onmouseover={() => setTooltipContent(day.time, day.date)}
+          ></div>
+        {:else}
+          <div class="none-day"></div>
+        {/if}
+      {/each}
+    </div>
   </div>
 
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div
-    class="calendarDate no-scrollbar overflow-visible"
-    onmouseleave={() => (tooltip = "")}
-  >
-    {#each days as day}
-      {#if day.enabled}
-        <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div
-          class="day"
-          data-level={calculateLevel(day.time)}
-          onmouseover={() => setTooltipContent(day.time, day.date)}
-        ></div>
-      {:else}
-        <div class="none-day"></div>
-      {/if}
-    {/each}
-  </div>
-
-  <div class="flex flex-col items-start max-w-150 gap-6">
+  <div class="flex flex-col items-end w-130 gap-3 px-3">
     <div class="flex items-center justify-center gap-2">
       <div class="text-12 leading-14 mr-3">Less</div>
       <div class="day" data-level="0"></div>
@@ -153,7 +157,7 @@
       <div class="text-12 leading-14 ml-3">More</div>
     </div>
 
-    <p class="text-12 leading-14">{tooltip}</p>
+    <p class="text-12 leading-14 text-wrap">{tooltip}</p>
   </div>
 </div>
 
@@ -162,17 +166,30 @@
     display: grid;
     grid-template-columns: repeat(7, minmax(10px, 1fr));
     gap: 1.5px;
-    overflow: auto;
+    overflow: hidden;
     align-items: center;
     justify-items: center;
   }
 
+  .calendarDay {
+    grid-column: span 7;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    line-height: 15px;
+    margin-bottom: 3px;
+  }
+
   .calendarMonth {
-    height: 100%;
-    margin-right: -18px;
+    height: calc(100% - 18px);
+    margin-right: 6px;
     display: grid;
     grid-template-rows: repeat(12, 1fr);
+    margin-top: 18px;
   }
+
   .none-day {
     width: 10px;
     height: 10px;
