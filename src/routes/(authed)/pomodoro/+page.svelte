@@ -456,7 +456,7 @@
 
   <Modal bind:showModal={showHeatmap}>
     <div
-      class="w-main h-[calc(100vh-44px)] bg-white rounded-2 overflow-hidden flex flex-col"
+      class="w-main h-[calc(100vh-44px)] bg-white overflow-hidden rounded-2 flex flex-col"
     >
       <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
         Heatmap

@@ -82,15 +82,7 @@
 
   function calculateLevel(time: number) {
     const hours = time / 60;
-    return hours >= 4
-      ? 4
-      : hours >= 3
-        ? 3
-        : hours >= 2
-          ? 2
-          : hours >= 1
-            ? 1
-            : 0;
+    return hours > 3 ? 4 : hours > 2 ? 3 : hours > 1 ? 2 : hours > 0 ? 1 : 0;
   }
 
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
