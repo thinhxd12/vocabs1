@@ -32,6 +32,7 @@
   import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
   import longbreakImage from "$lib/assets/images/Julien-Dupré-Resting-in-the-Fields.avif";
   import Heatmap from "$lib/components/Heatmap.svelte";
+  import { linear } from "svelte/easing";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -56,6 +57,7 @@
 
   const progress = new Tween(0, {
     duration: 1000,
+    easing: linear,
   });
 
   onMount(() => {
@@ -559,7 +561,9 @@
           from 0deg,
           black 0deg {progress.current}deg,
           transparent {progress.current}deg 360deg
-          );"
+          ); filter: {$isPaused
+            ? 'brightness(0.8) grayscale(1)'
+            : ''} contrast(1.2);"
         />
 
         <div class="center"></div>
