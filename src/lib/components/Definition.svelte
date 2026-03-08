@@ -7,15 +7,14 @@
     item: DBSelect["vocab_table"] | DBInsert["vocab_table"];
     onEdit?: () => void;
     onCheck?: () => void;
-    isEdit?: boolean;
   }
 
-  let { item, onCheck, onEdit, isEdit = false }: Props = $props();
+  let { item, onCheck, onEdit }: Props = $props();
 </script>
 
 {#each item.meanings as entry}
-  <div class="definition w-full min-h-min overflow-hidden py-3 light">
-    <div class="flex justify-between px-9">
+  <div class="definition light w-full min-h-min rounded-2 overflow-hidden py-3">
+    <div class="flex justify-between px-9 pb-6">
       <button
         class="cursor-pointer font-roslindale text-24 leading-28 font-500"
         onclick={onEdit || onCheck}
@@ -30,20 +29,12 @@
     {#each entry.definitions as el}
       {#if el.image || el.example.sentence}
         <div
-          class="relative mb-3 flex min-h-[210px] w-full flex-col justify-between"
+          class="relative mb-3 w-full min-h-215 flex flex-col justify-between"
         >
           {#if el.image}
-            {#if isEdit}
-              <img
-                alt="..."
-                width={382}
-                height={215}
-                src={el.image}
-                class="!absolute !h-full !w-full object-cover brightness-75"
-              />
-            {:else}
+            <div class="absolute w-full h-full">
               <ImageLoader width={382} height={215} imageSrc={el.image} />
-            {/if}
+            </div>
           {/if}
           {#if el.example.sentence}
             <div class="z-30 flex flex-1 items-center p-18">
@@ -73,21 +64,22 @@
           </div>
         </div>
       {/if}
+
       {#each el.definition as def}
         <p class="flex px-12">
           <span
-            class="inline-block min-w-12 text-12 font-700 uppercase leading-14"
+            class="inline-block min-w-12 text-12 font-700 uppercase leading-15"
           >
             {def.letter}
           </span>
           {#if def.num}
             <small
-              class="inline-block min-w-12 pr-2 text-12 font-500 leading-14"
+              class="inline-block min-w-12 pr-2 text-12 font-500 leading-15"
             >
               {def.num}
             </small>
           {/if}
-          <span class="text-12 font-500 leading-14">{def.sense}</span>
+          <span class="text-12 font-500 leading-15">{def.sense}</span>
         </p>
       {/each}
     {/each}

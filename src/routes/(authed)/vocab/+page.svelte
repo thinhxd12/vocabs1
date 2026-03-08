@@ -289,7 +289,7 @@
   <Container>
     <div class="h-36 w-full flex gap-3">
       <Flipcard number={flipNumber} />
-      <div class="light flex-1 flex flex-col h-full">
+      <div class="light flex-1 flex flex-col justify-center h-full rounded-2">
         <p
           class="truncate text-center font-constantine text-21 font-700 uppercase leading-24"
         >

@@ -217,6 +217,6 @@
   <div
     class="w-full h-[calc(100vh-368px-44px)] flex flex-col gap-2 no-scrollbar overflow-y-scroll"
   >
-    <Definition isEdit={true} item={translateWord} />
+    <Definition item={translateWord} />
   </div>
 </div>

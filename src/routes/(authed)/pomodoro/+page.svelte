@@ -44,7 +44,7 @@
   let pauseAudio = $state<boolean>(true);
   let srcAudio = $state<string>("/sounds/mp3_break.ogg");
   let currentPage = $state<number>(1);
-  let itemsPerPage = Math.floor((innerHeight.current! - 45 - 27 - 27) / 25);
+  let itemsPerPage = Math.floor((innerHeight.current! - 44 - 24 * 3 - 26) / 24);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 
@@ -410,7 +410,7 @@
       <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
         Report
       </div>
-      <div class="w-full flex-1 flex flex-col justify-between">
+      <div class="w-full px-3 flex-1 flex flex-col justify-between">
         <table class="w-full">
           <thead>
             <tr class="text-12 leading-24 h-24 font-400 bg-gray-100 text-black">
@@ -418,22 +418,30 @@
               <th colspan="2">Time(hh:mm)</th>
             </tr>
           </thead>
-          <tbody class="text-center">
+          <tbody>
             {#each paginationItems as item}
-              <tr class="h-24 border-b border-[#f0f0f0] text-12 leading-14">
-                <td class="w-80 pl-3">{item.date}</td>
-                <td>
+              <tr
+                class="h-24 w-full border-b border-[#f0f0f0] text-12 leading-14"
+              >
+                <td class="w-80 pl-3" colspan="1">{item.date}</td>
+                <td class="h-24 flex items-center" colspan="2">
                   <div
-                    class="h-9 rounded-2 {todayDate === item.date
+                    class="relative overflow-visible h-18 rounded-2 {todayDate ===
+                    item.date
                       ? 'bg-blue-400'
                       : 'bg-blue-200'}"
-                    style="width: {Math.round((item.time / 7) * 4)}px;"
-                  ></div>
-                </td>
-                <td class="w-50 pr-3">
-                  {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
-                    item.time % 60,
-                  )}
+                    style="width: {Math.round((item.time / 6) * 4)}px;"
+                  >
+                    <div
+                      class="absolute {item.time <= 60
+                        ? 'left-3 text-left'
+                        : 'right-3 text-right'} min-w-36 leading-18 text-10"
+                    >
+                      {padWithZeroes(secondsToMinutes(item.time))} : {padWithZeroes(
+                        item.time % 60,
+                      )}
+                    </div>
+                  </div>
                 </td>
               </tr>
             {/each}

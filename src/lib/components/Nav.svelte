@@ -91,7 +91,7 @@
 </script>
 
 <div class="w-main h-full flex items-center gap-2">
-  <div class="relative w-12 h-full flex flex-col">
+  <div class="relative w-12 h-full rounded-2 overflow-hidden flex flex-col">
     {#if $todaySchedule}
       <div
         class="w-full h-14 flex justify-center text-9 leading-12 text-white/90 text-center overflow-hidden pt-2 bg-black/80 backdrop-blur-md"
@@ -132,7 +132,7 @@
     </div>
   </div>
 
-  <div class="dark h-full flex-1 flex flex-wrap gap-4">
+  <div class="dark h-full rounded-2 flex-1 flex flex-wrap gap-4">
     <div class="w-full flex justify-center items-end gap-2">
       <button
         class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
@@ -248,14 +248,14 @@
   </div>
 
   <div
-    class="h-full px-2 overflow-hidden text-white/90 bg-black/80 backdrop-blur-md"
+    class="h-full px-2 rounded-2 overflow-hidden text-white/90 bg-black/80 backdrop-blur-md"
   >
     {#key $totalMemories}
       <div
         class="flex flex-col items-center justify-center"
         in:fly={{ y: -50, duration: 600 }}
       >
-        <span class="font-tupa text-18 font-600 leading-20">
+        <span class="font-tupa text-18 font-600 leading-21">
           {Math.floor($totalMemories / 100) < 10
             ? "0" + Math.floor($totalMemories / 100)
             : Math.floor($totalMemories / 100)}
@@ -269,12 +269,15 @@
     {/key}
   </div>
 
-  <a href="/weather" class="outline-none relative w-90 h-full overflow-hidden">
+  <a
+    href="/weather"
+    class="outline-none relative w-90 h-full rounded-2 overflow-hidden"
+  >
     <WeatherButton />
   </a>
 
   <button
-    class="outline-none relative w-90 h-full overflow-hidden"
+    class="outline-none relative w-90 h-full rounded-2 overflow-hidden"
     disabled={page.url.pathname !== "/vocab"}
     onclick={handleAutoplay}
   >

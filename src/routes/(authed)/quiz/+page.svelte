@@ -187,13 +187,15 @@
     </div>
 
     <div
-      class="h-[calc(100vh-122px-100px-44px)] flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+      class="h-[calc(100vh-122px-100px-44px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
     >
       {#each $quizRender.meanings as entry}
         {#each entry.definitions as el}
           {#if el.image}
             {#if el.image}
-              <ImageLoader width={382} height={215} imageSrc={el.image} />
+              <div class="relative w-full h-215 rounded-2 overflow-hidden">
+                <ImageLoader width={382} height={215} imageSrc={el.image} />
+              </div>
             {/if}
           {/if}
         {/each}
@@ -236,14 +238,14 @@
 
 <style lang="postcss">
   .quiz-choice {
-    @apply cursor-pointer w-full h-48 select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
+    @apply cursor-pointer w-full h-48 rounded-2 select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
   }
 
   .quiz-choice-true {
-    @apply cursor-pointer w-full h-48 select-none overflow-hidden text-center text-14 leading-21 !bg-green-400/60 font-400;
+    @apply cursor-pointer w-full h-48 rounded-2 select-none overflow-hidden text-center text-14 leading-21 !bg-green-400/60 font-400;
   }
 
   .quiz-choice-false {
-    @apply cursor-pointer w-full h-48 select-none overflow-hidden text-center text-14 leading-21 !bg-red-500/60 font-400;
+    @apply cursor-pointer w-full h-48 rounded-2 select-none overflow-hidden text-center text-14 leading-21 !bg-red-500/60 font-400;
   }
 </style>
