@@ -339,16 +339,16 @@
   <div class="w-full flex flex-col gap-1 items-center">
     {#each paginationItems as item}
       <div
-        class="w-full font-rubik text-12 leading-22 h-21 flex items-center select-none"
+        class="w-full font-rubik text-12 leading-23 h-21 flex items-center select-none"
       >
         <div class="dark min-w-120 indent-30 h-full">
           {item.index + 1} - {item.index + 200}
         </div>
         <div class="flex-1 light flex justify-center items-center h-full">
-          <div class="indent-30 w-1/2">
+          <div class="indent-30 w-1/2 h-full">
             {format(new Date(item.start_date), "yyyy-MM-dd")}
           </div>
-          <div class="indent-30 w-1/2">
+          <div class="indent-30 w-1/2 h-full">
             {format(new Date(item.end_date), "yyyy-MM-dd")}
           </div>
         </div>
