@@ -33,7 +33,9 @@
         >
           {#if el.image}
             <div class="absolute w-full h-full">
-              <ImageLoader width={382} height={215} imageSrc={el.image} />
+              {#key el.image}
+                <ImageLoader width={382} height={215} imageSrc={el.image} />
+              {/key}
             </div>
           {/if}
           {#if el.example.sentence}

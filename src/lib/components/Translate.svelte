@@ -53,6 +53,18 @@
         description: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}`,
         class: "my-toast my-toast-error",
       });
+
+    const { data: dataVocab } = await page.data.supabase
+      .from("vocab_table")
+      .select("*")
+      .eq("word", word.toLowerCase());
+      
+    if (dataVocab.length)
+      toast.error("Error!", {
+        description: `There is a word "${dataVocab[0].word}" exist!"`,
+        class: "my-toast my-toast-error",
+      });
+
     const data = await Promise.all([
       getTextDataWebster(word.toLowerCase()),
       getTranslateData(word.toLowerCase()),

@@ -194,7 +194,9 @@
           {#if el.image}
             {#if el.image}
               <div class="relative w-full h-215 rounded-2 overflow-hidden">
-                <ImageLoader width={382} height={215} imageSrc={el.image} />
+                {#key el.image}
+                  <ImageLoader width={382} height={215} imageSrc={el.image} />
+                {/key}
               </div>
             {/if}
           {/if}

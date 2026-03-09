@@ -1,6 +1,5 @@
 <script lang="ts">
   import Definition from "$lib/components/Definition.svelte";
-  import Flipcard from "$lib/components/Flipcard.svelte";
   import Translate from "$lib/components/Translate.svelte";
   import Edit from "$lib/components/Edit.svelte";
   import {
@@ -20,6 +19,8 @@
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
   import type { PageProps } from "./$types";
   import Modal from "$lib/components/Modal.svelte";
+  import { fly } from "svelte/transition";
+  import TickFlip from "$lib/components/TickFlip.svelte";
 
   let { data: layoutData }: PageProps = $props();
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
@@ -227,86 +228,95 @@
 >
 </audio>
 
-{#if $showTranslate}
-  <Modal bind:showModal={$showTranslate}>
-    <Translate />
-  </Modal>
-{:else if $searchTerm}
+<Modal bind:showModal={$showTranslate}>
+  <Translate />
+</Modal>
+
+<Modal bind:showModal={$showEdit}>
+  <Edit id={editId} />
+</Modal>
+
+{#if !$showEdit && !$showTranslate}
   <Container>
-    <p
-      style="color: {searchTermFounded ? 'black' : 'white'}"
-      class="light h-36 w-full truncate text-center font-constantine text-21 font-700 uppercase leading-36"
-    >
-      {$searchTerm}
-    </p>
-    {#if $searchResults.length}
+    {#if $searchTerm}
+      <p
+        class="light h-36 w-full {searchTermFounded
+          ? 'text-black'
+          : 'text-white'} truncate text-center font-constantine text-21 font-700 uppercase leading-36"
+        in:fly={{ y: "-100%", duration: 300 }}
+      >
+        {$searchTerm}
+      </p>
+      {#if $searchResults.length}
+        <div
+          class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+        >
+          <ol>
+            {#each $searchResults as item, i}
+              <li class="{i === activeIndex ? 'light' : 'dark'} flex">
+                <button
+                  class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
+                  onclick={() => handleEditFromSearch(item.id)}
+                >
+                  <MaterialSymbolsEditSquareOutlineRounded
+                    width="18"
+                    height="18"
+                  />
+                </button>
+                <button
+                  class="text-center flex-1 text-20 leading-30"
+                  onclick={() => {
+                    handleSelectWordFromSearch(item.id);
+                  }}
+                >
+                  <strong>{$searchTerm.toLowerCase()}</strong>
+                  <span class="-ml-3">
+                    {item.word.replace($searchTerm.toLowerCase(), "")}
+                  </span>
+                </button>
+                <button
+                  class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
+                  onclick={() => confirmDelete(item.id)}
+                >
+                  <MaterialSymbolsDeleteForeverOutlineRounded
+                    width="18"
+                    height="18"
+                  />
+                </button>
+              </li>
+            {/each}
+          </ol>
+        </div>
+      {/if}
+    {:else if $renderWord}
+      <div class="h-36 w-full flex gap-3">
+        <div
+          class="relative flex gap-2 font-helvetica text-40 font-600 leading-36"
+        >
+          <TickFlip number={Math.floor(flipNumber / 100)} delay={300} />
+          <TickFlip number={Math.floor((flipNumber % 100) / 10)} delay={150} />
+          <TickFlip number={flipNumber % 10} image={flipNumber === 0} />
+        </div>
+
+        <div class="light flex-1 flex flex-col justify-center h-full rounded-2">
+          <p
+            class="truncate text-center font-constantine text-21 font-700 uppercase leading-24"
+          >
+            {$renderWord.word}
+          </p>
+          <p
+            class="truncate text-center text-9 opacity-50 leading-9 font-400 lowercase"
+          >
+            {$renderWord.phonetics}
+          </p>
+        </div>
+      </div>
       <div
         class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
       >
-        <ol>
-          {#each $searchResults as item, i}
-            <li class="{i === activeIndex ? 'light' : 'dark'} flex">
-              <button
-                class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
-                onclick={() => handleEditFromSearch(item.id)}
-              >
-                <MaterialSymbolsEditSquareOutlineRounded
-                  width="18"
-                  height="18"
-                />
-              </button>
-              <button
-                class="text-center flex-1 text-20 leading-30"
-                onclick={() => {
-                  handleSelectWordFromSearch(item.id);
-                }}
-              >
-                <strong>{$searchTerm.toLowerCase()}</strong>
-                <span class="-ml-3">
-                  {item.word.replace($searchTerm.toLowerCase(), "")}
-                </span>
-              </button>
-              <button
-                class="size-36 opacity-0 hover:opacity-100 flex items-center justify-center transition"
-                onclick={() => confirmDelete(item.id)}
-              >
-                <MaterialSymbolsDeleteForeverOutlineRounded
-                  width="18"
-                  height="18"
-                />
-              </button>
-            </li>
-          {/each}
-        </ol>
+        <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
       </div>
     {/if}
-  </Container>
-{:else if $showEdit}
-  <Modal bind:showModal={$showEdit}>
-    <Edit id={editId} />
-  </Modal>
-{:else if $renderWord}
-  <Container>
-    <div class="h-36 w-full flex gap-3">
-      <Flipcard number={flipNumber} />
-      <div class="light flex-1 flex flex-col justify-center h-full rounded-2">
-        <p
-          class="truncate text-center font-constantine text-21 font-700 uppercase leading-24"
-        >
-          {$renderWord.word}
-        </p>
-        <p
-          class="truncate text-center text-9 opacity-50 leading-9 font-400 lowercase"
-        >
-          {$renderWord.phonetics}
-        </p>
-      </div>
-    </div>
-    <div
-      class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
-    >
-      <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
-    </div>
   </Container>
 {/if}
 

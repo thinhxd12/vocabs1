@@ -11,11 +11,6 @@
   let { imageSrc, width, height }: Props = $props();
 
   let loading = $state<boolean>(true);
-
-  $effect(() => {
-    imageSrc;
-    loading = true;
-  });
 </script>
 
 <img
