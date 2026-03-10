@@ -71,10 +71,10 @@
   function initMonth() {
     days = [];
     //	find the last Monday of the previous month
-    var firstDay = new Date(year, month, 1).getDay();
-    var daysInThisMonth = new Date(year, month + 1, 0).getDate();
-    var daysInLastMonth = new Date(year, month, 0).getDate();
-    var prevMonth = month == 0 ? 11 : month - 1;
+    let firstDay = new Date(year, month, 1).getDay();
+    let daysInThisMonth = new Date(year, month + 1, 0).getDate();
+    let daysInLastMonth = new Date(year, month, 0).getDate();
+    let prevMonth = month == 0 ? 11 : month - 1;
 
     //	show the days before the start of this month (disabled) - always less than 7
     for (let i = daysInLastMonth - firstDay; i < daysInLastMonth; i++) {
@@ -147,7 +147,7 @@
   }
 </script>
 
-<div class="w-full border border-[#2f3336]">
+<div class="w-full border border-[#2f3336] rounded-2 overflow-hidden">
   <div class="relative w-full golden overflow-hidden calendar">
     {#key month}
       <img

@@ -289,9 +289,9 @@
         </div>
       {/if}
     {:else if $renderWord}
-      <div class="h-36 w-full flex gap-3">
+      <div class="h-36 w-full flex gap-2">
         <div
-          class="relative flex gap-2 font-helvetica text-40 font-600 leading-36"
+          class="relative flex gap-2 font-helvetica text-36 font-600 leading-36"
         >
           <TickFlip number={Math.floor(flipNumber / 100)} delay={300} />
           <TickFlip number={Math.floor((flipNumber % 100) / 10)} delay={150} />

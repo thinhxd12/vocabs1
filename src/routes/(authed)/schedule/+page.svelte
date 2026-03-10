@@ -315,7 +315,7 @@
   <Calendar schedule={calendarData} />
 
   <p
-    class="light !bg-green-400/15 font-garamond text-10 font-400 leading-10 px-6 py-4"
+    class="light rounded-2 !bg-green-400/15 font-garamond text-10 font-400 leading-10 px-6 py-4"
   >
     The tree that is supposed to grow to a proud height can dispense with bad
     weather and storms. Whether misfortune and external resistance, some kinds
@@ -339,7 +339,7 @@
   <div class="w-full flex flex-col gap-1 items-center">
     {#each paginationItems as item}
       <div
-        class="w-full font-rubik text-12 leading-23 h-21 flex items-center select-none"
+        class="w-full rounded-2 overflow-hidden font-rubik text-12 leading-23 h-21 flex items-center select-none"
       >
         <div class="dark min-w-120 indent-30 h-full">
           {item.index + 1} - {item.index + 200}

@@ -3,6 +3,7 @@
   import { untrack } from "svelte";
   import cup from "$lib/assets/images/cup.webp";
 
+  // https://github.com/pqina/flip/blob/master/src/js/index.js
   interface Props {
     number: number;
     duration?: number;
@@ -13,6 +14,7 @@
   let { number, duration = 1000, delay = 0, image = false }: Props = $props();
 
   let oldNumber = $state<number>(0);
+  let newNumber = $state<number>(0);
 
   // svelte-ignore state_referenced_locally
   let visual_progress = new Tween(0, {
@@ -63,8 +65,11 @@
       visual_progress.set(0, { duration: 0 });
       visual_progress.target = 1;
       setTimeout(() => {
+        newNumber = number;
+      }, delay);
+      setTimeout(() => {
         oldNumber = number;
-      }, duration);
+      }, duration + delay);
     });
   });
 </script>
@@ -77,11 +82,10 @@
     >
       <span class="tick-flip-panel-front-text">
         <span class="tick-flip-panel-text-wrapper">
-          <!-- {number} -->
           {#if image}
             <img alt="cup" src={cup} />
           {:else}
-            {number}
+            {newNumber}
           {/if}
         </span>
       </span>
@@ -92,14 +96,17 @@
       style="transform: rotateX(-180deg);"
     >
       <span class="tick-flip-panel-back-text">
-        <span class="tick-flip-panel-text-wrapper"> </span>
+        <span class="tick-flip-panel-text-wrapper"></span>
       </span>
       <span class="tick-flip-panel-back-highlight" style="opacity: 2;"> </span>
       <span class="tick-flip-panel-back-shadow" style="opacity: 0;"></span>
     </span>
   </span>
 
-  <span class="tick-flip-card" style="z-index: 10;">
+  <span
+    class="tick-flip-card"
+    style="z-index: {visual_progress.current > 0.5 ? 10 : 1};"
+  >
     <span
       class="tick-flip-panel-front tick-flip-front tick-flip-panel"
       style="transform: rotateX({visual_progress.current * -180}deg);"
@@ -124,7 +131,7 @@
           {#if image}
             <img alt="cup" src={cup} />
           {:else}
-            {number}
+            {newNumber}
           {/if}
         </span>
       </span>
@@ -140,7 +147,7 @@
   <span class="tick-flip-card">
     <span
       class="tick-flip-panel-front tick-flip-front tick-flip-panel"
-      style="transform: rotateX(-180deg);"
+      style="transform: rotateX(-180deg); z-index: 2;"
     >
       <span class="tick-flip-panel-front-text">
         <span class="tick-flip-panel-text-wrapper">
@@ -195,6 +202,11 @@
   .tick-flip * {
     letter-spacing: inherit;
     text-indent: inherit;
+  }
+
+  .tick-flip-panel {
+    color: #f8f5f5;
+    background-color: #1c1c1c;
   }
 
   .tick-flip-front {
@@ -262,11 +274,6 @@
     perspective: 4em;
   }
 
-  .tick-flip-panel {
-    color: #edebeb;
-    background-color: #333232;
-  }
-
   .tick-flip-panel-front,
   .tick-flip-panel-back {
     position: absolute;
@@ -299,9 +306,9 @@
 
   .tick-flip-panel-text-wrapper img {
     position: absolute;
-    left: 15%;
+    left: 12%;
     top: 0;
-    width: 70%;
+    width: 76%;
     height: auto;
     object-fit: cover;
   }

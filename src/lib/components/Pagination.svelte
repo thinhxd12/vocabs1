@@ -157,7 +157,7 @@
     color: var(--color, #00000099);
     background-color: var(--bg, #fafafc4d);
     backdrop-filter: blur(6px);
-    border-radius: 1px;
+    border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 

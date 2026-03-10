@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
   import LaImageSolid from "~icons/la/image-solid";
 
   interface Props {
@@ -20,10 +19,11 @@
   alt="loaded"
   src={imageSrc}
   onload={() => (loading = false)}
+  onerror={() => (loading = true)}
 />
 
 {#if loading}
-  <div class="skeleton" out:fade={{ duration: 100 }}>
+  <div class="skeleton">
     <LaImageSolid class="h-1/2 w-auto" color="#e0e0e0" />
   </div>
 {/if}
