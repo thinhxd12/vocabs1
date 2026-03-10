@@ -69,7 +69,18 @@
       localStorage.setItem(LAYOUT_SETTING, JSON.stringify(setting));
     }
   }
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === "PageDown") {
+      getPrevImageBackground();
+    }
+    if (e.key === "PageUp") {
+      getNextImageBackground();
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="relative h-screen w-screen flex flex-col overflow-hidden">
   {@render children()}
