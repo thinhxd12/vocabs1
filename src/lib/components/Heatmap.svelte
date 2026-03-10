@@ -11,6 +11,7 @@
   };
 
   let year = $state<number>(new Date().getFullYear());
+  let maxValue = $state<number>(1);
 
   let days = $state<DayType[]>([]);
   let tooltip = $state<string>("");
@@ -81,8 +82,16 @@
   }
 
   function calculateLevel(time: number) {
-    const hours = time / 60;
-    return hours > 3 ? 4 : hours > 2 ? 3 : hours > 1 ? 2 : hours > 0 ? 1 : 0;
+    return Math.round((time / maxValue) * 10);
+  }
+
+  async function getMaxValue() {
+    const { data, error } = await page.data.supabase
+      .from("pomodoro_table")
+      .select("time")
+      .order("time", { ascending: false })
+      .limit(1);
+    if (data) maxValue = data[0].time;
   }
 
   const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
@@ -95,10 +104,11 @@
 
   onMount(() => {
     getAllDays();
+    getMaxValue();
   });
 </script>
 
-<div class="w-full h-full relative flex justify-between gap-24 p-3">
+<div class="w-full h-full relative flex justify-between p-3">
   <input
     name="heatmapyear"
     type="number"
@@ -138,18 +148,16 @@
     </div>
   </div>
 
-  <div class="flex flex-col items-end w-130 gap-3 px-3">
+  <div class="flex flex-col items-end gap-3 w-200">
     <div class="flex items-center justify-center gap-2">
       <div class="text-12 leading-14 mr-3">Less</div>
-      <div class="day" data-level="0"></div>
-      <div class="day" data-level="1"></div>
-      <div class="day" data-level="2"></div>
-      <div class="day" data-level="3"></div>
-      <div class="day" data-level="4"></div>
+      {#each { length: 11 } as item, index}
+        <div class="day" data-level={index}></div>
+      {/each}
       <div class="text-12 leading-14 ml-3">More</div>
     </div>
 
-    <p class="text-12 leading-14 text-wrap">{tooltip}</p>
+    <p class="text-12 leading-14 text-wrap pl-12">{tooltip}</p>
   </div>
 </div>
 
@@ -201,19 +209,43 @@
   }
 
   .day[data-level="1"] {
-    background-color: #aceebb;
+    @apply bg-green-100;
   }
 
   .day[data-level="2"] {
-    background-color: #4ac26b;
+    @apply bg-green-200;
   }
 
   .day[data-level="3"] {
-    background-color: #2da44e;
+    @apply bg-green-300;
   }
 
   .day[data-level="4"] {
-    background-color: #116329;
+    @apply bg-green-400;
+  }
+
+  .day[data-level="5"] {
+    @apply bg-green-500;
+  }
+
+  .day[data-level="6"] {
+    @apply bg-green-600;
+  }
+
+  .day[data-level="7"] {
+    @apply bg-green-700;
+  }
+
+  .day[data-level="8"] {
+    @apply bg-green-800;
+  }
+
+  .day[data-level="9"] {
+    @apply bg-green-900;
+  }
+
+  .day[data-level="10"] {
+    @apply bg-green-950;
   }
 
   .hidden-cursor {
