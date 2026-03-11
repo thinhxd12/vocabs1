@@ -3,6 +3,7 @@
   import { page } from "$app/state";
   import { format } from "date-fns";
   import type { DBSelect } from "$lib/types";
+  import CharmMenuHamburger from "~icons/charm/menu-hamburger";
 
   type DayType = {
     date: string;
@@ -14,7 +15,7 @@
   let maxValue = $state<number>(1);
 
   let days = $state<DayType[]>([]);
-  let tooltip = $state<string>("");
+  let dayDetail = $state<DayType>();
   const monthNames = [
     "January",
     "February",
@@ -94,12 +95,10 @@
     if (data) maxValue = data[0].time;
   }
 
-  const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
-
-  function setTooltipContent(time: number, date: string) {
-    tooltip = `Focus ${secondsToMinutes(time)} hours ${
-      time % 60
-    } minutes on ${format(date, "MMMM do")}.`;
+  function formatMinuteToString(time: number) {
+    const hours = Math.floor(time / 60);
+    const mins = time % 60;
+    return `${hours} hour${hours <= 1 ? "" : "s"} ${mins} minute${mins <= 1 ? "" : "s"}`;
   }
 
   onMount(() => {
@@ -114,8 +113,11 @@
     type="number"
     bind:value={year}
     min="2025"
-    class="hidden-cursor select-none h-24 w-60 text-13 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
-    onchange={() => getAllDays()}
+    class="hidden-cursor select-none h-24 w-54 text-13 font-500 leading-24 outline-none bg-[#efefef] rounded-2 indent-6"
+    onchange={() => {
+      getAllDays();
+      dayDetail = undefined;
+    }}
   />
 
   <div class="flex">
@@ -126,7 +128,7 @@
     </div>
 
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="calendarDate" onmouseleave={() => (tooltip = "")}>
+    <div class="calendarDate">
       <div class="calendarDay">
         <span>Sun</span>
         <span>Wed</span>
@@ -139,7 +141,7 @@
           <div
             class="day"
             data-level={calculateLevel(day.time)}
-            onmouseover={() => setTooltipContent(day.time, day.date)}
+            onmouseover={() => (dayDetail = day)}
           ></div>
         {:else}
           <div class="none-day"></div>
@@ -148,7 +150,32 @@
     </div>
   </div>
 
-  <div class="flex flex-col items-end gap-3 w-200">
+  <div class="flex flex-col items-center w-200 p-6 gap-9">
+    {#if dayDetail}
+      <div
+        class="dayDetail w-150 h-210 relative flex flex-col items-center rounded-3 bg-[#2ecc71] shadow shadow-black/30"
+      >
+        <CharmMenuHamburger
+          width="14"
+          class="absolute top-3 left-3 text-white"
+        />
+        <h4 class="text-25 leading-25 mt-18 text-white">
+          {format(dayDetail.date, "MMMM")}
+        </h4>
+        <h1 class="text-90 leading-80 mb-9 text-white">
+          {format(dayDetail.date, "d")}
+        </h1>
+        <h3 class="text-20 leading-20 text-white mb-9">
+          {format(dayDetail.date, "EEEE")}
+        </h3>
+        <p class="w-full text-left text-white text-14 leading-16 indent-9">
+          Focus
+        </p>
+        <p class="w-full text-left text-white text-12 indent-18">
+          {formatMinuteToString(dayDetail.time)}
+        </p>
+      </div>
+    {/if}
     <div class="flex items-center justify-center gap-2">
       <div class="text-12 leading-14 mr-3">Less</div>
       {#each { length: 11 } as item, index}
@@ -156,8 +183,6 @@
       {/each}
       <div class="text-12 leading-14 ml-3">More</div>
     </div>
-
-    <p class="text-12 leading-14 text-wrap pl-12">{tooltip}</p>
   </div>
 </div>
 
@@ -179,7 +204,6 @@
     align-items: center;
     font-size: 12px;
     line-height: 15px;
-    margin-bottom: 3px;
   }
 
   .calendarMonth {
@@ -199,52 +223,55 @@
     width: 10px;
     height: 10px;
     shape-rendering: geometricPrecision;
-    background-color: #eff2f5;
-    border: 0.5px solid #1f23280d;
+    border: 1px solid #1f23280d;
     border-radius: 2px;
   }
 
-  .day[data-level="0"] {
+  .day:hover {
+    border: 1px solid #000;
+  }
+
+  [data-level="0"] {
     background-color: #eff2f5;
   }
 
-  .day[data-level="1"] {
+  [data-level="1"] {
     @apply bg-green-100;
   }
 
-  .day[data-level="2"] {
+  [data-level="2"] {
     @apply bg-green-200;
   }
 
-  .day[data-level="3"] {
+  [data-level="3"] {
     @apply bg-green-300;
   }
 
-  .day[data-level="4"] {
+  [data-level="4"] {
     @apply bg-green-400;
   }
 
-  .day[data-level="5"] {
+  [data-level="5"] {
     @apply bg-green-500;
   }
 
-  .day[data-level="6"] {
+  [data-level="6"] {
     @apply bg-green-600;
   }
 
-  .day[data-level="7"] {
+  [data-level="7"] {
     @apply bg-green-700;
   }
 
-  .day[data-level="8"] {
+  [data-level="8"] {
     @apply bg-green-800;
   }
 
-  .day[data-level="9"] {
+  [data-level="9"] {
     @apply bg-green-900;
   }
 
-  .day[data-level="10"] {
+  [data-level="10"] {
     @apply bg-green-950;
   }
 
