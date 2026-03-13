@@ -12,9 +12,10 @@ import icescape from "$lib/assets/images/Icescape.jpg";
 
 const browser =
   typeof window !== "undefined" && typeof document !== "undefined";
-export const IMAGES_LENGTH = 18;
+export const IMAGES_LENGTH = 9;
 const LAYOUT_STORAGE = "layout-images";
 const LAYOUT_INDEX = "layout-index";
+const LAYOUT_API = "layout-api";
 export const LAYOUT_SETTING = "layout-setting";
 const defaultImage: ImageBackgroundType = {
   title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
@@ -44,13 +45,22 @@ export const layoutSetting = writable<LayoutSettingType>({
   showVideo: false,
 });
 
+export const layoutApi = writable<number>(3);
+
 //----------------LAYOUT IMAGE-----------------//
+
+export function setGetLayouImageApi(ver: number) {
+  layoutApi.set(ver);
+  localStorage.setItem(LAYOUT_API, String(ver));
+}
 
 export function getCurrentImageBackground() {
   if (!browser) return;
+  const api = localStorage.getItem(LAYOUT_API);
   const index = localStorage.getItem(LAYOUT_INDEX);
   const images = localStorage.getItem(LAYOUT_STORAGE);
   const settings = localStorage.getItem(LAYOUT_SETTING);
+  if (api) layoutApi.set(Number(api));
   if (index) currentImageIndex.set(Number(index));
   if (images)
     localImageStore.set({ loading: false, data: deserialize(images) });
@@ -66,10 +76,11 @@ export async function getNextImageBackground() {
   if (!browser) return;
   const images = get(localImageStore);
   const index = get(currentImageIndex);
+  const api = get(layoutApi);
 
   if (images.data.length < IMAGES_LENGTH && index === images.data.length - 1) {
     localImageStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(`/server/getlayoutimage`);
+    const response = await fetch(`/server/getlayoutimagev${api}`);
     if (response.status == 200) {
       const json = await response.json();
       localImageStore.update((s) => {
@@ -88,7 +99,7 @@ export async function getNextImageBackground() {
     index === IMAGES_LENGTH - 1
   ) {
     localImageStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(`/server/getlayoutimage`);
+    const response = await fetch(`/server/getlayoutimagev${api}`);
     if (response.status == 200) {
       const json = await response.json();
       localImageStore.update((s) => {
@@ -99,7 +110,7 @@ export async function getNextImageBackground() {
     }
   } else if (images.data.length === 0) {
     localImageStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(`/server/getlayoutimage`);
+    const response = await fetch(`/server/getlayoutimagev${api}`);
     if (response.status == 200) {
       const json = await response.json();
       localImageStore.update((s) => {

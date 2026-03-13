@@ -11,6 +11,7 @@
     LAYOUT_SETTING,
     localImageStore,
     layoutSetting,
+    setGetLayouImageApi,
   } from "$lib/store/localstore";
   import type { LayoutSettingType, VideoBackgroundType } from "$lib/types";
   import { onMount } from "svelte";
@@ -19,7 +20,6 @@
   import SolarArrowRightBold from "~icons/solar/arrow-right-bold";
   import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
   import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
-  import MaterialSymbolsImage from "~icons/material-symbols/image";
   import MaterialSymbolsMovie from "~icons/material-symbols/movie";
 
   let { children } = $props();
@@ -132,22 +132,34 @@
         {/each}
       </select>
 
-      <button
-        class="btn-menu light"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleShowLayout("image");
-        }}
-      >
-        <MaterialSymbolsImage width="14" height="14" />
-      </button>
-
       <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
         {#if isMuted}
           <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
         {:else}
           <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
         {/if}
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("image");
+          setGetLayouImageApi(3);
+        }}
+      >
+        v3
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("image");
+          setGetLayouImageApi(4);
+        }}
+      >
+        v4
       </button>
     </div>
   {/if}
@@ -170,9 +182,7 @@
           {$localImageStore.data[$currentImageIndex].title || ""}
         </p>
         <p style="text-shadow: 0 0 3px black;" class="text-left">
-          {$localImageStore.data[$currentImageIndex].place
-            .split("©")[0]
-            .trim() || ""}
+          {$localImageStore.data[$currentImageIndex].place || ""}
         </p>
       </div>
     {/if}

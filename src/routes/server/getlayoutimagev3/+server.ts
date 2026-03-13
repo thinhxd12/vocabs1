@@ -4,13 +4,20 @@ import { error } from "@sveltejs/kit";
 // https://github.com/ORelio/Spotlight-Downloader/blob/master/SpotlightAPI.md
 
 export async function GET({ fetch }) {
-  const endpoint = "https://fd.api.iris.microsoft.com/v4/api/selection";
+  const endpoint = "https://arc.msn.com/v3/Delivery/Placement";
+
   const params = new URLSearchParams({
-    placement: "88000820",
-    bcnt: "1",
-    locale: "en-US",
-    country: "DE",
+    pid: "338380",
     fmt: "json",
+    rafb: "0",
+    ua: "WindowsShellClient",
+    cdm: "1",
+    disphorzres: "9999",
+    dispvertres: "9999",
+    lo: "80217",
+    pl: "en-US",
+    lc: "en-US",
+    ctry: "AR",
   });
 
   try {
@@ -20,9 +27,9 @@ export async function GET({ fetch }) {
     const item = JSON.parse(data.batchrsp.items[0].item).ad;
 
     const images: ImageBackgroundType = {
-      title: item.title,
-      url: item.landscapeImage.asset,
-      place: item.iconHoverText,
+      title: item.hs1_title_text.tx,
+      url: item.image_fullscreen_001_landscape.u,
+      place: item.title_text.tx,
     };
 
     return new Response(JSON.stringify(images));
