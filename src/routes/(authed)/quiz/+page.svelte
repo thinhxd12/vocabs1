@@ -77,14 +77,18 @@
       timeout = setTimeout(async () => {
         src0 = "/sounds/mp3_Ding.mp3";
         paused0 = false;
-        $quizRender = undefined;
-        $listContent = [];
-        $listCount = 0;
-        $isAutoPlay = false;
         submitted = false;
-        updateTodayScheduleLocal();
+        $quizRender = undefined;
+        endQuiz();
       }, 1000);
     }
+  }
+
+  async function endQuiz() {
+    $listContent = [];
+    $listCount = 0;
+    $isAutoPlay = false;
+    updateTodayScheduleLocal();
   }
 
   // handlecheck

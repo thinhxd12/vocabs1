@@ -63,20 +63,32 @@
       />
     {/key}
 
-    <!-- svelte-ignore a11y_distracting_elements -->
-    <marquee
-      class="marquee absolute bottom-0 text-8 font-500 leading-12 text-white"
-      scrollamount="1"
-      width="90"
+    <div
+      class="marquee w-full absolute bottom-0 text-8 font-500 leading-12 text-white"
     >
       <span>{weatherInfo.description}</span>
-    </marquee>
+    </div>
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   .marquee span {
     margin: 0 9px;
     text-shadow: 0px 0px 3px #000000;
+  }
+
+  .marquee {
+    white-space: nowrap;
+    overflow: hidden;
+    animation: marquee 6s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
   }
 </style>

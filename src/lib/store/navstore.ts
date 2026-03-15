@@ -7,12 +7,14 @@ import type { DBInsert, DBSelect, OpenMeteoResponse } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
 import { archiveVocab } from "$lib/utils/functions";
 import cloverImage from "$lib/assets/images/clover.webp";
+import { goto } from "$app/navigation";
 
 export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
 export const isAutoPlay = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const wakeEnable = writable<boolean>(false);
+export const currentProgress = writable<0 | 1 | 2>(0);
 
 export const todaySchedule = writable<
   | {
@@ -195,8 +197,6 @@ export const updateTodayScheduleLocal = async () => {
   currentScheduleValue = get(currentSchedule);
 
   if (currentScheduleValue) {
-    if (currentScheduleValue.count < 12) showTimer.set(true);
-
     if (todayScheduleValue.start.id === currentScheduleValue.id) {
       todaySchedule.set({
         ...todayScheduleValue,
@@ -207,12 +207,27 @@ export const updateTodayScheduleLocal = async () => {
     }
 
     const newTodayScheduleValue = get(todaySchedule);
-
     if (
       newTodayScheduleValue!.start.count > 11 &&
       newTodayScheduleValue!.end.count > 11
-    )
+    ) {
+      currentProgress.set(0);
+      currentSchedule.set(undefined);
       checkSchedule();
+    } else {
+      showTimer.set(true);
+      const currentProgressValue = get(currentProgress);
+      if (currentProgressValue === 1) {
+        goto("/quiz");
+        currentProgress.set(2);
+        currentSchedule.set(newTodayScheduleValue!.end);
+      } else {
+        goto("/vocab");
+        currentProgress.set(1);
+        currentSchedule.set(newTodayScheduleValue!.start);
+      }
+      handleGetListContent();
+    }
   }
 };
 

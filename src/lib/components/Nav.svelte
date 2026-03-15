@@ -10,6 +10,7 @@
     currentSchedule,
     handleGetListContent,
     weatherData,
+    currentProgress,
   } from "$lib/store/navstore";
   import type { WeatherQueryParams } from "$lib/types";
   import { format } from "date-fns";
@@ -21,7 +22,6 @@
   import WakeLockButton from "./WakeLockButton.svelte";
   import { fly } from "svelte/transition";
   import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
-  import SolarCloseCircleLinear from "~icons/solar/close-circle-linear";
   import MaterialSymbolsDocumentSearchOutlineRounded from "~icons/material-symbols/document-search-outline-rounded";
   import MaterialSymbolsCalendarMonthRounded from "~icons/material-symbols/calendar-month-rounded";
   import MaterialSymbolsTranslateRounded from "~icons/material-symbols/translate-rounded";
@@ -36,6 +36,7 @@
     getWeatherList,
     locationList,
   } from "$lib/store/localstore";
+  import { goto } from "$app/navigation";
 
   const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
@@ -79,9 +80,17 @@
     $weatherData = await getOpenMeteoWeather(param);
   }
 
-  function handleGetList(numb: number) {
-    $currentSchedule = numb === 0 ? $todaySchedule!.start : $todaySchedule!.end;
-    handleGetListContent();
+  function handleDailyProgress() {
+    if ($currentProgress === 0) {
+      goto("/vocab");
+      $currentProgress = 1;
+      $currentSchedule = $todaySchedule!.start;
+      handleGetListContent();
+    } else if ($currentProgress === 1) {
+      goto("/vocab");
+    } else if ($currentProgress === 2) {
+      goto("/quiz");
+    }
   }
 
   onDestroy(() => {
@@ -135,37 +144,25 @@
   <div class="dark h-full rounded-2 flex-1 flex flex-wrap gap-4">
     <div class="w-full flex justify-center items-end gap-2">
       <button
-        class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
-        class:active={$todaySchedule &&
-          $todaySchedule.start.id === $currentSchedule?.id}
+        class="flex justify-between relative w-40 mx-1 outline-none disabled:cursor-not-allowed"
         onclick={(e) => {
-          handleGetList(0);
           e.currentTarget.blur();
+          handleDailyProgress();
         }}
-        disabled={!["/vocab", "/quiz"].includes(page.url.pathname)}
       >
-        {#if $todaySchedule}
-          <span>{$todaySchedule.start.index}</span>
-        {:else}
-          <SolarCloseCircleLinear width="13" height="13" />
-        {/if}
-      </button>
-
-      <button
-        class="btn-menu disabled:cursor-default disabled:opacity-30 disabled:hover:!bg-white/20 disabled:hover:!text-black/60"
-        class:active={$todaySchedule &&
-          $todaySchedule.end.id === $currentSchedule?.id}
-        onclick={(e) => {
-          handleGetList(1);
-          e.currentTarget.blur();
-        }}
-        disabled={!["/vocab", "/quiz"].includes(page.url.pathname)}
-      >
-        {#if $todaySchedule}
-          <span>{$todaySchedule.end.index}</span>
-        {:else}
-          <SolarCloseCircleLinear width="13" height="13" />
-        {/if}
+        <div class="progress"></div>
+        <div
+          class="progress-active"
+          style="width: {$currentProgress === 2 ? 10 : 0}px;"
+        ></div>
+        <div
+          class="circle"
+          class:active={$currentProgress === 1}
+          class:done={$currentProgress === 2}
+        >
+          1
+        </div>
+        <div class="circle" class:active={$currentProgress === 2}>2</div>
       </button>
 
       <a
@@ -332,5 +329,28 @@
 
   .btn-nav.active {
     @apply bg-white/60 text-black;
+  }
+
+  .circle {
+    @apply flex items-center justify-center size-15 rounded-full border-2 border-white/15 text-9 leading-12 font-500 text-black text-center bg-white/15 shadow shadow-black/30;
+    transition: 0.3s ease;
+  }
+
+  :global {
+    .circle.active {
+      @apply !border-green-400/60;
+    }
+    .circle.done {
+      @apply !bg-green-400/60 !border-green-400/60;
+    }
+  }
+
+  .progress {
+    @apply absolute top-1/2 -translate-y-1/2 left-15 h-2 w-10 -z-1 bg-white/30 shadow shadow-black/30;
+  }
+
+  .progress-active {
+    @apply absolute top-1/2 -translate-y-1/2 left-15 w-0 h-2 z-1 bg-green-400 shadow shadow-black/30;
+    transition: 0.3s ease;
   }
 </style>
