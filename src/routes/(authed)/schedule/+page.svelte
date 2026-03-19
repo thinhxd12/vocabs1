@@ -1,41 +1,25 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import Calendar from "$lib/components/Calendar.svelte";
-  import { schedule, todaySchedule } from "$lib/store/navstore";
-  import type { CalendarDayType, DBSelect } from "$lib/types.js";
+  import {
+    getSchedule,
+    getTodaySchedule,
+    showTimer,
+    todaySchedule,
+  } from "$lib/store/navstore";
+  import type { DBSelect } from "$lib/types.js";
   import { format } from "date-fns";
   import { onMount } from "svelte";
-  import { toast } from "svelte-sonner";
   import type { PageProps } from "./$types";
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
-  import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
+  import MaterialSymbolsSettingsRounded from "~icons/material-symbols/settings-rounded";
   import MaterialSymbolsCalendarAddOnRounded from "~icons/material-symbols/calendar-add-on-rounded";
   import { getCalendarRecord } from "$lib/store/localstore";
   import Modal from "$lib/components/Modal.svelte";
+  import { addToast } from "$lib/store/layoutstore";
 
   let { data: layoutData }: PageProps = $props();
-
-  let calendarData = $state<CalendarDayType[]>([]);
-
-  calendarData = $schedule?.reduce(
-    (acc: any, curr: DBSelect["schedule_table"]) => {
-      const dateObj = new Date(curr.date!);
-      const day = dateObj.getDate();
-      const month = dateObj.getMonth();
-      const year = dateObj.getFullYear();
-      const existing = acc.find(
-        (item: any) => item.date === day && item.month === month,
-      );
-      if (existing) {
-        existing.count += curr.count;
-      } else {
-        acc.push({ date: day, month, year, count: curr.count });
-      }
-      return acc;
-    },
-    [],
-  );
 
   let src = $state<string>("");
   let paused = $state<boolean>(true);
@@ -79,72 +63,12 @@
     await getTablePaginationLength();
     getDataPaginationByIndex(1);
   });
-
-  async function reloadScheduleData() {
-    const todayDate = format(new Date(), "yyyy-MM-dd");
-    const { data: schedule } = await layoutData.supabase
-      .from("schedule_table")
-      .select("*")
-      .order("id", { ascending: true });
-
-    if (schedule) {
-      let index = schedule.findIndex(
-        (item) =>
-          format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null,
-      );
-
-      if (index > -1) {
-        $todaySchedule = {
-          start: schedule[index],
-          end: schedule[index + 1],
-        };
-      } else $todaySchedule = undefined;
-
-      calendarData = schedule.reduce(
-        (acc: any, curr: DBSelect["schedule_table"]) => {
-          const dateObj = new Date(curr.date!);
-          const day = dateObj.getDate();
-          const month = dateObj.getMonth();
-          const year = dateObj.getFullYear();
-          const existing = acc.find(
-            (item: any) => item.date === day && item.month === month,
-          );
-          if (existing) {
-            existing.count += curr.count;
-          } else {
-            acc.push({ date: day, month, year, count: curr.count });
-          }
-          return acc;
-        },
-        [],
-      );
-    }
-  }
-
-  type UpdateSchedule = {
-    id: any;
-    date: any;
-    count: number;
-  };
-
-  async function updateScheduleLocal(
-    start: UpdateSchedule,
-    end: UpdateSchedule,
-  ) {
-    schedule.update((current) =>
-      current?.map((item) => {
-        if (item.id === start.id) {
-          return { ...item, ...start };
-        } else if (item.id === end.id) {
-          return { ...item, ...end };
-        } else return item;
-      }),
-    );
-  }
 </script>
 
 <svelte:head>
-  <title>📆</title>
+  {#if !$showTimer}
+    <title>📆</title>
+  {/if}
   <meta name="Schedule" content="Some Schedule" />
 </svelte:head>
 
@@ -158,7 +82,7 @@
       class="calendar-button light"
       onclick={() => (showReset = !showReset)}
     >
-      <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
+      <MaterialSymbolsSettingsRounded width="14" height="14" />
     </button>
     <button
       class="calendar-button light"
@@ -169,7 +93,7 @@
   </div>
 
   <Modal bind:showModal={showReset}>
-    <div class="w-main p-45 h-120 flex flex-col rounded-2">
+    <div class="w-main px-45 pt-60 flex flex-col">
       <p class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
         Set today task
       </p>
@@ -182,28 +106,20 @@
           use:enhance={({ formElement, formData, action, cancel }) => {
             return async ({ result }) => {
               if (result.type === "failure") {
-                toast.error("Error!", {
-                  description: result.data?.error as string,
-                  class: "my-toast my-toast-error",
+                addToast({
+                  type: "error",
+                  title: "Error!",
+                  message: result.data?.error as string,
                 });
               } else {
-                toast.success("Success!", {
-                  description: "Edit successfully.",
-                  class: "my-toast my-toast-success",
+                addToast({
+                  type: "success",
+                  title: "Success!",
+                  message: "Set items successfully.",
                 });
-                updateScheduleLocal(
-                  {
-                    id: formData.get("id0"),
-                    date: formData.get("date0"),
-                    count: Number(formData.get("count0")),
-                  },
-                  {
-                    id: formData.get("id1"),
-                    date: formData.get("date1"),
-                    count: Number(formData.get("count1")),
-                  },
-                );
                 showReset = false;
+                await getSchedule();
+                getTodaySchedule();
               }
             };
           }}
@@ -212,20 +128,20 @@
             hidden
             name="id0"
             autocomplete="off"
-            value={$todaySchedule.start.id}
+            value={$todaySchedule.first.id}
           />
           <input
             hidden
             name="id1"
             autocomplete="off"
-            value={$todaySchedule.end.id}
+            value={$todaySchedule.second.id}
           />
 
           <input
             name="date0"
             autocomplete="off"
             type="date"
-            bind:value={$todaySchedule.start.date}
+            bind:value={$todaySchedule.first.date}
             class="form-date"
           />
           <input
@@ -233,7 +149,7 @@
             autocomplete="off"
             type="number"
             min="0"
-            bind:value={$todaySchedule.start.count}
+            bind:value={$todaySchedule.first.count}
             class="form-number"
           />
 
@@ -241,7 +157,7 @@
             name="date1"
             autocomplete="off"
             type="date"
-            bind:value={$todaySchedule.end.date}
+            bind:value={$todaySchedule.second.date}
             class="form-date"
           />
 
@@ -250,7 +166,7 @@
             autocomplete="off"
             type="number"
             min="0"
-            bind:value={$todaySchedule.end.count}
+            bind:value={$todaySchedule.second.count}
             class="form-number"
           />
 
@@ -271,7 +187,7 @@
   </Modal>
 
   <Modal bind:showModal={showCreate}>
-    <div class="w-main p-45 h-120 flex flex-col rounded-2">
+    <div class="w-main px-45 pt-90 flex flex-col">
       <p class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
         Set today task
       </p>
@@ -283,16 +199,20 @@
         use:enhance={({ formElement, formData, action, cancel }) => {
           return async ({ result }) => {
             if (result.type === "failure") {
-              toast.error("Error!", {
-                description: result.data?.error as string,
-                class: "my-toast my-toast-error",
+              addToast({
+                type: "error",
+                title: "Error!",
+                message: result.data?.error as string,
               });
             } else {
-              toast.success("Success!", {
-                description: "Create successfully.",
-                class: "my-toast my-toast-success",
+              addToast({
+                type: "success",
+                title: "Success!",
+                message: "Create schedule successfully.",
               });
-              reloadScheduleData();
+              showCreate = false;
+              await getSchedule();
+              getTodaySchedule();
             }
           };
         }}
@@ -312,7 +232,7 @@
     </div>
   </Modal>
 
-  <Calendar schedule={calendarData} />
+  <Calendar />
 
   <p
     class="light rounded-2 !bg-green-400/15 font-garamond text-10 font-400 leading-10 px-6 py-4"

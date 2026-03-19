@@ -8,56 +8,45 @@
 
   let { showModal = $bindable(), children }: Props = $props();
 
-  let dialog = $state();
+  let dialog = $state<HTMLDialogElement>();
+
+  $effect(() => {
+    if (showModal) dialog?.showModal();
+    else dialog?.close();
+  });
 </script>
 
 {#if showModal}
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div
+  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+  <dialog
     bind:this={dialog}
-    class="backdrop"
+    onclose={() => (showModal = false)}
     onclick={(e) => {
-      if (e.target === dialog) showModal = false;
-    }}
-    onkeydown={(e) => {
-      e.stopPropagation();
+      if (e.target === dialog) dialog.close();
     }}
   >
-    <div
-      class="modal"
-      tabindex="-1"
-      role="dialog"
-      aria-modal="true"
-      data-open={showModal}
-    >
-      {@render children?.()}
-    </div>
-  </div>
+    {@render children?.()}
+  </dialog>
 {/if}
 
 <style lang="postcss">
-  .backdrop {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: start;
+  dialog {
+    border: none;
+    padding: 0;
+    margin: 0 auto;
+    background: transparent;
+  }
+
+  dialog::backdrop {
     background: var(--backdrop, #0000004d);
-    animation: fade 0.1s ease-out;
   }
 
-  .modal {
-    position: relative;
-    z-index: inherit;
-    outline: none;
+  dialog[open] {
+    animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .modal[data-open] {
-    animation: zoom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  dialog[open]::backdrop {
+    animation: fade 0.2s ease-out;
   }
 
   @keyframes zoom {

@@ -11,8 +11,6 @@
   } from "$lib/store/vocabstore";
   import { onDestroy, untrack } from "svelte";
   import { showTimer, vocabInput } from "$lib/store/navstore";
-  import { toast } from "svelte-sonner";
-  import { timerString } from "$lib/store/layoutstore";
   import { archiveVocab } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
@@ -21,6 +19,7 @@
   import Modal from "$lib/components/Modal.svelte";
   import { fly } from "svelte/transition";
   import TickFlip from "$lib/components/TickFlip.svelte";
+  import { addToast } from "$lib/store/layoutstore";
 
   let { data: layoutData }: PageProps = $props();
   let deleteSearchTimeout: ReturnType<typeof setTimeout>;
@@ -80,6 +79,9 @@
     clearTimeout(checkTimeout);
     clearTimeout(deleteSearchTimeout);
     switch (true) {
+      case e.key === "F2":
+        $showTranslate = true;
+        break;
       case e.key === "ArrowDown":
         activeIndex = (activeIndex + 1) % $searchResults.length;
         break;
@@ -128,10 +130,16 @@
       $renderWord = data[0];
       $vocabInput = data[0].word;
       if (data[0].number > 1) {
-        await layoutData.supabase
+        const { error } = await layoutData.supabase
           .from("vocab_table")
           .update({ number: data[0].number - 1 })
           .eq("id", id);
+        if (error)
+          addToast({
+            type: "error",
+            title: "Error!",
+            message: error.message as string,
+          });
       } else {
         await archiveVocab(data[0].id, data[0].word);
       }
@@ -175,14 +183,16 @@
       .eq("id", id);
 
     if (error) {
-      toast.error("Error!", {
-        description: error.message as string,
-        class: "my-toast my-toast-error",
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
       });
     } else
-      toast.success("Success!", {
-        description: "Delete successfully.",
-        class: "my-toast my-toast-success",
+      addToast({
+        type: "success",
+        title: "Success!",
+        message: "Delete successfully.",
       });
     searchTermFounded = true;
     $searchTerm = "";
@@ -210,10 +220,8 @@
 </script>
 
 <svelte:head>
-  {#if $showTimer && $timerString}
-    <title>{$timerString}</title>
-  {:else}
-    <title>{$renderWord ? `${$renderWord.word}` : "vocab"}</title>
+  {#if !$showTimer}
+    <title>{$renderWord ? `${$renderWord.word}` : "vocabs1"}</title>
   {/if}
 
   <meta name="Vocab" content="Some Vocab" />

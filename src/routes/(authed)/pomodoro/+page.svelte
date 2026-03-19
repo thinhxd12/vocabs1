@@ -12,6 +12,7 @@
     intervals,
     isMuted,
     isPaused,
+    addToast,
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
@@ -23,16 +24,22 @@
   import MaterialSymbolsDarkModeRounded from "~icons/material-symbols/dark-mode-rounded";
   import MaterialSymbolsSailingRounded from "~icons/material-symbols/sailing-rounded";
   import MaterialSymbolsInsertChartOutlineRounded from "~icons/material-symbols/insert-chart-outline-rounded";
-  import MaterialSymbolsSettingsOutlineRounded from "~icons/material-symbols/settings-outline-rounded";
-  import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
-  import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
+  import MaterialSymbolsSettingsRounded from "~icons/material-symbols/settings-rounded";
   import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
+  import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
+  import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
   import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
   import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
   import longbreakImage from "$lib/assets/images/Julien-Dupré-Resting-in-the-Fields.avif";
   import Heatmap from "$lib/components/Heatmap.svelte";
   import { linear } from "svelte/easing";
+  import {
+    formatTimerString,
+    minutesToSeconds,
+    padWithZeroes,
+    secondsToMinutes,
+  } from "$lib/utils/functions";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -47,10 +54,6 @@
   let itemsPerPage = Math.floor((innerHeight.current! - 44 - 24 * 3 - 26) / 24);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
-
-  const minutesToSeconds = (minutes: number) => minutes * 60;
-  const secondsToMinutes = (seconds: number) => Math.floor(seconds / 60);
-  const padWithZeroes = (number: number) => number.toString().padStart(2, "0");
 
   let now = $state<number>(0);
   let end = $state<number>(0);
@@ -67,12 +70,6 @@
       startTimer();
     }
   });
-
-  function formatTime(timeInSeconds: number): string {
-    const minutes = secondsToMinutes(timeInSeconds);
-    const remainingSeconds = timeInSeconds % 60;
-    return `${padWithZeroes(minutes)}:${padWithZeroes(remainingSeconds)}`;
-  }
 
   function startTimer() {
     clearInterval(interval);
@@ -199,16 +196,28 @@
       .eq("date", date);
 
     if (data && data.length) {
-      await layoutData.supabase
+      const { error } = await layoutData.supabase
         .from("pomodoro_table")
         .update({
           time: data[0].time + $focusMinutes,
         })
         .eq("date", date);
+      if (error)
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message as string,
+        });
     } else {
-      await layoutData.supabase
+      const { error } = await layoutData.supabase
         .from("pomodoro_table")
         .insert({ date, time: $focusMinutes });
+      if (error)
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message as string,
+        });
     }
   }
 
@@ -266,9 +275,9 @@
   {#if $isPaused}
     <title>🍅 Paused</title>
   {:else if $currentMode === "focus"}
-    <title>{formatTime($secondsRemaining)} - Time to focus!</title>
+    <title>{formatTimerString($secondsRemaining)} - Time to focus!</title>
   {:else}
-    <title>{formatTime($secondsRemaining)} - Time for a break!</title>
+    <title>{formatTimerString($secondsRemaining)} - Time for a break!</title>
   {/if}
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
@@ -384,7 +393,7 @@
           showSetting = true;
         }}
       >
-        <MaterialSymbolsSettingsOutlineRounded width="14" height="14" />
+        <MaterialSymbolsSettingsRounded width="14" height="14" />
       </button>
 
       <button
@@ -395,9 +404,9 @@
         }}
       >
         {#if $isMuted}
-          <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
+          <MaterialSymbolsVolumeOffRounded width="14" height="14" />
         {:else}
-          <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
+          <MaterialSymbolsVolumeUpRounded width="14" height="14" />
         {/if}
       </button>
     </div>

@@ -31,11 +31,9 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.48.0",
     "@svelte-put/dragscroll": "^4.0.0",
-    "array-shuffle": "^3.0.0",
     "cheerio": "^1.0.0",
     "date-fns": "^4.1.0",
     "sharp": "^0.33.5",
-    "svelte-sonner": "^1.0.7",
     "thumbhash": "^0.1.1",
     "uuid": "^11.0.5"
   }

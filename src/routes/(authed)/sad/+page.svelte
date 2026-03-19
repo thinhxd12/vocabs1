@@ -6,6 +6,7 @@
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
   import { innerHeight } from "svelte/reactivity/window";
+  import { showTimer } from "$lib/store/navstore";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -65,7 +66,9 @@
 </script>
 
 <svelte:head>
-  <title>🙁</title>
+  {#if !$showTimer}
+    <title>🙁</title>
+  {/if}
   <meta name="sad" content="Sad day!" />
 </svelte:head>
 
@@ -79,7 +82,7 @@
       <button aria-label="add" class="btn-add" onclick={addDay}></button>
     </li>
     {#each paginationItems as item}
-      <li class="light">
+      <li class="light w-main">
         <button
           aria-label="delete"
           class="btn-delete"
@@ -97,7 +100,7 @@
 
 <style lang="postcss">
   li {
-    @apply p-6 rounded-2 flex items-center justify-start font-basier font-500 text-15 text-left leading-12 italic mb-3 hover:bg-white/40 shadow shadow-black/40;
+    @apply p-6 rounded-2 flex items-center justify-start font-basier font-500 text-15 text-left leading-12 italic mb-3 hover:bg-white/40 shadow shadow-black/40 cursor-default;
   }
 
   .btn-add {

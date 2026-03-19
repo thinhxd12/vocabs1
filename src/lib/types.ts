@@ -278,3 +278,11 @@ export type LayoutSettingType = {
   showImage: boolean;
   showVideo: boolean;
 };
+
+export type ToastType = {
+  showToast?: boolean;
+  title: string;
+  message: string;
+  type: "success" | "error" | "info";
+  timeout?: number;
+};

@@ -26,7 +26,7 @@
       </span>
     </div>
 
-    {#each entry.definitions as el}
+    {#each entry.definitions as el, index}
       {#if el.image || el.example.sentence}
         <div
           class="relative mb-3 w-full min-h-215 flex flex-col justify-between"
@@ -66,24 +66,31 @@
           </div>
         </div>
       {/if}
-
-      {#each el.definition as def}
-        <p class="flex px-12">
-          <span
-            class="inline-block min-w-12 text-12 font-700 uppercase leading-15"
-          >
-            {def.letter}
-          </span>
-          {#if def.num}
-            <small
-              class="inline-block min-w-12 pr-2 text-12 font-500 leading-15"
-            >
-              {def.num}
-            </small>
-          {/if}
-          <span class="text-12 font-500 leading-15">{def.sense}</span>
-        </p>
-      {/each}
+      <div class="w-full flex px-6 mb-3">
+        <span
+          class="min-w-15 text-12 font-700 leading-15 border-r-2 border-black/45"
+          >{index + 1}</span
+        >
+        <div class="pl-6">
+          {#each el.definition as def}
+            <p class="flex">
+              <span
+                class="inline-block min-w-12 text-12 font-700 uppercase leading-15"
+              >
+                {def.letter}
+              </span>
+              {#if def.num}
+                <small
+                  class="inline-block min-w-16 text-12 font-500 leading-15"
+                >
+                  {def.num}
+                </small>
+              {/if}
+              <span class="text-12 font-500 leading-15">{def.sense}</span>
+            </p>
+          {/each}
+        </div>
+      </div>
     {/each}
 
     {#if entry.synonyms.length}

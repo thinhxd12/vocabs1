@@ -1,9 +1,9 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { showTranslate } from "$lib/store/vocabstore";
-  import { toast } from "svelte-sonner";
+  import { addToast } from "$lib/store/layoutstore";
   import type { DBInsert, TranslateType, VocabMeaningType } from "$lib/types";
-  import { getTranslationArr } from "$lib/utils/functions";
+  import { autofocus, getTranslationArr } from "$lib/utils/functions";
   import Definition from "./Definition.svelte";
   import { v7 as uuidv7 } from "uuid";
   import { page } from "$app/state";
@@ -35,9 +35,10 @@
       const data = await response.json();
       if (data) return data as DBInsert["vocab_table"];
     } else {
-      toast.error("Error", {
-        description: "Not found!",
-        class: "my-toast my-toast-error",
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: "Can't find this word.",
       });
     }
   }
@@ -49,20 +50,22 @@
       .eq("word", word.toLowerCase());
 
     if (dataMemories.length)
-      toast.error(`Memorized "${dataMemories[0].word}"!`, {
-        description: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}`,
-        class: "my-toast my-toast-error",
+      addToast({
+        type: "error",
+        title: `Memorized "${dataMemories[0].word}"!`,
+        message: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}.`,
       });
 
     const { data: dataVocab } = await page.data.supabase
       .from("vocab_table")
       .select("*")
       .eq("word", word.toLowerCase());
-      
+
     if (dataVocab.length)
-      toast.error("Error!", {
-        description: `There is a word "${dataVocab[0].word}" exist!"`,
-        class: "my-toast my-toast-error",
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: `There is a word "${dataVocab[0].word}" exist.`,
       });
 
     const data = await Promise.all([
@@ -124,14 +127,16 @@
     use:enhance={({ formElement, formData, action, cancel }) => {
       return async ({ result }) => {
         if (result.type === "failure") {
-          toast.error("Error!", {
-            description: result.data?.error as string,
-            class: "my-toast my-toast-error",
+          addToast({
+            type: "error",
+            title: "Error!",
+            message: result.data?.error as string,
           });
         } else if (result.type === "success") {
-          toast.success("Success!", {
-            description: "Add word successfully.",
-            class: "my-toast my-toast-success",
+          addToast({
+            type: "success",
+            title: "Success!",
+            message: "Add word successfully.",
           });
         }
       };
@@ -140,12 +145,11 @@
     <div
       class="w-full h-36 mb-3 relative bg-black/15 shadow-[0_0_3px_0px_#00000054_inset]"
     >
-      <!-- svelte-ignore a11y_autofocus -->
       <input
         name="word"
         autocomplete="off"
-        autofocus
         type="text"
+        use:autofocus
         onkeydown={(e) => {
           e.stopPropagation();
           if (e.key === "Enter") {
@@ -185,7 +189,7 @@
     />
 
     <textarea
-      class="w-full style-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
+      class="w-full my-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
       name="meanings"
       autocomplete="off"
       onkeydown={(e) => e.stopPropagation()}

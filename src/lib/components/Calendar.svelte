@@ -1,6 +1,6 @@
 <script lang="ts">
   import { localCalendarStore } from "$lib/store/localstore";
-  import type { CalendarDayType } from "$lib/types";
+  import type { CalendarDayType, DBSelect } from "$lib/types";
   import { format } from "date-fns";
   import { untrack } from "svelte";
   import MingcuteUpLine from "~icons/mingcute/up-line";
@@ -19,6 +19,7 @@
   import October from "$lib/assets/images/10.webp";
   import November from "$lib/assets/images/11.webp";
   import December from "$lib/assets/images/12.webp";
+  import { schedule } from "$lib/store/navstore";
 
   type DayType = {
     enabled: boolean;
@@ -28,11 +29,6 @@
     count: number | undefined;
   };
 
-  interface Props {
-    schedule: CalendarDayType[];
-  }
-
-  let { schedule }: Props = $props();
   let days = $state<DayType[]>([]);
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const monthNames = [
@@ -107,19 +103,40 @@
       });
     }
 
-    days = days.map((obj1) => {
-      const obj2 = schedule.find(
-        (obj) =>
-          obj.date === obj1.date &&
-          obj.month === obj1.month &&
-          obj.year === obj1.year,
+    if ($schedule && $schedule.length) {
+      let calendarData = $schedule.reduce(
+        (acc: any, curr: DBSelect["schedule_table"]) => {
+          const dateObj = new Date(curr.date!);
+          const day = dateObj.getDate();
+          const month = dateObj.getMonth();
+          const year = dateObj.getFullYear();
+          const existing = acc.find(
+            (item: any) => item.date === day && item.month === month,
+          );
+          if (existing) {
+            existing.count += curr.count;
+          } else {
+            acc.push({ date: day, month, year, count: curr.count });
+          }
+          return acc;
+        },
+        [],
       );
-      return { ...obj1, ...obj2 };
-    });
+
+      days = days.map((obj1) => {
+        const obj2 = calendarData.find(
+          (obj: CalendarDayType) =>
+            obj.date === obj1.date &&
+            obj.month === obj1.month &&
+            obj.year === obj1.year,
+        );
+        return { ...obj1, ...obj2 };
+      });
+    }
   }
 
   $effect(() => {
-    const v = schedule;
+    $schedule;
     untrack(async () => {
       initMonth();
     });

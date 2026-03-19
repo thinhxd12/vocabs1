@@ -32,13 +32,5 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
         },
       });
 
-  const [{ count: totalMemories }, { data: schedule }] = await Promise.all([
-    supabase.from("memories_table").select("*", { count: "exact", head: true }),
-    supabase
-      .from("schedule_table")
-      .select("*")
-      .order("id", { ascending: true }),
-  ]);
-
-  return { supabase, totalMemories, schedule };
+  return { supabase };
 };

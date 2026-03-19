@@ -93,20 +93,19 @@ export async function GET({ url }) {
       meaning.synonyms = [];
       meaning.translation = [];
 
-      let dummyDefinition: VocabDefinitionsType = {
-        definition: [],
-        example: {
-          author: "",
-          sentence: "",
-          title: "",
-          year: "",
-        },
-        hash: "",
-        image: "",
-      };
-
-      let definitionItems = $(element).find(".vg-sseq-entry-item").first();
+      let definitionItems = $(element).find(".vg-sseq-entry-item");
       definitionItems.each((index, element) => {
+        let dummyDefinition: VocabDefinitionsType = {
+          definition: [],
+          example: {
+            author: "",
+            sentence: "",
+            title: "",
+            year: "",
+          },
+          hash: "",
+          image: "",
+        };
         $(element)
           .find(".sb-entry")
           .each((ind, item) => {
@@ -117,6 +116,10 @@ export async function GET({ url }) {
                 let num = $(n).find(".sub-num").text().trim();
                 let sense = $(n)
                   .find(".dtText")
+                  .clone()
+                  .find(".text-lowercase")
+                  .remove()
+                  .end()
                   .text()
                   .trim()
                   .replace(/[\n\r]+|\s{2,}/g, " ");

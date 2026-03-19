@@ -215,4 +215,42 @@
       rgb(254, 254, 254) 100%
     );
   }
+
+  :global {
+    .highlightContent {
+      font-family: "Bookerly", sans-serif;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 1.55;
+      letter-spacing: 0px;
+      overflow: hidden;
+      text-align: left;
+      text-size-adjust: 100%;
+      color: #1e1915;
+    }
+
+    .highlightContent p {
+      text-indent: 1.5rem;
+    }
+
+    .highlightContent cite {
+      display: block;
+      text-align: right;
+    }
+
+    .highlightContentFirstPage::first-letter {
+      initial-letter: 5;
+      background: url("$lib/assets/images/TheEndoftheDay.webp") 0 0 no-repeat;
+      background-size: cover;
+      background-position: center;
+      padding: 9px 12px;
+      margin: 12px 6px 0 0;
+      font-family: "Baskervville";
+      font-weight: 600;
+      color: #f0f0f0;
+      border: 1px solid #111111;
+      text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
+      box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
+    }
+  }
 </style>

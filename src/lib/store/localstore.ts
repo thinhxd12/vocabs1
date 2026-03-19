@@ -45,13 +45,13 @@ export const layoutSetting = writable<LayoutSettingType>({
   showVideo: false,
 });
 
-export const layoutApi = writable<number>(3);
+export const layoutApi = writable<string>("");
 
 //----------------LAYOUT IMAGE-----------------//
 
-export function setGetLayouImageApi(ver: number) {
-  layoutApi.set(ver);
-  localStorage.setItem(LAYOUT_API, String(ver));
+export function setGetLayouImageApi(url: string) {
+  layoutApi.set(url);
+  localStorage.setItem(LAYOUT_API, url);
 }
 
 export function getCurrentImageBackground() {
@@ -60,7 +60,7 @@ export function getCurrentImageBackground() {
   const index = localStorage.getItem(LAYOUT_INDEX);
   const images = localStorage.getItem(LAYOUT_STORAGE);
   const settings = localStorage.getItem(LAYOUT_SETTING);
-  if (api) layoutApi.set(Number(api));
+  if (api) layoutApi.set(api);
   if (index) currentImageIndex.set(Number(index));
   if (images)
     localImageStore.set({ loading: false, data: deserialize(images) });
@@ -80,7 +80,7 @@ export async function getNextImageBackground() {
 
   if (images.data.length < IMAGES_LENGTH && index === images.data.length - 1) {
     localImageStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(`/server/getlayoutimagev${api}`);
+    const response = await fetch(`/server/${api}`);
     if (response.status == 200) {
       const json = await response.json();
       localImageStore.update((s) => {
@@ -99,7 +99,7 @@ export async function getNextImageBackground() {
     index === IMAGES_LENGTH - 1
   ) {
     localImageStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(`/server/getlayoutimagev${api}`);
+    const response = await fetch(`/server/${api}`);
     if (response.status == 200) {
       const json = await response.json();
       localImageStore.update((s) => {
@@ -110,7 +110,7 @@ export async function getNextImageBackground() {
     }
   } else if (images.data.length === 0) {
     localImageStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(`/server/getlayoutimagev${api}`);
+    const response = await fetch(`/server/${api}`);
     if (response.status == 200) {
       const json = await response.json();
       localImageStore.update((s) => {

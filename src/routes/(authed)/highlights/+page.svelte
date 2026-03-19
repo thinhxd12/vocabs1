@@ -2,7 +2,6 @@
   import { enhance } from "$app/forms";
   import type { BookPageContentType, DBSelect } from "$lib/types";
   import { format } from "date-fns";
-  import { toast } from "svelte-sonner";
   import { fly } from "svelte/transition";
   import { Spring, Tween } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
@@ -24,6 +23,8 @@
   import type { PageProps } from "./$types";
   import Modal from "$lib/components/Modal.svelte";
   import Container from "$lib/components/Container.svelte";
+  import { addToast } from "$lib/store/layoutstore";
+  import { showTimer } from "$lib/store/navstore";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -293,14 +294,16 @@
       .delete()
       .eq("id", $bookmark!.id);
     if (error) {
-      toast.error("Error!", {
-        description: error.message as string,
-        class: "my-toast my-toast-error",
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
       });
     } else {
-      toast.success("Success!", {
-        description: "Delete successfully.",
-        class: "my-toast my-toast-success",
+      addToast({
+        type: "success",
+        title: "Success!",
+        message: "Delete successfully.",
       });
     }
     handleGetNextBookmark();
@@ -509,9 +512,10 @@
         .eq("id", $bookmark!.id);
 
       if (error) {
-        toast.error("Error!", {
-          description: error.message as string,
-          class: "my-toast my-toast-error",
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message as string,
         });
       }
     }
@@ -528,15 +532,18 @@
 </script>
 
 <svelte:head>
-  <title>
-    {bookmark ? `${$bookmark?.bookTile}` : "Bookmark"}
-  </title>
+  {#if !$showTimer}
+    <title>
+      {$bookmark ? `${$bookmark.bookTile}` : "📖"}
+    </title>
+  {/if}
+
   <meta name="bookmark" content="Some bookmark" />
 </svelte:head>
 
 <Container fullscreen>
   <Modal bind:showModal={showEdit}>
-    {#if bookmark}
+    {#if $bookmark}
       <form
         name="editbookmark"
         action="?/editBookmark"
@@ -546,14 +553,16 @@
           isSubmitting = true;
           return async ({ result, update }) => {
             if (result.type === "failure") {
-              toast.error("Error!", {
-                description: result.data?.error as string,
-                class: "my-toast my-toast-error",
+              addToast({
+                type: "error",
+                title: "Error!",
+                message: result.data?.error as string,
               });
             } else {
-              toast.success("Success!", {
-                description: "Edit successfully.",
-                class: "my-toast my-toast-success",
+              addToast({
+                type: "success",
+                title: "Success!",
+                message: "Edit successfully.",
               });
               handleCloseBook($bookmark!);
             }
@@ -688,14 +697,16 @@
           isSubmitting = true;
           return async ({ result }) => {
             if (result.type === "failure") {
-              toast.error("Error!", {
-                description: result.data?.error as string,
-                class: "my-toast my-toast-error",
+              addToast({
+                type: "error",
+                title: "Error!",
+                message: result.data?.error as string,
               });
             } else {
-              toast.success("Success!", {
-                description: "Insert successfully.",
-                class: "my-toast my-toast-success",
+              addToast({
+                type: "success",
+                title: "Success!",
+                message: "Insert successfully.",
               });
             }
             isSubmitting = false;
@@ -1086,7 +1097,7 @@
       }}
     >
       <textarea
-        class="style-scrollbar"
+        class="my-scrollbar"
         name="note"
         bind:value={noteContent}
         onkeydown={(e) => e.stopPropagation()}

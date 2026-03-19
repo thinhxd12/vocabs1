@@ -1,6 +1,6 @@
 <script lang="ts">
   import { wakeEnable } from "$lib/store/navstore";
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { fly } from "svelte/transition";
   import MaterialSymbolsSunnyRounded from "~icons/material-symbols/sunny-rounded";
   import MaterialSymbolsDarkModeRounded from "~icons/material-symbols/dark-mode-rounded";
@@ -41,7 +41,12 @@
     }
   }
 
-  wakeEnable.subscribe((value) => toggleWakeLock(value));
+  $effect(() => {
+    $wakeEnable;
+    untrack(() => {
+      toggleWakeLock($wakeEnable);
+    });
+  });
 
   function handleVisibilityChange() {
     document.addEventListener("visibilitychange", () => {
@@ -68,18 +73,18 @@
 >
   {#if status}
     <span in:fly={{ duration: 300, y: -15 }}>
-      <MaterialSymbolsSunnyRounded width="13" height="13" />
+      <MaterialSymbolsSunnyRounded width="14" height="14" />
     </span>
   {:else}
     <span in:fly={{ duration: 300, y: -15 }}>
-      <MaterialSymbolsDarkModeRounded width="13" height="13" />
+      <MaterialSymbolsDarkModeRounded width="14" height="14" />
     </span>
   {/if}
 </button>
 
 <style lang="postcss">
   .btn-menu {
-    @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 overflow-hidden bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30 disabled:cursor-not-allowed disabled:opacity-30;
+    @apply h-16 min-w-18 flex items-center justify-center rounded-2 overflow-hidden bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30 disabled:cursor-not-allowed disabled:opacity-30;
   }
 
   .btn-menu.active {

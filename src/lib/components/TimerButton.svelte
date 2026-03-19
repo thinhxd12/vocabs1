@@ -1,44 +1,41 @@
 <script lang="ts">
-  import { timerString } from "$lib/store/layoutstore";
+  import { page } from "$app/state";
+  import { sendNotification, showTimer } from "$lib/store/navstore";
   import {
-    handleGetListContent,
-    sendNotification,
-    showTimer,
-  } from "$lib/store/navstore";
+    formatTimerString,
+    padWithZeroes,
+    secondsToMinutes,
+  } from "$lib/utils/functions";
   import { onDestroy } from "svelte";
-  import MaterialSymbolsAlarmOutlineRounded from "~icons/material-symbols/alarm-outline-rounded";
+  import MaterialSymbolsTimerPlay from "~icons/material-symbols/timer-play";
 
+  const timeCount = 6 * 60;
   let interval: ReturnType<typeof setInterval>;
+  let now = $state<number>(0);
+  let end = $state<number>(0);
+  let secondsRemaining = $state<number>(timeCount);
 
   function startCountdown() {
     clearInterval(interval);
-    $timerString = "05:59";
     $showTimer = true;
+    now = Date.now();
+    end = now + secondsRemaining * 1000;
+    interval = setInterval(updateTimer, 1000);
+  }
 
-    const startTime = Date.now();
-    const targetTime = startTime + 6 * 60 * 1000;
-
-    interval = setInterval(() => {
-      const currentTime = Date.now();
-      const remainingTime = targetTime - currentTime;
-      if (remainingTime <= 0) {
-        clearInterval(interval);
-        endCountdown();
-        return;
-      }
-      const remainingMinutes = Math.floor(remainingTime / 1000 / 60);
-      const remainingSeconds = Math.floor((remainingTime / 1000) % 60);
-
-      const minuteString = String(remainingMinutes).padStart(2, "0");
-      const secondString = String(remainingSeconds).padStart(2, "0");
-      timerString.set(minuteString + ":" + secondString);
-    }, 1000);
+  function updateTimer() {
+    now = Date.now();
+    secondsRemaining = Math.round((end - now) / 1000);
+    if (now >= end) {
+      endCountdown();
+    }
   }
 
   function endCountdown() {
-    handleGetListContent();
     sendNotification();
+    clearInterval(interval);
     $showTimer = false;
+    secondsRemaining = timeCount;
   }
 
   function stopCountdown() {
@@ -47,13 +44,21 @@
   }
 
   $effect(() => {
-    if ($showTimer) startCountdown();
+    if ($showTimer) {
+      startCountdown();
+    }
   });
 
   onDestroy(() => {
-    clearInterval(interval);
+    stopCountdown();
   });
 </script>
+
+<svelte:head>
+  {#if $showTimer && page.url.pathname !== "/pomodoro"}
+    <title>{formatTimerString(secondsRemaining)}</title>
+  {/if}
+</svelte:head>
 
 {#if $showTimer}
   <button
@@ -62,9 +67,15 @@
     class:timerPlay={$showTimer}
   >
     <span
-      class="absolute w-full text-center text-9 leading-15 text-white group-hover:opacity-0"
+      class="absolute w-full flex items-center justify-center text-9 leading-15 text-white group-hover:opacity-0"
     >
-      {$timerString}
+      <span class="w-1/2 text-right">
+        {padWithZeroes(secondsToMinutes(secondsRemaining))}
+      </span>
+      <span class="min-w-6">:</span>
+      <span class="w-1/2 text-left">
+        {padWithZeroes(secondsRemaining % 60)}
+      </span>
     </span>
     <span
       class="absolute text-9 leading-15 text-[#fe3d2c] opacity-0 group-hover:opacity-100"
@@ -75,17 +86,17 @@
   </button>
 {:else}
   <button onclick={startCountdown} class="btn-menu">
-    <MaterialSymbolsAlarmOutlineRounded width="13" height="13" />
+    <MaterialSymbolsTimerPlay width="14" height="14" />
   </button>
 {/if}
 
 <style lang="postcss">
   .btn-timer {
-    @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
+    @apply h-16 min-w-18 flex items-center justify-center rounded-2 bg-white/20 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .btn-menu {
-    @apply flex h-15 min-w-17 px-2 items-center justify-center rounded-2 bg-white/20 hover:bg-white/40 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
+    @apply h-16 min-w-18 flex items-center justify-center rounded-2 bg-white/20 hover:bg-white/40 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .timerPlay {

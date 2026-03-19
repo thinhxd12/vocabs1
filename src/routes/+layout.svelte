@@ -18,9 +18,11 @@
   import SolarArrowLeftBold from "~icons/solar/arrow-left-bold";
   import EosIconsLoading from "~icons/eos-icons/loading";
   import SolarArrowRightBold from "~icons/solar/arrow-right-bold";
-  import MaterialSymbolsVolumeOffOutlineRounded from "~icons/material-symbols/volume-off-outline-rounded";
-  import MaterialSymbolsVolumeUpOutlineRounded from "~icons/material-symbols/volume-up-outline-rounded";
-  import MaterialSymbolsMovie from "~icons/material-symbols/movie";
+  import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
+  import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
+  import MaterialSymbolsPlayCircleRounded from "~icons/material-symbols/play-circle-rounded";
+  import Bi3CircleFill from "~icons/bi/3-circle-fill";
+  import Bi4CircleFill from "~icons/bi/4-circle-fill";
 
   let { children } = $props();
 
@@ -86,7 +88,7 @@
   {@render children()}
 
   {#if $layoutSetting.showImage}
-    <div class="absolute hidden md:flex gap-3 right-3 top-3 text-white">
+    <div class="absolute hidden md:flex gap-2 right-3 top-3 text-white">
       <button
         class="btn-menu light"
         onclick={(e) => {
@@ -104,7 +106,7 @@
           handleShowLayout("video");
         }}
       >
-        <MaterialSymbolsMovie width="14" height="14" />
+        <MaterialSymbolsPlayCircleRounded width="16" height="16" />
       </button>
       <button
         class="btn-menu light"
@@ -134,9 +136,9 @@
 
       <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
         {#if isMuted}
-          <MaterialSymbolsVolumeOffOutlineRounded width="14" height="14" />
+          <MaterialSymbolsVolumeOffRounded width="14" height="14" />
         {:else}
-          <MaterialSymbolsVolumeUpOutlineRounded width="14" height="14" />
+          <MaterialSymbolsVolumeUpRounded width="14" height="14" />
         {/if}
       </button>
 
@@ -145,10 +147,10 @@
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
-          setGetLayouImageApi(3);
+          setGetLayouImageApi("getlayoutimagev3");
         }}
       >
-        v3
+        <Bi3CircleFill width="14" height="14" />
       </button>
 
       <button
@@ -156,10 +158,10 @@
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
-          setGetLayouImageApi(4);
+          setGetLayouImageApi("getlayoutimagev4");
         }}
       >
-        v4
+        <Bi4CircleFill width="14" height="14" />
       </button>
     </div>
   {/if}

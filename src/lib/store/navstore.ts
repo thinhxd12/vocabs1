@@ -1,32 +1,29 @@
 import { page } from "$app/state";
-import arrayShuffle from "array-shuffle";
 import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
 import type { DBInsert, DBSelect, OpenMeteoResponse } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
-import { archiveVocab } from "$lib/utils/functions";
+import { archiveVocab, shuffle } from "$lib/utils/functions";
 import cloverImage from "$lib/assets/images/clover.webp";
 import { goto } from "$app/navigation";
+import { addToast } from "./layoutstore";
 
 export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
 export const isAutoPlay = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const wakeEnable = writable<boolean>(false);
-export const currentProgress = writable<0 | 1 | 2>(0);
+export const currentProgress = writable<number>(0);
 
 export const todaySchedule = writable<
   | {
-      start: DBSelect["schedule_table"];
-      end: DBSelect["schedule_table"];
+      first: DBSelect["schedule_table"];
+      second: DBSelect["schedule_table"];
     }
   | undefined
 >(undefined);
 export const listContent = writable<DBSelect["vocab_table"][]>([]);
-export const currentSchedule = writable<DBSelect["schedule_table"] | undefined>(
-  undefined,
-);
 export const schedule = writable<DBSelect["schedule_table"][] | undefined>(
   undefined,
 );
@@ -38,6 +35,60 @@ export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
 export const vocabInput = writable<string>("");
 
 const todayDate = format(new Date(), "yyyy-MM-dd");
+
+export async function getTotalMemories() {
+  const { count } = await page.data.supabase
+    .from("memories_table")
+    .select("*", { count: "exact", head: true });
+  if (count) totalMemories.set(count);
+}
+
+export async function getSchedule() {
+  const { data } = await page.data.supabase
+    .from("schedule_table")
+    .select("*")
+    .order("id", { ascending: true });
+  if (data) schedule.set(data);
+}
+
+export function getTodaySchedule() {
+  const scheduleValue = get(schedule);
+  if (scheduleValue) {
+    let index = scheduleValue.findIndex(
+      (item) =>
+        format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null,
+    );
+
+    if (index > -1) {
+      todaySchedule.set({
+        first: scheduleValue[index],
+        second: scheduleValue[index + 1],
+      });
+    }
+  }
+}
+
+export function getCurrentProgressSchedule() {
+  const currentProgressValue = get(currentProgress);
+  const todayScheduleValue = get(todaySchedule);
+  if (currentProgressValue === 2) {
+    return todayScheduleValue!.second;
+  }
+  if (currentProgressValue === 1) {
+    return todayScheduleValue!.first;
+  }
+}
+
+export function getNextProgressSchedule() {
+  const currentProgressValue = get(currentProgress);
+  const todayScheduleValue = get(todaySchedule);
+  if (currentProgressValue >= 1) {
+    return todayScheduleValue!.second;
+  }
+  if (currentProgressValue >= 2) {
+    return todayScheduleValue!.first;
+  }
+}
 
 export function sendNotification() {
   if (typeof window !== "undefined" && "Notification" in window) {
@@ -54,36 +105,46 @@ export function sendNotification() {
 }
 
 function notificationAlert() {
-  const currentScheduleValue = get(currentSchedule);
+  const nextProgressScheduleValue = getNextProgressSchedule();
   const notification = new Notification("Countdown Finished!", {
     requireInteraction: true,
-    body: currentScheduleValue
-      ? `${currentScheduleValue.count + 1}`
-      : "No current schedule.",
+    body: nextProgressScheduleValue
+      ? String(nextProgressScheduleValue.count + 1)
+      : "",
     icon: cloverImage,
     // icon: "https://cdn-icons-png.flaticon.com/512/2617/2617511.png",
   });
   notification.onclose = async () => {
-    clearInterval(intervalAutoplay);
-    handleAutoplay();
+    await handleCloseNotification();
   };
 }
 
+async function handleCloseNotification() {
+  const currentProgressValue = get(currentProgress);
+
+  if (currentProgressValue === 3) {
+    await goto("/vocab");
+    currentProgress.set(1);
+    await handleGetListContent();
+    isAutoPlay.set(false);
+    startAutoplay();
+  } else handleGetListContent();
+}
+
 export async function handleGetListContent() {
-  const schedule = get(currentSchedule);
-  if (!schedule) return;
+  const currentProgressSchedule = getCurrentProgressSchedule();
+  if (!currentProgressSchedule) return;
   listCount.set(0);
   isAutoPlay.set(false);
   listContent.set([]);
-  const index = schedule.index;
 
   const { data } = await page.data.supabase
     .from("vocab_table")
     .select("*")
     .order("id", { ascending: true })
-    .range(index, index + 49);
+    .range(currentProgressSchedule.index, currentProgressSchedule.index + 49);
   if (data.length) {
-    const content = arrayShuffle(data) as DBSelect["vocab_table"][];
+    const content = shuffle(data) as DBSelect["vocab_table"][];
     listContent.set(content);
     isAutoPlay.set(true);
   }
@@ -112,6 +173,12 @@ const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
       .from("vocab_table")
       .update({ number: word.number - 1 })
       .eq("id", word.id);
+    if (error)
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
+      });
   } else {
     await archiveVocab(word.id, word.word);
   }
@@ -161,73 +228,52 @@ export const handleAutoplay = () => {
 };
 
 export const updateTodayScheduleLocal = async () => {
-  let currentScheduleValue = get(currentSchedule);
-  const todayScheduleValue = get(todaySchedule);
-  if (!currentScheduleValue || !todayScheduleValue) return;
+  const currentProgressSchedule = getCurrentProgressSchedule();
+  if (!currentProgressSchedule) return;
 
-  const { data: currentData } = await page.data.supabase
+  const { data } = await page.data.supabase
     .from("schedule_table")
-    .select()
-    .eq("id", currentScheduleValue.id);
-  if (currentData.length == 0) return;
-  if (!currentData[0].date) {
+    .select("count")
+    .eq("id", currentProgressSchedule.id);
+  if (data.length == 0) return;
+  const currentCount = data[0].count;
+
+  if (currentProgressSchedule.date === null) {
     const { data } = await page.data.supabase
       .from("schedule_table")
-      .update({ date: new Date(todayDate), count: currentData[0].count + 1 })
-      .eq("id", currentScheduleValue.id)
-      .select();
-    currentSchedule.set(data[0]);
-
-    schedule.update((current) => {
-      return current?.map((item) => (item.id === data[0].id ? data[0] : item));
-    });
+      .update({
+        date: new Date(todayDate),
+        count: currentCount + 1,
+      })
+      .eq("id", currentProgressSchedule.id);
   } else {
     const { data } = await page.data.supabase
       .from("schedule_table")
-      .update({ count: currentData[0].count + 1 })
-      .eq("id", currentScheduleValue.id)
-      .select();
-    currentSchedule.set(data[0]);
-
-    schedule.update((current) => {
-      return current?.map((item) => (item.id === data[0].id ? data[0] : item));
-    });
+      .update({ count: currentCount + 1 })
+      .eq("id", currentProgressSchedule.id);
   }
 
-  currentScheduleValue = get(currentSchedule);
+  await getSchedule();
+  getTodaySchedule();
 
-  if (currentScheduleValue) {
-    if (todayScheduleValue.start.id === currentScheduleValue.id) {
-      todaySchedule.set({
-        ...todayScheduleValue,
-        start: currentScheduleValue,
-      });
-    } else {
-      todaySchedule.set({ ...todayScheduleValue, end: currentScheduleValue });
-    }
+  const newTodayScheduleValue = get(todaySchedule);
+  const currentProgressValue = get(currentProgress);
 
-    const newTodayScheduleValue = get(todaySchedule);
-    if (
-      newTodayScheduleValue!.start.count > 11 &&
-      newTodayScheduleValue!.end.count > 11
-    ) {
-      currentProgress.set(0);
-      currentSchedule.set(undefined);
-      checkSchedule();
-    } else {
-      showTimer.set(true);
-      const currentProgressValue = get(currentProgress);
-      if (currentProgressValue === 1) {
-        goto("/quiz");
-        currentProgress.set(2);
-        currentSchedule.set(newTodayScheduleValue!.end);
-      } else {
-        goto("/vocab");
-        currentProgress.set(1);
-        currentSchedule.set(newTodayScheduleValue!.start);
-      }
-      handleGetListContent();
-    }
+  if (currentProgressValue === 1) {
+    if (newTodayScheduleValue!.first.count < 12) showTimer.set(true);
+    await goto("/quiz");
+    currentProgress.set(2);
+    handleGetListContent();
+  } else if (currentProgressValue === 2) {
+    currentProgress.set(3);
+  }
+
+  if (
+    newTodayScheduleValue!.first.count > 11 &&
+    newTodayScheduleValue!.second.count > 11
+  ) {
+    currentProgress.set(0);
+    checkSchedule();
   }
 };
 

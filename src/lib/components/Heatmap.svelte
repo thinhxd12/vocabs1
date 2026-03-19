@@ -101,9 +101,9 @@
     return `${hours} hour${hours <= 1 ? "" : "s"} ${mins} minute${mins <= 1 ? "" : "s"}`;
   }
 
-  onMount(() => {
+  onMount(async () => {
+    await getMaxValue();
     getAllDays();
-    getMaxValue();
   });
 </script>
 

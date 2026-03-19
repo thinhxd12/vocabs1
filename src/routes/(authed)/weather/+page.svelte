@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
-  import { weatherData } from "$lib/store/navstore";
+  import { showTimer, weatherData } from "$lib/store/navstore";
   import {
     getAQIDescription,
     getAQILevel,
@@ -531,7 +531,9 @@
 </script>
 
 <svelte:head>
-  <title>🌧️</title>
+  {#if !$showTimer}
+    <title>🌧️</title>
+  {/if}
   <meta name="Weather" content="Weather" />
 </svelte:head>
 

@@ -2,12 +2,12 @@
   import { enhance } from "$app/forms";
   import { renderWord, showEdit } from "$lib/store/vocabstore";
   import { untrack } from "svelte";
-  import { toast } from "svelte-sonner";
   import type { DBSelect, VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/utils/functions";
   import Definition from "./Definition.svelte";
   import { page } from "$app/state";
   import SolarMagniferLinear from "~icons/solar/magnifer-linear";
+  import { addToast } from "$lib/store/layoutstore";
 
   let editWord = $state<DBSelect["vocab_table"]>({
     id: "",
@@ -108,16 +108,17 @@
     use:enhance={({ formElement, formData, action, cancel }) => {
       return async ({ result }) => {
         if (result.type === "failure") {
-          toast.error("Error!", {
-            description: result.data?.error as string,
-            class: "my-toast my-toast-error",
+          addToast({
+            type: "error",
+            title: "Error!",
+            message: result.data?.error as string,
           });
         } else {
-          toast.success("Success!", {
-            description: "Edit successfully.",
-            class: "my-toast my-toast-success",
+          addToast({
+            type: "success",
+            title: "Success!",
+            message: "Edit successfully.",
           });
-
           if ($renderWord && $renderWord.id === editWord.id) {
             $renderWord = editWord;
           }
@@ -171,7 +172,7 @@
     />
 
     <textarea
-      class="w-full style-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
+      class="w-full my-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
       name="meanings"
       autocomplete="off"
       onkeydown={(e) => e.stopPropagation()}

@@ -1,4 +1,3 @@
-import { toast } from "svelte-sonner";
 import type {
   CurrentlyWeatherType,
   HourlyWeatherType,
@@ -6,8 +5,42 @@ import type {
   WeatherQueryParams,
 } from "../types";
 import { v7 as uuidv7 } from "uuid";
-import { totalMemories } from "$lib/store/navstore";
+import { getTotalMemories } from "$lib/store/navstore";
 import { page } from "$app/state";
+import { addToast } from "$lib/store/layoutstore";
+
+export function minutesToSeconds(minutes: number) {
+  return minutes * 60;
+}
+export function secondsToMinutes(seconds: number) {
+  return Math.floor(seconds / 60);
+}
+export function padWithZeroes(number: number) {
+  return number.toString().padStart(2, "0");
+}
+
+export function formatTimerString(timeInSeconds: number): string {
+  const minutes = secondsToMinutes(timeInSeconds);
+  const remainingSeconds = timeInSeconds % 60;
+  return `${padWithZeroes(minutes)}:${padWithZeroes(remainingSeconds)}`;
+}
+
+export function shuffle(array: Array<any>) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  while (currentIndex > 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+}
 
 export function autofocus(node: HTMLElement) {
   node.focus();
@@ -174,9 +207,10 @@ export const archiveVocab = async (id: string, word: string) => {
     .insert({ id: uuidv7(), word: word });
 
   if (errorMemories) {
-    toast.error("Error!", {
-      description: errorMemories.message as string,
-      class: "my-toast my-toast-error",
+    addToast({
+      type: "error",
+      title: "Error!",
+      message: errorMemories.message as string,
     });
     return;
   }
@@ -187,9 +221,10 @@ export const archiveVocab = async (id: string, word: string) => {
     .eq("id", id);
 
   if (errorDeleteVocab) {
-    toast.error("Error!", {
-      description: errorDeleteVocab.message as string,
-      class: "my-toast my-toast-error",
+    addToast({
+      type: "error",
+      title: "Error!",
+      message: errorDeleteVocab.message as string,
     });
     return;
   }
@@ -199,12 +234,12 @@ export const archiveVocab = async (id: string, word: string) => {
     .select("*", { count: "exact", head: true });
 
   if (!lengthVocabTable || lengthVocabTable % 200 === 0) {
-    totalMemories.update((n) => n + 1);
+    getTotalMemories();
     return;
   }
 
   if (lengthVocabTable < 200) {
-    totalMemories.update((n) => n + 1);
+    getTotalMemories();
     return;
   }
 
@@ -226,7 +261,14 @@ export const archiveVocab = async (id: string, word: string) => {
     .update({ id: id })
     .eq("id", smallestRow.id);
 
-  if (!lastError) totalMemories.update((n) => n + 1);
+  if (lastError) {
+    addToast({
+      type: "error",
+      title: "Error!",
+      message: lastError.message as string,
+    });
+  }
+  getTotalMemories();
 };
 
 /**

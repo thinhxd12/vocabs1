@@ -5,15 +5,14 @@
     quizRender,
     listCount,
     updateTodayScheduleLocal,
-    showTimer,
     isAutoPlay,
+    showTimer,
   } from "$lib/store/navstore";
-  import arrayShuffle from "array-shuffle";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
-  import { timerString } from "$lib/store/layoutstore";
-  import { archiveVocab } from "$lib/utils/functions";
+  import { archiveVocab, shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import type { PageProps } from "./$types";
+  import { addToast } from "$lib/store/layoutstore";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -48,8 +47,8 @@
     const filterdOptions = $listContent.filter(
       (choice) => choice.id !== $quizRender!.id,
     );
-    let randomChoices = arrayShuffle(filterdOptions).slice(0, 3);
-    randomChoices = arrayShuffle([...randomChoices, $quizRender!]);
+    let randomChoices = shuffle(filterdOptions).slice(0, 3);
+    randomChoices = shuffle([...randomChoices, $quizRender!]);
     options = randomChoices.map((item) => item.word);
   }
 
@@ -95,10 +94,16 @@
   async function handleCheckQuizWord() {
     if (!$quizRender) return;
     if ($quizRender.number > 1) {
-      await layoutData.supabase
+      const { error } = await layoutData.supabase
         .from("vocab_table")
         .update({ number: $quizRender.number - 1 })
         .eq("id", $quizRender.id);
+      if (error)
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message as string,
+        });
     } else {
       await archiveVocab($quizRender.id, $quizRender.word);
     }
@@ -141,16 +146,12 @@
 </script>
 
 <svelte:head>
-  {#if $showTimer && $timerString}
-    <title>🤔 {$timerString}</title>
-  {:else if $listCount}
-    <title>🤔 {Math.floor(($listCount / $listContent.length) * 100)}%</title>
-  {:else}
+  {#if !$showTimer}
     <title>🤔</title>
   {/if}
-
   <meta name="Quiz" content="Some Quiz" />
 </svelte:head>
+
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 <audio src={src1} bind:paused={paused1} preload="auto"></audio>
 

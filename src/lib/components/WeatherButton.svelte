@@ -1,7 +1,7 @@
 <script lang="ts">
   import { weatherData } from "$lib/store/navstore";
   import { getWeatherInfo } from "$lib/utils/w-conditions";
-  import { onDestroy } from "svelte";
+  import { untrack } from "svelte";
   import { fly } from "svelte/transition";
 
   interface WeatherInfo {
@@ -12,16 +12,15 @@
 
   let weatherInfo = $state<WeatherInfo | undefined>(undefined);
 
-  const unsubscribe = weatherData.subscribe((value) => {
-    if (value)
-      weatherInfo = getWeatherInfo(
-        value.current.weather_code,
-        value.current.is_day,
-      );
-  });
-
-  onDestroy(() => {
-    unsubscribe();
+  $effect(() => {
+    $weatherData;
+    untrack(() => {
+      if ($weatherData)
+        weatherInfo = getWeatherInfo(
+          $weatherData.current.weather_code,
+          $weatherData.current.is_day,
+        );
+    });
   });
 </script>
 
