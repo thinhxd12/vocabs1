@@ -16,7 +16,10 @@
         timeout = setTimeout(() => {
           dialog?.close();
         }, $toast.timeout);
-      } else dialog?.close();
+      } else {
+        dialog?.close();
+        clearTimeout(timeout);
+      }
     });
   });
 
@@ -25,32 +28,30 @@
   });
 </script>
 
-{#if $toast.showToast}
-  <dialog
-    bind:this={dialog}
-    onclick={(e) => {
-      if (e.target === dialog) {
-        dialog.close();
-        clearTimeout(timeout);
-      }
-    }}
-  >
-    <div class="toast-content" data-type={$toast.type}>
-      {#if $toast.type === "success"}
-        <MaterialSymbolsLightCheckCircleRounded width="24" height="24" />
-      {:else if $toast.type === "error"}
-        <MaterialSymbolsErrorRounded width="24" height="24" />
-      {:else}
-        <MaterialSymbolsInfoRounded width="24" height="24" />
-      {/if}
+<dialog
+  bind:this={dialog}
+  onclick={(e) => {
+    if (e.target === dialog) {
+      dialog.close();
+      clearTimeout(timeout);
+    }
+  }}
+>
+  <div class="toast-content" data-type={$toast.type}>
+    {#if $toast.type === "success"}
+      <MaterialSymbolsLightCheckCircleRounded width="24" height="24" />
+    {:else if $toast.type === "error"}
+      <MaterialSymbolsErrorRounded width="24" height="24" />
+    {:else}
+      <MaterialSymbolsInfoRounded width="24" height="24" />
+    {/if}
 
-      <div class="toast-text">
-        <h3>{$toast.title}</h3>
-        <p>{$toast.message}</p>
-      </div>
+    <div class="toast-text">
+      <h3>{$toast.title}</h3>
+      <p>{$toast.message}</p>
     </div>
-  </dialog>
-{/if}
+  </div>
+</dialog>
 
 <style lang="postcss">
   dialog {

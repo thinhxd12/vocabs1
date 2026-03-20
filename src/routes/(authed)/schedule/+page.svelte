@@ -266,10 +266,10 @@
         </div>
         <div class="flex-1 light flex justify-center items-center h-full">
           <div class="indent-30 w-1/2 h-full">
-            {format(new Date(item.start_date), "yyyy-MM-dd")}
+            {item.start_date}
           </div>
           <div class="indent-30 w-1/2 h-full">
-            {format(new Date(item.end_date), "yyyy-MM-dd")}
+            {item.end_date}
           </div>
         </div>
       </div>

@@ -29,15 +29,14 @@
   import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
   import GravityUiFrames from "~icons/gravity-ui/frames";
   import sunrise from "$lib/assets/images/sunrise.webp";
-  import TeenyiconsBulbOnSolid from "~icons/teenyicons/bulb-on-solid";
-  import MingcuteSadFill from "~icons/mingcute/sad-fill";
-  import MaterialSymbolsLockOpen from "~icons/material-symbols/lock-open";
   import BiTranslate from "~icons/bi/translate";
   import BxsBookBookmark from "~icons/bxs/book-bookmark";
-  import MaterialSymbolsDocumentSearch from "~icons/material-symbols/document-search";
   import UilSchedule from "~icons/uil/schedule";
+  import LineiconsEmojiSad from "~icons/lineicons/emoji-sad";
+  import MaterialSymbolsFeatureSearchOutline from "~icons/material-symbols/feature-search-outline";
+  import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
+  import MdiLockOpenVariant from "~icons/mdi/lock-open-variant";
 
-  const todayDate = format(new Date(), "yyyy-MM-dd");
   let interval: ReturnType<typeof setInterval>;
   let timeout: ReturnType<typeof setTimeout>;
 
@@ -132,7 +131,7 @@
       <span
         class="uppercase text-8 font-900 text-black leading-12 text-center absolute w-15 h-full transform -rotate-90 origin-center"
       >
-        {format(todayDate, "eeeeee")}
+        {format(new Date(), "eeeeee")}
       </span>
     </div>
   </div>
@@ -142,7 +141,7 @@
   >
     <div class="w-full flex justify-center items-end gap-2">
       <div
-        class="flex justify-between relative w-40 mx-8 outline-none disabled:cursor-not-allowed"
+        class="flex justify-between relative w-40 mx-1 outline-none disabled:cursor-not-allowed"
       >
         <div class="progress"></div>
         <div
@@ -192,7 +191,7 @@
         class:active={page.url.pathname === "/vocab"}
         class="btn-nav"
       >
-        <MaterialSymbolsDocumentSearch width="14" height="14" />
+        <MaterialSymbolsFeatureSearchOutline width="14" height="14" />
       </a>
 
       <a
@@ -208,7 +207,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <TeenyiconsBulbOnSolid width="14" height="14" />
+        <HugeiconsQuiz02 width="14" height="14" />
       </a>
 
       <button
@@ -244,12 +243,12 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <MingcuteSadFill width="14" height="14" />
+        <LineiconsEmojiSad width="14" height="14" />
       </a>
 
       <form method="post" action="/login?/signout">
-        <button class="btn-menu">
-          <MaterialSymbolsLockOpen width="14" height="14" />
+        <button class="btn-menu" onclick={() => localStorage.clear()}>
+          <MdiLockOpenVariant width="14" height="14" />
         </button>
       </form>
     </div>

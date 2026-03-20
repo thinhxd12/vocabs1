@@ -55,8 +55,7 @@ export function getTodaySchedule() {
   const scheduleValue = get(schedule);
   if (scheduleValue) {
     let index = scheduleValue.findIndex(
-      (item) =>
-        format(item.date!, "yyyy-MM-dd") === todayDate || item.date === null,
+      (item) => item.date === todayDate || item.date === null,
     );
 
     if (index > -1) {

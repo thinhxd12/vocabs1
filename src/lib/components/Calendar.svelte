@@ -215,7 +215,7 @@
         {#if $localCalendarStore}
           {#each $localCalendarStore as item}
             <p class="flex gap-6">
-              <span>{format(new Date(item.date), "yyyy-MM-dd")}</span>
+              <span>{item.date}</span>
               <span>{item.count}</span>
             </p>
           {/each}

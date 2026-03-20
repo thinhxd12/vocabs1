@@ -16,18 +16,16 @@
   });
 </script>
 
-{#if showModal}
-  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-  <dialog
-    bind:this={dialog}
-    onclose={() => (showModal = false)}
-    onclick={(e) => {
-      if (e.target === dialog) dialog.close();
-    }}
-  >
-    {@render children?.()}
-  </dialog>
-{/if}
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+<dialog
+  bind:this={dialog}
+  onclose={() => (showModal = false)}
+  onclick={(e) => {
+    if (e.target === dialog) dialog.close();
+  }}
+>
+  {@render children?.()}
+</dialog>
 
 <style lang="postcss">
   dialog {

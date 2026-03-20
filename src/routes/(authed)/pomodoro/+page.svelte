@@ -187,13 +187,10 @@
   }
 
   async function submitReport() {
-    const today = new Date();
-    const date = format(today, "yyyy-MM-dd");
-
     const { data } = await layoutData.supabase
       .from("pomodoro_table")
       .select("time")
-      .eq("date", date);
+      .eq("date", todayDate);
 
     if (data && data.length) {
       const { error } = await layoutData.supabase
@@ -201,7 +198,7 @@
         .update({
           time: data[0].time + $focusMinutes,
         })
-        .eq("date", date);
+        .eq("date", todayDate);
       if (error)
         addToast({
           type: "error",
@@ -211,7 +208,7 @@
     } else {
       const { error } = await layoutData.supabase
         .from("pomodoro_table")
-        .insert({ date, time: $focusMinutes });
+        .insert({ date: todayDate, time: $focusMinutes });
       if (error)
         addToast({
           type: "error",
@@ -273,12 +270,13 @@
 
 <svelte:head>
   {#if $isPaused}
-    <title>🍅 Paused</title>
+    <title>Paused 🍅</title>
   {:else if $currentMode === "focus"}
-    <title>{formatTimerString($secondsRemaining)} - Time to focus!</title>
+    <title>{formatTimerString($secondsRemaining)} - Time to focus! ⏳</title>
   {:else}
-    <title>{formatTimerString($secondsRemaining)} - Time for a break!</title>
+    <title>{formatTimerString($secondsRemaining)} - Time for a break! 🌴</title>
   {/if}
+
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
 
@@ -480,9 +478,11 @@
       <div class="w-full h-24 px-6 bg-black text-white text-13 leading-24">
         Heatmap
       </div>
-      <div class="w-full flex-1">
-        <Heatmap />
-      </div>
+      {#if showHeatmap}
+        <div class="w-full flex-1">
+          <Heatmap />
+        </div>
+      {/if}
     </div>
   </Modal>
 

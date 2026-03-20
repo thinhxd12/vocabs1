@@ -237,11 +237,15 @@
 </audio>
 
 <Modal bind:showModal={$showTranslate}>
-  <Translate />
+  {#if $showTranslate}
+    <Translate />
+  {/if}
 </Modal>
 
 <Modal bind:showModal={$showEdit}>
-  <Edit id={editId} />
+  {#if $showEdit}
+    <Edit id={editId} />
+  {/if}
 </Modal>
 
 {#if !$showEdit && !$showTranslate}

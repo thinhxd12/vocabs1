@@ -45,7 +45,7 @@ export const layoutSetting = writable<LayoutSettingType>({
   showVideo: false,
 });
 
-export const layoutApi = writable<string>("");
+export const layoutApi = writable<string>("getlayoutimagev3");
 
 //----------------LAYOUT IMAGE-----------------//
 
@@ -128,6 +128,18 @@ export async function getNextImageBackground() {
       return newIndex;
     });
   }
+}
+
+export async function setDefaultImageBackground() {
+  localImageStore.update((s) => ({ ...s, loading: true }));
+  localImageStore.update((s) => {
+    const data = [...s.data.slice(1), defaultImage];
+    localStorage.setItem(LAYOUT_STORAGE, serialize(data));
+    return { loading: false, data };
+  });
+  const currentIndex = get(localImageStore).data.length - 1;
+  currentImageIndex.set(currentIndex);
+  localStorage.setItem(LAYOUT_INDEX, String(currentIndex));
 }
 
 export async function getPrevImageBackground() {

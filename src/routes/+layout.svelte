@@ -12,6 +12,7 @@
     localImageStore,
     layoutSetting,
     setGetLayouImageApi,
+    setDefaultImageBackground,
   } from "$lib/store/localstore";
   import type { LayoutSettingType, VideoBackgroundType } from "$lib/types";
   import { onMount } from "svelte";
@@ -23,6 +24,7 @@
   import MaterialSymbolsPlayCircleRounded from "~icons/material-symbols/play-circle-rounded";
   import Bi3CircleFill from "~icons/bi/3-circle-fill";
   import Bi4CircleFill from "~icons/bi/4-circle-fill";
+  import MaterialSymbolsResetImage from "~icons/material-symbols/reset-image";
 
   let { children } = $props();
 
@@ -140,6 +142,17 @@
         {:else}
           <MaterialSymbolsVolumeUpRounded width="14" height="14" />
         {/if}
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("image");
+          setDefaultImageBackground();
+        }}
+      >
+        <MaterialSymbolsResetImage width="14" height="14" />
       </button>
 
       <button

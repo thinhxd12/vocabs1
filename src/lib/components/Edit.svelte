@@ -1,13 +1,19 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import { renderWord, showEdit } from "$lib/store/vocabstore";
-  import { untrack } from "svelte";
+  import { onMount } from "svelte";
   import type { DBSelect, VocabMeaningType } from "$lib/types";
   import { getTranslationArr } from "$lib/utils/functions";
   import Definition from "./Definition.svelte";
   import { page } from "$app/state";
   import SolarMagniferLinear from "~icons/solar/magnifer-linear";
   import { addToast } from "$lib/store/layoutstore";
+
+  interface Props {
+    id: string;
+  }
+
+  let { id }: Props = $props();
 
   let editWord = $state<DBSelect["vocab_table"]>({
     id: "",
@@ -27,29 +33,22 @@
     meanings: [],
   });
 
-  let { id } = $props();
-
-  $effect(() => {
-    const v = $showEdit;
-    untrack(async () => {
-      if (id && $showEdit) {
-        const { data } = await page.data.supabase
-          .from("vocab_table")
-          .select("*")
-          .eq("id", id)
-          .limit(1);
-        if (data) {
-          editWord = data[0];
-          meaningsText = JSON.stringify(editWord.meanings, null, "     ");
-          translationText = makeTranslationText(editWord.meanings);
-          getTextDataWebster(false);
-        }
-      }
-    });
+  onMount(async () => {
+    const { data } = await page.data.supabase
+      .from("vocab_table")
+      .select("*")
+      .eq("id", id)
+      .limit(1);
+    if (data) {
+      editWord = data[0];
+      meaningsText = JSON.stringify(editWord.meanings, null, "     ");
+      translationText = makeTranslationText(editWord.meanings);
+      getTextDataWebster(false);
+    }
   });
 
-  let meaningsText = $state<string>();
-  let translationText = $state<string>();
+  let meaningsText = $state<string>("");
+  let translationText = $state<string>("");
 
   async function getTextDataWebster(isChange: boolean) {
     const response = await fetch(`/server/getwebster?word=${editWord.word}`);
@@ -86,16 +85,19 @@
 
   function handleChangeTranslationMeanings(str: string) {
     editWord.meanings = JSON.parse(str);
-    translationText = makeTranslationText(editWord.meanings);
     editRenderWord.meanings = JSON.parse(str);
+    translationText = makeTranslationText(editWord.meanings);
   }
 
   function handleCheckEdit() {
-    editWord.meanings = editRenderWord.meanings;
-    editWord.phonetics = editRenderWord.phonetics;
-    editWord.audio = editRenderWord.audio;
-    meaningsText = JSON.stringify(editWord.meanings, null, "     ");
     translationText = makeTranslationText(editWord.meanings);
+    editWord.meanings = editRenderWord.meanings;
+    meaningsText = JSON.stringify(editWord.meanings, null, "     ");
+    handleChangeTranslationTranslate(translationText);
+    if (editWord.word !== editRenderWord.word) {
+      editWord.phonetics = editRenderWord.phonetics;
+      editWord.audio = editRenderWord.audio;
+    }
   }
 </script>
 

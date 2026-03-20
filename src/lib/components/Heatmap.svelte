@@ -120,35 +120,37 @@
     }}
   />
 
-  <div class="flex">
-    <div class="calendarMonth">
-      {#each monthNames as month}
-        <div class="text-12 font-400 leading-10">{month.slice(0, 3)}</div>
-      {/each}
-    </div>
-
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="calendarDate">
-      <div class="calendarDay">
-        <span>Sun</span>
-        <span>Wed</span>
-        <span>Sat</span>
+  {#if days.length}
+    <div class="flex">
+      <div class="calendarMonth">
+        {#each monthNames as month}
+          <div class="text-12 font-400 leading-10">{month.slice(0, 3)}</div>
+        {/each}
       </div>
-      {#each days as day}
-        {#if day.enabled}
-          <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div
-            class="day"
-            data-level={calculateLevel(day.time)}
-            onmouseover={() => (dayDetail = day)}
-          ></div>
-        {:else}
-          <div class="none-day"></div>
-        {/if}
-      {/each}
+
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div class="calendarDate">
+        <div class="calendarDay">
+          <span>Sun</span>
+          <span>Wed</span>
+          <span>Sat</span>
+        </div>
+        {#each days as day}
+          {#if day.enabled}
+            <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div
+              class="day"
+              data-level={calculateLevel(day.time)}
+              onmouseover={() => (dayDetail = day)}
+            ></div>
+          {:else}
+            <div class="none-day"></div>
+          {/if}
+        {/each}
+      </div>
     </div>
-  </div>
+  {/if}
 
   <div class="flex flex-col items-center w-200 p-6 gap-9">
     {#if dayDetail}
