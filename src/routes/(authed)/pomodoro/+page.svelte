@@ -40,6 +40,7 @@
     padWithZeroes,
     secondsToMinutes,
   } from "$lib/utils/functions";
+  import { fade } from "svelte/transition";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -350,12 +351,12 @@
     <div class="h-18 flex justify-center items-center gap-6">
       {#each { length: $currentInterval } as item, i}
         <div
-          class="size-3 rounded-full bg-black shadow shadow-black/30 ring-1 ring-black"
+          class="size-3 rounded-full bg-black shadow-sm shadow-black/60 ring-1 ring-black"
         ></div>
       {/each}
       {#each { length: $intervals - $currentInterval } as item, i}
         <div
-          class="size-3 rounded-full shadow shadow-black/30 ring-1 ring-black"
+          class="size-3 rounded-full shadow-sm shadow-black/60 ring-1 ring-black"
         ></div>
       {/each}
     </div>
@@ -578,10 +579,22 @@
           from 0deg,
           black 0deg {progress.current}deg,
           transparent {progress.current}deg 360deg
-          ); filter: {$isPaused
-            ? 'brightness(0.8) grayscale(1)'
-            : ''} contrast(1.2);"
+          ); filter: contrast(1.2);"
         />
+
+        {#if $isPaused}
+          <div
+            class="absolute w-full h-full z-30 flex items-center justify-center bg-black/15 shadow-[inset_0_0_60px_rgba(0,0,0,1)]"
+          >
+            <h1
+              class="text-90 text-[#FF0000] font-constantine font-400"
+              style="text-shadow: 0 2px 8px rgba(0, 0, 0, 1);"
+              transition:fade={{ duration: 300 }}
+            >
+              PAUSED
+            </h1>
+          </div>
+        {/if}
 
         <div class="center"></div>
         <div class="static"></div>

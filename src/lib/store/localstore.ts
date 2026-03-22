@@ -1,14 +1,23 @@
 import type {
   ArtImageType,
-  DBSelect,
   ImageBackgroundType,
   LayoutSettingType,
+  UserType,
 } from "$lib/types";
 import { get, writable } from "svelte/store";
 import { page } from "$app/state";
 import mainImage from "$lib/assets/images/main-image.webp";
 import mainAuthor from "$lib/assets/images/main-author.webp";
 import icescape from "$lib/assets/images/Icescape.jpg";
+import {
+  currentLocationId,
+  focusMinutes,
+  intervals,
+  locationList,
+  longbreakMinutes,
+  shortbreakMinutes,
+  yearProgressList,
+} from "./layoutstore";
 
 const browser =
   typeof window !== "undefined" && typeof document !== "undefined";
@@ -23,11 +32,11 @@ const defaultImage: ImageBackgroundType = {
   place: "Snæfellsnes peninsula, Iceland",
 };
 
-function serialize(value: any): string {
+export function serialize(value: any): string {
   return JSON.stringify(value);
 }
 
-function deserialize(item: string) {
+export function deserialize(item: string) {
   return JSON.parse(item);
 }
 
@@ -247,60 +256,50 @@ export async function getPrevArtImage() {
   });
 }
 
-//----------------CALENDAR-----------------//
-export const localCalendarStore = writable<DBSelect["diary_table"][] | null>();
-const CALENDAR_RECORD = "calendar-record";
+//----------------DASHBOARD-----------------//
 
-export async function getCalendarRecord() {
+export const USER_SETTINGS = "user-settings";
+
+export async function getUserSettingsData() {
   if (!browser) return;
-  const record = localStorage.getItem(CALENDAR_RECORD);
-
-  if (record) {
-    localCalendarStore.set(deserialize(record));
+  const settings = localStorage.getItem(USER_SETTINGS);
+  if (settings) {
+    const data = deserialize(settings);
+    setStoreUserSettings(data);
   } else {
     const { data } = await page.data.supabase
-      .from("diary_table")
-      .select("*")
-      .order("id", { ascending: true });
+      .from("dashboard_table")
+      .select(
+        "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress",
+      )
+      .eq("user", "thinh");
     if (data) {
-      localCalendarStore.set(data);
-      localStorage.setItem(CALENDAR_RECORD, serialize(data));
+      localStorage.setItem(USER_SETTINGS, serialize(data[0]));
+      setStoreUserSettings(data[0]);
     }
   }
 }
 
-//----------------WEATHER-----------------//
-
-export const locationList = writable<DBSelect["weather_table"][]>([]);
-export const currentWeatherIndex = writable<number>(0);
-const WEATHER_LIST = "weather-list";
-const WEATHER_INDEX = "weather-index";
-
-export async function getWeatherList() {
-  if (!browser) return;
-  const list = localStorage.getItem(WEATHER_LIST);
-  const index = localStorage.getItem(WEATHER_INDEX);
-  if (index) currentWeatherIndex.set(Number(index));
-  else {
-    currentWeatherIndex.set(0);
-    localStorage.setItem(WEATHER_INDEX, "0");
-  }
-
-  if (list) {
-    locationList.set(deserialize(list));
-  } else {
-    const { data } = await page.data.supabase
-      .from("weather_table")
-      .select("*")
-      .order("id", { ascending: true });
-    if (data) {
-      locationList.set(data);
-      localStorage.setItem(WEATHER_LIST, serialize(data));
-    }
-  }
+function setStoreUserSettings(setting: UserType) {
+  focusMinutes.set(setting.focusMinutes);
+  shortbreakMinutes.set(setting.shortbreakMinutes);
+  longbreakMinutes.set(setting.longbreakMinutes);
+  intervals.set(setting.intervals);
+  locationList.set(setting.locations);
+  currentLocationId.set(setting.currentLocationId);
+  yearProgressList.set(setting.progress);
 }
 
-export async function handleChangeWeatherLocation(index: number) {
-  localStorage.setItem(WEATHER_INDEX, String(index));
-  currentWeatherIndex.set(index);
+export async function saveUserSetting() {
+  if (!browser) return;
+  const { data } = await page.data.supabase
+    .from("dashboard_table")
+    .select(
+      "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress",
+    )
+    .eq("user", "thinh");
+  if (data) {
+    localStorage.setItem(USER_SETTINGS, serialize(data[0]));
+    setStoreUserSettings(data[0]);
+  }
 }

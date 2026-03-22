@@ -8,19 +8,10 @@
     todaySchedule,
     totalMemories,
     handleGetListContent,
-    weatherData,
     currentProgress,
   } from "$lib/store/navstore";
-  import {
-    currentWeatherIndex,
-    getWeatherList,
-    locationList,
-  } from "$lib/store/localstore";
   import { goto } from "$app/navigation";
-  import type { WeatherQueryParams } from "$lib/types";
   import { format } from "date-fns";
-  import { getOpenMeteoWeather } from "$lib/utils/functions";
-  import { onDestroy, onMount } from "svelte";
   import { showTranslate } from "$lib/store/vocabstore";
   import WeatherButton from "./WeatherButton.svelte";
   import TimerButton from "./TimerButton.svelte";
@@ -32,52 +23,12 @@
   import BiTranslate from "~icons/bi/translate";
   import BxsBookBookmark from "~icons/bxs/book-bookmark";
   import UilSchedule from "~icons/uil/schedule";
-  import LineiconsEmojiSad from "~icons/lineicons/emoji-sad";
   import MaterialSymbolsFeatureSearchOutline from "~icons/material-symbols/feature-search-outline";
   import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
   import MdiLockOpenVariant from "~icons/mdi/lock-open-variant";
-
-  let interval: ReturnType<typeof setInterval>;
-  let timeout: ReturnType<typeof setTimeout>;
-
-  onMount(() => {
-    getNavWeatherData();
-    startInterval();
-  });
-
-  function calculateNextInterval() {
-    const now = new Date();
-    let minutes = now.getMinutes();
-    let nextIntervalMinutes = Math.ceil(minutes / 15) * 15;
-    if (nextIntervalMinutes === 60) {
-      nextIntervalMinutes = 0;
-      now.setHours(now.getHours() + 1);
-    }
-
-    now.setMinutes(nextIntervalMinutes, 0, 0);
-    const delay = now.getTime() - Date.now() + 300;
-    return delay;
-  }
-
-  const startInterval = () => {
-    const delay = calculateNextInterval();
-    timeout = setTimeout(() => {
-      getNavWeatherData();
-      interval = setInterval(getNavWeatherData, 15 * 60 * 1000);
-    }, delay);
-  };
-
-  async function getNavWeatherData() {
-    await getWeatherList();
-    const defaultLocation = $locationList[$currentWeatherIndex];
-    let param: WeatherQueryParams = {
-      latitude: defaultLocation.lat,
-      longitude: defaultLocation.lon,
-      tempUnit: "c",
-    };
-    $weatherData = await getOpenMeteoWeather(param);
-  }
-
+  import MaterialSymbolsDashboardRounded from "~icons/material-symbols/dashboard-rounded";
+  import SolarSadSquareBold from "~icons/solar/sad-square-bold";
+  
   async function handleDailyProgress(num: number) {
     if (num === 1) {
       await goto("/vocab");
@@ -87,11 +38,6 @@
     $currentProgress = num;
     handleGetListContent();
   }
-
-  onDestroy(() => {
-    clearInterval(interval);
-    clearTimeout(timeout);
-  });
 </script>
 
 <div class="w-main h-full flex items-center gap-2">
@@ -173,6 +119,14 @@
       </div>
 
       <a
+        href="/dashboard"
+        class:active={page.url.pathname === "/dashboard"}
+        class="btn-menu"
+      >
+        <MaterialSymbolsDashboardRounded width="14" height="14" />
+      </a>
+
+      <a
         href="/pomodoro"
         class:active={page.url.pathname === "/pomodoro"}
         class="btn-menu"
@@ -243,7 +197,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <LineiconsEmojiSad width="14" height="14" />
+        <SolarSadSquareBold width="14" height="14" />
       </a>
 
       <form method="post" action="/login?/signout">

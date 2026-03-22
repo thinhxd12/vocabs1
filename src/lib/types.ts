@@ -127,6 +127,19 @@ export interface WeatherCodeData {
   };
 }
 
+export type HighlightType = {
+  authors: string;
+  bookTile: string;
+  content: string;
+  dateOfCreation: string;
+  id: string;
+  like: number;
+  location: string;
+  page: number;
+  type: string;
+  note: string;
+};
+
 export type BookDetailType = {
   title: string | null;
   authors: string[];
@@ -258,8 +271,8 @@ export interface OpenMeteoGeocodeResponse {
 }
 
 export interface WeatherQueryParams {
-  latitude: number;
-  longitude: number;
+  latitude: string;
+  longitude: string;
   tempUnit: "c" | "f";
 }
 
@@ -286,3 +299,27 @@ export type ToastType = {
   type: "success" | "error" | "info";
   timeout?: number;
 };
+
+export type UserType = {
+  focusMinutes: number;
+  shortbreakMinutes: number;
+  longbreakMinutes: number;
+  intervals: number;
+  currentHighlightId: string;
+  locations: Array<LocationType>;
+  progress: Array<YearProgressType>;
+  currentLocationId: string;
+};
+
+export interface LocationType {
+  id: string;
+  name: string;
+  latitude: string;
+  longitude: string;
+}
+
+export interface YearProgressType {
+  id: string;
+  date: string;
+  count: string;
+}

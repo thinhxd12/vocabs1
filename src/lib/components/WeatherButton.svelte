@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { weatherData } from "$lib/store/navstore";
+  import { weatherData } from "$lib/store/layoutstore";
   import { getWeatherInfo } from "$lib/utils/w-conditions";
   import { untrack } from "svelte";
   import { fly } from "svelte/transition";

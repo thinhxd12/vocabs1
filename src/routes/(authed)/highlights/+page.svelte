@@ -1,13 +1,21 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
-  import type { BookPageContentType, DBSelect } from "$lib/types";
+  import type {
+    BookPageContentType,
+    DBSelect,
+    HighlightType,
+  } from "$lib/types";
   import { format } from "date-fns";
   import { fly } from "svelte/transition";
   import { Spring, Tween } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
   import { onDestroy, onMount } from "svelte";
   import StarRating from "$lib/components/StarRating.svelte";
-  import { bookmark, bookInfo } from "$lib/store/highlightstore";
+  import {
+    highlight,
+    bookInfo,
+    currentHighlightId,
+  } from "$lib/store/layoutstore";
   import { innerHeight } from "svelte/reactivity/window";
   import HighlightPage from "$lib/components/HighlightPage.svelte";
   import PhCaretLeftFill from "~icons/ph/caret-left-fill";
@@ -67,6 +75,7 @@
   let expandDesc = $state<boolean>(false);
   let showNote = $state<boolean>(false);
   let noteContent = $state<string>("");
+  let highlightEdit = $state<HighlightType>();
 
   const pageWidth = () => {
     const width = Math.round(ratio * (innerHeight.current! - 150));
@@ -75,25 +84,33 @@
   const pageHeight = () => innerHeight.current! - 150;
 
   async function handleGetCurrentId() {
-    const { data } = await layoutData.supabase
-      .from("bookmark_progress")
-      .select("*")
-      .eq("id", 1);
-    if (data) return data[0] as DBSelect["bookmark_progress"];
+    const { data, error } = await layoutData.supabase
+      .from("dashboard_table")
+      .select("currentHighlightId")
+      .eq("user", "thinh");
+    if (error) {
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
+      });
+    }
+    if (data) {
+      $currentHighlightId = data[0].currentHighlightId;
+    }
   }
 
   async function handleGetCurrentBookmark() {
-    const idData = await handleGetCurrentId();
-    if (!idData) return;
+    await handleGetCurrentId();
     const { data } = await layoutData.supabase
       .from("bookmark_table")
       .select("*")
-      .eq("id", idData.currentId)
+      .eq("id", $currentHighlightId)
       .limit(1);
 
     if (data) {
       handleGetBookInfo(data[0]);
-      bookmark.set(data[0]);
+      highlight.set(data[0]);
       setBookContent(data[0].content);
       noteContent = data[0].note;
       resetRenderBookmark();
@@ -101,9 +118,9 @@
   }
 
   onMount(() => {
-    if ($bookmark) {
-      setBookContent($bookmark.content);
-      noteContent = $bookmark.note;
+    if ($highlight) {
+      setBookContent($highlight.content);
+      noteContent = $highlight.note;
       resetRenderBookmark();
     } else {
       handleGetCurrentBookmark();
@@ -111,7 +128,7 @@
   });
 
   async function handleGetNextBookmark() {
-    if (!bookmark || isRandomed) return;
+    if (!highlight || isRandomed) return;
     showNote = false;
     handleUpdateNote();
 
@@ -119,7 +136,7 @@
       .from("bookmark_table")
       .select()
       .order("id", { ascending: true })
-      .gt("id", $bookmark!.id)
+      .gt("id", $highlight!.id)
       .limit(1);
 
     if (data) {
@@ -135,7 +152,7 @@
   }
 
   async function handleGetPrevBookmark() {
-    if (!bookmark || isRandomed) return;
+    if (!highlight || isRandomed) return;
     showNote = false;
     handleUpdateNote();
 
@@ -143,7 +160,7 @@
       .from("bookmark_table")
       .select()
       .order("id", { ascending: false })
-      .lt("id", $bookmark!.id)
+      .lt("id", $highlight!.id)
       .limit(1);
 
     if (data) {
@@ -179,7 +196,7 @@
       setTimeout(
         () => {
           currentPage = 0;
-          bookmark.set(data);
+          highlight.set(data);
           setBookContent(data.content);
           noteContent = data.note;
           resetRenderBookmark();
@@ -192,7 +209,7 @@
       flipCover = false;
       flipTimeoutId = setTimeout(() => {
         currentPage = 0;
-        bookmark.set(data);
+        highlight.set(data);
         setBookContent(data.content);
         noteContent = data.note;
         resetRenderBookmark();
@@ -204,7 +221,7 @@
   function handleOpenBook() {
     flipCover = true;
     tweenCover.target = -180;
-    if ($bookmark!.like) {
+    if ($highlight!.like) {
       setTimeout(() => {
         tweenRibbon.target = likeBookmark ? 580 : 480;
       }, 250);
@@ -213,13 +230,21 @@
 
   async function handleSetBookmark(data: DBSelect["bookmark_table"]) {
     handleCloseBook(data);
-    if (data.bookTile !== $bookmark?.bookTile) {
+    if (data.bookTile !== $highlight?.bookTile) {
       handleGetBookInfo(data);
     }
+
     const { error } = await layoutData.supabase
-      .from("bookmark_progress")
-      .update({ currentId: data.id })
-      .eq("id", 1);
+      .from("dashboard_table")
+      .update({ currentHighlightId: data.id })
+      .eq("user", "thinh");
+    if (error) {
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
+      });
+    }
   }
 
   async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
@@ -240,31 +265,31 @@
   }
 
   async function handleCheckBookmark() {
-    if (!bookmark) return;
+    if (!highlight) return;
     if (likeBookmark) {
-      const newLike = $bookmark!.like - 1;
+      const newLike = $highlight!.like - 1;
       tweenRibbon.target = newLike === 0 ? 21 : 480;
-      bookmark.update((n) => ({ ...n!, like: newLike }));
+      highlight.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = false;
       const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ like: newLike })
-        .eq("id", $bookmark!.id);
+        .eq("id", $highlight!.id);
     } else {
-      const newLike = $bookmark!.like + 1;
+      const newLike = $highlight!.like + 1;
       tweenRibbon.target = 580;
-      bookmark.update((n) => ({ ...n!, like: newLike }));
+      highlight.update((n) => ({ ...n!, like: newLike }));
       likeBookmark = true;
       const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ like: newLike })
-        .eq("id", $bookmark!.id);
+        .eq("id", $highlight!.id);
     }
   }
 
   async function copyBookMarkToClipboard() {
     try {
-      if (bookmark) await navigator.clipboard.writeText($bookmark!.content);
+      if (highlight) await navigator.clipboard.writeText($highlight!.content);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
@@ -280,7 +305,7 @@
     );
 
     if (data.length) {
-      if (data.bookTile !== $bookmark?.bookTile) {
+      if (data.bookTile !== $highlight?.bookTile) {
         handleGetBookInfo(data[0]);
       }
       handleCloseBook(data[0]);
@@ -288,11 +313,11 @@
   }
 
   async function handleDeleteBookmark() {
-    if (!bookmark) return;
+    if (!highlight) return;
     const { error } = await layoutData.supabase
       .from("bookmark_table")
       .delete()
-      .eq("id", $bookmark!.id);
+      .eq("id", $highlight!.id);
     if (error) {
       addToast({
         type: "error",
@@ -398,7 +423,7 @@
 
   async function translateContent() {
     if (!translatedContent.length) {
-      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${$bookmark!.content}`;
+      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${$highlight!.content}`;
       const response = await fetch(url);
       const data = await response.json();
       translatedContent = data[0][0];
@@ -410,7 +435,7 @@
     flipTimeoutId = setTimeout(() => {
       if (showTranslated) {
         showTranslated = false;
-        setBookContent($bookmark!.content);
+        setBookContent($highlight!.content);
       } else {
         showTranslated = true;
         setBookContent(translatedContent);
@@ -441,7 +466,7 @@
       keyPressed = false;
     }, 400);
 
-    if (flipCover && $bookmark!.like) {
+    if (flipCover && $highlight!.like) {
       flagTimeoutId = setTimeout(() => {
         tweenRibbon.target = likeBookmark ? 580 : 480;
       }, 400);
@@ -504,12 +529,12 @@
   }
 
   async function handleUpdateNote() {
-    if (noteContent !== $bookmark!.note) {
-      $bookmark!.note = noteContent;
+    if (noteContent !== $highlight!.note) {
+      $highlight!.note = noteContent;
       const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ note: noteContent })
-        .eq("id", $bookmark!.id);
+        .eq("id", $highlight!.id);
 
       if (error) {
         addToast({
@@ -521,12 +546,18 @@
     }
   }
 
+  function handleShowEdit() {
+    showEdit = true;
+    isSubmitting = false;
+    highlightEdit = $highlight;
+  }
+
   onDestroy(() => {
     clearTimeout(flipTimeoutId);
     clearTimeout(flagTimeoutId);
     clearTimeout(keyDownTimeoutId);
     if (isRandomed) {
-      $bookmark = $bookInfo = undefined;
+      $highlight = $bookInfo = undefined;
     }
   });
 </script>
@@ -534,16 +565,16 @@
 <svelte:head>
   {#if !$showTimer}
     <title>
-      {$bookmark ? `${$bookmark.bookTile}` : "📖"}
+      {$highlight ? `${$highlight.bookTile}` : "📖"}
     </title>
   {/if}
 
-  <meta name="bookmark" content="Some bookmark" />
+  <meta name="highlight" content="Some highlight" />
 </svelte:head>
 
 <Container fullscreen>
   <Modal bind:showModal={showEdit}>
-    {#if $bookmark}
+    {#if highlightEdit}
       <form
         name="editbookmark"
         action="?/editBookmark"
@@ -564,13 +595,13 @@
                 title: "Success!",
                 message: "Edit successfully.",
               });
-              handleCloseBook($bookmark!);
+              handleCloseBook(highlightEdit!);
             }
             isSubmitting = false;
           };
         }}
       >
-        <input hidden name="id" autocomplete="off" value={$bookmark!.id} />
+        <input hidden name="id" autocomplete="off" value={highlightEdit!.id} />
         <div class="mb-6">
           <p class="form-title">Book title</p>
           <div class="mt-2">
@@ -579,7 +610,7 @@
               name="bookTile"
               autocomplete="off"
               class="form-input"
-              bind:value={$bookmark!.bookTile}
+              bind:value={highlightEdit!.bookTile}
               onkeydown={(e) => e.stopPropagation()}
             />
           </div>
@@ -592,7 +623,7 @@
               name="authors"
               autocomplete="off"
               class="form-input"
-              bind:value={$bookmark!.authors}
+              bind:value={highlightEdit!.authors}
               onkeydown={(e) => e.stopPropagation()}
             />
           </div>
@@ -605,7 +636,7 @@
               name="dateOfCreation"
               autocomplete="off"
               class="form-input"
-              bind:value={$bookmark!.dateOfCreation}
+              bind:value={highlightEdit!.dateOfCreation}
               onkeydown={(e) => e.stopPropagation()}
             />
           </div>
@@ -644,7 +675,7 @@
               autocomplete="off"
               rows="9"
               class="form-input"
-              bind:value={$bookmark!.content}
+              bind:value={highlightEdit!.content}
               onkeydown={(e) => e.stopPropagation()}
             ></textarea>
           </div>
@@ -658,7 +689,7 @@
               min={0}
               autocomplete="off"
               class="form-input"
-              bind:value={$bookmark!.like}
+              bind:value={highlightEdit!.like}
               onkeydown={(e) => e.stopPropagation()}
             />
           </div>
@@ -942,32 +973,32 @@
                   </p>
                 {/if}
 
-                {#if $bookmark}
+                {#if $highlight}
                   <p
                     class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                   >
                     Bookmarked at {format(
-                      new Date($bookmark.dateOfCreation),
+                      new Date($highlight.dateOfCreation),
                       "p cccc, yyyy-MM-dd",
                     )}
                   </p>
                 {/if}
-              {:else if $bookmark}
+              {:else if $highlight}
                 <p
                   class="mt-12 mb-6 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
                 >
-                  {$bookmark.bookTile}
+                  {$highlight.bookTile}
                 </p>
                 <p
                   class="mb-6 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
                 >
-                  {$bookmark.authors}
+                  {$highlight.authors}
                 </p>
                 <p
                   class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
                 >
                   Bookmarked at {format(
-                    new Date($bookmark.dateOfCreation),
+                    new Date($highlight.dateOfCreation),
                     "p cccc, yyyy-MM-dd",
                   )}
                 </p>
@@ -989,13 +1020,7 @@
                 <MaterialSymbolsShuffleRounded width="15" height="15" />
               </button>
 
-              <button
-                class="btn-menu"
-                onclick={() => {
-                  showEdit = true;
-                  isSubmitting = false;
-                }}
-              >
+              <button class="btn-menu" onclick={handleShowEdit}>
                 <MaterialSymbolsEditSquareOutlineRounded
                   width="15"
                   height="15"
@@ -1070,10 +1095,10 @@
           class="ribbonContent"
           style="font-size: {27 -
             3 **
-              ($bookmark!.like &&
-                $bookmark!.like.toLocaleString().length - 1)}px;"
+              ($highlight!.like &&
+                $highlight!.like.toLocaleString().length - 1)}px;"
         >
-          {$bookmark!.like ? $bookmark!.like : ""}
+          {$highlight!.like ? $highlight!.like : ""}
         </span>
       {/if}
       {#if tweenRibbon.current > 21}
@@ -1086,15 +1111,11 @@
     </button>
   </div>
 
-  {#if $bookmark}
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
+  {#if $highlight}
     <div
       class="note-page absolute top-60 {showNote
         ? 'right-0'
         : '-right-270'}  bottom-300 w-300 transition-all duration-300 ease-in-out"
-      onmouseenter={() => {
-        showNote = true;
-      }}
     >
       <textarea
         class="my-scrollbar"
@@ -1102,6 +1123,12 @@
         bind:value={noteContent}
         onkeydown={(e) => e.stopPropagation()}
       ></textarea>
+
+      <button
+        class="absolute w-30 h-full left-0"
+        aria-label="opennote"
+        onclick={() => (showNote = true)}
+      ></button>
 
       <button
         class="note-button"
@@ -1371,7 +1398,7 @@
   .note-button {
     position: absolute;
     display: block;
-    background-color: rgba(108, 212, 255, 0.9);
+    background-color: rgba(108, 212, 255, 1);
     width: 120px;
     height: 35px;
     left: 50%;

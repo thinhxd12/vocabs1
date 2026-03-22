@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { localCalendarStore } from "$lib/store/localstore";
   import type { CalendarDayType, DBSelect } from "$lib/types";
   import { format } from "date-fns";
   import { untrack } from "svelte";
@@ -20,6 +19,7 @@
   import November from "$lib/assets/images/11.webp";
   import December from "$lib/assets/images/12.webp";
   import { schedule } from "$lib/store/navstore";
+  import { yearProgressList } from "$lib/store/layoutstore";
 
   type DayType = {
     enabled: boolean;
@@ -212,14 +212,12 @@
       </div>
 
       <div class="font-rubik text-8 leading-9 font-300 pb-6 text-[#71767b]">
-        {#if $localCalendarStore}
-          {#each $localCalendarStore as item}
-            <p class="flex gap-6">
-              <span>{item.date}</span>
-              <span>{item.count}</span>
-            </p>
-          {/each}
-        {/if}
+        {#each $yearProgressList as item}
+          <p class="flex gap-6">
+            <span>{item.date}</span>
+            <span>{item.count}</span>
+          </p>
+        {/each}
       </div>
     </div>
 

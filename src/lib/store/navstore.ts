@@ -2,14 +2,13 @@ import { page } from "$app/state";
 import { format } from "date-fns";
 import { get, writable } from "svelte/store";
 import { renderWord } from "$lib/store/vocabstore";
-import type { DBInsert, DBSelect, OpenMeteoResponse } from "$lib/types";
+import type { DBInsert, DBSelect } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
 import { archiveVocab, shuffle } from "$lib/utils/functions";
 import cloverImage from "$lib/assets/images/clover.webp";
 import { goto } from "$app/navigation";
 import { addToast } from "./layoutstore";
 
-export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
 export const isAutoPlay = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);

@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
-  import { showTimer, weatherData } from "$lib/store/navstore";
+  import { showTimer } from "$lib/store/navstore";
   import {
     getAQIDescription,
     getAQILevel,
@@ -29,12 +29,17 @@
     formatTime,
     formatTimeWithMinutes,
   } from "$lib/utils/w-formatting";
-  import type { DBSelect, WeatherQueryParams } from "$lib/types";
+  import type { WeatherQueryParams } from "$lib/types";
   import {
-    currentWeatherIndex,
-    handleChangeWeatherLocation,
+    addToast,
+    currentLocationId,
     locationList,
-  } from "$lib/store/localstore";
+    weatherData,
+  } from "$lib/store/layoutstore";
+  import { saveUserSetting } from "$lib/store/localstore";
+  import type { PageProps } from "./$types";
+
+  let { data: layoutData }: PageProps = $props();
 
   type HourlyForecast = {
     time: string;
@@ -510,23 +515,36 @@
     };
   }
 
-  onMount(() => {
-    getCurrentConditions();
+  $effect(() => {
+    $weatherData;
+    untrack(() => {
+      if ($weatherData) getCurrentConditions();
+    });
   });
 
-  let location = $state<DBSelect["weather_table"] | undefined>(
-    $locationList[$currentWeatherIndex],
-  );
-
-  async function handleChangeDefaultLocation(index: number) {
-    handleChangeWeatherLocation(index);
-    let param: WeatherQueryParams = {
-      latitude: location!.lat,
-      longitude: location!.lon,
-      tempUnit: "c",
-    };
-    $weatherData = await getOpenMeteoWeather(param);
-    getCurrentConditions();
+  async function setCurrentLocation(id: string) {
+    const { error } = await layoutData.supabase
+      .from("dashboard_table")
+      .update({ currentLocationId: id })
+      .eq("user", "thinh");
+    if (error) {
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
+      });
+    } else {
+      saveUserSetting();
+      const currentLocation = $locationList.find((item) => item.id === id);
+      if (currentLocation) {
+        let param: WeatherQueryParams = {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          tempUnit: "c",
+        };
+        $weatherData = await getOpenMeteoWeather(param);
+      }
+    }
   }
 </script>
 
@@ -542,13 +560,15 @@
     <div class="current">
       <select
         name="location"
-        bind:value={location}
-        onchange={(e) =>
-          handleChangeDefaultLocation(e.currentTarget.selectedIndex)}
+        onchange={(e) => setCurrentLocation(e.currentTarget.value)}
         class="location-list mb-6"
       >
         {#each $locationList as item}
-          <option value={item} class="hover:bg-red-500 hover:text-white">
+          <option
+            value={item.id}
+            selected={item.id === $currentLocationId}
+            class="hover:bg-red-500 hover:text-white"
+          >
             {item.name}
           </option>
         {/each}

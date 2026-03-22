@@ -7,7 +7,7 @@
     secondsToMinutes,
   } from "$lib/utils/functions";
   import { onDestroy } from "svelte";
-  import MaterialSymbolsAlarmOutlineRounded from "~icons/material-symbols/alarm-outline-rounded";
+  import MaterialSymbolsAlarm from "~icons/material-symbols/alarm";
 
   const timeCount = 6 * 60;
   let interval: ReturnType<typeof setInterval>;
@@ -86,7 +86,7 @@
   </button>
 {:else}
   <button onclick={startCountdown} class="btn-menu">
-    <MaterialSymbolsAlarmOutlineRounded width="14" height="14" />
+    <MaterialSymbolsAlarm width="14" height="14" />
   </button>
 {/if}
 

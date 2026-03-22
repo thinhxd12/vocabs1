@@ -1,5 +1,15 @@
-import type { ToastType } from "$lib/types";
+import type {
+  LocationType,
+  OpenMeteoResponse,
+  ToastType,
+  YearProgressType,
+} from "$lib/types";
 import { writable } from "svelte/store";
+import type { BookDetailType, HighlightType } from "../types";
+
+export const highlight = writable<HighlightType | undefined>();
+export const currentHighlightId = writable<string>("");
+export const bookInfo = writable<BookDetailType | undefined>();
 
 export const currentMode = writable<"focus" | "shortbreak" | "longbreak">(
   "focus",
@@ -12,6 +22,12 @@ export const longbreakMinutes = writable<number>(15);
 export const intervals = writable<number>(3);
 export const isMuted = writable<boolean>(false);
 export const isPaused = writable<boolean>(true);
+
+export const locationList = writable<LocationType[]>([]);
+export const currentLocationId = writable<string>("");
+export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
+
+export const yearProgressList = writable<YearProgressType[]>([]);
 
 const defaultToast: ToastType = {
   showToast: false,

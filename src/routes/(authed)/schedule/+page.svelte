@@ -8,14 +8,12 @@
     todaySchedule,
   } from "$lib/store/navstore";
   import type { DBSelect } from "$lib/types.js";
-  import { format } from "date-fns";
   import { onMount } from "svelte";
   import type { PageProps } from "./$types";
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
   import MaterialSymbolsSettingsRounded from "~icons/material-symbols/settings-rounded";
   import MaterialSymbolsCalendarAddOnRounded from "~icons/material-symbols/calendar-add-on-rounded";
-  import { getCalendarRecord } from "$lib/store/localstore";
   import Modal from "$lib/components/Modal.svelte";
   import { addToast } from "$lib/store/layoutstore";
 
@@ -59,7 +57,6 @@
   }
 
   onMount(async () => {
-    getCalendarRecord();
     await getTablePaginationLength();
     getDataPaginationByIndex(1);
   });

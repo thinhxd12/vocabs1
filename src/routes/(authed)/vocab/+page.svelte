@@ -221,7 +221,7 @@
 
 <svelte:head>
   {#if !$showTimer}
-    <title>{$renderWord ? `${$renderWord.word}` : "vocabs1"}</title>
+    <title>{$renderWord ? `${$renderWord.word}` : "vocabs"}</title>
   {/if}
 
   <meta name="Vocab" content="Some Vocab" />
