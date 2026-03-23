@@ -56,9 +56,13 @@
 <style lang="postcss">
   dialog {
     outline: none;
+    border: none;
+    padding: 0;
     margin: 0 auto;
-    padding: 30px;
     background: transparent;
+    max-width: unset;
+    max-height: unset;
+    padding: 45px 15px;
   }
 
   dialog::backdrop {
@@ -66,14 +70,13 @@
   }
 
   .toast-content {
-    margin-top: 15px;
-    max-width: 360px;
+    width: 100%;
     border: 1px solid;
     border-radius: 2px;
     display: flex;
     align-items: center;
     gap: 9px;
-    padding: 6px 12px;
+    padding: 6px 9px;
     backdrop-filter: blur(12px);
     box-shadow: 0 9px 15px rgba(0, 0, 0, 0.45);
     overflow: hidden;
