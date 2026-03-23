@@ -6,6 +6,7 @@
   import {
     getAQIDescription,
     getAQILevel,
+    getBeaufortInfo,
     getCloudCoverDescription,
     getFeelsLikeDescription,
     getHumidityDescription,
@@ -95,12 +96,16 @@
     windDirection: number;
     directionLabel: string;
     speedUnit: string;
+    image: string;
+    description: string;
   }>({
     windSpeed: 0,
     windGusts: 0,
     windDirection: 0,
     directionLabel: "",
     speedUnit: "km/h",
+    image: "0",
+    description: "",
   });
 
   let precipitationValues = $state<{
@@ -227,6 +232,7 @@
       let windGusts = Math.round($weatherData.current.wind_gusts_10m || 0);
       let windDirection = $weatherData.current.wind_direction_10m || 0;
       let directionLabel = getWindDirection(windDirection);
+      let windInfo = getBeaufortInfo($weatherData.current.wind_speed_10m || 0);
 
       windValues = {
         windSpeed,
@@ -234,6 +240,8 @@
         windDirection,
         directionLabel,
         speedUnit: "km/h",
+        image: windInfo.level,
+        description: windInfo.description,
       };
 
       const tempUnit = "c";
@@ -613,17 +621,17 @@
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Wind</p>
-        <div class="relative size-120 ml-30 mb-6">
+        <div class="relative size-90 ml-30 mb-6">
           <span
-            class="absolute -top-5 left-1/2 -translate-x-1/2 text-12 leading-12"
+            class="absolute -top-6 left-1/2 -translate-x-1/2 text-12 leading-12"
             >N</span
           >
           <span
-            class="absolute top-1/2 -right-2 -translate-y-1/2 text-12 leading-12"
+            class="absolute top-1/2 -right-3 -translate-y-1/2 text-12 leading-12"
             >E</span
           >
           <span
-            class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-12 leading-12"
+            class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-12 leading-12"
             >S</span
           >
           <span
@@ -632,8 +640,8 @@
           >
 
           <svg
-            width="120"
-            height="120"
+            width="90"
+            height="90"
             viewBox="0 0 150 150"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -698,20 +706,25 @@
             </text>
           </svg>
         </div>
-        <div class="grid grid-cols-2 text-center">
-          <div>
-            <p class="text-12">Gust</p>
-            <p class="text-14 font-500">
-              {windValues.windGusts}
-              {windValues.speedUnit}
-            </p>
-          </div>
-          <div>
-            <p class="text-12">Direction</p>
-            <p class="text-14 font-500">
-              {windValues.windDirection}° {windValues.directionLabel}
-            </p>
-          </div>
+
+        <div
+          class="flex gap-9 pt-3 mt-15 mb-6 bg-white/80 rounded-2 overflow-hidden"
+        >
+          <img
+            src="/beaufort-scale/{windValues.image}.png"
+            alt="Beaufortimg"
+            class="w-1/3 object-cover"
+          />
+          <p class="text-12 leading-16 pb-3">{windValues.description}</p>
+        </div>
+
+        <div class="flex justify-between">
+          <p class="text-12">
+            Direction {windValues.windDirection}° {windValues.directionLabel}
+          </p>
+          <p class="text-12">
+            Gust {windValues.windGusts}{windValues.speedUnit}
+          </p>
         </div>
       </div>
       <div class="light p-6 w-full">

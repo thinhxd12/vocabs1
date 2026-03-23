@@ -5,7 +5,7 @@
 
 function getRangeBasedValue<T>(
   value: number,
-  ranges: Array<{ max: number; result: T }>
+  ranges: Array<{ max: number; result: T }>,
 ): T {
   for (const range of ranges) {
     if (value <= range.max) {
@@ -115,7 +115,7 @@ const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
 
 export function getWeatherInfo(
   code: number,
-  isday: number = 0
+  isday: number = 0,
 ): {
   description: string;
   icon: string;
@@ -277,7 +277,7 @@ export function getPressureDescription(pressureHpa: number): string {
  */
 export function getVisibilityDescription(
   distance: number,
-  isMetric: boolean
+  isMetric: boolean,
 ): string {
   const ranges = isMetric
     ? [
@@ -334,5 +334,89 @@ export function getCloudCoverDescription(percentage: number): string {
     { max: 50, result: "Partly cloudy" },
     { max: 75, result: "Mostly cloudy" },
     { max: Infinity, result: "Overcast" },
+  ]);
+}
+
+/**
+ * Get Beaufort level and description based on windspeed.
+ *
+ * @param wind - wind speed km/h
+ * @returns Object with level and description
+ */
+export function getBeaufortInfo(wind: number): {
+  level: string;
+  description: string;
+} {
+  return getRangeBasedValue(wind, [
+    {
+      max: 1.6,
+      result: { level: "0", description: "Smoke rises vertically" },
+    },
+    {
+      max: 4.8,
+      result: {
+        level: "1",
+        description: "Smoke drift indicates wind direction",
+      },
+    },
+    {
+      max: 11.3,
+      result: { level: "2", description: "Leaves rustle; vanes move" },
+    },
+    {
+      max: 19.3,
+      result: { level: "3", description: "Leaves in motion; flags extend" },
+    },
+    {
+      max: 29,
+      result: {
+        level: "4",
+        description: "Dust, leaves raised up; branches move",
+      },
+    },
+    {
+      max: 38.6,
+      result: { level: "5", description: "Small trees begin to sway" },
+    },
+    {
+      max: 49.9,
+      result: {
+        level: "6",
+        description: "Large braches in motion, whistling heard in wires",
+      },
+    },
+    {
+      max: 61.2,
+      result: {
+        level: "7",
+        description: "Resistance felt in walking against wind",
+      },
+    },
+    {
+      max: 74,
+      result: {
+        level: "8",
+        description: "Twigs and small branches broken off trees",
+      },
+    },
+    {
+      max: 86.9,
+      result: { level: "9", description: "Shingles blown off roofs" },
+    },
+    {
+      max: 101.4,
+      result: {
+        level: "10",
+        description: "Trees broken, structural damage occurs",
+      },
+    },
+    {
+      max: 115.9,
+      result: { level: "11", description: "Widespread damage" },
+    },
+    {
+      max: Infinity,
+      result: { level: "11", description: "Violence and destruction" },
+    },
   ]);
 }
