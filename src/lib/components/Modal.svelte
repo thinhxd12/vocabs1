@@ -33,6 +33,8 @@
     padding: 0;
     margin: 0 auto;
     background: transparent;
+    max-width: unset;
+    max-height: unset;
   }
 
   dialog::backdrop {
