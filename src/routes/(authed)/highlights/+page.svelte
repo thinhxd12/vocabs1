@@ -1113,10 +1113,14 @@
 
   {#if $highlight}
     <div
-      class="note-page absolute top-60 {showNote
-        ? 'right-0'
-        : '-right-270'}  bottom-300 w-300 transition-all duration-300 ease-in-out"
+      class="note-page absolute top-60 {flipCover
+        ? showNote
+          ? 'right-0'
+          : '-right-270'
+        : '-right-300'} bottom-300 w-300 transition-all duration-300 ease-in-out"
     >
+      <div class="note-tape"></div>
+
       <textarea
         class="my-scrollbar"
         name="note"
@@ -1127,15 +1131,9 @@
       <button
         class="absolute w-30 h-full left-0"
         aria-label="opennote"
-        onclick={() => (showNote = true)}
-      ></button>
-
-      <button
-        class="note-button"
-        aria-label="note-button"
         onclick={(e) => {
           e.currentTarget.blur();
-          showNote = false;
+          showNote = !showNote;
           handleUpdateNote();
         }}
       ></button>
@@ -1380,7 +1378,7 @@
   .note-page {
     background-color: #fff;
     border: 2px solid #e0e0e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
   }
 
   .note-page::before {
@@ -1395,10 +1393,10 @@
     pointer-events: none;
   }
 
-  .note-button {
+  .note-tape {
     position: absolute;
     display: block;
-    background-color: rgba(108, 212, 255, 1);
+    background-color: rgba(108, 212, 255, 0.7);
     width: 120px;
     height: 35px;
     left: 50%;
@@ -1409,7 +1407,7 @@
   .note-page textarea {
     width: 100%;
     min-height: 100%;
-    padding: 30px 18px 15px;
+    padding: 30px 12px 12px 30px;
     font-family: "Comic Sans MS", cursive, sans-serif;
     font-size: 14px;
     line-height: 1.5;

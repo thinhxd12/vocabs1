@@ -384,9 +384,10 @@
         description: aqi_description,
       };
 
-      const currentUV = Math.round($weatherData.current.uv_index || 0);
+      let currentUV = Math.round($weatherData.current.uv_index || 0);
+      const indiNumber = currentUV > 11 ? 11 : currentUV;
       const uvScale = 11;
-      const indicatorPercent = (currentUV / uvScale) * 100;
+      const indicatorPercent = (indiNumber / uvScale) * 100;
       const { level: uv_level, description: uv_description } =
         getUVInfo(currentUV);
       uvValues = {
@@ -593,6 +594,7 @@
           src="/liquid/128/{currentValues.icon}.png"
           alt="icon"
           class="size-60 object-cover"
+          style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
         />
         <span class="text-[#212529] text-21 font-400"
           >{currentValues.actualDescription}</span
@@ -754,20 +756,20 @@
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">UV Index</p>
-        <h1 class="text-48 leading-48 font-400 pl-6">
+        <h1 class="text-48 leading-48 font-400">
           {uvValues.currentUV}
         </h1>
-        <p class="text-14 font-600 mb-9 px-6">{uvValues.level}</p>
+        <p class="text-14 font-600 mb-9">{uvValues.level}</p>
         <div
-          class="relative h-6 rounded-full mb-6 w-4/5 mx-auto"
+          class="relative h-6 rounded-full mr-auto mb-6 w-170"
           style="background: linear-gradient(to right, #22c55e 0%, #eab308 30%, #f97316 60%, #ef4444 80%, #ec4899 100%);"
         >
           <div
-            class="absolute top-3 size-12 bg-white border-2 border-black/80 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-sm shadow-black/60"
+            class="absolute -top-3 size-12 bg-white border-2 border-black/80 rounded-full -translate-x-1/2"
             style="left: {uvValues.indicatorPercent}%;"
           ></div>
         </div>
-        <p class="text-12 px-6">{uvValues.description}</p>
+        <p class="text-12">{uvValues.description}</p>
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12 mb-15">Pressure</p>
@@ -986,6 +988,7 @@
             src="/liquid/128/{item.icon}.png"
             alt="icon"
             class="size-60 object-cover mx-auto"
+            style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
           />
           <p class="text-18 text-center font-500">
             {formatTemperature("c", item.temp)}
@@ -1041,7 +1044,8 @@
     background: linear-gradient(
         0deg,
         rgb(255 255 255 / 30%) 0%,
-        rgb(171, 203, 222) 100%
+        rgb(142, 187, 213) 60%,
+        rgb(87, 175, 226) 100%
       )
       0% 0% no-repeat padding-box padding-box transparent;
     backdrop-filter: blur(6px);

@@ -5,16 +5,13 @@
     quizRender,
     listCount,
     updateTodayScheduleLocal,
-    isAutoPlay,
     showTimer,
+    handleCheckWord,
   } from "$lib/store/navstore";
   import ImageLoader from "$lib/components/ImageLoader.svelte";
-  import { archiveVocab, shuffle } from "$lib/utils/functions";
+  import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import type { PageProps } from "./$types";
-  import { addToast } from "$lib/store/layoutstore";
-
-  let { data: layoutData }: PageProps = $props();
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -57,7 +54,7 @@
     submitted = true;
     if (!$quizRender) return;
     if (value == $quizRender.word) {
-      handleCheckQuizWord();
+      handleCheckWord($quizRender!);
       $quizRender = { ...$quizRender, number: $quizRender.number - 1 };
       src1 = $quizRender.audio;
       paused1 = false;
@@ -86,27 +83,7 @@
   async function endQuiz() {
     $listContent = [];
     $listCount = 0;
-    $isAutoPlay = false;
     updateTodayScheduleLocal();
-  }
-
-  // handlecheck
-  async function handleCheckQuizWord() {
-    if (!$quizRender) return;
-    if ($quizRender.number > 1) {
-      const { error } = await layoutData.supabase
-        .from("vocab_table")
-        .update({ number: $quizRender.number - 1 })
-        .eq("id", $quizRender.id);
-      if (error)
-        addToast({
-          type: "error",
-          title: "Error!",
-          message: error.message as string,
-        });
-    } else {
-      await archiveVocab($quizRender.id, $quizRender.word);
-    }
   }
 
   function onKeyDown(e: KeyboardEvent) {

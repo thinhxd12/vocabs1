@@ -9,7 +9,7 @@ import cloverImage from "$lib/assets/images/clover.webp";
 import { goto } from "$app/navigation";
 import { addToast } from "./layoutstore";
 
-export const isAutoPlay = writable<boolean>(false);
+export const isLearningWord = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const wakeEnable = writable<boolean>(false);
@@ -31,7 +31,6 @@ export const listCount = writable<number>(0);
 export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
   undefined,
 );
-export const vocabInput = writable<string>("");
 
 const todayDate = format(new Date(), "yyyy-MM-dd");
 
@@ -124,8 +123,7 @@ async function handleCloseNotification() {
     await goto("/vocab");
     currentProgress.set(1);
     await handleGetListContent();
-    isAutoPlay.set(false);
-    startAutoplay();
+    startLearningWord();
   } else handleGetListContent();
 }
 
@@ -133,7 +131,6 @@ export async function handleGetListContent() {
   const currentProgressSchedule = getCurrentProgressSchedule();
   if (!currentProgressSchedule) return;
   listCount.set(0);
-  isAutoPlay.set(false);
   listContent.set([]);
 
   const { data } = await page.data.supabase
@@ -144,28 +141,19 @@ export async function handleGetListContent() {
   if (data.length) {
     const content = shuffle(data) as DBSelect["vocab_table"][];
     listContent.set(content);
-    isAutoPlay.set(true);
   }
 }
 
 // -------------------AUTOPLAY START-------------------- //
 
-let intervalAutoplay: ReturnType<typeof setInterval>;
-
-const handleRenderWord = async () => {
+export function startLearningWord() {
+  isLearningWord.set(true);
   const listContentValue = get(listContent);
-
-  listCount.update((n) => {
-    const value = listContentValue[n];
-    handleCheckWord(value);
-    renderWord.set(value);
-    vocabInput.set(value.word);
-    return n + 1;
-  });
-};
+  renderWord.set(listContentValue[0]);
+}
 
 // handlecheck
-const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
+export async function handleCheckWord(word: DBSelect["vocab_table"]) {
   if (word.number > 1) {
     const { error } = await page.data.supabase
       .from("vocab_table")
@@ -180,50 +168,27 @@ const handleCheckWord = async (word: DBSelect["vocab_table"]) => {
   } else {
     await archiveVocab(word.id, word.word);
   }
-};
 
-const startAutoplay = async () => {
-  clearInterval(intervalAutoplay);
-  const listContentValue = get(listContent);
-
-  handleRenderWord();
-  intervalAutoplay = setInterval(() => {
-    const listCountValue = get(listCount);
-    if (listCountValue < listContentValue.length) {
-      handleRenderWord();
-    } else {
-      endAutoplay();
-    }
-  }, 6000);
-};
-
-const pauseAutoplay = () => {
-  clearInterval(intervalAutoplay);
-};
-
-const endAutoplay = async () => {
-  clearInterval(intervalAutoplay);
-  renderWord.set(undefined);
-  listContent.set([]);
-  listCount.set(0);
-  isAutoPlay.set(false);
-  await updateTodayScheduleLocal();
-};
-
-export const handleAutoplay = () => {
-  const listContentValue = get(listContent);
-  if (page.url.pathname === "/vocab" && listContentValue.length > 0) {
-    isAutoPlay.update((n) => {
-      if (n) {
-        startAutoplay();
-        return false;
+  const isLearningWordValue = get(isLearningWord);
+  if (isLearningWordValue) {
+    const listContentValue = get(listContent);
+    listCount.update((n) => {
+      if (n < listContentValue.length - 1) {
+        const value = listContentValue[n + 1];
+        setTimeout(() => {
+          renderWord.set(value);
+        }, 1500);
+        return n + 1;
       } else {
-        pauseAutoplay();
-        return true;
+        renderWord.set(undefined);
+        listContent.set([]);
+        isLearningWord.set(false);
+        updateTodayScheduleLocal();
+        return 0;
       }
     });
   }
-};
+}
 
 export const updateTodayScheduleLocal = async () => {
   const currentProgressSchedule = getCurrentProgressSchedule();
@@ -270,7 +235,7 @@ export const updateTodayScheduleLocal = async () => {
     newTodayScheduleValue!.first.count > 11 &&
     newTodayScheduleValue!.second.count > 11
   ) {
-    currentProgress.set(0);
+    if (get(currentProgress) === 3) currentProgress.set(0);
     checkSchedule();
   }
 };

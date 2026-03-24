@@ -1,14 +1,13 @@
 <script lang="ts">
   import { page } from "$app/state";
   import {
-    handleAutoplay,
-    isAutoPlay,
     listContent,
     listCount,
     todaySchedule,
     totalMemories,
     handleGetListContent,
     currentProgress,
+    startLearningWord,
   } from "$lib/store/navstore";
   import { goto } from "$app/navigation";
   import { format } from "date-fns";
@@ -28,15 +27,17 @@
   import MdiLockOpenVariant from "~icons/mdi/lock-open-variant";
   import MaterialSymbolsDashboardRounded from "~icons/material-symbols/dashboard-rounded";
   import SolarSadSquareBold from "~icons/solar/sad-square-bold";
-  
+
   async function handleDailyProgress(num: number) {
+    $currentProgress = num;
     if (num === 1) {
       await goto("/vocab");
+      await handleGetListContent();
+      startLearningWord();
     } else if (num === 2) {
       await goto("/quiz");
+      await handleGetListContent();
     }
-    $currentProgress = num;
-    handleGetListContent();
   }
 </script>
 
@@ -237,20 +238,7 @@
     <WeatherButton />
   </a>
 
-  <button
-    class="outline-none relative w-90 h-full rounded-2 overflow-hidden"
-    disabled={page.url.pathname !== "/vocab"}
-    onclick={handleAutoplay}
-  >
-    {#if $isAutoPlay && page.url.pathname === "/vocab"}
-      <img
-        src={sunrise}
-        alt="btn-play"
-        class="absolute top-0 left-0 z-[2] w-90 h-full object-cover object-[-10px]"
-        in:fly={{ y: -42, duration: 300 }}
-      />
-    {/if}
-
+  <div class="outline-none relative w-90 h-full rounded-2 overflow-hidden">
     <img
       src={sunrise}
       alt="btn-pause"
@@ -261,13 +249,13 @@
       <img
         src={sunrise}
         alt="btn-play"
-        class="absolute top-0 left-0 w-0 h-full z-[3] object-cover object-[-10px] transition-all duration-300"
+        class="absolute top-0 left-0 w-0 h-full z-[3] object-cover object-[-10px] transition-all duration-500"
         style="box-shadow: rgba(0, 0, 0, 0.9) 3px 0px 7px; width: {($listCount /
           $listContent.length) *
           90}px;"
       />
     {/if}
-  </button>
+  </div>
 </div>
 
 <style lang="postcss">

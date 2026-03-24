@@ -2,6 +2,7 @@
   import ImageLoader from "./ImageLoader.svelte";
   import type { DBSelect, DBInsert } from "$lib/types";
   import MingcuteCornerDownRightLine from "~icons/mingcute/corner-down-right-line";
+  import { isChecked } from "$lib/store/vocabstore";
 
   interface Props {
     item: DBSelect["vocab_table"] | DBInsert["vocab_table"];
@@ -10,10 +11,24 @@
   }
 
   let { item, onCheck, onEdit }: Props = $props();
+
+  function handleContainerClick(event: any) {
+    const target = event.target;
+
+    if (target.nodeName === "EM") {
+      target.classList.toggle("clicked");
+      isChecked.set(true);
+    }
+  }
 </script>
 
 {#each item.meanings as entry}
-  <div class="definition light w-full min-h-min rounded-2 overflow-hidden py-3">
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    onclick={(e) => handleContainerClick(e)}
+    class="definition light w-full min-h-min rounded-2 overflow-hidden py-3"
+  >
     <div class="flex justify-between px-9 pb-6">
       <button
         class="cursor-pointer font-roslindale text-24 leading-28 font-500"
@@ -113,15 +128,18 @@
     background: #fff none repeat scroll 0 0;
     box-decoration-break: clone;
     padding: 0 6px;
+    cursor: default;
   }
 
-  .definition-example :global {
-    b,
-    em {
-      font-weight: 500;
-      font-style: normal;
-      color: #f90000;
-    }
+  .definition-example :global(em) {
+    font-style: normal;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .definition-example :global(em.clicked) {
+    color: #f90000;
   }
 
   .definition-credit {

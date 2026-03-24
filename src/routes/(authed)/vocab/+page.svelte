@@ -8,10 +8,10 @@
     searchResults,
     showEdit,
     showTranslate,
+    isChecked,
   } from "$lib/store/vocabstore";
   import { onDestroy, untrack } from "svelte";
-  import { showTimer, vocabInput } from "$lib/store/navstore";
-  import { archiveVocab } from "$lib/utils/functions";
+  import { handleCheckWord, showTimer } from "$lib/store/navstore";
   import Container from "$lib/components/Container.svelte";
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
@@ -31,7 +31,6 @@
       .like("word", `${text}%`)
       .order("id", { ascending: true })
       .limit(9);
-
     if (!data) return;
     switch (data.length) {
       case 0:
@@ -39,7 +38,6 @@
         deleteSearchTimeout = setTimeout(() => {
           searchTermFounded = true;
           $searchTerm = "";
-          $vocabInput = "";
           $searchResults = [];
           activeIndex = 0;
         }, 1500);
@@ -65,6 +63,7 @@
   }, 300);
 
   let debouncetimeout: ReturnType<typeof setTimeout>;
+
   export function debounce(callback: Function, wait = 300) {
     return (...args: any[]) => {
       clearTimeout(debouncetimeout);
@@ -115,7 +114,6 @@
     }
   }
 
-  // handlecheck
   async function handleSelectWordFromSearch(id: string) {
     $searchTerm = "";
     $searchResults = [];
@@ -128,21 +126,6 @@
 
     if (data) {
       $renderWord = data[0];
-      $vocabInput = data[0].word;
-      if (data[0].number > 1) {
-        const { error } = await layoutData.supabase
-          .from("vocab_table")
-          .update({ number: data[0].number - 1 })
-          .eq("id", id);
-        if (error)
-          addToast({
-            type: "error",
-            title: "Error!",
-            message: error.message as string,
-          });
-      } else {
-        await archiveVocab(data[0].id, data[0].word);
-      }
     }
   }
 
@@ -159,6 +142,7 @@
     untrack(() => {
       if (v) {
         flipNumber = v.number;
+        isChecked.set(false);
         src1 = v.audio;
         paused1 = false;
       }
@@ -170,11 +154,16 @@
       ? $renderWord.meanings.flatMap((item: any) => item.translation).join(", ")
       : "";
     src0 = `https://vocabs3.vercel.app/speech?text=${translations}`;
-    setTimeout(() => {
-      paused0 = false;
-      flipNumber = $renderWord!.number - 1;
-    }, 1000);
+    paused0 = false;
   }
+
+  const unsubscribe = isChecked.subscribe((value) => {
+    if (value && $renderWord) {
+      handlePlaySoundMeanings();
+      flipNumber = $renderWord.number - 1;
+      handleCheckWord($renderWord);
+    }
+  });
 
   async function confirmDelete(id: string) {
     const { error } = await layoutData.supabase
@@ -215,7 +204,11 @@
   }
 
   onDestroy(() => {
+    clearTimeout(checkTimeout);
+    clearTimeout(deleteSearchTimeout);
+    clearTimeout(debouncetimeout);
     renderWord.set(undefined);
+    unsubscribe();
   });
 </script>
 
@@ -228,13 +221,7 @@
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
-<audio
-  src={src1}
-  bind:paused={paused1}
-  onended={handlePlaySoundMeanings}
-  preload="auto"
->
-</audio>
+<audio src={src1} bind:paused={paused1} preload="auto"> </audio>
 
 <Modal bind:showModal={$showTranslate}>
   {#if $showTranslate}
@@ -253,8 +240,8 @@
     {#if $searchTerm}
       <p
         class="light h-36 w-full {searchTermFounded
-          ? 'text-black'
-          : 'text-white'} truncate text-center font-constantine text-21 font-700 uppercase leading-36"
+          ? ''
+          : '!text-white'} truncate text-center font-constantine text-21 font-700 uppercase leading-36"
         in:fly={{ y: "-100%", duration: 300 }}
       >
         {$searchTerm}

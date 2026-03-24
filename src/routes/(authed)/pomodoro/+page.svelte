@@ -589,7 +589,7 @@
             <h1
               class="text-90 text-[#FF0000] font-constantine font-400"
               style="text-shadow: 0 2px 8px rgba(0, 0, 0, 1);"
-              transition:fade={{ duration: 300 }}
+              transition:fade={{ duration: 150 }}
             >
               PAUSED
             </h1>
@@ -701,5 +701,19 @@
     color: #555;
     width: 100%;
     outline: 0;
+  }
+
+  @media screen and (max-width: 500px) {
+    .circle {
+      width: 360px;
+    }
+
+    .square {
+      width: 253px;
+    }
+
+    .square h1 {
+      font-size: 63px;
+    }
   }
 </style>
