@@ -17,7 +17,6 @@
 
   function startCountdown() {
     clearInterval(interval);
-    $showTimer = true;
     now = Date.now();
     end = now + secondsRemaining * 1000;
     interval = setInterval(updateTimer, 1000);
@@ -27,20 +26,15 @@
     now = Date.now();
     secondsRemaining = Math.round((end - now) / 1000);
     if (now >= end) {
-      endCountdown();
+      sendNotification();
+      stopCountdown();
     }
-  }
-
-  function endCountdown() {
-    sendNotification();
-    clearInterval(interval);
-    $showTimer = false;
-    secondsRemaining = timeCount;
   }
 
   function stopCountdown() {
     clearInterval(interval);
     $showTimer = false;
+    secondsRemaining = timeCount;
   }
 
   $effect(() => {
@@ -85,7 +79,7 @@
     </span>
   </button>
 {:else}
-  <button onclick={startCountdown} class="btn-menu">
+  <button onclick={() => ($showTimer = true)} class="btn-menu">
     <MaterialSymbolsAlarm width="14" height="14" />
   </button>
 {/if}

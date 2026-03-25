@@ -9,7 +9,6 @@ import cloverImage from "$lib/assets/images/clover.webp";
 import { goto } from "$app/navigation";
 import { addToast } from "./layoutstore";
 
-export const isLearningWord = writable<boolean>(false);
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
 export const wakeEnable = writable<boolean>(false);
@@ -147,7 +146,6 @@ export async function handleGetListContent() {
 // -------------------AUTOPLAY START-------------------- //
 
 export function startLearningWord() {
-  isLearningWord.set(true);
   const listContentValue = get(listContent);
   renderWord.set(listContentValue[0]);
 }
@@ -168,29 +166,36 @@ export async function handleCheckWord(word: DBSelect["vocab_table"]) {
   } else {
     await archiveVocab(word.id, word.word);
   }
+}
 
-  const isLearningWordValue = get(isLearningWord);
-  if (isLearningWordValue) {
-    const listContentValue = get(listContent);
+export async function setNextLearningWord() {
+  const listContentValue = get(listContent);
+  const currentRenderWord = get(renderWord);
+  const currentLearnWord = listContentValue[get(listCount)];
+  if (
+    listContentValue.length &&
+    currentRenderWord?.id === currentLearnWord.id
+  ) {
     listCount.update((n) => {
       if (n < listContentValue.length - 1) {
-        const value = listContentValue[n + 1];
-        setTimeout(() => {
-          renderWord.set(value);
-        }, 1500);
+        const nextWord = listContentValue[n + 1];
+        renderWord.set(nextWord);
         return n + 1;
       } else {
         renderWord.set(undefined);
         listContent.set([]);
-        isLearningWord.set(false);
         updateTodayScheduleLocal();
         return 0;
       }
     });
+  } else {
+    setTimeout(() => {
+      renderWord.set(listContentValue[get(listCount)]);
+    }, 1500);
   }
 }
 
-export const updateTodayScheduleLocal = async () => {
+export async function updateTodayScheduleLocal() {
   const currentProgressSchedule = getCurrentProgressSchedule();
   if (!currentProgressSchedule) return;
 
@@ -238,7 +243,7 @@ export const updateTodayScheduleLocal = async () => {
     if (get(currentProgress) === 3) currentProgress.set(0);
     checkSchedule();
   }
-};
+}
 
 type ResultType = {
   index: number;

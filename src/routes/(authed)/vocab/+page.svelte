@@ -11,7 +11,11 @@
     isChecked,
   } from "$lib/store/vocabstore";
   import { onDestroy, untrack } from "svelte";
-  import { handleCheckWord, showTimer } from "$lib/store/navstore";
+  import {
+    handleCheckWord,
+    setNextLearningWord,
+    showTimer,
+  } from "$lib/store/navstore";
   import Container from "$lib/components/Container.svelte";
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
   import MaterialSymbolsDeleteForeverOutlineRounded from "~icons/material-symbols/delete-forever-outline-rounded";
@@ -143,8 +147,8 @@
       if (v) {
         flipNumber = v.number;
         isChecked.set(false);
-        src1 = v.audio;
-        paused1 = false;
+        src0 = v.audio;
+        paused0 = false;
       }
     });
   });
@@ -153,8 +157,8 @@
     const translations = Array.isArray($renderWord?.meanings)
       ? $renderWord.meanings.flatMap((item: any) => item.translation).join(", ")
       : "";
-    src0 = `https://vocabs3.vercel.app/speech?text=${translations}`;
-    paused0 = false;
+    src1 = `https://vocabs3.vercel.app/speech?text=${translations}`;
+    paused1 = false;
   }
 
   const unsubscribe = isChecked.subscribe((value) => {
@@ -221,7 +225,13 @@
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
-<audio src={src1} bind:paused={paused1} preload="auto"> </audio>
+<audio
+  src={src1}
+  bind:paused={paused1}
+  preload="auto"
+  onended={setNextLearningWord}
+>
+</audio>
 
 <Modal bind:showModal={$showTranslate}>
   {#if $showTranslate}
