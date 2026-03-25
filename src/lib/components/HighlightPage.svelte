@@ -229,6 +229,11 @@
       color: #1e1915;
     }
 
+    .highlightContent::selection {
+      background-color: #fef135;
+      color: #000;
+    }
+
     .highlightContent p {
       text-indent: 1.5rem;
     }
