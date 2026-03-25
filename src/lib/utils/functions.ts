@@ -345,8 +345,11 @@ export const getOpenMeteoWeather = async ({
   const url2 = "https://air-quality-api.open-meteo.com/v1/air-quality?";
   const params2 = new URLSearchParams(param2).toString();
 
-  const response1 = await fetch(url1 + params1);
-  const response2 = await fetch(url2 + params2);
+  let response1 = await fetch(url1 + params1);
+  let response2 = await fetch(url2 + params2);
+
+  if (response1.status !== 200) response1 = await fetch(url1 + params1);
+  if (response2.status !== 200) response2 = await fetch(url2 + params2);
 
   const data1 = await response1.json();
   const data2 = await response2.json();

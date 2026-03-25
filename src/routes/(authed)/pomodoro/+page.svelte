@@ -118,7 +118,8 @@
       case "shortbreak":
         srcAudio = "/sounds/mp3_focus.ogg";
         pauseAudio = false;
-        $currentInterval++;
+        $currentInterval =
+          $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
         setTimeout(() => {
           $currentMode = "focus";
         }, 1000);
@@ -128,7 +129,8 @@
       case "longbreak":
         srcAudio = "/sounds/mp3_focus.ogg";
         pauseAudio = false;
-        $currentInterval = 1;
+        $currentInterval =
+          $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
         setTimeout(() => {
           $currentMode = "focus";
         }, 1000);

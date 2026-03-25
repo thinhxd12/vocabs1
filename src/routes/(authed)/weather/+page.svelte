@@ -39,6 +39,7 @@
   } from "$lib/store/layoutstore";
   import { saveUserSetting } from "$lib/store/localstore";
   import type { PageProps } from "./$types";
+  import { fade } from "svelte/transition";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -77,6 +78,7 @@
     actual: number;
     feelsLike: number;
     actualDescription: string;
+    background: string;
     forecastStatement: string;
     lastUpdated: string;
     feelsLikeDescription: string;
@@ -85,6 +87,7 @@
     actual: 0,
     feelsLike: 0,
     actualDescription: "No data",
+    background: "",
     forecastStatement: "No data",
     lastUpdated: "No data",
     feelsLikeDescription: "No data",
@@ -203,11 +206,14 @@
 
   function getCurrentConditions() {
     if ($weatherData) {
-      const { icon: current_icon, description: current_description } =
-        getWeatherInfo(
-          $weatherData.current.weather_code,
-          $weatherData.current.is_day,
-        );
+      const {
+        icon: current_icon,
+        description: current_description,
+        background: current_background,
+      } = getWeatherInfo(
+        $weatherData.current.weather_code,
+        $weatherData.current.is_day,
+      );
       let forecastStatement = generateForecastStatement($weatherData);
       const now = Date.now();
       const fulfilledTimeStamp = new Date($weatherData.current.time).getTime();
@@ -221,6 +227,7 @@
       currentValues = {
         icon: current_icon,
         actualDescription: current_description,
+        background: current_background,
         actual,
         feelsLike,
         forecastStatement,
@@ -567,47 +574,54 @@
 <Container scrollable>
   {#if $weatherData}
     <div class="current">
+      {#key currentValues.background}
+        <img
+          src="/navweather/{currentValues.background}.webp"
+          alt="wtb"
+          class="absolute top-0 left-0 w-full h-full object-cover"
+          in:fade={{ duration: 300 }}
+        />
+      {/key}
+
+      <div class="absolute w-full h-full bg-black/20"></div>
+
       <select
         name="location"
         onchange={(e) => setCurrentLocation(e.currentTarget.value)}
-        class="location-list mb-6"
+        class="location-list relative mb-6 text-white"
       >
         {#each $locationList as item}
-          <option
-            value={item.id}
-            selected={item.id === $currentLocationId}
-            class="hover:bg-red-500 hover:text-white"
-          >
+          <option value={item.id} selected={item.id === $currentLocationId}>
             {item.name}
           </option>
         {/each}
       </select>
 
       <h1
-        class="indent-30 text-120 font-300 leading-100 h-100 overflow-hidden mb-9 text-center"
+        class="relative indent-30 text-white text-120 font-300 leading-100 h-100 overflow-hidden mb-9 text-center"
       >
         {currentValues.actual}°
       </h1>
 
-      <div class="flex justify-center items-center gap-9 h-50 mb-6">
+      <div class="relative flex justify-center items-center gap-9 h-50">
         <img
           src="/liquid/128/{currentValues.icon}.png"
           alt="icon"
           class="size-60 object-cover"
           style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
         />
-        <span class="text-[#212529] text-21 font-400"
-          >{currentValues.actualDescription}</span
-        >
+        <span class="text-white text-21 font-400">
+          {currentValues.actualDescription}
+        </span>
       </div>
 
-      <p class="text-center text-16 mb-6">
+      <p class="relative text-white text-center text-16">
         Feels Like: {currentValues.feelsLike}°C
       </p>
-      <p class="px-6 text-center text-15 text-[#343a40]">
+      <p class="relative text-white px-6 text-center text-15 leading-21">
         {currentValues.forecastStatement}
       </p>
-      <p class="text-center text-12 mb-6 text-[#343a40]">
+      <p class="relative text-white/60 text-center text-12 pb-9">
         Last updated {currentValues.lastUpdated}
       </p>
     </div>
@@ -1049,6 +1063,7 @@
       )
       0% 0% no-repeat padding-box padding-box transparent;
     backdrop-filter: blur(6px);
+    position: relative;
   }
 
   progress::-webkit-progress-bar {

@@ -89,11 +89,11 @@ const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   3: "cloudy", // Overcast
   45: "foggy", // Fog
   48: "foggy", // Depositing rime fog
-  51: "rain", // Light drizzle
-  53: "rain", // Moderate drizzle
-  55: "rain", // Dense drizzle
-  56: "rain", // Light freezing drizzle
-  57: "rain", // Dense freezing drizzle
+  51: "drizzle", // Light drizzle
+  53: "drizzle", // Moderate drizzle
+  55: "drizzle", // Dense drizzle
+  56: "drizzle", // Light freezing drizzle
+  57: "drizzle", // Dense freezing drizzle
   61: "rain", // Slight rain
   63: "rain", // Moderate rain
   65: "rain", // Heavy rain
@@ -103,9 +103,9 @@ const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   73: "snow", // Moderate snow
   75: "snow", // Heavy snow
   77: "snow", // Snow grains
-  80: "rain", // Slight rain showers
-  81: "rain", // Moderate rain showers
-  82: "rain", // Violent rain showers
+  80: "light-shower", // Slight rain showers
+  81: "shower", // Moderate rain showers
+  82: "shower", // Violent rain showers
   85: "snow", // Slight snow showers
   86: "snow", // Heavy snow showers
   95: "thunderstorm", // Thunderstorm
@@ -113,6 +113,11 @@ const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   99: "thunderstorm", // Thunderstorm with heavy hail
 };
 
+/**
+ * @param code - weather code
+ * @param isday
+ * @returns description, icon, background
+ */
 export function getWeatherInfo(
   code: number,
   isday: number = 0,
