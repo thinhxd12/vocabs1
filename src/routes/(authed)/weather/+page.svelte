@@ -574,14 +574,16 @@
 <Container scrollable>
   {#if $weatherData}
     <div class="current">
-      {#key currentValues.background}
-        <img
-          src="/navweather/{currentValues.background}.webp"
-          alt="wtb"
-          class="absolute top-0 left-0 w-full h-full object-cover"
-          in:fade={{ duration: 300 }}
-        />
-      {/key}
+      {#if currentValues.background}
+        {#key currentValues.background}
+          <img
+            src="/navweather/{currentValues.background}.webp"
+            alt="wtb"
+            class="absolute top-0 left-0 w-full h-full object-cover"
+            in:fade={{ duration: 300 }}
+          />
+        {/key}
+      {/if}
 
       <div class="absolute w-full h-full bg-black/20"></div>
 
