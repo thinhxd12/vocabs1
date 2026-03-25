@@ -154,6 +154,9 @@ export function getWeatherInfo(
     "rain",
     "snow",
     "thunderstorm",
+    "drizzle",
+    "light-shower",
+    "shower",
   ]);
 
   const background = backgroundsWithoutDayNight.has(backgroundImage)
