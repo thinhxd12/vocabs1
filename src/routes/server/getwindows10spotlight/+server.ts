@@ -23,13 +23,11 @@ export async function GET({ url }) {
     if (nextIndex) index = nextIndex;
 
     const image: ImageBackgroundType = {
-      title: dateImg || "2022-11-29",
+      title: titleImg || "",
       url:
         urlImg ||
         "https://windows10spotlight.com/wp-content/uploads/2022/11/91ebe7f07ca590b62d45472efb560c8a-1024x576.jpg",
-      place:
-        titleImg ||
-        "Ashopton Viaduct towards Derwent, Ladybower Reservoir, Derbyshire, England, UK",
+      place: dateImg || "",
     };
 
     return new Response(JSON.stringify(image));
