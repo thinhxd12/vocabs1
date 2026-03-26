@@ -25,6 +25,7 @@
   import Bi3CircleFill from "~icons/bi/3-circle-fill";
   import Bi4CircleFill from "~icons/bi/4-circle-fill";
   import MaterialSymbolsResetImage from "~icons/material-symbols/reset-image";
+  import BiCCircleFill from "~icons/bi/c-circle-fill";
 
   let { children } = $props();
 
@@ -175,6 +176,17 @@
         }}
       >
         <Bi4CircleFill width="14" height="14" />
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("image");
+          setGetLayouImageApi("getwindows10spotlight");
+        }}
+      >
+        <BiCCircleFill width="14" height="14" />
       </button>
     </div>
   {/if}
