@@ -229,6 +229,6 @@
   <div
     class="w-full h-[calc(100vh-404px-44px)] flex flex-col gap-2 no-scrollbar overflow-y-scroll"
   >
-    <Definition item={editRenderWord} onCheck={handleCheckEdit} />
+    <Definition item={editRenderWord} onSelect={handleCheckEdit} />
   </div>
 </div>

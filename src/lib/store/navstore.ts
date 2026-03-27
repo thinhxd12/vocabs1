@@ -168,33 +168,6 @@ export async function handleCheckWord(word: DBSelect["vocab_table"]) {
   }
 }
 
-export async function setNextLearningWord() {
-  const listContentValue = get(listContent);
-  const currentRenderWord = get(renderWord);
-  const currentLearnWord = listContentValue[get(listCount)];
-  if (
-    listContentValue.length &&
-    currentRenderWord?.id === currentLearnWord.id
-  ) {
-    listCount.update((n) => {
-      if (n < listContentValue.length - 1) {
-        const nextWord = listContentValue[n + 1];
-        renderWord.set(nextWord);
-        return n + 1;
-      } else {
-        renderWord.set(undefined);
-        listContent.set([]);
-        updateTodayScheduleLocal();
-        return 0;
-      }
-    });
-  } else {
-    setTimeout(() => {
-      renderWord.set(listContentValue[get(listCount)]);
-    }, 1500);
-  }
-}
-
 export async function updateTodayScheduleLocal() {
   const currentProgressSchedule = getCurrentProgressSchedule();
   if (!currentProgressSchedule) return;

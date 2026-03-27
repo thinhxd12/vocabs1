@@ -556,6 +556,7 @@
     clearTimeout(flipTimeoutId);
     clearTimeout(flagTimeoutId);
     clearTimeout(keyDownTimeoutId);
+    handleUpdateNote();
     if (isRandomed) {
       $highlight = $bookInfo = undefined;
     }

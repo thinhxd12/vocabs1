@@ -7,5 +7,3 @@ export const searchTerm = writable<string>("");
 export const searchResults = writable<VocabularySearchType[]>([]);
 export const showTranslate = writable<boolean>(false);
 export const showEdit = writable<boolean>(false);
-
-export const isChecked = writable<boolean>(false);

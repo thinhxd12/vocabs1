@@ -20,9 +20,6 @@
   import Modal from "$lib/components/Modal.svelte";
   import { innerHeight } from "svelte/reactivity/window";
   import { wakeEnable } from "$lib/store/navstore";
-  import MaterialSymbolsAdjust from "~icons/material-symbols/adjust";
-  import MaterialSymbolsDarkModeRounded from "~icons/material-symbols/dark-mode-rounded";
-  import MaterialSymbolsSailingRounded from "~icons/material-symbols/sailing-rounded";
   import MaterialSymbolsInsertChartOutlineRounded from "~icons/material-symbols/insert-chart-outline-rounded";
   import MaterialSymbolsSettingsRounded from "~icons/material-symbols/settings-rounded";
   import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
@@ -41,6 +38,9 @@
     secondsToMinutes,
   } from "$lib/utils/functions";
   import { fade } from "svelte/transition";
+  import TablerCircleLetterFFilled from "~icons/tabler/circle-letter-f-filled";
+  import TablerCircleLetterSFilled from "~icons/tabler/circle-letter-s-filled";
+  import TablerCircleLetterLFilled from "~icons/tabler/circle-letter-l-filled";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -297,7 +297,7 @@
           handleChangeMode("focus");
         }}
       >
-        <MaterialSymbolsAdjust width="14" height="14" />
+        <TablerCircleLetterFFilled width="16" height="16" />
       </button>
 
       <button
@@ -308,7 +308,7 @@
           handleChangeMode("shortbreak");
         }}
       >
-        <MaterialSymbolsDarkModeRounded width="14" height="14" />
+        <TablerCircleLetterSFilled width="16" height="16" />
       </button>
 
       <button
@@ -319,7 +319,7 @@
           handleChangeMode("longbreak");
         }}
       >
-        <MaterialSymbolsSailingRounded width="14" height="14" />
+        <TablerCircleLetterLFilled width="16" height="16" />
       </button>
 
       <button
@@ -586,16 +586,9 @@
 
         {#if $isPaused}
           <div
-            class="absolute w-full h-full z-30 flex items-center justify-center bg-black/15 shadow-[inset_0_0_60px_rgba(0,0,0,1)]"
-          >
-            <h1
-              class="text-90 text-[#FF0000] font-constantine font-400"
-              style="text-shadow: 0 2px 8px rgba(0, 0, 0, 1);"
-              transition:fade={{ duration: 150 }}
-            >
-              PAUSED
-            </h1>
-          </div>
+            transition:fade={{ duration: 150 }}
+            class="absolute w-full h-full z-30 flex items-center justify-center bg-black/15 shadow-[inset_0_0_45px_rgba(0,0,0,1)]"
+          ></div>
         {/if}
 
         <div class="center"></div>
@@ -625,7 +618,7 @@
   }
 
   .square {
-    width: 381px;
+    width: 379px;
     aspect-ratio: 1;
     border: 3px solid #000000;
     position: relative;
@@ -672,7 +665,7 @@
   }
 
   .setting-button.active {
-    @apply !bg-green-400/60 !text-black;
+    @apply !bg-green-400 !text-black;
   }
 
   .btn-timer {
@@ -712,10 +705,6 @@
 
     .square {
       width: 253px;
-    }
-
-    .square h1 {
-      font-size: 63px;
     }
   }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, untrack } from "svelte";
+  import { untrack } from "svelte";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import { showTimer } from "$lib/store/navstore";
@@ -39,7 +39,6 @@
   } from "$lib/store/layoutstore";
   import { saveUserSetting } from "$lib/store/localstore";
   import type { PageProps } from "./$types";
-  import { fade } from "svelte/transition";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -575,17 +574,14 @@
   {#if $weatherData}
     <div class="current">
       {#if currentValues.background}
-        {#key currentValues.background}
-          <img
-            src="/navweather/{currentValues.background}.webp"
-            alt="wtb"
-            class="absolute top-0 left-0 w-full h-full object-cover"
-            in:fade={{ duration: 300 }}
-          />
-        {/key}
+        <img
+          src="/navweather/{currentValues.background}.webp"
+          alt="wtb"
+          class="absolute top-0 left-0 w-full h-full object-cover object-top"
+        />
       {/if}
 
-      <div class="absolute w-full h-full bg-black/20"></div>
+      <div class="absolute w-full h-full bg-black/15"></div>
 
       <select
         name="location"
@@ -600,30 +596,27 @@
       </select>
 
       <h1
-        class="relative indent-30 text-white text-120 font-300 leading-100 h-100 overflow-hidden mb-9 text-center"
+        class="relative select-none indent-30 text-white text-135 font-300 leading-150 overflow-hidden text-center"
       >
         {currentValues.actual}°
       </h1>
 
-      <div class="relative flex justify-center items-center gap-9 h-50">
+      <div class="relative flex justify-center items-center gap-9 mb-3">
         <img
           src="/liquid/128/{currentValues.icon}.png"
           alt="icon"
           class="size-60 object-cover"
           style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
         />
-        <span class="text-white text-21 font-400">
+        <span class="text-white text-18 font-400">
           {currentValues.actualDescription}
         </span>
       </div>
 
-      <p class="relative text-white text-center text-16">
-        Feels Like: {currentValues.feelsLike}°C
-      </p>
-      <p class="relative text-white px-6 text-center text-15 leading-21">
+      <p class="relative text-white px-6 text-center text-15 leading-18 mb-3">
         {currentValues.forecastStatement}
       </p>
-      <p class="relative text-white/60 text-center text-12 pb-9">
+      <p class="relative text-white/60 text-center text-11 mb-3">
         Last updated {currentValues.lastUpdated}
       </p>
     </div>
@@ -725,24 +718,22 @@
           </svg>
         </div>
 
-        <div
-          class="flex gap-9 pt-3 mt-15 mb-6 bg-white/80 rounded-2 overflow-hidden"
-        >
-          <img
-            src="/beaufort-scale/{windValues.image}.png"
-            alt="Beaufortimg"
-            class="w-1/3 object-cover"
-          />
-          <p class="text-12 leading-16 pb-3">{windValues.description}</p>
-        </div>
-
-        <div class="flex justify-between">
+        <div class="flex justify-between mt-9 mb-3 px-3">
           <p class="text-12">
             Direction {windValues.windDirection}° {windValues.directionLabel}
           </p>
           <p class="text-12">
             Gust {windValues.windGusts}{windValues.speedUnit}
           </p>
+        </div>
+
+        <div class="flex gap-9 bg-white/80 rounded-2 overflow-hidden">
+          <img
+            src="/beaufort-scale/{windValues.image}.png"
+            alt="Beaufortimg"
+            class="w-1/3 object-cover"
+          />
+          <p class="text-12 leading-16 pb-3">{windValues.description}</p>
         </div>
       </div>
       <div class="light p-6 w-full">

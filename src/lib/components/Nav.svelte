@@ -24,9 +24,9 @@
   import UilSchedule from "~icons/uil/schedule";
   import MaterialSymbolsFeatureSearchOutline from "~icons/material-symbols/feature-search-outline";
   import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
-  import MdiLockOpenVariant from "~icons/mdi/lock-open-variant";
   import MaterialSymbolsDashboardRounded from "~icons/material-symbols/dashboard-rounded";
   import SolarSadSquareBold from "~icons/solar/sad-square-bold";
+  import MajesticonsUnlockOpenLine from "~icons/majesticons/unlock-open-line";
 
   async function handleDailyProgress(num: number) {
     $currentProgress = num;
@@ -203,7 +203,7 @@
 
       <form method="post" action="/login?/signout">
         <button class="btn-menu" onclick={() => localStorage.clear()}>
-          <MdiLockOpenVariant width="14" height="14" />
+          <MajesticonsUnlockOpenLine width="14" height="14" />
         </button>
       </form>
     </div>
@@ -261,10 +261,6 @@
 <style lang="postcss">
   .btn-menu {
     @apply h-16 min-w-18 flex items-center justify-center rounded-2 overflow-hidden bg-white/20 hover:bg-white/40 text-black/60 hover:text-black transition duration-100 ring-1 ring-black/5 shadow shadow-black/30;
-  }
-
-  .btn-menu.active {
-    @apply !bg-green-400/60 text-black;
   }
 
   .btn-menu.active {

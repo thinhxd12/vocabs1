@@ -7,7 +7,7 @@
     secondsToMinutes,
   } from "$lib/utils/functions";
   import { onDestroy } from "svelte";
-  import MaterialSymbolsAlarm from "~icons/material-symbols/alarm";
+  import RiAlarmLine from "~icons/ri/alarm-line";
 
   const timeCount = 6 * 60;
   let interval: ReturnType<typeof setInterval>;
@@ -80,7 +80,7 @@
   </button>
 {:else}
   <button onclick={() => ($showTimer = true)} class="btn-menu">
-    <MaterialSymbolsAlarm width="14" height="14" />
+    <RiAlarmLine width="14" height="14" />
   </button>
 {/if}
 

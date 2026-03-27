@@ -2,22 +2,22 @@
   import ImageLoader from "./ImageLoader.svelte";
   import type { DBSelect, DBInsert } from "$lib/types";
   import MingcuteCornerDownRightLine from "~icons/mingcute/corner-down-right-line";
-  import { isChecked } from "$lib/store/vocabstore";
 
   interface Props {
     item: DBSelect["vocab_table"] | DBInsert["vocab_table"];
     onEdit?: () => void;
+    onSelect?: () => void;
     onCheck?: () => void;
   }
 
-  let { item, onCheck, onEdit }: Props = $props();
+  let { item, onSelect, onCheck, onEdit }: Props = $props();
 
   function handleContainerClick(event: any) {
     const target = event.target;
-
+    if (target.classList.contains("clicked")) return;
     if (target.nodeName === "EM") {
-      target.classList.toggle("clicked");
-      isChecked.set(true);
+      target.classList.add("clicked");
+      onCheck?.();
     }
   }
 </script>
@@ -25,14 +25,11 @@
 {#each item.meanings as entry}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div
-    onclick={(e) => handleContainerClick(e)}
-    class="definition light w-full min-h-min rounded-2 overflow-hidden py-3"
-  >
+  <div class="definition light w-full min-h-min rounded-2 overflow-hidden py-3">
     <div class="flex justify-between px-9 pb-6">
       <button
         class="cursor-pointer font-roslindale text-24 leading-28 font-500"
-        onclick={onEdit || onCheck}
+        onclick={onEdit || onSelect}
       >
         {entry.partOfSpeech}
       </button>
@@ -56,7 +53,10 @@
           {#if el.example.sentence}
             <div class="z-30 flex flex-1 items-center p-18">
               <h2 class="text-center text-18 leading-27">
-                <span class="definition-example shadow shadow-black/30">
+                <span
+                  onclick={(e) => handleContainerClick(e)}
+                  class="definition-example shadow shadow-black/30"
+                >
                   {@html el.example.sentence}
                 </span>
               </h2>
@@ -135,7 +135,6 @@
     font-style: normal;
     font-weight: 500;
     cursor: pointer;
-    user-select: none;
   }
 
   .definition-example :global(em.clicked) {

@@ -22,10 +22,10 @@
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
   import MaterialSymbolsPlayCircleRounded from "~icons/material-symbols/play-circle-rounded";
-  import Bi3CircleFill from "~icons/bi/3-circle-fill";
-  import Bi4CircleFill from "~icons/bi/4-circle-fill";
   import MaterialSymbolsResetImage from "~icons/material-symbols/reset-image";
-  import BiCCircleFill from "~icons/bi/c-circle-fill";
+  import TablerCircleLetterSFilled from "~icons/tabler/circle-letter-s-filled";
+  import TablerCircleNumber3Filled from "~icons/tabler/circle-number-3-filled";
+  import TablerCircleNumber4Filled from "~icons/tabler/circle-number-4-filled";
 
   let { children } = $props();
 
@@ -164,7 +164,7 @@
           setGetLayouImageApi("getlayoutimagev3");
         }}
       >
-        <Bi3CircleFill width="14" height="14" />
+        <TablerCircleNumber3Filled width="16" height="16" />
       </button>
 
       <button
@@ -175,7 +175,7 @@
           setGetLayouImageApi("getlayoutimagev4");
         }}
       >
-        <Bi4CircleFill width="14" height="14" />
+        <TablerCircleNumber4Filled width="16" height="16" />
       </button>
 
       <button
@@ -186,7 +186,7 @@
           setGetLayouImageApi("getwindows10spotlight");
         }}
       >
-        <BiCCircleFill width="14" height="14" />
+        <TablerCircleLetterSFilled width="16" height="16" />
       </button>
     </div>
   {/if}

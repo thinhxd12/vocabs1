@@ -9,6 +9,19 @@ import { getTotalMemories } from "$lib/store/navstore";
 import { page } from "$app/state";
 import { addToast } from "$lib/store/layoutstore";
 
+async function fetchWithRetry(url: string, options = {}, retries = 9) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error("Network response was not ok");
+    return await response.json();
+  } catch (error) {
+    if (retries > 0) {
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
+
 export function minutesToSeconds(minutes: number) {
   return minutes * 60;
 }
@@ -345,14 +358,8 @@ export const getOpenMeteoWeather = async ({
   const url2 = "https://air-quality-api.open-meteo.com/v1/air-quality?";
   const params2 = new URLSearchParams(param2).toString();
 
-  let response1 = await fetch(url1 + params1);
-  let response2 = await fetch(url2 + params2);
-
-  if (response1.status !== 200) response1 = await fetch(url1 + params1);
-  if (response2.status !== 200) response2 = await fetch(url2 + params2);
-
-  const data1 = await response1.json();
-  const data2 = await response2.json();
+  const data1 = await fetchWithRetry(url1 + params1);
+  const data2 = await fetchWithRetry(url2 + params2);
 
   const result: OpenMeteoResponse = {
     latitude: data1.latitude,

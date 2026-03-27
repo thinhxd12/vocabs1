@@ -8,13 +8,14 @@
     searchResults,
     showEdit,
     showTranslate,
-    isChecked,
   } from "$lib/store/vocabstore";
   import { onDestroy, untrack } from "svelte";
   import {
     handleCheckWord,
-    setNextLearningWord,
+    listContent,
+    listCount,
     showTimer,
+    updateTodayScheduleLocal,
   } from "$lib/store/navstore";
   import Container from "$lib/components/Container.svelte";
   import MaterialSymbolsEditSquareOutlineRounded from "~icons/material-symbols/edit-square-outline-rounded";
@@ -26,7 +27,6 @@
   import { addToast } from "$lib/store/layoutstore";
 
   let { data: layoutData }: PageProps = $props();
-  let deleteSearchTimeout: ReturnType<typeof setTimeout>;
   let checkTimeout: ReturnType<typeof setTimeout>;
   const trigger = debounce(async (text: string) => {
     const { data } = await layoutData.supabase
@@ -39,12 +39,6 @@
     switch (data.length) {
       case 0:
         searchTermFounded = false;
-        deleteSearchTimeout = setTimeout(() => {
-          searchTermFounded = true;
-          $searchTerm = "";
-          $searchResults = [];
-          activeIndex = 0;
-        }, 1500);
         src0 = "/sounds/mp3_Boing.mp3";
         paused0 = false;
         break;
@@ -64,7 +58,7 @@
         activeIndex = 0;
         break;
     }
-  }, 300);
+  }, 1000);
 
   let debouncetimeout: ReturnType<typeof setTimeout>;
 
@@ -80,7 +74,6 @@
 
     clearTimeout(debouncetimeout);
     clearTimeout(checkTimeout);
-    clearTimeout(deleteSearchTimeout);
     switch (true) {
       case e.key === "F2":
         $showTranslate = true;
@@ -146,7 +139,6 @@
     untrack(() => {
       if (v) {
         flipNumber = v.number;
-        isChecked.set(false);
         src0 = v.audio;
         paused0 = false;
       }
@@ -161,13 +153,32 @@
     paused1 = false;
   }
 
-  const unsubscribe = isChecked.subscribe((value) => {
-    if (value && $renderWord) {
-      handlePlaySoundMeanings();
-      flipNumber = $renderWord.number - 1;
-      handleCheckWord($renderWord);
+  function handleSetNextLearningWord() {
+    if ($listContent.length) {
+      if ($renderWord?.id === $listContent[$listCount].id) {
+        $listCount++;
+        if ($listCount < $listContent.length) {
+          renderWord.set($listContent[$listCount]);
+        } else {
+          src0 = "/sounds/mp3_Ding.mp3";
+          paused0 = false;
+          $listContent = [];
+          $listCount = 0;
+          updateTodayScheduleLocal();
+        }
+      } else {
+        setTimeout(() => {
+          renderWord.set($listContent[$listCount]);
+        }, 1500);
+      }
     }
-  });
+  }
+
+  function handleCheck() {
+    flipNumber = $renderWord!.number - 1;
+    handlePlaySoundMeanings();
+    handleCheckWord($renderWord!);
+  }
 
   async function confirmDelete(id: string) {
     const { error } = await layoutData.supabase
@@ -209,10 +220,8 @@
 
   onDestroy(() => {
     clearTimeout(checkTimeout);
-    clearTimeout(deleteSearchTimeout);
     clearTimeout(debouncetimeout);
     renderWord.set(undefined);
-    unsubscribe();
   });
 </script>
 
@@ -229,7 +238,7 @@
   src={src1}
   bind:paused={paused1}
   preload="auto"
-  onended={setNextLearningWord}
+  onended={handleSetNextLearningWord}
 >
 </audio>
 
@@ -323,7 +332,11 @@
       <div
         class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
       >
-        <Definition item={$renderWord} onEdit={handleEditFromDefinition} />
+        <Definition
+          item={$renderWord}
+          onCheck={handleCheck}
+          onEdit={handleEditFromDefinition}
+        />
       </div>
     {/if}
   </Container>
