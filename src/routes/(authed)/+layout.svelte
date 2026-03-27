@@ -75,10 +75,8 @@
 
 <Toast />
 
-<main class="flex-1 w-full flex justify-center items-start">
-  {@render children()}
-</main>
+{@render children()}
 
-<nav class="sticky h-42 w-full flex justify-center">
+<nav class="fixed h-42 bottom-0 w-full flex justify-center z-30">
   <Nav />
 </nav>

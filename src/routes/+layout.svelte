@@ -12,7 +12,6 @@
     localImageStore,
     layoutSetting,
     setGetLayouImageApi,
-    setDefaultImageBackground,
   } from "$lib/store/localstore";
   import type { LayoutSettingType, VideoBackgroundType } from "$lib/types";
   import { onMount } from "svelte";
@@ -22,10 +21,10 @@
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
   import MaterialSymbolsPlayCircleRounded from "~icons/material-symbols/play-circle-rounded";
-  import MaterialSymbolsResetImage from "~icons/material-symbols/reset-image";
   import TablerCircleLetterSFilled from "~icons/tabler/circle-letter-s-filled";
   import TablerCircleNumber3Filled from "~icons/tabler/circle-number-3-filled";
   import TablerCircleNumber4Filled from "~icons/tabler/circle-number-4-filled";
+  import TablerCircleLetterDFilled from "~icons/tabler/circle-letter-d-filled";
 
   let { children } = $props();
 
@@ -87,11 +86,13 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="relative h-screen w-screen flex flex-col overflow-hidden">
+<main
+  class="relative h-screen w-screen flex flex-col items-center overflow-hidden"
+>
   {@render children()}
 
   {#if $layoutSetting.showImage}
-    <div class="absolute hidden md:flex gap-2 right-3 top-3 text-white">
+    <div class="absolute z-10 hidden md:flex gap-2 right-3 top-3 text-white">
       <button
         class="btn-menu light"
         onclick={(e) => {
@@ -150,10 +151,21 @@
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
-          setDefaultImageBackground();
+          setGetLayouImageApi("getdefaultlayoutimage");
         }}
       >
-        <MaterialSymbolsResetImage width="14" height="14" />
+        <TablerCircleLetterDFilled width="16" height="16" />
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("image");
+          setGetLayouImageApi("getwindows10spotlight");
+        }}
+      >
+        <TablerCircleLetterSFilled width="16" height="16" />
       </button>
 
       <button
@@ -177,20 +189,9 @@
       >
         <TablerCircleNumber4Filled width="16" height="16" />
       </button>
-
-      <button
-        class="btn-menu light"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleShowLayout("image");
-          setGetLayouImageApi("getwindows10spotlight");
-        }}
-      >
-        <TablerCircleLetterSFilled width="16" height="16" />
-      </button>
     </div>
   {/if}
-</div>
+</main>
 
 <div class="fixed w-screen h-screen inset-0 -z-1">
   {#if $layoutSetting.showImage}

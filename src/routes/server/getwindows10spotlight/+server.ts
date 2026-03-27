@@ -1,8 +1,15 @@
 import type { ImageBackgroundType } from "$lib/types.js";
 import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
+import icescape from "$lib/assets/images/Icescape.jpg";
 
 let index = "28991";
+
+const defaultImage: ImageBackgroundType = {
+  title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
+  url: icescape,
+  place: "Snæfellsnes peninsula, Iceland",
+};
 
 export async function GET({ url }) {
   const startUrl = `https://windows10spotlight.com/images/${index}`;
@@ -24,14 +31,12 @@ export async function GET({ url }) {
 
     const image: ImageBackgroundType = {
       title: titleImg || "",
-      url:
-        urlImg ||
-        "https://windows10spotlight.com/wp-content/uploads/2022/11/91ebe7f07ca590b62d45472efb560c8a-1024x576.jpg",
+      url: urlImg || defaultImage.url,
       place: dateImg || "",
     };
 
     return new Response(JSON.stringify(image));
   } catch (e) {
-    error(404);
+    return new Response(JSON.stringify(defaultImage));
   }
 }

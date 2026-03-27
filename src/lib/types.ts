@@ -67,7 +67,6 @@ export interface ArtImageType {
   author: string;
   authorYears: string;
   content: string;
-  nextImageUrl: string;
 }
 
 export interface TranslateType {

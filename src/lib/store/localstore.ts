@@ -139,18 +139,6 @@ export async function getNextImageBackground() {
   }
 }
 
-export async function setDefaultImageBackground() {
-  localImageStore.update((s) => ({ ...s, loading: true }));
-  localImageStore.update((s) => {
-    const data = [...s.data.slice(1), defaultImage];
-    localStorage.setItem(LAYOUT_STORAGE, serialize(data));
-    return { loading: false, data };
-  });
-  const currentIndex = get(localImageStore).data.length - 1;
-  currentImageIndex.set(currentIndex);
-  localStorage.setItem(LAYOUT_INDEX, String(currentIndex));
-}
-
 export async function getPrevImageBackground() {
   if (!browser) return;
   const images = get(localImageStore);
@@ -164,8 +152,6 @@ export async function getPrevImageBackground() {
 }
 
 //--------------ART-------------------//
-const ART_STORAGE = "art-images";
-const ART_INDEX = "art-index";
 
 const defaultArtImage: ArtImageType = {
   mainImage: mainImage,
@@ -177,8 +163,6 @@ const defaultArtImage: ArtImageType = {
   authorYears: "1895",
   content:
     "<p>Hello July!</p> <p>Time for an artist who in my opinion, created one of the best images of Summer ... the French Pointillist, Paul Signac!</p> <p>Signac was a painter and an avid sailor. He created several marine paintings, including a series of views over the port of Saint-Tropez, where he settled in 1892.</p> <p>In this vertical painting, the eye initially fixes on the vibrant red-orange buoy, which contrasts with the water's deep blue. The reflections of the buildings then lead the viewer's eye to the background, with lighter tones. The divisionist technique and the combination of pure colors allowed Signac to depict a glittering sea, and the glimmering light of the Midi.</p> <p>The Pointillist painters differ from the Impressionists, most notably in the scientific dimension of their work. Regarding the rigor of his initial work, Signac's strokes have widened for this series; the division of tones is more relaxed.</p> <p>P.S. Our sale is on! Save 20% on our <a href=\"https://shop.dailyartmagazine.com/product-category/prints/?utm_campaign=DailyArt-Prints&amp;utm_medium=text&amp;utm_source=DailyArtapp&amp;utm_term=fine-art-prints\">Prints Collection</a> and order a high-quality reproduction of the greatest masterpieces.&nbsp;</p>",
-  nextImageUrl:
-    "https://www.getdailyart.com/en/24717/vincent-van-gogh/labourer-in-a-field",
 };
 
 export const currentArtImageIndex = writable<number>(0);
@@ -189,8 +173,6 @@ export const localArtStore = writable<{
 
 export function getCurrentArtImage() {
   if (!browser) return;
-  localStorage.removeItem(ART_STORAGE);
-  localStorage.removeItem(ART_INDEX);
   currentArtImageIndex.set(0);
   localArtStore.set({ loading: false, data: [defaultArtImage] });
 }
@@ -202,20 +184,16 @@ export async function getNextArtImage() {
 
   if (images.data.length < IMAGES_LENGTH && index === images.data.length - 1) {
     localArtStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(
-      `/server/getdailyart?link=${images.data[images.data.length - 1].nextImageUrl}`,
-    );
+    const response = await fetch(`/server/getdailyart`);
 
     if (response.status == 200) {
       let json = await response.json();
       localArtStore.update((s) => {
         const data = [...s.data, json];
-        localStorage.setItem(ART_STORAGE, serialize(data));
         return { loading: false, data };
       });
       currentArtImageIndex.update((n) => {
         const newIndex = (n + 1) % IMAGES_LENGTH;
-        localStorage.setItem(ART_INDEX, String(newIndex));
         return newIndex;
       });
     }
@@ -224,21 +202,17 @@ export async function getNextArtImage() {
     index === IMAGES_LENGTH - 1
   ) {
     localArtStore.update((s) => ({ ...s, loading: true }));
-    const response = await fetch(
-      `/server/getdailyart?link=${images.data[images.data.length - 1].nextImageUrl}`,
-    );
+    const response = await fetch(`/server/getdailyart`);
     if (response.status == 200) {
       const json = await response.json();
       localArtStore.update((s) => {
         const data = [...s.data.slice(1), json];
-        localStorage.setItem(ART_STORAGE, serialize(data));
         return { loading: false, data };
       });
     }
   } else {
     currentArtImageIndex.update((n) => {
       const newIndex = (n + 1) % IMAGES_LENGTH;
-      localStorage.setItem(ART_INDEX, String(newIndex));
       return newIndex;
     });
   }
@@ -251,7 +225,6 @@ export async function getPrevArtImage() {
   currentArtImageIndex.update((n) => {
     let newIndex = (n - 1) % images.data.length;
     newIndex = newIndex < 0 ? 0 : newIndex;
-    localStorage.setItem(ART_INDEX, String(newIndex));
     return newIndex;
   });
 }

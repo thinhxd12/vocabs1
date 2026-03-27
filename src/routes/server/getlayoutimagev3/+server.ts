@@ -1,7 +1,14 @@
 import type { ImageBackgroundType } from "$lib/types.js";
 import { error } from "@sveltejs/kit";
+import icescape from "$lib/assets/images/Icescape.jpg";
 
 // https://github.com/ORelio/Spotlight-Downloader/blob/master/SpotlightAPI.md
+
+const defaultImage: ImageBackgroundType = {
+  title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
+  url: icescape,
+  place: "Snæfellsnes peninsula, Iceland",
+};
 
 export async function GET({ fetch }) {
   const endpoint = "https://arc.msn.com/v3/Delivery/Placement";
@@ -34,6 +41,6 @@ export async function GET({ fetch }) {
 
     return new Response(JSON.stringify(images));
   } catch (e) {
-    error(404);
+    return new Response(JSON.stringify(defaultImage));
   }
 }
