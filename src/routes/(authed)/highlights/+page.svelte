@@ -547,6 +547,7 @@
   }
 
   function handleShowEdit() {
+    handleUpdateNote();
     showEdit = true;
     isSubmitting = false;
     highlightEdit = $highlight;
@@ -978,7 +979,7 @@
                   <p
                     class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                   >
-                    Bookmarked at {format(
+                   Page {$highlight.page}, bookmarked at {format(
                       new Date($highlight.dateOfCreation),
                       "p cccc, yyyy-MM-dd",
                     )}
@@ -998,7 +999,7 @@
                 <p
                   class="text-13 font-proxima leading-20 text-[#4f4f4d] font-400"
                 >
-                  Bookmarked at {format(
+                  Page {$highlight.page}, bookmarked at {format(
                     new Date($highlight.dateOfCreation),
                     "p cccc, yyyy-MM-dd",
                   )}

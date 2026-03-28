@@ -21,10 +21,11 @@
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
   import MaterialSymbolsPlayCircleRounded from "~icons/material-symbols/play-circle-rounded";
-  import TablerCircleLetterSFilled from "~icons/tabler/circle-letter-s-filled";
   import TablerCircleNumber3Filled from "~icons/tabler/circle-number-3-filled";
   import TablerCircleNumber4Filled from "~icons/tabler/circle-number-4-filled";
   import TablerCircleLetterDFilled from "~icons/tabler/circle-letter-d-filled";
+  import TablerCircleLetterRFilled from "~icons/tabler/circle-letter-r-filled";
+  import TablerSquareLetterTFilled from "~icons/tabler/square-letter-t-filled";
 
   let { children } = $props();
 
@@ -165,7 +166,18 @@
           setGetLayouImageApi("getwindows10spotlight");
         }}
       >
-        <TablerCircleLetterSFilled width="16" height="16" />
+        <TablerSquareLetterTFilled width="16" height="16" />
+      </button>
+
+      <button
+        class="btn-menu light"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowLayout("image");
+          setGetLayouImageApi("getwindows10spotlightrandom");
+        }}
+      >
+        <TablerCircleLetterRFilled width="16" height="16" />
       </button>
 
       <button

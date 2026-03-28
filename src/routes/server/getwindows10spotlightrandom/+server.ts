@@ -3,7 +3,7 @@ import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
 import icescape from "$lib/assets/images/Icescape.jpg";
 
-let todayIndex = "";
+let index = "28991";
 
 const defaultImage: ImageBackgroundType = {
   title: "Stunning Icelandic region of volcanoes, beaches, and glaciers.",
@@ -12,9 +12,9 @@ const defaultImage: ImageBackgroundType = {
 };
 
 export async function GET({ url }) {
-  await getIndex();
+  const startUrl = `https://windows10spotlight.com/images/${index}`;
+
   try {
-    const startUrl = `https://windows10spotlight.com/images/${todayIndex}`;
     const response = await fetch(startUrl);
     if (response.status !== 200) error(400, "not found");
     const text = await response.text();
@@ -22,34 +22,21 @@ export async function GET({ url }) {
     const titleImg = doc("h1").text();
     const dateImg = doc(".date").text();
     const urlImg = doc(".entry").find("a").attr("href");
-    const navigation = doc(".navigation");
-    const nextIndex = navigation
-      .find('a[rel="prev"]')
-      .attr("href")
-      ?.split("/")
-      .pop();
-    if (nextIndex) todayIndex = nextIndex;
+
+    const relatedItem = doc(".relatedposts").find("a").toArray();
+    const randomItem =
+      relatedItem[Math.floor(Math.random() * relatedItem.length)];
+    const nextIndex = doc(randomItem).attr("href")?.split("/").pop();
+    if (nextIndex) index = nextIndex;
 
     const image: ImageBackgroundType = {
       title: titleImg || "",
       url: urlImg || defaultImage.url,
       place: dateImg || "",
     };
+
     return new Response(JSON.stringify(image));
   } catch (e) {
     return new Response(JSON.stringify(defaultImage));
-  }
-}
-
-async function getIndex() {
-  if (!todayIndex) {
-    const mainUrl = `https://windows10spotlight.com`;
-    const response = await fetch(mainUrl);
-    if (response.status === 200) {
-      const text = await response.text();
-      const $ = load(text);
-      const post = $(".post").first();
-      todayIndex = post.find("a").attr("href")?.split("/").pop() || "28991";
-    }
   }
 }

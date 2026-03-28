@@ -79,17 +79,20 @@
         $showTranslate = true;
         break;
       case e.key === "ArrowDown":
-        activeIndex = (activeIndex + 1) % $searchResults.length;
+        if ($searchResults.length)
+          activeIndex = (activeIndex + 1) % $searchResults.length;
         break;
       case e.key === "ArrowUp":
-        activeIndex =
-          (activeIndex - 1 + $searchResults.length) % $searchResults.length;
+        if ($searchResults.length)
+          activeIndex =
+            (activeIndex - 1 + $searchResults.length) % $searchResults.length;
         break;
       case e.key === "Enter":
-        handleSelectWordFromSearch($searchResults[activeIndex].id);
+        if ($searchResults.length)
+          handleSelectWordFromSearch($searchResults[activeIndex].id);
         break;
       case e.key === "Backspace":
-        $searchTerm = $searchTerm.slice(0, -1);
+        if ($searchTerm) $searchTerm = $searchTerm.slice(0, -1);
         if ($searchTerm.length > 2) trigger($searchTerm.toLowerCase());
         break;
       case e.key === " ":
@@ -160,8 +163,6 @@
         if ($listCount < $listContent.length) {
           renderWord.set($listContent[$listCount]);
         } else {
-          src0 = "/sounds/mp3_Ding.mp3";
-          paused0 = false;
           $listContent = [];
           $listCount = 0;
           updateTodayScheduleLocal();

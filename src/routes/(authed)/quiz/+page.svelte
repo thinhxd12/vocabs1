@@ -92,7 +92,7 @@
       e.altKey ||
       e.shiftKey ||
       e.metaKey ||
-      answer === $quizRender!.word
+      answer === $quizRender?.word
     )
       return;
 
