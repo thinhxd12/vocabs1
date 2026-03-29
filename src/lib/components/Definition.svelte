@@ -25,7 +25,7 @@
 {#each item.meanings as entry}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="definition light w-full min-h-min rounded-2 overflow-hidden py-3">
+  <div class="definition light w-full min-h-min rounded-2 overflow-hidden">
     <div class="flex justify-between px-9 pb-6">
       <button
         class="cursor-pointer font-roslindale text-24 leading-28 font-500"

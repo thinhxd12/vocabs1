@@ -9,7 +9,7 @@
     showEdit,
     showTranslate,
   } from "$lib/store/vocabstore";
-  import { onDestroy, untrack } from "svelte";
+  import { onDestroy, onMount, untrack } from "svelte";
   import {
     handleCheckWord,
     listContent,
@@ -136,6 +136,12 @@
   let paused1 = $state<boolean>(true);
   let flipNumber = $state<number>(0);
   let activeIndex = $state<number>(0);
+
+  onMount(() => {
+    if ($listContent.length) {
+      renderWord.set($listContent[$listCount]);
+    }
+  });
 
   $effect(() => {
     const v = $renderWord;

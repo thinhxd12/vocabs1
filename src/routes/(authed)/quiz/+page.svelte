@@ -11,7 +11,6 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
-  import type { PageProps } from "./$types";
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);

@@ -23,10 +23,10 @@
   import BxsBookBookmark from "~icons/bxs/book-bookmark";
   import UilSchedule from "~icons/uil/schedule";
   import MaterialSymbolsFeatureSearchOutline from "~icons/material-symbols/feature-search-outline";
-  import HugeiconsQuiz02 from "~icons/hugeicons/quiz-02";
   import MaterialSymbolsDashboardRounded from "~icons/material-symbols/dashboard-rounded";
   import SolarSadSquareBold from "~icons/solar/sad-square-bold";
   import MajesticonsUnlockOpenLine from "~icons/majesticons/unlock-open-line";
+  import CodiconQuestion from "~icons/codicon/question";
 
   async function handleDailyProgress(num: number) {
     $currentProgress = num;
@@ -162,7 +162,7 @@
         class="btn-nav"
         class:active={page.url.pathname === "/quiz"}
       >
-        <HugeiconsQuiz02 width="14" height="14" />
+        <CodiconQuestion width="14" height="14" />
       </a>
 
       <button
