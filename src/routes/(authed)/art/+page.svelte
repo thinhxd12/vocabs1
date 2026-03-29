@@ -56,16 +56,19 @@
           e.currentTarget.blur();
           getPrevArtImage();
         }}
-        disabled={$currentArtImageIndex === 0}
+        class:disableBtn={$currentArtImageIndex === 0}
       >
         <SolarArrowLeftBold width="15" height="15" />
       </button>
+
       <button
         class="btn-menu"
         onclick={(e) => {
           e.currentTarget.blur();
           getNextArtImage();
         }}
+        class:disableBtn={$currentArtImageIndex ===
+          $localArtStore.data.length - 1}
       >
         {#if $localArtStore.loading}
           <EosIconsLoading width="15" height="15" />
@@ -120,6 +123,10 @@
 
 <style lang="postcss">
   .btn-menu {
-    @apply flex size-27 items-center justify-center rounded-full text-white/50 hover:text-white hover:bg-white/10 outline-none backdrop-blur-md disabled:opacity-15;
+    @apply flex size-27 items-center justify-center rounded-full text-white/50 hover:text-white hover:bg-white/10 outline-none backdrop-blur-md disabled:opacity-30;
+  }
+
+  .disableBtn {
+    @apply opacity-30;
   }
 </style>

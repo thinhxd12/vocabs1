@@ -75,16 +75,10 @@
   <div
     class="absolute z-3 flex justify-center items-center right-3 top-3 gap-3"
   >
-    <button
-      class="calendar-button light"
-      onclick={() => (showReset = !showReset)}
-    >
+    <button class="calendar-button" onclick={() => (showReset = !showReset)}>
       <MaterialSymbolsSettingsRounded width="14" height="14" />
     </button>
-    <button
-      class="calendar-button light"
-      onclick={() => (showCreate = !showCreate)}
-    >
+    <button class="calendar-button" onclick={() => (showCreate = !showCreate)}>
       <MaterialSymbolsCalendarAddOnRounded width="14" height="14" />
     </button>
   </div>
@@ -276,7 +270,8 @@
 
 <style lang="postcss">
   .calendar-button {
-    @apply size-18 flex items-center justify-center text-13 leading-16 appearance-none text-center cursor-pointer rounded-2 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30 disabled:opacity-30;
+    @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
+    backdrop-filter: blur(12px);
   }
 
   .form-date {

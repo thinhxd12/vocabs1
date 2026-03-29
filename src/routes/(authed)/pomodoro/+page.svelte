@@ -290,7 +290,7 @@
   <div class="min-w-main flex justify-between py-3">
     <div class="flex gap-3 {$intervals > 15 ? 'pr-18' : ''}">
       <button
-        class="setting-button light"
+        class="setting-button"
         class:active={$currentMode === "focus"}
         onclick={(e) => {
           e.currentTarget.blur();
@@ -301,7 +301,7 @@
       </button>
 
       <button
-        class="setting-button light"
+        class="setting-button"
         class:active={$currentMode === "shortbreak"}
         onclick={(e) => {
           e.currentTarget.blur();
@@ -312,7 +312,7 @@
       </button>
 
       <button
-        class="setting-button light"
+        class="setting-button"
         class:active={$currentMode === "longbreak"}
         onclick={(e) => {
           e.currentTarget.blur();
@@ -365,7 +365,7 @@
 
     <div class="flex gap-3 pl-18">
       <button
-        class="setting-button light"
+        class="setting-button"
         class:active={showReport === true}
         onclick={(e) => {
           e.currentTarget.blur();
@@ -376,7 +376,7 @@
       </button>
 
       <button
-        class="setting-button light"
+        class="setting-button"
         class:active={showHeatmap === true}
         onclick={(e) => {
           e.currentTarget.blur();
@@ -387,7 +387,7 @@
       </button>
 
       <button
-        class="setting-button light"
+        class="setting-button"
         class:active={showSetting === true}
         onclick={(e) => {
           e.currentTarget.blur();
@@ -398,7 +398,7 @@
       </button>
 
       <button
-        class="setting-button light"
+        class="setting-button"
         onclick={(e) => {
           e.currentTarget.blur();
           $isMuted = !$isMuted;
@@ -661,7 +661,8 @@
   }
 
   .setting-button {
-    @apply size-18 flex items-center justify-center text-13 leading-16 appearance-none text-center cursor-pointer rounded-2 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30 disabled:opacity-15;
+    @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
+    backdrop-filter: blur(12px);
   }
 
   .setting-button.active {

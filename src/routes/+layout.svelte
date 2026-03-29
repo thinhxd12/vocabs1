@@ -95,43 +95,47 @@
   {#if $layoutSetting.showImage}
     <div class="absolute z-10 hidden md:flex gap-2 right-3 top-3 text-white">
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           getPrevImageBackground();
         }}
-        disabled={$currentImageIndex === 0}
+        class:disableLayoutBtn={$currentImageIndex === 0}
       >
         <SolarArrowLeftBold width="14" height="14" />
       </button>
+
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("video");
         }}
       >
-        <MaterialSymbolsPlayCircleRounded width="16" height="16" />
+        {#if $localImageStore.loading}
+          <EosIconsLoading width="14" height="14" />
+        {:else}
+          <MaterialSymbolsPlayCircleRounded width="14" height="14" />
+        {/if}
       </button>
+
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           getNextImageBackground();
         }}
+        class:disableLayoutBtn={$currentImageIndex ===
+          $localImageStore.data.length - 1}
       >
-        {#if $localImageStore.loading}
-          <EosIconsLoading width="14" height="14" />
-        {:else}
-          <SolarArrowRightBold width="14" height="14" />
-        {/if}
+        <SolarArrowRightBold width="14" height="14" />
       </button>
     </div>
   {/if}
 
   {#if $layoutSetting.showVideo}
     <div class="absolute right-3 top-3 flex gap-2">
-      <select bind:value={videoSrc} class="btn-menu light">
+      <select bind:value={videoSrc} class="btn-layout">
         {#each videos as item}
           <option value={item.value}>
             {item.label}
@@ -139,7 +143,7 @@
         {/each}
       </select>
 
-      <button onclick={() => (isMuted = !isMuted)} class="btn-menu light">
+      <button onclick={() => (isMuted = !isMuted)} class="btn-layout">
         {#if isMuted}
           <MaterialSymbolsVolumeOffRounded width="14" height="14" />
         {:else}
@@ -148,7 +152,7 @@
       </button>
 
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
@@ -159,7 +163,7 @@
       </button>
 
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
@@ -170,7 +174,7 @@
       </button>
 
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
@@ -181,7 +185,7 @@
       </button>
 
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
@@ -192,7 +196,7 @@
       </button>
 
       <button
-        class="btn-menu light"
+        class="btn-layout"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowLayout("image");
@@ -241,7 +245,12 @@
 </div>
 
 <style lang="postcss">
-  .btn-menu {
-    @apply size-18 flex items-center justify-center text-12 leading-16 appearance-none text-center cursor-pointer rounded-2 transition duration-100 outline-none ring-1 ring-black/5 shadow shadow-black/30 disabled:opacity-30;
+  .btn-layout {
+    @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
+    backdrop-filter: blur(12px);
+  }
+
+  .disableLayoutBtn {
+    @apply text-black/30;
   }
 </style>
