@@ -254,6 +254,11 @@
     showReport = true;
   }
 
+  function handleMuteAudio() {
+    pauseAudio = true;
+    isMuted.update((val) => (val = !val));
+  }
+
   onDestroy(() => {
     clearInterval(interval);
   });
@@ -266,7 +271,7 @@
       $wakeEnable = !$wakeEnable;
     }
     if (e.key.toLocaleLowerCase() === "m") {
-      $isMuted = !$isMuted;
+      handleMuteAudio();
     }
   }
 </script>
@@ -323,7 +328,7 @@
       </button>
 
       <button
-        class="btn-timer light group relative"
+        class="btn-timer group relative"
         onclick={(e) => {
           e.currentTarget.blur();
           $isPaused ? startTimer() : pauseTimer();
@@ -401,7 +406,7 @@
         class="setting-button"
         onclick={(e) => {
           e.currentTarget.blur();
-          $isMuted = !$isMuted;
+          handleMuteAudio();
         }}
       >
         {#if $isMuted}
@@ -670,7 +675,7 @@
   }
 
   .btn-timer {
-    @apply flex items-center justify-center h-18 min-w-36 rounded-2 ring-1 ring-black/5 shadow shadow-black/30 hover:bg-[#101213];
+    @apply h-18 min-w-36 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-[#101213];
   }
 
   .timerPause {
