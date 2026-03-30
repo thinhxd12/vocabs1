@@ -109,7 +109,7 @@
     {/each}
 
     {#if entry.synonyms.length}
-      <div class="flex items-start justify-start px-3 mt-3">
+      <div class="flex items-start justify-start px-3 my-3">
         <MingcuteCornerDownRightLine
           width="15"
           height="15"
