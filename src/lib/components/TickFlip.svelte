@@ -190,8 +190,8 @@
   .tick-flip {
     position: relative;
     text-align: center;
-    min-width: 0.75em;
-    border-radius: 0.1em;
+    min-width: 0.7em;
+    border-radius: 0.08em;
   }
 
   .tick-flip * {

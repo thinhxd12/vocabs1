@@ -116,14 +116,17 @@ function notificationAlert() {
 }
 
 async function handleCloseNotification() {
-  const currentProgressValue = get(currentProgress);
-
-  if (currentProgressValue === 3) {
+  const todayScheduleValue = get(todaySchedule);
+  if (!todayScheduleValue) return;
+  if (
+    todayScheduleValue.first.count < 12 ||
+    todayScheduleValue.second.count < 12
+  ) {
     await goto("/vocab");
     currentProgress.set(1);
     await handleGetListContent();
     startLearningWord();
-  } else handleGetListContent();
+  }
 }
 
 export async function handleGetListContent() {

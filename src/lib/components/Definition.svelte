@@ -146,7 +146,7 @@
   }
 
   .definition-credit span {
-    @apply bg-white/30 px-3 pt-2 text-13 font-500 leading-17 text-black;
+    @apply bg-white/60 px-3 pt-2 text-13 font-500 leading-17 text-black;
   }
 
   .definition-credit > span:first-child {

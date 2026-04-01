@@ -11,6 +11,7 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
+  import TickFlip from "$lib/components/TickFlip.svelte";
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -21,15 +22,19 @@
   let submitted = $state<boolean>(false);
   let timeout: ReturnType<typeof setTimeout>;
   let answer = $state<string>("");
+  let flipNumber = $state<number>(0);
 
   $effect.pre(() => {
     const list = $listContent;
     untrack(() => {
-      $quizRender = list[$listCount];
-      timeout = setTimeout(() => {
-        createOptions();
-        submitted = false;
-      }, 500);
+      if (list.length) {
+        $quizRender = list[$listCount];
+        flipNumber = $quizRender.number;
+        timeout = setTimeout(() => {
+          createOptions();
+          submitted = false;
+        }, 500);
+      }
     });
   });
 
@@ -53,29 +58,13 @@
     submitted = true;
     if (!$quizRender) return;
     if (value == $quizRender.word) {
-      handleCheckWord($quizRender!);
-      $quizRender = { ...$quizRender, number: $quizRender.number - 1 };
+      handleCheckWord($quizRender);
+      flipNumber = $quizRender.number - 1;
       src1 = $quizRender.audio;
       paused1 = false;
     } else {
       src1 = "/sounds/mp3_Boing.mp3";
       paused1 = false;
-    }
-    $listCount += 1;
-    if ($listCount < $listContent.length) {
-      timeout = setTimeout(() => {
-        submitted = false;
-        $quizRender = $listContent[$listCount];
-        createOptions();
-      }, 1000);
-    } else {
-      timeout = setTimeout(async () => {
-        src0 = "/sounds/mp3_Ding.mp3";
-        paused0 = false;
-        submitted = false;
-        $quizRender = undefined;
-        endQuiz();
-      }, 1000);
     }
   }
 
@@ -83,6 +72,26 @@
     $listContent = [];
     $listCount = 0;
     updateTodayScheduleLocal();
+  }
+
+  function handleSetNextLearningWord() {
+    $listCount++;
+    if ($listCount < $listContent.length) {
+      timeout = setTimeout(() => {
+        submitted = false;
+        $quizRender = $listContent[$listCount];
+        flipNumber = $quizRender!.number;
+        createOptions();
+      }, 300);
+    } else {
+      timeout = setTimeout(async () => {
+        src0 = "/sounds/mp3_Ding.mp3";
+        paused0 = false;
+        submitted = false;
+        $quizRender = undefined;
+        endQuiz();
+      }, 300);
+    }
   }
 
   function onKeyDown(e: KeyboardEvent) {
@@ -129,21 +138,42 @@
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
-<audio src={src1} bind:paused={paused1} preload="auto"></audio>
+<audio
+  src={src1}
+  bind:paused={paused1}
+  preload="auto"
+  onended={handleSetNextLearningWord}
+></audio>
 
 {#if $quizRender}
   <Container>
     <div
-      class="min-h-120 h-120 w-full mx-auto relative flex no-scrollbar dark select-none items-center overflow-hidden rounded-2"
+      class="dark w-full rounded-2 pt-1 pb-5 flex justify-center items-center gap-4 font-helvetica text-136 font-600 leading-120"
     >
-      <h1
-        class="absolute z-10 left-1/2 -translate-x-1/2 bg-transparent text-center text-168 leading-120 text-white/30 font-200"
-      >
-        {$quizRender.number}
-      </h1>
+      <TickFlip number={Math.floor(flipNumber / 100)} delay={300} />
+      <TickFlip number={Math.floor((flipNumber % 100) / 10)} delay={150} />
+      <TickFlip number={flipNumber % 10} image={flipNumber === 0} />
+    </div>
+
+    <div
+      class="relative h-[calc(100vh-122px-100px-44px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+    >
+      {#each $quizRender.meanings as entry}
+        {#each entry.definitions as el}
+          {#if el.image}
+            {#if el.image}
+              <div class="relative w-full h-215 rounded-2 overflow-hidden">
+                {#key el.image}
+                  <ImageLoader width={382} height={215} imageSrc={el.image} />
+                {/key}
+              </div>
+            {/if}
+          {/if}
+        {/each}
+      {/each}
 
       <div
-        class="py-3 z-30 text-white bg-black/80 shadow-lg shadow-black/60 w-full"
+        class="absolute py-3 z-30 text-white bg-black/60 shadow-md shadow-black/30 w-full"
       >
         {#if $quizRender.meanings.flatMap((item) => item.synonyms).length}
           {#each $quizRender.meanings as item}
@@ -165,24 +195,6 @@
           {/each}
         {/if}
       </div>
-    </div>
-
-    <div
-      class="h-[calc(100vh-122px-100px-44px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
-    >
-      {#each $quizRender.meanings as entry}
-        {#each entry.definitions as el}
-          {#if el.image}
-            {#if el.image}
-              <div class="relative w-full h-215 rounded-2 overflow-hidden">
-                {#key el.image}
-                  <ImageLoader width={382} height={215} imageSrc={el.image} />
-                {/key}
-              </div>
-            {/if}
-          {/if}
-        {/each}
-      {/each}
     </div>
 
     <div
@@ -208,7 +220,7 @@
 
       {#if answer}
         <div
-          class="absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white bg-black/80 shadow-lg shadow-black/60"
+          class="dark absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white shadow-md shadow-black/60"
         >
           {answer}
         </div>
