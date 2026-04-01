@@ -25,12 +25,10 @@
   import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
-  import { Tween } from "svelte/motion";
   import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
   import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
   import longbreakImage from "$lib/assets/images/Julien-Dupré-Resting-in-the-Fields.avif";
   import Heatmap from "$lib/components/Heatmap.svelte";
-  import { linear } from "svelte/easing";
   import {
     formatTimerString,
     minutesToSeconds,
@@ -55,18 +53,14 @@
   let itemsPerPage = Math.floor((innerHeight.current! - 44 - 24 * 3 - 26) / 24);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
+  let percent = $state<number>(100);
 
   let now = $state<number>(0);
   let end = $state<number>(0);
 
-  const progress = new Tween(0, {
-    duration: 1000,
-    easing: linear,
-  });
-
   onMount(() => {
     $wakeEnable = true;
-    updateDisplay(true);
+    updateDisplay();
     if (!$isPaused) {
       startTimer();
     }
@@ -95,21 +89,16 @@
   }
 
   function endTimer() {
-    progress.target = 0;
-
+    percent = 100;
     switch ($currentMode) {
       case "focus":
         srcAudio = "/sounds/mp3_break.ogg";
         pauseAudio = false;
         if ($currentInterval >= $intervals) {
-          setTimeout(() => {
-            $currentMode = "longbreak";
-          }, 1000);
+          $currentMode = "longbreak";
           $secondsRemaining = minutesToSeconds($longbreakMinutes);
         } else {
-          setTimeout(() => {
-            $currentMode = "shortbreak";
-          }, 1000);
+          $currentMode = "shortbreak";
           $secondsRemaining = minutesToSeconds($shortbreakMinutes);
         }
         submitReport();
@@ -120,9 +109,7 @@
         pauseAudio = false;
         $currentInterval =
           $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
-        setTimeout(() => {
-          $currentMode = "focus";
-        }, 1000);
+        $currentMode = "focus";
         $secondsRemaining = minutesToSeconds($focusMinutes);
         startTimer();
         break;
@@ -131,9 +118,7 @@
         pauseAudio = false;
         $currentInterval =
           $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
-        setTimeout(() => {
-          $currentMode = "focus";
-        }, 1000);
+        $currentMode = "focus";
         $secondsRemaining = minutesToSeconds($focusMinutes);
         startTimer();
         break;
@@ -142,34 +127,23 @@
     }
   }
 
-  function updateDisplay(set: boolean = false) {
-    let target = 0;
+  function updateDisplay() {
     switch ($currentMode) {
       case "focus":
-        target = (($focusMinutes * 60 - $secondsRemaining) / $focusMinutes) * 6;
-
+        percent = ($secondsRemaining / $focusMinutes / 6) * 10;
         break;
       case "shortbreak":
-        target =
-          (($shortbreakMinutes * 60 - $secondsRemaining) / $shortbreakMinutes) *
-          6;
+        percent = ($secondsRemaining / $shortbreakMinutes / 6) * 10;
         break;
       case "longbreak":
-        target =
-          (($longbreakMinutes * 60 - $secondsRemaining) / $longbreakMinutes) *
-          6;
+        percent = ($secondsRemaining / $longbreakMinutes / 6) * 10;
         break;
       default:
         break;
     }
-
-    if (set) progress.set(target, { duration: 0 });
-    else progress.target = target;
   }
 
   function handleChangeMode(mode: typeof $currentMode) {
-    progress.set(0, { duration: 0 });
-
     switch (mode) {
       case "focus":
         $secondsRemaining = minutesToSeconds($focusMinutes);
@@ -570,8 +544,7 @@
               ? shortbreakImage
               : longbreakImage}
           alt="bg"
-          class="absolute z-10 object-cover w-full h-full"
-          style="filter: grayscale(1) contrast(1.2);"
+          class="absolute z-10 object-cover w-full h-full grayscale"
         />
 
         <img
@@ -581,13 +554,14 @@
               ? shortbreakImage
               : longbreakImage}
           alt="pbg"
-          class="absolute z-20 object-cover w-full h-full"
-          style="mask-image: conic-gradient(
-          from 0deg,
-          black 0deg {progress.current}deg,
-          transparent {progress.current}deg 360deg
-          ); filter: contrast(1.2);"
+          class="absolute z-20 object-cover w-full h-full transition-all"
+          style="mask-image: linear-gradient(to bottom, black 50%, transparent 50%); mask-size: 100% 200%; mask-position: 0 100%; mask-position: 0 {percent}%;"
         />
+
+        <div
+          class="absolute z-20 w-full h-1 bg-black"
+          style="bottom: {percent}%; transform: scaleY(2);"
+        ></div>
 
         {#if $isPaused}
           <div
@@ -595,13 +569,6 @@
             class="absolute w-full h-full z-30 flex items-center justify-center bg-black/15 shadow-[inset_0_0_45px_rgba(0,0,0,1)]"
           ></div>
         {/if}
-
-        <div class="center"></div>
-        <div class="static"></div>
-        <div
-          class="dynamic"
-          style="transform: rotate({progress.current}deg) scaleX(2);"
-        ></div>
       </div>
     </div>
   </div>
@@ -628,41 +595,6 @@
     border: 3px solid #000000;
     position: relative;
     overflow: hidden;
-  }
-
-  .static {
-    position: absolute;
-    height: 270px;
-    width: 1px;
-    left: calc(50% - 0.5px);
-    bottom: 50%;
-    transform-origin: bottom;
-    transform: scaleX(2);
-    background-color: rgba(0, 0, 0, 1);
-    z-index: 20;
-  }
-
-  .dynamic {
-    position: absolute;
-    height: 270px;
-    width: 1px;
-    left: calc(50% - 0.5px);
-    transform-origin: bottom;
-    bottom: 50%;
-    background-color: rgba(0, 0, 0, 1);
-    z-index: 20;
-  }
-
-  .center {
-    position: absolute;
-    height: 1px;
-    width: 1px;
-    left: calc(50% - 0.5px);
-    top: calc(50% - 0.5px);
-    transform: scale(2);
-    background-color: rgba(0, 0, 0, 1);
-    border-radius: 50%;
-    z-index: 21;
   }
 
   .setting-button {
