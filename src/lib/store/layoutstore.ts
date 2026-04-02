@@ -22,6 +22,7 @@ export const longbreakMinutes = writable<number>(15);
 export const intervals = writable<number>(3);
 export const isMuted = writable<boolean>(false);
 export const isPaused = writable<boolean>(true);
+export const isFocusDone = writable<boolean>(false);
 
 export const locationList = writable<LocationType[]>([]);
 export const currentLocationId = writable<string>("");

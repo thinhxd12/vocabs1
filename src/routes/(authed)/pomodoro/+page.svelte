@@ -13,6 +13,7 @@
     isMuted,
     isPaused,
     addToast,
+    isFocusDone,
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
@@ -101,14 +102,18 @@
           $currentMode = "shortbreak";
           $secondsRemaining = minutesToSeconds($shortbreakMinutes);
         }
+        isFocusDone.set(true);
         submitReport();
         startTimer();
         break;
       case "shortbreak":
         srcAudio = "/sounds/mp3_focus.ogg";
         pauseAudio = false;
-        $currentInterval =
-          $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
+        if ($isFocusDone) {
+          $currentInterval =
+            $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
+          isFocusDone.set(false);
+        }
         $currentMode = "focus";
         $secondsRemaining = minutesToSeconds($focusMinutes);
         startTimer();
@@ -116,8 +121,11 @@
       case "longbreak":
         srcAudio = "/sounds/mp3_focus.ogg";
         pauseAudio = false;
-        $currentInterval =
-          $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
+        if ($isFocusDone) {
+          $currentInterval =
+            $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
+          isFocusDone.set(false);
+        }
         $currentMode = "focus";
         $secondsRemaining = minutesToSeconds($focusMinutes);
         startTimer();
