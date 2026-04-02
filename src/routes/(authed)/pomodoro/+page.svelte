@@ -521,7 +521,7 @@
             name="longBreakInterval"
             autocomplete="off"
             type="number"
-            min="1"
+            min={$currentInterval}
             step="1"
             bind:value={$intervals}
             class="input-setting"
