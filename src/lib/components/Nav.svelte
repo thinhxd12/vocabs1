@@ -35,8 +35,8 @@
       await handleGetListContent();
       startLearningWord();
     } else if (num === 2) {
-      await goto("/quiz");
       await handleGetListContent();
+      await goto("/quiz");
     }
   }
 </script>
@@ -242,15 +242,15 @@
     <img
       src={sunrise}
       alt="btn-pause"
-      class="absolute top-0 left-0 z-[1] grayscale w-90 h-full object-cover object-[-10px]"
+      class="absolute top-0 left-0 z-1 grayscale w-90 h-full object-cover object-[-10px]"
     />
 
     {#if ["/vocab", "/quiz"].includes(page.url.pathname)}
       <img
         src={sunrise}
         alt="btn-play"
-        class="absolute top-0 left-0 w-0 h-full z-[3] object-cover object-[-10px] transition-all duration-300"
-        style="box-shadow: rgba(0, 0, 0, 0.9) 3px 0px 7px; width: {($listCount /
+        class="absolute top-0 left-0 w-0 h-full z-3 object-cover object-[-10px] transition-all duration-300"
+        style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {($listCount /
           $listContent.length) *
           90}px;"
       />

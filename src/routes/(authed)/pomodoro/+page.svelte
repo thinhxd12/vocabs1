@@ -130,13 +130,13 @@
   function updateDisplay() {
     switch ($currentMode) {
       case "focus":
-        percent = ($secondsRemaining / $focusMinutes / 6) * 10;
+        percent = 100 - ($secondsRemaining / $focusMinutes / 6) * 10;
         break;
       case "shortbreak":
-        percent = ($secondsRemaining / $shortbreakMinutes / 6) * 10;
+        percent = 100 - ($secondsRemaining / $shortbreakMinutes / 6) * 10;
         break;
       case "longbreak":
-        percent = ($secondsRemaining / $longbreakMinutes / 6) * 10;
+        percent = 100 - ($secondsRemaining / $longbreakMinutes / 6) * 10;
         break;
       default:
         break;
@@ -544,7 +544,7 @@
               ? shortbreakImage
               : longbreakImage}
           alt="bg"
-          class="absolute z-10 object-cover w-full h-full grayscale"
+          class="absolute z-10 object-cover object-[-45px] w-full h-full grayscale"
         />
 
         <img
@@ -554,14 +554,9 @@
               ? shortbreakImage
               : longbreakImage}
           alt="pbg"
-          class="absolute z-20 object-cover w-full h-full transition-all"
-          style="mask-image: linear-gradient(to bottom, black 50%, transparent 50%); mask-size: 100% 200%; mask-position: 0 100%; mask-position: 0 {percent}%;"
+          class="absolute z-20 h-full w-0 object-cover object-[-45px] transition-all duration-300"
+          style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {percent}%;"
         />
-
-        <div
-          class="absolute z-20 w-full h-1 bg-black"
-          style="bottom: {percent}%; transform: scaleY(2);"
-        ></div>
 
         {#if $isPaused}
           <div

@@ -205,9 +205,9 @@ export async function updateTodayScheduleLocal() {
 
   if (currentProgressValue === 1) {
     if (newTodayScheduleValue!.first.count < 12) showTimer.set(true);
-    await goto("/quiz");
     currentProgress.set(2);
-    handleGetListContent();
+    await handleGetListContent();
+    await goto("/quiz");
   } else if (currentProgressValue === 2) {
     currentProgress.set(3);
   }

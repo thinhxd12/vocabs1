@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, untrack } from "svelte";
+  import { onMount } from "svelte";
   import {
     listContent,
     quizRender,
@@ -12,6 +12,7 @@
   import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import TickFlip from "$lib/components/TickFlip.svelte";
+  import { fade } from "svelte/transition";
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -20,25 +21,20 @@
   let value = $state("");
   let options = $state<string[]>([]);
   let submitted = $state<boolean>(false);
-  let timeout: ReturnType<typeof setTimeout>;
   let answer = $state<string>("");
   let flipNumber = $state<number>(0);
 
-  $effect.pre(() => {
-    const list = $listContent;
-    untrack(() => {
-      if (list.length) {
-        $quizRender = list[$listCount];
-        flipNumber = $quizRender.number;
-        timeout = setTimeout(() => {
-          createOptions();
-          submitted = false;
-        }, 500);
-      }
-    });
+  onMount(() => {
+    if ($listContent.length) {
+      $quizRender = $listContent[$listCount];
+      flipNumber = $quizRender.number;
+      createOptions();
+      submitted = false;
+    }
   });
 
   function createOptions() {
+    answer = "";
     if ($listContent.length === 0 || !$quizRender) return;
     let sound = $quizRender!.meanings
       .flatMap((item) => item.translation)
@@ -54,10 +50,9 @@
   }
 
   function submitAnswer(answer: string) {
-    value = answer;
     submitted = true;
     if (!$quizRender) return;
-    if (value == $quizRender.word) {
+    if (answer === $quizRender.word) {
       handleCheckWord($quizRender);
       flipNumber = $quizRender.number - 1;
       src1 = $quizRender.audio;
@@ -77,20 +72,16 @@
   function handleSetNextLearningWord() {
     $listCount++;
     if ($listCount < $listContent.length) {
-      timeout = setTimeout(() => {
-        submitted = false;
-        $quizRender = $listContent[$listCount];
-        flipNumber = $quizRender!.number;
-        createOptions();
-      }, 300);
+      submitted = false;
+      $quizRender = $listContent[$listCount];
+      flipNumber = $quizRender!.number;
+      createOptions();
     } else {
-      timeout = setTimeout(async () => {
-        src0 = "/sounds/mp3_Ding.mp3";
-        paused0 = false;
-        submitted = false;
-        $quizRender = undefined;
-        endQuiz();
-      }, 300);
+      src0 = "/sounds/mp3_Ding.mp3";
+      paused0 = false;
+      submitted = false;
+      $quizRender = undefined;
+      endQuiz();
     }
   }
 
@@ -112,9 +103,6 @@
         answer += e.key.toLowerCase();
         if (answer === $quizRender!.word) {
           submitAnswer(answer);
-          setTimeout(() => {
-            answer = "";
-          }, 1000);
         }
         break;
       case e.key === " ":
@@ -124,10 +112,6 @@
         break;
     }
   }
-
-  onDestroy(() => {
-    clearTimeout(timeout);
-  });
 </script>
 
 <svelte:head>
@@ -221,6 +205,7 @@
       {#if answer}
         <div
           class="dark absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white shadow-md shadow-black/60"
+          transition:fade={{ duration: 300 }}
         >
           {answer}
         </div>
