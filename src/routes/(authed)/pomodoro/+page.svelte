@@ -90,7 +90,7 @@
   }
 
   function endTimer() {
-    percent = 100;
+    percent = 0;
     switch ($currentMode) {
       case "focus":
         srcAudio = "/sounds/mp3_break.ogg";
