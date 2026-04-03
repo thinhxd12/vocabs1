@@ -23,8 +23,8 @@
   import type { PageProps } from "./$types";
   import Modal from "$lib/components/Modal.svelte";
   import { fly } from "svelte/transition";
-  import TickFlip from "$lib/components/TickFlip.svelte";
   import { addToast } from "$lib/store/layoutstore";
+  import Flip from "$lib/components/Flip.svelte";
 
   let { data: layoutData }: PageProps = $props();
   let checkTimeout: ReturnType<typeof setTimeout>;
@@ -58,7 +58,7 @@
         activeIndex = 0;
         break;
     }
-  }, 1000);
+  }, 600);
 
   let debouncetimeout: ReturnType<typeof setTimeout>;
 
@@ -314,30 +314,9 @@
         </div>
       {/if}
     {:else if $renderWord}
-      <div class="h-36 w-full flex gap-2">
-        <div
-          class="relative flex gap-2 font-helvetica text-36 font-600 leading-36"
-        >
-          <TickFlip number={Math.floor(flipNumber / 100)} delay={300} />
-          <TickFlip number={Math.floor((flipNumber % 100) / 10)} delay={150} />
-          <TickFlip number={flipNumber % 10} image={flipNumber === 0} />
-        </div>
-
-        <div class="light flex-1 flex flex-col justify-center h-full rounded-2">
-          <p
-            class="truncate text-center font-constantine text-21 font-700 uppercase leading-24"
-          >
-            {$renderWord.word}
-          </p>
-          <p
-            class="truncate text-center text-9 opacity-50 leading-9 font-400 lowercase"
-          >
-            {$renderWord.phonetics}
-          </p>
-        </div>
-      </div>
+      <Flip {flipNumber} />
       <div
-        class="h-[calc(100vh-44px-38px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+        class="h-[calc(100vh-150px-44px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
       >
         <Definition
           item={$renderWord}

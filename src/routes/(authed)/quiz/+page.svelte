@@ -11,8 +11,8 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
-  import TickFlip from "$lib/components/TickFlip.svelte";
   import { fade } from "svelte/transition";
+  import Flip from "$lib/components/Flip.svelte";
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -131,16 +131,10 @@
 
 {#if $quizRender}
   <Container>
-    <div
-      class="dark w-full rounded-2 pt-1 pb-5 flex justify-center items-center gap-4 font-helvetica text-136 font-600 leading-120"
-    >
-      <TickFlip number={Math.floor(flipNumber / 100)} delay={300} />
-      <TickFlip number={Math.floor((flipNumber % 100) / 10)} delay={150} />
-      <TickFlip number={flipNumber % 10} image={flipNumber === 0} />
-    </div>
+    <Flip {flipNumber} />
 
     <div
-      class="relative h-[calc(100vh-122px-100px-44px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+      class="relative h-[calc(100vh-150px-100px-42px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
     >
       {#each $quizRender.meanings as entry}
         {#each entry.definitions as el}
@@ -205,7 +199,7 @@
       {#if answer}
         <div
           class="dark absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white shadow-md shadow-black/60"
-          transition:fade={{ duration: 300 }}
+          transition:fade={{ duration: 150 }}
         >
           {answer}
         </div>

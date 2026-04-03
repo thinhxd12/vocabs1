@@ -11,7 +11,7 @@
     image?: boolean;
   }
 
-  let { number, duration = 1000, delay = 0, image = false }: Props = $props();
+  let { number, duration = 800, delay = 0, image = false }: Props = $props();
 
   let oldNumber = $state<number>(0);
   let newNumber = $state<number>(0);
@@ -190,7 +190,7 @@
   .tick-flip {
     position: relative;
     text-align: center;
-    min-width: 0.7em;
+    min-width: 0.72em;
     border-radius: 0.08em;
   }
 
@@ -205,8 +205,8 @@
   }
 
   .tick-flip-panel {
-    color: #f8f5f5;
-    background-color: #1c1c1c;
+    color: rgba(255, 255, 255, 0.85);
+    background: url("$lib/assets/images/clock.png");
   }
 
   .tick-flip-front {
