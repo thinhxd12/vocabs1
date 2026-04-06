@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { redirect, type Handle } from "@sveltejs/kit";
 const PUBLIC_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const PUBLIC_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const unProtectedRoutes = ["/", "/login"];
+const unProtectedRoutes = ["/login"];
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.supabase = createServerClient(
@@ -11,8 +11,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     {
       cookies: {
         getAll: () => event.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value, options }) => {
+        setAll: (cookiesToSet: any) => {
+          cookiesToSet.forEach(({ name, value, options }: any) => {
             event.cookies.set(name, value, { ...options, path: "/" });
           });
         },

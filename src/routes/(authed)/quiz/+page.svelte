@@ -11,7 +11,6 @@
   import ImageLoader from "$lib/components/ImageLoader.svelte";
   import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
-  import { fade } from "svelte/transition";
   import Flip from "$lib/components/Flip.svelte";
 
   let src0 = $state<string>("");
@@ -134,74 +133,65 @@
     <Flip {flipNumber} />
 
     <div
-      class="relative h-[calc(100vh-150px-100px-42px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+      class="relative h-[calc(100vh-150px-76px-42px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
     >
       {#each $quizRender.meanings as entry}
         {#each entry.definitions as el}
-          {#if el.image}
+          <div class="relative w-full min-h-fit rounded-2 overflow-hidden">
             {#if el.image}
-              <div class="relative w-full h-215 rounded-2 overflow-hidden">
+              <div class="relative w-382 h-215">
                 {#key el.image}
                   <ImageLoader width={382} height={215} imageSrc={el.image} />
                 {/key}
               </div>
+
+              <div
+                class="absolute z-3 top-0 left-0 text-white bg-black/60 shadow-md shadow-black/30 w-full"
+              >
+                {#if entry.synonyms.length}
+                  <p class="px-6 leading-18 pb-3">
+                    <i>{entry.partOfSpeech}:</i>
+                    {entry.synonyms.join(", ")}
+                  </p>
+                {:else if entry.translation.length}
+                  <p class="px-6 leading-18 pb-3">
+                    <i>{entry.partOfSpeech}:</i>
+                    {entry.translation.join(", ")}
+                  </p>
+                {/if}
+              </div>
             {/if}
-          {/if}
+          </div>
         {/each}
       {/each}
-
-      <div
-        class="absolute py-3 z-30 text-white bg-black/60 shadow-md shadow-black/30 w-full"
-      >
-        {#if $quizRender.meanings.flatMap((item) => item.synonyms).length}
-          {#each $quizRender.meanings as item}
-            {#if item.synonyms.length}
-              <p class="mb-3 px-6 leading-18">
-                <i>{item.partOfSpeech}:</i>
-                {item.synonyms.join(", ")}
-              </p>
-            {/if}
-          {/each}
-        {:else}
-          {#each $quizRender.meanings as item}
-            {#if item.translation.length}
-              <p class="mb-3 px-6 leading-18">
-                <i>{item.partOfSpeech}:</i>
-                {item.translation.join(", ")}
-              </p>
-            {/if}
-          {/each}
-        {/if}
-      </div>
     </div>
 
-    <div
-      class="relative no-scrollbar w-full outline-none mx-auto grid grid-cols-2 grid-rows-2 gap-2"
-    >
-      {#each options as item}
-        <button
-          class={submitted
-            ? item == value
-              ? item === $quizRender.word
-                ? "light quiz-choice-true"
-                : "light quiz-choice-false"
-              : item === $quizRender.word
-                ? "light quiz-choice-true"
-                : "light quiz-choice"
-            : "light quiz-choice"}
-          disabled={submitted}
-          onclick={() => submitAnswer(item)}
-        >
-          {item}
-        </button>
-      {/each}
-
+    <div class="w-full h-74 flex items-center overflow-y-scroll no-scrollbar">
       {#if answer}
-        <div
-          class="dark absolute top-1/2 left-0 w-full -translate-y-1/2 text-center font-constantine text-21 font-700 uppercase leading-36 text-white shadow-md shadow-black/60"
-          transition:fade={{ duration: 150 }}
+        <p
+          class="dark px-6 py-4 w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28 shadow-md shadow-black/60"
         >
           {answer}
+        </p>
+      {:else}
+        <div class="w-full outline-none grid grid-cols-2 grid-rows-2 gap-2">
+          {#each options as item}
+            <button
+              class={submitted
+                ? item == value
+                  ? item === $quizRender.word
+                    ? "light quiz-choice-true"
+                    : "light quiz-choice-false"
+                  : item === $quizRender.word
+                    ? "light quiz-choice-true"
+                    : "light quiz-choice"
+                : "light quiz-choice"}
+              disabled={submitted}
+              onclick={() => submitAnswer(item)}
+            >
+              {item}
+            </button>
+          {/each}
         </div>
       {/if}
     </div>
@@ -212,14 +202,14 @@
 
 <style lang="postcss">
   .quiz-choice {
-    @apply cursor-pointer w-full h-48 rounded-2 select-none overflow-hidden text-center text-14 leading-21 hover:!bg-white/40 transition-all font-400;
+    @apply cursor-pointer w-full h-36 rounded-2 select-none overflow-hidden text-center text-15 leading-18 hover:!bg-white/40 transition-all font-400;
   }
 
   .quiz-choice-true {
-    @apply cursor-pointer w-full h-48 rounded-2 select-none overflow-hidden text-center text-14 leading-21 !bg-green-400/60 font-400;
+    @apply cursor-pointer w-full h-36 rounded-2 select-none overflow-hidden text-center text-15 leading-18 !bg-green-400/60 font-400;
   }
 
   .quiz-choice-false {
-    @apply cursor-pointer w-full h-48 rounded-2 select-none overflow-hidden text-center text-14 leading-21 !bg-red-500/60 font-400;
+    @apply cursor-pointer w-full h-36 rounded-2 select-none overflow-hidden text-center text-15 leading-18 !bg-red-500/60 font-400;
   }
 </style>
