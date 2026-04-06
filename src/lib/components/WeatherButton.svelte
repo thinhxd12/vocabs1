@@ -54,12 +54,17 @@
     </div>
 
     {#key weatherInfo.background}
-      <img
-        src="/navweather/{weatherInfo.background}.webp"
-        alt="wtb"
-        class="absolute top-0 left-0 w-90 h-full object-cover"
+      <video
+        src="/weathervideos/{weatherInfo.background}.mp4"
+        autoplay
+        loop
+        muted
+        playsinline
+        class="absolute top-0 left-0 w-90 h-full object-cover object-left-top"
         in:fly={{ y: "-100%", duration: 600 }}
-      />
+      >
+        Your browser does not support the video tag.
+      </video>
     {/key}
 
     <div

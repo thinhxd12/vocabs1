@@ -574,11 +574,16 @@
   {#if $weatherData}
     <div class="current">
       {#if currentValues.background}
-        <img
-          src="/navweather/{currentValues.background}.webp"
-          alt="wtb"
-          class="absolute top-0 left-0 w-full h-full object-cover object-top"
-        />
+        <video
+          src="/weathervideos/{currentValues.background}.mp4"
+          autoplay
+          loop
+          muted
+          playsinline
+          class="absolute top-0 left-0 w-full h-full object-cover object-left-top"
+        >
+          Your browser does not support the video tag.
+        </video>
       {/if}
 
       <div class="absolute w-full h-full bg-black/15"></div>
