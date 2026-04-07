@@ -192,7 +192,10 @@ export function getUVInfo(uv: number): { level: string; description: string } {
   return getRangeBasedValue(uv, [
     {
       max: 2,
-      result: { level: "Low", description: "Low for the rest of the day" },
+      result: {
+        level: "Low",
+        description: "Little to no sun protection required",
+      },
     },
     {
       max: 5,

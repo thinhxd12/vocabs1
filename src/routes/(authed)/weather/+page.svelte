@@ -580,13 +580,11 @@
           loop
           muted
           playsinline
-          class="absolute top-0 left-0 w-full h-full object-cover object-left-top"
+          class="absolute top-0 left-0 w-full h-full object-cover object-top"
         >
           Your browser does not support the video tag.
         </video>
       {/if}
-
-      <div class="absolute w-full h-full bg-black/15"></div>
 
       <select
         name="location"

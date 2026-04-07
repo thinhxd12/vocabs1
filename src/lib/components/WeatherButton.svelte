@@ -31,7 +31,7 @@
         src="/liquid/48/{weatherInfo.icon}.png"
         alt="icon"
         class="size-28 object-cover"
-        style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 1));"
+        style="filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.6));"
       />
       <div
         class="flex flex-col items-end text-white text-8 leading-9 font-500"
@@ -60,7 +60,7 @@
         loop
         muted
         playsinline
-        class="absolute top-0 left-0 w-90 h-full object-cover object-left-top"
+        class="absolute top-0 left-0 w-90 h-full object-cover object-top"
         in:fly={{ y: "-100%", duration: 600 }}
       >
         Your browser does not support the video tag.
@@ -84,7 +84,7 @@
   .marquee {
     white-space: nowrap;
     overflow: hidden;
-    animation: marquee 6s linear infinite;
+    animation: marquee 12s linear infinite;
   }
 
   @keyframes marquee {
