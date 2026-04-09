@@ -46,6 +46,8 @@
     time: string;
     temp: number;
     icon: string;
+    isDay: number;
+    background: string;
     description: string;
     precipitation_probability: number;
   };
@@ -462,14 +464,16 @@
     const hourlyForecasts: HourlyForecast[] = Array.from(
       { length: 12 },
       (_, i) => {
-        let { icon, description } = getWeatherInfo(
+        let { icon, description, background } = getWeatherInfo(
           $weatherData!.hourly.weather_code[i],
           $weatherData!.hourly.is_day[i],
         );
         return {
           time: $weatherData!.hourly.time[i],
           temp: $weatherData!.hourly.temperature_2m[i],
+          isDay: $weatherData!.hourly.is_day[i],
           icon,
+          background,
           description,
           precipitation_probability:
             $weatherData!.hourly.precipitation_probability[i],
@@ -992,18 +996,31 @@
     <h1 class="text-24">Hourly Forecast</h1>
     <div class="w-full grid grid-cols-4 gap-2">
       {#each hourlyData as item}
-        <div class="light p-6 w-full">
-          <p class="text-center text-14 font-600">{formatTime(item.time)}</p>
-          <img
-            src="/liquid/128/{item.icon}.png"
-            alt="icon"
-            class="size-60 object-cover mx-auto"
-            style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
-          />
-          <p class="text-18 text-center font-500">
-            {formatTemperature("c", item.temp)}
-          </p>
-          <p class="text-12 text-center w-full">{item.description}</p>
+        <div class="light flex flex-col rounded-2 overflow-hidden">
+          <h1 class="pt-6 uppercase text-24 font-500 text-center">
+            {formatTime(item.time)}
+          </h1>
+
+          <div class="{item.isDay ? 'light' : 'dark'} w-full relative">
+            <img
+              src="/navweather/{item.background}.webp"
+              alt="wtb"
+              class="absolute top-0 left-0 -z-1 w-full h-full object-cover"
+            />
+
+            <img
+              src="/liquid/128/{item.icon}.png"
+              alt="icon"
+              class="size-60 object-cover mx-auto mt-12"
+              style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
+            />
+            <p class="text-12 text-center font-500 leading-18">
+              {item.description}
+            </p>
+            <p class="mt-3 mb-9 text-18 text-center font-500">
+              {formatTemperature("c", item.temp)}
+            </p>
+          </div>
         </div>
       {/each}
     </div>
@@ -1011,9 +1028,9 @@
     <h1 class="text-24">7-Day Forecast</h1>
     <div class="flex flex-wrap gap-2">
       {#each dailyData as item}
-        <div class="light w-full flex items-center px-9 py-3">
-          <div class="flex items-center gap-3">
-            <span class="text-18 font-500 min-w-50">
+        <div class="light w-full h-36 flex px-9 rounded-2">
+          <div class="flex items-center">
+            <span class="text-16 font-500 min-w-60">
               {formatDay(item.date, $weatherData.current.time)}</span
             >
             <img
@@ -1021,24 +1038,32 @@
               alt="img"
               class="size-32 object-cover"
             />
-            <span class="text-12 text-black/60 min-w-30 text-center">
-              {formatTemperature("c", item.temp_min)}
+
+            <span class="text-center min-w-36 text-12 font-500 text-[#228be6]">
+              {#if item.precipitation_probability}
+                {item.precipitation_probability}%
+              {/if}
             </span>
           </div>
 
-          <div class="flex flex-1 items-center gap-3">
-            <div class="px-6 flex-1">
-              <div
-                class="h-4 rounded-full bg-[#228be6]"
-                style="width: {((item.temp_max - item.temp_min) /
-                  tempScale.range) *
-                  100}%; margin-left: {((item.temp_min - tempScale.min) /
-                  tempScale.range) *
-                  100}%"
-              ></div>
-            </div>
+          <div class="flex justify-start items-center flex-1 h-full">
+            <span
+              class="text-12 text-black/60 min-w-45 text-center"
+              style="margin-left: {((item.temp_min - tempScale.min) /
+                tempScale.range) *
+                50}%;"
+            >
+              {formatTemperature("c", item.temp_min)}
+            </span>
 
-            <span class="min-w-30 text-12 text-right">
+            <span
+              class="h-5 rounded-full bg-[#228be6]"
+              style="width: {((item.temp_max - item.temp_min) /
+                tempScale.range) *
+                50}%;"
+            ></span>
+
+            <span class="min-w-45 text-12 text-center">
               {formatTemperature("c", item.temp_max)}
             </span>
           </div>
