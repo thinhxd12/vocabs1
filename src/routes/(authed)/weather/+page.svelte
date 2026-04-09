@@ -46,7 +46,6 @@
     time: string;
     temp: number;
     icon: string;
-    isDay: number;
     background: string;
     description: string;
     precipitation_probability: number;
@@ -471,7 +470,6 @@
         return {
           time: $weatherData!.hourly.time[i],
           temp: $weatherData!.hourly.temperature_2m[i],
-          isDay: $weatherData!.hourly.is_day[i],
           icon,
           background,
           description,
@@ -584,7 +582,7 @@
           loop
           muted
           playsinline
-          class="absolute top-0 left-0 w-full h-full object-cover object-center"
+          class="absolute top-0 left-0 w-full h-full object-cover object-top"
         >
           Your browser does not support the video tag.
         </video>
@@ -637,25 +635,29 @@
         </h1>
         <p class="text-12">{currentValues.feelsLikeDescription}</p>
       </div>
-      <div class="light p-6 w-full">
+      <div class="light p-5 w-full">
         <p class="uppercase text-12">Wind</p>
-        <div class="relative size-90 ml-30 mb-6">
+        <div class="relative size-90 mb-15 mx-auto">
           <span
-            class="absolute -top-6 left-1/2 -translate-x-1/2 text-12 leading-12"
-            >N</span
+            class="absolute -top-9 left-1/2 -translate-x-1/2 text-12 leading-12"
           >
+            N
+          </span>
           <span
-            class="absolute top-1/2 -right-3 -translate-y-1/2 text-12 leading-12"
-            >E</span
+            class="absolute top-1/2 -right-6 -translate-y-1/2 text-12 leading-12"
           >
+            E
+          </span>
           <span
-            class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-12 leading-12"
-            >S</span
+            class="absolute -bottom-9 left-1/2 -translate-x-1/2 text-12 leading-12"
           >
+            S
+          </span>
           <span
-            class="absolute top-1/2 -left-6 -translate-y-1/2 text-12 leading-12"
-            >W</span
+            class="absolute top-1/2 -left-9 -translate-y-1/2 text-12 leading-12"
           >
+            W
+          </span>
 
           <svg
             width="90"
@@ -725,7 +727,7 @@
           </svg>
         </div>
 
-        <div class="flex justify-between mt-9 mb-3 px-3">
+        <div class="flex justify-between mt-9 mb-3 pr-3">
           <p class="text-12">
             Direction {windValues.windDirection}° {windValues.directionLabel}
           </p>
@@ -734,7 +736,7 @@
           </p>
         </div>
 
-        <div class="flex gap-9 bg-white/80 rounded-2 overflow-hidden">
+        <div class="flex gap-9 pl-6 bg-white rounded-2 overflow-hidden">
           <img
             src="/beaufort-scale/{windValues.image}.png"
             alt="Beaufortimg"
@@ -997,11 +999,11 @@
     <div class="w-full grid grid-cols-4 gap-2">
       {#each hourlyData as item}
         <div class="light flex flex-col rounded-2 overflow-hidden">
-          <h1 class="pt-6 uppercase text-24 font-500 text-center">
+          <h1 class="pt-9 uppercase text-21 leading-24 font-500 text-center">
             {formatTime(item.time)}
           </h1>
 
-          <div class="{item.isDay ? 'light' : 'dark'} w-full relative">
+          <div class="light w-full relative">
             <img
               src="/navweather/{item.background}.webp"
               alt="wtb"
@@ -1014,11 +1016,17 @@
               class="size-60 object-cover mx-auto mt-12"
               style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
             />
-            <p class="text-12 text-center font-500 leading-18">
+            <p
+              class="text-12 text-center font-500 leading-18 text-white"
+              style="text-shadow: 0px 0px 3px #000000"
+            >
               {item.description}
             </p>
-            <p class="mt-3 mb-9 text-18 text-center font-500">
-              {formatTemperature("c", item.temp)}
+            <p
+              class="mt-3 mb-15 text-18 text-center font-500 text-white"
+              style="text-shadow: 0px 0px 3px #000000"
+            >
+              {formatTemperature(item.temp)}
             </p>
           </div>
         </div>
@@ -1048,12 +1056,12 @@
 
           <div class="flex justify-start items-center flex-1 h-full">
             <span
-              class="text-12 text-black/60 min-w-45 text-center"
+              class="text-12 text-black/60 min-w-30 text-center"
               style="margin-left: {((item.temp_min - tempScale.min) /
                 tempScale.range) *
                 50}%;"
             >
-              {formatTemperature("c", item.temp_min)}
+              {formatTemperature(item.temp_min)}
             </span>
 
             <span
@@ -1063,8 +1071,8 @@
                 50}%;"
             ></span>
 
-            <span class="min-w-45 text-12 text-center">
-              {formatTemperature("c", item.temp_max)}
+            <span class="min-w-30 text-12 text-center">
+              {formatTemperature(item.temp_max)}
             </span>
           </div>
         </div>

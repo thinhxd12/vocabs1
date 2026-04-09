@@ -15,11 +15,8 @@
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
  */
-export function formatTemperature(tempUnit: string, temp: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'unit',
-    unit: tempUnit === 'c' ? 'celsius' : 'fahrenheit'
-  }).format(Math.round(temp))
+export function formatTemperature(temp: number): string {
+  return Math.round(temp) + "°";
 }
 
 /**
@@ -32,23 +29,23 @@ export function formatTemperature(tempUnit: string, temp: number): string {
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
  */
 export function formatTime(isoTime: string): string {
-  const timePart = isoTime.split('T')[1]
-  const hour = Number.parseInt(timePart.split(':')[0], 10)
+  const timePart = isoTime.split("T")[1];
+  const hour = Number.parseInt(timePart.split(":")[0], 10);
 
   // Convert 24-hour format to 12-hour format
   if (hour === 0) {
-    return '12 AM'
+    return "12 AM";
   }
 
   if (hour < 12) {
-    return `${hour} AM`
+    return `${hour} AM`;
   }
 
   if (hour === 12) {
-    return '12 PM'
+    return "12 PM";
   }
 
-  return `${hour - 12} PM`
+  return `${hour - 12} PM`;
 }
 
 /**
@@ -61,24 +58,24 @@ export function formatTime(isoTime: string): string {
  */
 export function formatTimeWithMinutes(isoTime: string): string {
   // Extract hour and minute from ISO string
-  const timePart = isoTime.split('T')[1]
-  const hour = Number.parseInt(timePart.split(':')[0], 10)
-  const minute = Number.parseInt(timePart.split(':')[1], 10)
-  const minuteStr = minute.toString().padStart(2, '0')
+  const timePart = isoTime.split("T")[1];
+  const hour = Number.parseInt(timePart.split(":")[0], 10);
+  const minute = Number.parseInt(timePart.split(":")[1], 10);
+  const minuteStr = minute.toString().padStart(2, "0");
 
   if (hour === 0) {
-    return `12:${minuteStr} AM`
+    return `12:${minuteStr} AM`;
   }
 
   if (hour < 12) {
-    return `${hour}:${minuteStr} AM`
+    return `${hour}:${minuteStr} AM`;
   }
 
   if (hour === 12) {
-    return `12:${minuteStr} PM`
+    return `12:${minuteStr} PM`;
   }
 
-  return `${hour - 12}:${minuteStr} PM`
+  return `${hour - 12}:${minuteStr} PM`;
 }
 
 /**
@@ -90,17 +87,17 @@ export function formatTimeWithMinutes(isoTime: string): string {
  * @returns Day label (e.g., "Today", "Mon", "Tue")
  */
 export function formatDay(isoDate: string, currentDate: string): string {
-  const datePart = isoDate.split('T')[0]
-  const todayString = currentDate.split('T')[0]
+  const datePart = isoDate.split("T")[0];
+  const todayString = currentDate.split("T")[0];
 
   if (datePart === todayString) {
-    return 'Today'
+    return "Today";
   }
 
-  const [year, month, day] = datePart.split('-').map(Number)
-  const date = new Date(year, month - 1, day)
+  const [year, month, day] = datePart.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
 
-  return new Intl.DateTimeFormat('en-US', {weekday: 'short'}).format(date)
+  return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
 }
 
 /**
@@ -118,20 +115,20 @@ export function formatDay(isoDate: string, currentDate: string): string {
  */
 export function formatPressure(
   tempUnit: string,
-  pressureHpa: number
-): {value: string; unit: string} {
-  if (tempUnit === 'f') {
-    const inHg = pressureHpa * 0.02953
+  pressureHpa: number,
+): { value: string; unit: string } {
+  if (tempUnit === "f") {
+    const inHg = pressureHpa * 0.02953;
     return {
       value: inHg.toFixed(2),
-      unit: 'inHg'
-    }
+      unit: "inHg",
+    };
   }
 
   return {
     value: Math.round(pressureHpa).toString(),
-    unit: 'hPa'
-  }
+    unit: "hPa",
+  };
 }
 
 /**
@@ -141,7 +138,7 @@ export function formatPressure(
  * @returns Formatted percentage string (e.g., "23%")
  */
 export function getMoonIlluminationPercentage(fraction: number): string {
-  return `${Math.round(fraction * 100)}%`
+  return `${Math.round(fraction * 100)}%`;
 }
 
 /**
@@ -153,10 +150,10 @@ export function getMoonIlluminationPercentage(fraction: number): string {
  * @returns Formatted precipitation string (e.g., "0.12 in" or "3 mm")
  */
 export function formatPrecipitation(tempUnit: string, amount: number): string {
-  if (tempUnit === 'f') {
-    return `${amount.toFixed(2)} in`
+  if (tempUnit === "f") {
+    return `${amount.toFixed(2)} in`;
   }
-  return `${Math.round(amount)} mm`
+  return `${Math.round(amount)} mm`;
 }
 
 /**
@@ -168,12 +165,12 @@ export function formatPrecipitation(tempUnit: string, amount: number): string {
  * @returns Formatted snow depth string (e.g., "5 in" or "12 cm")
  */
 export function formatSnowDepth(tempUnit: string, meters: number): string {
-  if (tempUnit === 'f') {
-    const inches = meters * 39.3701
-    return `${Math.round(inches)} in`
+  if (tempUnit === "f") {
+    const inches = meters * 39.3701;
+    return `${Math.round(inches)} in`;
   }
-  const cm = meters * 100
-  return `${Math.round(cm)} cm`
+  const cm = meters * 100;
+  return `${Math.round(cm)} cm`;
 }
 
 /**
@@ -183,20 +180,20 @@ export function formatSnowDepth(tempUnit: string, meters: number): string {
  * @returns Human-friendly relative label like "a few seconds ago", "3 mins ago", "2 hrs ago"
  */
 export function formatRelativeFromMs(diffMs: number): string {
-  const safe = Math.max(0, diffMs)
-  const minute = 60_000
-  const hour = 60 * minute
-  const day = 24 * hour
+  const safe = Math.max(0, diffMs);
+  const minute = 60_000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
 
-  if (safe < 45_000) return 'a few seconds ago'
+  if (safe < 45_000) return "a few seconds ago";
   if (safe < hour) {
-    const mins = Math.round(safe / minute)
-    return `${mins} min${mins === 1 ? '' : 's'} ago`
+    const mins = Math.round(safe / minute);
+    return `${mins} min${mins === 1 ? "" : "s"} ago`;
   }
   if (safe < day) {
-    const hrs = Math.round(safe / hour)
-    return `${hrs} hr${hrs === 1 ? '' : 's'} ago`
+    const hrs = Math.round(safe / hour);
+    return `${hrs} hr${hrs === 1 ? "" : "s"} ago`;
   }
-  const days = Math.round(safe / day)
-  return `${days} day${days === 1 ? '' : 's'} ago`
+  const days = Math.round(safe / day);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
 }
