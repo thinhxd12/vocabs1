@@ -580,7 +580,7 @@
           loop
           muted
           playsinline
-          class="absolute top-0 left-0 w-full h-full object-cover object-top"
+          class="absolute top-0 left-0 w-full h-full object-cover object-center"
         >
           Your browser does not support the video tag.
         </video>

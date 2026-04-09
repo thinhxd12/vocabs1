@@ -136,31 +136,29 @@
       class="relative h-[calc(100vh-150px-76px-42px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
     >
       {#each $quizRender.meanings as entry}
-        {#each entry.definitions as el}
+        {#each entry.definitions.filter((item) => item.image) as el}
           <div class="relative w-full min-h-fit rounded-2 overflow-hidden">
-            {#if el.image}
-              <div class="relative w-382 h-215">
-                {#key el.image}
-                  <ImageLoader width={382} height={215} imageSrc={el.image} />
-                {/key}
-              </div>
+            <div class="relative w-382 h-215">
+              {#key el.image}
+                <ImageLoader width={382} height={215} imageSrc={el.image} />
+              {/key}
+            </div>
 
-              <div
-                class="absolute z-3 top-0 left-0 text-white bg-black/60 shadow-md shadow-black/30 w-full"
-              >
-                {#if entry.synonyms.length}
-                  <p class="px-6 leading-18 pb-3">
-                    <i>{entry.partOfSpeech}:</i>
-                    {entry.synonyms.join(", ")}
-                  </p>
-                {:else if entry.translation.length}
-                  <p class="px-6 leading-18 pb-3">
-                    <i>{entry.partOfSpeech}:</i>
-                    {entry.translation.join(", ")}
-                  </p>
-                {/if}
-              </div>
-            {/if}
+            <div
+              class="absolute z-3 top-0 left-0 text-white bg-black/60 shadow-md shadow-black/30 w-full"
+            >
+              {#if entry.synonyms.length}
+                <p class="px-6 leading-18 pb-3">
+                  <i>{entry.partOfSpeech}:</i>
+                  {entry.synonyms.join(", ")}
+                </p>
+              {:else if entry.translation.length}
+                <p class="px-6 leading-18 pb-3">
+                  <i>{entry.partOfSpeech}:</i>
+                  {entry.translation.join(", ")}
+                </p>
+              {/if}
+            </div>
           </div>
         {/each}
       {/each}
