@@ -33,6 +33,7 @@
   import type { WeatherQueryParams } from "$lib/types";
   import {
     addToast,
+    currentForecastModel,
     currentLocationId,
     locationList,
     weatherData,
@@ -558,6 +559,7 @@
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
           tempUnit: "c",
+          model: $currentForecastModel,
         };
         $weatherData = await getOpenMeteoWeather(param);
       }
@@ -1064,12 +1066,7 @@
           </div>
 
           <div class="flex justify-start items-center flex-1 h-full">
-            <span
-              class="text-12 text-black/60 min-w-30 text-center"
-              style="margin-left: {((item.temp_min - tempScale.min) /
-                tempScale.range) *
-                50}%;"
-            >
+            <span class="text-12 text-black/60 min-w-30 text-center">
               {formatTemperature(item.temp_min)}
             </span>
 
@@ -1080,7 +1077,12 @@
                 50}%;"
             ></span>
 
-            <span class="min-w-30 text-12 text-center">
+            <span
+              class="min-w-30 text-12 text-center"
+              style="margin-right: {((item.temp_min - tempScale.min) /
+                tempScale.range) *
+                50}%;"
+            >
               {formatTemperature(item.temp_max)}
             </span>
           </div>

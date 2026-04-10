@@ -273,6 +273,7 @@ export interface WeatherQueryParams {
   latitude: string;
   longitude: string;
   tempUnit: "c" | "f";
+  model: string;
 }
 
 export interface VideoBackgroundType {
@@ -308,6 +309,7 @@ export type UserType = {
   locations: Array<LocationType>;
   progress: Array<YearProgressType>;
   currentLocationId: string;
+  currentForecastModel: string;
 };
 
 export interface LocationType {

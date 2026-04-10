@@ -2,6 +2,7 @@
   import Nav from "$lib/components/Nav.svelte";
   import Toast from "$lib/components/Toast.svelte";
   import {
+    currentForecastModel,
     currentLocationId,
     locationList,
     weatherData,
@@ -40,6 +41,7 @@
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
         tempUnit: "c",
+        model: $currentForecastModel,
       };
       $weatherData = await getOpenMeteoWeather(param);
     }

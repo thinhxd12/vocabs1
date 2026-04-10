@@ -297,6 +297,7 @@ export const getOpenMeteoWeather = async ({
   latitude,
   longitude,
   tempUnit = "c",
+  model,
 }: WeatherQueryParams) => {
   const param1 = {
     latitude: String(latitude),
@@ -339,7 +340,7 @@ export const getOpenMeteoWeather = async ({
       "sunset",
       "uv_index_max",
     ].join(","),
-    models: "metno_seamless",
+    models: model,
     temperature_unit: tempUnit === "c" ? "celsius" : "fahrenheit",
     timezone: "auto",
     forecast_hours: "12",

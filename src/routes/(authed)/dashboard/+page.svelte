@@ -2,6 +2,7 @@
   import Container from "$lib/components/Container.svelte";
   import {
     addToast,
+    currentForecastModel,
     currentLocationId,
     focusMinutes,
     intervals,
@@ -26,6 +27,20 @@
   import { getOpenMeteoWeather } from "$lib/utils/functions";
 
   let { data: layoutData }: PageProps = $props();
+
+  const modelList = [
+    { name: "DWD Germany", value: "icon_seamless" },
+    { name: "NOAA U.S", value: "gfs_seamless" },
+    { name: "ECMWF", value: "ecmwf_ifs" },
+    { name: "UK Met Office", value: "ukmo_seamless" },
+    { name: "KMA Korea", value: "kma_seamless" },
+    { name: "JMA Japan", value: "jma_seamless" },
+    { name: "MET Norway", value: "metno_seamless" },
+    { name: "GEM Canada", value: "gem_seamless" },
+    { name: "CMA China", value: "cma_grapes_global" },
+    { name: "KNMI Netherlands", value: "knmi_seamless" },
+    { name: "DMI Denmark", value: "dmi_seamless" },
+  ];
 
   async function handleChangeInput(name: keyof UserType, value: any) {
     const { error } = await layoutData.supabase
@@ -132,6 +147,7 @@
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
           tempUnit: "c",
+          model: $currentForecastModel,
         };
         $weatherData = await getOpenMeteoWeather(param);
       }
@@ -177,6 +193,34 @@
         date: "",
         count: "",
       };
+    }
+  }
+
+  async function setForecastModel(model: string) {
+    const { error } = await layoutData.supabase
+      .from("dashboard_table")
+      .update({ currentForecastModel: model })
+      .eq("user", "thinh");
+    if (error) {
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
+      });
+    } else {
+      saveUserSetting();
+      const currentLocation = $locationList.find(
+        (item) => item.id === $currentLocationId,
+      );
+      if (currentLocation) {
+        let param: WeatherQueryParams = {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          tempUnit: "c",
+          model,
+        };
+        $weatherData = await getOpenMeteoWeather(param);
+      }
     }
   }
 </script>
@@ -312,6 +356,22 @@
         </div>
       {/each}
     </div>
+
+    <h2 class="col-span-2 text-18 font-500">Weather Forecast Model</h2>
+    <select
+      name="model"
+      onchange={(e) => setForecastModel(e.currentTarget.value)}
+      class="dashboardItem w-main rounded-2 outline-none appearance-none"
+    >
+      {#each modelList as item}
+        <option
+          value={item.value}
+          selected={item.value === $currentForecastModel}
+        >
+          {item.name}
+        </option>
+      {/each}
+    </select>
 
     <h2 class="col-span-2 text-18 font-500">Annual Progress</h2>
     <div class="dashboardItem col-span-2">

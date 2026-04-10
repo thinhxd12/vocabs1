@@ -10,6 +10,7 @@ import mainImage from "$lib/assets/images/main-image.webp";
 import mainAuthor from "$lib/assets/images/main-author.webp";
 import icescape from "$lib/assets/images/Icescape.jpg";
 import {
+  currentForecastModel,
   currentLocationId,
   focusMinutes,
   intervals,
@@ -243,7 +244,7 @@ export async function getUserSettingsData() {
     const { data } = await page.data.supabase
       .from("dashboard_table")
       .select(
-        "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress",
+        "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel",
       )
       .eq("user", "thinh");
     if (data) {
@@ -261,6 +262,7 @@ function setStoreUserSettings(setting: UserType) {
   locationList.set(setting.locations);
   currentLocationId.set(setting.currentLocationId);
   yearProgressList.set(setting.progress);
+  currentForecastModel.set(setting.currentForecastModel);
 }
 
 export async function saveUserSetting() {
@@ -268,7 +270,7 @@ export async function saveUserSetting() {
   const { data } = await page.data.supabase
     .from("dashboard_table")
     .select(
-      "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress",
+      "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel",
     )
     .eq("user", "thinh");
   if (data) {

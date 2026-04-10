@@ -26,6 +26,7 @@ export const isFocusDone = writable<boolean>(false);
 
 export const locationList = writable<LocationType[]>([]);
 export const currentLocationId = writable<string>("");
+export const currentForecastModel = writable<string>("");
 export const weatherData = writable<OpenMeteoResponse | undefined>(undefined);
 
 export const yearProgressList = writable<YearProgressType[]>([]);
