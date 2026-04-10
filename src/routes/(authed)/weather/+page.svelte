@@ -727,7 +727,7 @@
           </svg>
         </div>
 
-        <div class="flex justify-between mt-9 mb-3 pr-3">
+        <div class="flex justify-between mt-9 mb-3 px-3">
           <p class="text-12">
             Direction {windValues.windDirection}° {windValues.directionLabel}
           </p>
@@ -1003,7 +1003,7 @@
             {formatTime(item.time)}
           </h1>
 
-          <div class="light w-full relative">
+          <div class="light h-150 w-full relative">
             <img
               src="/navweather/{item.background}.webp"
               alt="wtb"
@@ -1017,17 +1017,26 @@
               style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
             />
             <p
-              class="text-12 text-center font-500 leading-18 text-white"
+              class="mb-3 text-12 text-center font-500 leading-18 text-white"
               style="text-shadow: 0px 0px 3px #000000"
             >
               {item.description}
             </p>
             <p
-              class="mt-3 mb-15 text-18 text-center font-500 text-white"
+              class="mb-3 text-18 leading-24 text-center font-500 text-white"
               style="text-shadow: 0px 0px 3px #000000"
             >
               {formatTemperature(item.temp)}
             </p>
+
+            {#if item.precipitation_probability}
+              <p
+                class="text-12 leading-16 text-center font-500 text-blue-300"
+                style="text-shadow: 0px 0px 3px #000000"
+              >
+                {item.precipitation_probability}%
+              </p>
+            {/if}
           </div>
         </div>
       {/each}
