@@ -250,7 +250,8 @@
         src={sunrise}
         alt="btn-play"
         class="absolute top-0 left-0 w-0 h-full z-3 object-cover object-[-10px] transition-all duration-300"
-        style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {($listCount /
+        style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {(($listCount +
+          1) /
           $listContent.length) *
           90}px;"
       />

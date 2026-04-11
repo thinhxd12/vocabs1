@@ -979,7 +979,7 @@
                   <p
                     class="text-12 font-proxima leading-16 text-[#4f4f4d] font-400"
                   >
-                   Page {$highlight.page}, bookmarked at {format(
+                    Page {$highlight.page}, bookmarked at {format(
                       new Date($highlight.dateOfCreation),
                       "p cccc, yyyy-MM-dd",
                     )}
@@ -1398,12 +1398,13 @@
   .note-tape {
     position: absolute;
     display: block;
-    background-color: rgba(108, 212, 255, 0.7);
+    background-color: rgba(108, 212, 255, 1);
     width: 120px;
     height: 35px;
     left: 50%;
     top: -18px;
     transform: translateX(-50%) rotate(3deg);
+    box-shadow: 0 -3px 3px rgba(0, 0, 0, 0.3);
   }
 
   .note-page textarea {

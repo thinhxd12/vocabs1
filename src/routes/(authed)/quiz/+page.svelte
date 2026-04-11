@@ -164,35 +164,37 @@
       {/each}
     </div>
 
-    <div class="w-full h-74 flex items-center overflow-y-scroll no-scrollbar">
-      {#if answer}
+    {#if answer}
+      <div
+        class="dark w-full h-74 rounded-2 p-6 flex items-center overflow-y-scroll no-scrollbar"
+      >
         <p
-          class="dark px-6 py-4 w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28 shadow-md shadow-black/60"
+          class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
         >
           {answer}
         </p>
-      {:else}
-        <div class="w-full outline-none grid grid-cols-2 grid-rows-2 gap-2">
-          {#each options as item}
-            <button
-              class={submitted
-                ? item == value
-                  ? item === $quizRender.word
-                    ? "light quiz-choice-true"
-                    : "light quiz-choice-false"
-                  : item === $quizRender.word
-                    ? "light quiz-choice-true"
-                    : "light quiz-choice"
-                : "light quiz-choice"}
-              disabled={submitted}
-              onclick={() => submitAnswer(item)}
-            >
-              {item}
-            </button>
-          {/each}
-        </div>
-      {/if}
-    </div>
+      </div>
+    {:else}
+      <div class="w-full outline-none grid grid-cols-2 grid-rows-2 gap-2">
+        {#each options as item}
+          <button
+            class={submitted
+              ? item == value
+                ? item === $quizRender.word
+                  ? "light quiz-choice-true"
+                  : "light quiz-choice-false"
+                : item === $quizRender.word
+                  ? "light quiz-choice-true"
+                  : "light quiz-choice"
+              : "light quiz-choice"}
+            disabled={submitted}
+            onclick={() => submitAnswer(item)}
+          >
+            {item}
+          </button>
+        {/each}
+      </div>
+    {/if}
   </Container>
 {/if}
 

@@ -34,18 +34,18 @@ export function formatTime(isoTime: string): string {
 
   // Convert 24-hour format to 12-hour format
   if (hour === 0) {
-    return "12 AM";
+    return "12<small>AM</small>";
   }
 
   if (hour < 12) {
-    return `${hour} AM`;
+    return `${hour}<small>AM</small>`;
   }
 
   if (hour === 12) {
-    return "12 PM";
+    return "12<small>PM</small>";
   }
 
-  return `${hour - 12} PM`;
+  return `${hour - 12}<small>PM</small>`;
 }
 
 /**

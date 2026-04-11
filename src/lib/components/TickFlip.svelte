@@ -205,7 +205,7 @@
   }
 
   .tick-flip-panel {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.9);
     background: url("$lib/assets/images/clock.png");
   }
 

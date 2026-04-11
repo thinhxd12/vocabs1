@@ -40,6 +40,10 @@
   } from "$lib/store/layoutstore";
   import { saveUserSetting } from "$lib/store/localstore";
   import type { PageProps } from "./$types";
+  import FluentEmojiFlatSnowflake from "~icons/fluent-emoji-flat/snowflake";
+  import FxemojiBlackdroplet from "~icons/fxemoji/blackdroplet";
+  import FluentEmojiFlatCloud from "~icons/fluent-emoji-flat/cloud";
+  import MaterialSymbolsHumidityPercentage from "~icons/material-symbols/humidity-percentage";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -708,9 +712,9 @@
 
             <text
               x="75"
-              y="79"
+              y="82"
               text-anchor="middle"
-              font-size="18"
+              font-size="25"
               font-weight="500"
               fill="currentColor"
             >
@@ -718,9 +722,9 @@
             </text>
             <text
               x="75"
-              y="92"
+              y="95"
               text-anchor="middle"
-              font-size="10"
+              font-size="13"
               fill="currentColor"
               opacity="0.6"
             >
@@ -748,119 +752,124 @@
         </div>
       </div>
       <div class="light p-6 w-full">
-        <p class="uppercase text-12">Precipitation</p>
-        {#if precipitationValues.hasPrecipitation}
-          {#if precipitationValues.hasRain}
-            <img
-              src="/liquid/128/rain.png"
-              alt="icon"
-              class="size-60 object-cover mx-auto"
-            />
-            <p class="text-14 font-600">{precipitationValues.formattedRain}</p>
-            <p class="text-12">Rain</p>
-          {:else if precipitationValues.hasSnow}
-            <img
-              src="/liquid/128/snow.png"
-              alt="icon"
-              class="size-90 object-cover"
-            />
-            <p class="text-14 font-600">{precipitationValues.formattedSnow}</p>
-            <p class="text-12">Snow</p>
+        <p class="mb-3 uppercase text-12">Precipitation</p>
+        <div class="flex flex-col items-center">
+          {#if precipitationValues.hasPrecipitation}
+            {#if precipitationValues.hasRain}
+              <FxemojiBlackdroplet width="50" height="50" />
+              <p class="mt-3 text-14 font-600">
+                {precipitationValues.formattedRain}
+              </p>
+              <p class="text-12">Rain</p>
+            {:else if precipitationValues.hasSnow}
+              <FluentEmojiFlatSnowflake width="50" height="50" />
+              <p class="mt-3 text-14 font-600">
+                {precipitationValues.formattedSnow}
+              </p>
+              <p class="text-12">Snow</p>
+            {/if}
+          {:else}
+            <p class="mt-45 text-14 font-600">None</p>
+            <p class="text-12">
+              {precipitationValues.precipitationDescription}
+            </p>
           {/if}
-        {:else}
-          <p class="text-14 font-600">None</p>
-          <p class="text-12">{precipitationValues.precipitationDescription}</p>
-        {/if}
+        </div>
       </div>
-      <div class="light p-6 w-full">
-        <p class="uppercase text-12">UV Index</p>
-        <h1 class="text-48 leading-48 font-400">
-          {uvValues.currentUV}
-        </h1>
-        <p class="text-14 font-600 mb-9">{uvValues.level}</p>
+      <div class="light p-3 w-full">
+        <p class="uppercase text-12 mb-6">UV Index</p>
+
         <div
-          class="relative h-6 rounded-full mr-auto mb-6 w-170"
-          style="background: linear-gradient(to right, #22c55e 0%, #eab308 30%, #f97316 60%, #ef4444 80%, #ec4899 100%);"
+          data-uv={uvValues.level}
+          class="mx-auto mb-9 size-50 rounded-full flex items-center justify-center"
         >
-          <div
-            class="absolute -top-3 size-12 bg-white border-2 border-black/80 rounded-full -translate-x-1/2"
-            style="left: {uvValues.indicatorPercent}%;"
-          ></div>
+          <span
+            class="w-full text-center text-36 leading-30 pb-3 font-400 text-white"
+          >
+            {uvValues.currentUV}
+          </span>
         </div>
-        <p class="text-12">{uvValues.description}</p>
+
+        <p class="mb-3 text-12 text-center">{uvValues.description}</p>
+
+        <div
+          class="grid grid-rows-1 grid-cols-12 gap-1 mb-1 text-10 text-center leading-13 text-white font-600"
+        >
+          <div data-uv="Low" class="h-13 rounded-2">1</div>
+          <div data-uv="Low" class="h-13 rounded-2">2</div>
+          <div data-uv="Moderate" class="h-13 rounded-2">3</div>
+          <div data-uv="Moderate" class="h-13 rounded-2">4</div>
+          <div data-uv="Moderate" class="h-13 rounded-2">5</div>
+          <div data-uv="High" class="h-13 rounded-2">6</div>
+          <div data-uv="High" class="h-13 rounded-2">7</div>
+          <div data-uv="Very High" class="h-13 rounded-2">8</div>
+          <div data-uv="Very High" class="h-13 rounded-2">9</div>
+          <div data-uv="Very High" class="h-13 rounded-2">10</div>
+          <div data-uv="Extreme" class="col-span-2 h-13 rounded-2">11+</div>
+        </div>
+
+        <div
+          class="grid grid-rows-1 grid-cols-12 gap-1 text-7 text-center leading-13 text-white font-600"
+        >
+          <div data-uv="Low" class="col-span-2 h-13 rounded-2">Low</div>
+          <div data-uv="Moderate" class="col-span-3 h-13 rounded-2">
+            Moderate
+          </div>
+          <div data-uv="High" class="col-span-2 h-13 rounded-2">High</div>
+          <div data-uv="Very High" class="col-span-3 h-13 rounded-2">
+            Very High
+          </div>
+          <div data-uv="Extreme" class="col-span-2 h-13 rounded-2">Extreme</div>
+        </div>
       </div>
       <div class="light p-6 w-full">
-        <p class="uppercase text-12 mb-15">Pressure</p>
-        <h1 class="text-20 mb-15 text-center">
-          {pressureValues.pressureHpa} hPa
-        </h1>
-        <div class="w-full flex justify-center">
-          <progress value={pressureValues.normalizedValue} max="100"></progress>
+        <p class="uppercase text-12">Pressure</p>
+
+        <div class="w-full px-12 mb-6 flex justify-between items-center">
+          <div class="flex flex-col">
+            <h1 class="text-24 font-500">
+              {pressureValues.pressureHpa} <small>hPa</small>
+            </h1>
+            <p class="text-12 text-center">
+              {pressureValues.pressureDescription}
+            </p>
+          </div>
+          <div class="flex flex-col items-center justify-between">
+            <div class="text-12 mb-3 font-500">High</div>
+            <div
+              class="w-6 h-100 rounded-3 relative bg-gradient-to-b from-white/20 via-white to-white/20"
+            >
+              <span
+                class="absolute -left-4 -translate-y-1/2 w-14 h-4 rounded-3 bg-white shadow shadow-black/30"
+                style="bottom: {pressureValues.normalizedValue}%;"
+              ></span>
+            </div>
+            <div class="text-12 mt-3 font-500">Low</div>
+          </div>
         </div>
-        <div class="w-full flex justify-between text-12 mb-6">
-          <span>Low</span>
-          <span>High</span>
-        </div>
-        <p class="text-12 text-center">{pressureValues.pressureDescription}</p>
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Humidity</p>
-
-        <svg
-          width="120"
-          height="120"
-          viewBox="-15 -15 150 150"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          style="transform:rotate(-90deg)"
-          class="ml-30"
-        >
-          <circle
-            r="50"
-            cx="60"
-            cy="60"
-            fill="transparent"
-            stroke="#e0e0e0"
-            stroke-width="9"
-          ></circle>
-          <circle
-            r="50"
-            cx="60"
-            cy="60"
-            stroke="#228be6"
-            stroke-width="10"
-            stroke-dashoffset="{(100 - humidityValues.humidity) * 3}px"
-            fill="transparent"
-            stroke-dasharray="314px"
-          ></circle>
-          <text
-            x="37px"
-            y="67px"
-            fill="#000000"
-            font-size="20px"
-            font-weight="bold"
-            style="transform:rotate(90deg) translate(8px, -120px)"
-            >{humidityValues.humidity}%</text
-          >
-        </svg>
-
-        <p class="text-12 text-center">
-          Dew point: {humidityValues.dewPoint}°
-        </p>
-        <p class="text-12 text-center">{humidityValues.humidityDescription}</p>
+        <div class="flex flex-col items-center">
+          <MaterialSymbolsHumidityPercentage
+            width="50"
+            height="50"
+            color="#228be6"
+          />
+          <p class="mt-3 text-14 font-600">{humidityValues.humidity}%</p>
+          <p class="text-12">
+            Dew point: {humidityValues.dewPoint}°
+          </p>
+          <p class="text-12">{humidityValues.humidityDescription}</p>
+        </div>
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Cloud Cover</p>
-        <img
-          src="/liquid/128/cloud.png"
-          alt="icon"
-          class="size-60 object-cover mx-auto"
-        />
-        <p class="text-14 font-600 mb-6 pl-9">{cloudCoverValues.cloudCover}%</p>
-        <div class="w-full flex justify-center h-6 mb-6">
-          <progress value={cloudCoverValues.cloudCover} max="100"></progress>
+        <div class="flex flex-col items-center">
+          <FluentEmojiFlatCloud width="50" height="50" />
+          <p class="mt-3 text-14 font-600">{cloudCoverValues.cloudCover}%</p>
+          <p class="text-12">{cloudCoverValues.cloudCoverDescription}</p>
         </div>
-        <p class="text-12 pl-9">{cloudCoverValues.cloudCoverDescription}</p>
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Visibility</p>
@@ -913,13 +922,11 @@
                   height: 20;
                   overflow: hidden"
           >
-            <div class="size-20 flex items-center justify-center">
-              <img
-                src="/liquid/48/sun.png"
-                alt="icon"
-                class="size-20 object-cover"
-              />
-            </div>
+            <img
+              src="/openmeteo/icons/01d.svg"
+              alt="sunicon"
+              class="size-20 object-cover"
+            />
           </div>
         </div>
 
@@ -1002,7 +1009,7 @@
       {#each hourlyData as item}
         <div class="light flex flex-col rounded-2 overflow-hidden">
           <h1 class="pt-9 uppercase text-21 leading-24 font-500 text-center">
-            {formatTime(item.time)}
+            {@html formatTime(item.time)}
           </h1>
 
           <div class="light h-150 w-full relative">
@@ -1033,7 +1040,7 @@
 
             {#if item.precipitation_probability}
               <p
-                class="text-12 leading-16 text-center font-500 text-blue-300"
+                class="text-12 leading-16 text-center font-500 text-blue-200"
                 style="text-shadow: 0px 0px 3px #000000"
               >
                 {item.precipitation_probability}%
@@ -1092,7 +1099,7 @@
   {/if}
 </Container>
 
-<style>
+<style lang="postcss">
   .current {
     width: 100%;
     background: linear-gradient(
@@ -1151,5 +1158,25 @@
 
   option::checkmark {
     display: none;
+  }
+
+  [data-uv="Low"] {
+    @apply bg-green-500;
+  }
+
+  [data-uv="Moderate"] {
+    @apply bg-yellow-500;
+  }
+
+  [data-uv="High"] {
+    @apply bg-orange-500;
+  }
+
+  [data-uv="Very High"] {
+    @apply bg-red-500;
+  }
+
+  [data-uv="Extreme"] {
+    @apply bg-purple-500;
   }
 </style>
