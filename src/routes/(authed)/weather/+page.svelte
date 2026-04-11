@@ -1113,18 +1113,6 @@
     position: relative;
   }
 
-  progress::-webkit-progress-bar {
-    width: 100%;
-    height: 10px;
-    background-color: #e9ecef;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  progress::-webkit-progress-value {
-    background-color: #228be6;
-  }
-
   .location-list {
     width: 100%;
     text-align: center;
