@@ -153,7 +153,7 @@ export function formatPrecipitation(tempUnit: string, amount: number): string {
   if (tempUnit === "f") {
     return `${amount.toFixed(2)} in`;
   }
-  return `${Math.round(amount)} mm`;
+  return `${amount} mm`;
 }
 
 /**

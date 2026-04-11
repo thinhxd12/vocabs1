@@ -41,9 +41,9 @@
   import { saveUserSetting } from "$lib/store/localstore";
   import type { PageProps } from "./$types";
   import FluentEmojiFlatSnowflake from "~icons/fluent-emoji-flat/snowflake";
-  import FxemojiBlackdroplet from "~icons/fxemoji/blackdroplet";
   import FluentEmojiFlatCloud from "~icons/fluent-emoji-flat/cloud";
   import MaterialSymbolsHumidityPercentage from "~icons/material-symbols/humidity-percentage";
+  import MaterialSymbolsWaterDrop from "~icons/material-symbols/water-drop";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -227,7 +227,12 @@
 
       const feelsLike = Math.round($weatherData.current.apparent_temperature);
       const actual = Math.round($weatherData.current.temperature_2m);
-      const feelsLikeDescription = getFeelsLikeDescription(feelsLike, actual);
+      const feelsLikeDescription = getFeelsLikeDescription(
+        feelsLike,
+        actual,
+        $weatherData.current.wind_speed_10m,
+        $weatherData.current.relative_humidity_2m,
+      );
 
       currentValues = {
         icon: current_icon,
@@ -756,17 +761,21 @@
         <div class="flex flex-col items-center">
           {#if precipitationValues.hasPrecipitation}
             {#if precipitationValues.hasRain}
-              <FxemojiBlackdroplet width="50" height="50" />
+              <MaterialSymbolsWaterDrop
+                width="50"
+                height="50"
+                color="#228be6"
+              />
               <p class="mt-3 text-14 font-600">
                 {precipitationValues.formattedRain}
               </p>
-              <p class="text-12">Rain</p>
+              <p class="text-12">in 15 minutes</p>
             {:else if precipitationValues.hasSnow}
               <FluentEmojiFlatSnowflake width="50" height="50" />
               <p class="mt-3 text-14 font-600">
                 {precipitationValues.formattedSnow}
               </p>
-              <p class="text-12">Snow</p>
+              <p class="text-12">in 15 minutes</p>
             {/if}
           {:else}
             <p class="mt-45 text-14 font-600">None</p>
@@ -781,7 +790,7 @@
 
         <div
           data-uv={uvValues.level}
-          class="mx-auto mb-9 size-50 rounded-full flex items-center justify-center"
+          class="mx-auto mb-6 size-60 rounded-full flex items-center justify-center"
         >
           <span
             class="w-full text-center text-36 leading-30 pb-3 font-400 text-white"
@@ -790,7 +799,7 @@
           </span>
         </div>
 
-        <p class="mb-3 text-12 text-center">{uvValues.description}</p>
+        <p class="mb-6 text-12 text-center">{uvValues.description}</p>
 
         <div
           class="grid grid-rows-1 grid-cols-12 gap-1 mb-1 text-10 text-center leading-13 text-white font-600"

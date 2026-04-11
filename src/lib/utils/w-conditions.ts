@@ -320,16 +320,24 @@ export function getVisibilityDescription(
  * @param actual - Actual temperature
  * @returns Comparison description string
  */
-export function getFeelsLikeDescription(feels: number, actual: number): string {
+export function getFeelsLikeDescription(
+  feels: number,
+  actual: number,
+  wind_kph = 0,
+  humidity_pct = 0,
+): string {
   const diff = feels - actual;
   const absDiff = Math.abs(diff);
 
-  if (absDiff < 2) return "Similar to actual temperature";
-  if (diff > 5) return `Feels much warmer (${Math.round(diff)}° warmer)`;
-  if (diff < -5) return `Feels much cooler (${Math.round(absDiff)}° cooler)`;
-  return diff > 0
-    ? `Feels ${Math.round(diff)}° warmer`
-    : `Feels ${Math.round(absDiff)}° cooler`;
+  if (diff <= -3) {
+    const reason = wind_kph > 15 ? "Wind" : "The breeze";
+    return `${reason} is making it feel colder ${absDiff}°`;
+  }
+  if (diff >= 3) {
+    const reason = humidity_pct > 60 ? "Humidity" : "The air";
+    return `${reason} is making it feel hotter ${absDiff}°`;
+  }
+  return "It feels similar to the actual temperature";
 }
 
 /**
