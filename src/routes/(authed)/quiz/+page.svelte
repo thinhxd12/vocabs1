@@ -35,11 +35,6 @@
   function createOptions() {
     answer = "";
     if ($listContent.length === 0 || !$quizRender) return;
-    let sound = $quizRender!.meanings
-      .flatMap((item) => item.translation)
-      .join(", ");
-    src0 = `https://vocabs3.vercel.app/speech?text=${sound}`;
-    paused0 = false;
     const filterdOptions = $listContent.filter(
       (choice) => choice.id !== $quizRender!.id,
     );
@@ -57,8 +52,8 @@
       src1 = $quizRender.audio;
       paused1 = false;
     } else {
-      src1 = "/sounds/mp3_Boing.mp3";
-      paused1 = false;
+      src0 = "/sounds/mp3_Boing.mp3";
+      paused0 = false;
     }
   }
 

@@ -148,18 +148,15 @@
     untrack(() => {
       if (v) {
         flipNumber = v.number;
-        src0 = v.audio;
-        paused0 = false;
       }
     });
   });
 
   function handlePlaySoundMeanings() {
-    const translations = Array.isArray($renderWord?.meanings)
-      ? $renderWord.meanings.flatMap((item: any) => item.translation).join(", ")
-      : "";
-    src1 = `https://vocabs3.vercel.app/speech?text=${translations}`;
-    paused1 = false;
+    if ($renderWord) {
+      src1 = $renderWord.audio;
+      paused1 = false;
+    }
   }
 
   function handleSetNextLearningWord() {
