@@ -42,8 +42,8 @@
   import type { PageProps } from "./$types";
   import FluentEmojiFlatSnowflake from "~icons/fluent-emoji-flat/snowflake";
   import FluentEmojiFlatCloud from "~icons/fluent-emoji-flat/cloud";
-  import MaterialSymbolsHumidityPercentage from "~icons/material-symbols/humidity-percentage";
   import MaterialSymbolsWaterDrop from "~icons/material-symbols/water-drop";
+  import Rainviewer from "$lib/components/Rainviewer.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -402,7 +402,7 @@
       };
 
       let currentUV = Math.round($weatherData.current.uv_index || 0);
-      const indiNumber = currentUV > 11 ? 11 : currentUV;
+      const indiNumber = currentUV > 11 ? 12 : currentUV;
       const uvScale = 11;
       const indicatorPercent = (indiNumber / uvScale) * 100;
       const { level: uv_level, description: uv_description } =
@@ -574,6 +574,108 @@
       }
     }
   }
+
+  function calculateWindRotate(angle: number) {
+    let alpha = 0;
+    if (angle <= 45) {
+      alpha = angle;
+    } else if (angle <= 135) {
+      alpha = angle - 90;
+    } else if (angle <= 225) {
+      alpha = angle - 180;
+    } else if (angle <= 315) {
+      alpha = angle - 270;
+    } else {
+      alpha = angle - 360;
+    }
+
+    if (alpha >= 10 && alpha <= 35) return angle - 90 - (alpha - 10);
+    else return angle - 90 - 25;
+  }
+
+  function calculateWindDash(angle: number) {
+    let alpha = 0;
+    if (angle <= 45) {
+      alpha = angle;
+    } else if (angle <= 135) {
+      alpha = angle - 90;
+    } else if (angle <= 225) {
+      alpha = angle - 180;
+    } else if (angle <= 315) {
+      alpha = angle - 270;
+    } else {
+      alpha = angle - 360;
+    }
+
+    if (alpha <= -35 || alpha >= 35) return "50 310";
+    if (alpha < 10 && alpha > -10)
+      return `${25 - alpha - 10} 20 ${25 + alpha - 10} 310`;
+    if (alpha >= 10) return `${25 + alpha - 10} ${360 - (25 + alpha - 10)}`;
+    if (alpha <= -10) return `${25 - alpha - 10} ${360 - (25 - alpha - 10)}`;
+  }
+
+  const uvCoordinates = [
+    {
+      cx: 36.6,
+      cy: 133.6,
+      color: "#73AA24",
+    },
+    {
+      cx: 18.7,
+      cy: 105,
+      color: "#73AA24",
+    },
+    {
+      cx: 14.5,
+      cy: 80,
+      color: "#FDE300",
+    },
+    {
+      cx: 18.7,
+      cy: 55.2,
+      color: "#FDE300",
+    },
+    {
+      cx: 36.2,
+      cy: 26.8,
+      color: "#FDE300",
+    },
+    {
+      cx: 56.6,
+      cy: 12,
+      color: "#FF8C00",
+    },
+    {
+      cx: 90.5,
+      cy: 4,
+      color: "#FF8C00",
+    },
+    {
+      cx: 124.4,
+      cy: 12,
+      color: "#D13438",
+    },
+    {
+      cx: 144.8,
+      cy: 26.8,
+      color: "#D13438",
+    },
+    {
+      cx: 162.3,
+      cy: 55.2,
+      color: "#D13438",
+    },
+    {
+      cx: 166.3,
+      cy: 85.3,
+      color: "#5C2E91",
+    },
+    {
+      cx: 144.8,
+      cy: 133.6,
+      color: "#5C2E91",
+    },
+  ];
 </script>
 
 <svelte:head>
@@ -637,6 +739,8 @@
       </p>
     </div>
 
+    <Rainviewer />
+
     <!-- DetailsGrid -->
     <div class="w-full grid grid-cols-2 gap-2">
       <div class="light p-6 w-full">
@@ -646,105 +750,134 @@
         </h1>
         <p class="text-12">{currentValues.feelsLikeDescription}</p>
       </div>
-      <div class="light p-5 w-full">
+      <div class="light p-6 w-full">
         <p class="uppercase text-12">Wind</p>
-        <div class="relative size-90 mb-15 mx-auto">
-          <span
-            class="absolute -top-9 left-1/2 -translate-x-1/2 text-12 leading-12"
-          >
-            N
-          </span>
-          <span
-            class="absolute top-1/2 -right-6 -translate-y-1/2 text-12 leading-12"
-          >
-            E
-          </span>
-          <span
-            class="absolute -bottom-9 left-1/2 -translate-x-1/2 text-12 leading-12"
-          >
-            S
-          </span>
-          <span
-            class="absolute top-1/2 -left-9 -translate-y-1/2 text-12 leading-12"
-          >
-            W
-          </span>
 
+        <div class="mx-auto size-110 relative" aria-hidden="true">
           <svg
-            width="90"
-            height="90"
-            viewBox="0 0 150 150"
+            width="110"
+            height="110"
+            viewBox="0 0 180 180"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            class="absolute top-0 left-0 overflow-visible"
           >
-            <circle
-              cx="75"
-              cy="75"
-              r="65"
-              stroke="currentColor"
-              stroke-width="1.5"
-              opacity="0.15"
-              fill="none"
-            />
-
-            {#each windTickArray as tick, i}
-              <line
-                x1={tick.x1}
-                y1={tick.y1}
-                x2={tick.x2}
-                y2={tick.y2}
-                stroke="currentColor"
-                stroke-width={tick.width}
-                opacity={tick.opacity}
-              />
-            {/each}
-
-            <g transform={`rotate(${windValues.windDirection + 180} 75 75)`}>
-              <path
-                d="M75 12 L71 25 L75 22 L79 25 Z"
-                fill="currentColor"
-                opacity="0.9"
-              />
-              <path
-                d="M75 22 L75 50"
-                stroke="currentColor"
-                stroke-width="2"
+            <g transform="translate(90, 90) rotate(-80)">
+              <circle
+                r="80"
+                stroke="#0000001a"
+                stroke-width="8"
+                pathLength="360"
+                stroke-dasharray="70 290"
                 stroke-linecap="round"
-                opacity="0.9"
+                fill="none"
               />
             </g>
 
-            <text
-              x="75"
-              y="82"
-              text-anchor="middle"
-              font-size="25"
-              font-weight="500"
-              fill="currentColor"
+            <g transform="translate(90, 90) rotate(10)">
+              <circle
+                r="80"
+                stroke="#0000001a"
+                stroke-width="8"
+                pathLength="360"
+                stroke-dasharray="70 290"
+                stroke-linecap="round"
+                fill="none"
+              />
+            </g>
+
+            <g transform="translate(90, 90) rotate(100)">
+              <circle
+                r="80"
+                stroke="#0000001a"
+                stroke-width="8"
+                pathLength="360"
+                stroke-dasharray="70 290"
+                stroke-linecap="round"
+                fill="none"
+              />
+            </g>
+
+            <g transform="translate(90, 90) rotate(190)">
+              <circle
+                r="80"
+                stroke="#0000001a"
+                stroke-width="8"
+                pathLength="360"
+                stroke-dasharray="70 290"
+                stroke-linecap="round"
+                fill="none"
+              />
+            </g>
+
+            <path
+              d="M 86.325 40.3742 C 86.9141 37.7765 90.5908 37.7098 91.2738 40.2843 L 112.0053 118.42840000000001 C 113.7162 124.8774 108.87360000000001 131.20420000000001 102.2016 131.23680000000002 L 78.5064 131.35250000000002 C 71.94605 131.3845 67.06373 125.3014 68.51471 118.9034 L 86.325 40.3742Z"
+              fill="#228be6"
+              transform="rotate({windValues.windDirection - 180} 90 90)"
             >
-              {windValues.windSpeed}
-            </text>
-            <text
-              x="75"
-              y="95"
-              text-anchor="middle"
-              font-size="13"
-              fill="currentColor"
-              opacity="0.6"
+            </path>
+
+            <g
+              transform="translate(90, 90) rotate({calculateWindRotate(
+                windValues.windDirection,
+              )})"
             >
-              {windValues.speedUnit}
-            </text>
+              <circle
+                r="80"
+                stroke="#228be6"
+                stroke-width="8"
+                pathLength="360"
+                stroke-dasharray={calculateWindDash(windValues.windDirection)}
+                stroke-linecap="round"
+                fill="none"
+              />
+            </g>
           </svg>
+
+          <div class="text-12 absolute top-0 left-1/2 -translate-x-1/2">N</div>
+          <div class="text-12 absolute bottom-0 left-1/2 -translate-x-1/2">
+            S
+          </div>
+          <div
+            class="text-12 absolute top-1/2 left-7 -translate-x-1/2 -translate-y-1/2"
+          >
+            W
+          </div>
+          <div
+            class="text-12 absolute top-1/2 right-7 translate-x-5 -translate-y-1/2"
+          >
+            E
+          </div>
         </div>
 
-        <div class="flex justify-between mt-9 mb-3 px-3">
-          <p class="text-12">
-            Direction {windValues.windDirection}° {windValues.directionLabel}
-          </p>
-          <p class="text-12">
-            Gust {windValues.windGusts}{windValues.speedUnit}
-          </p>
+        <div class="flex justify-between">
+          <div class="flex flex-col my-6 gap-5">
+            <p class="text-12 leading-15">
+              From {windValues.directionLabel} ({windValues.windDirection}°)
+            </p>
+            <div class="flex gap-3 items-center">
+              <div class="text-30 font-500 leading-30">
+                {windValues.windSpeed}
+              </div>
+              <div class="flex flex-col">
+                <p class="text-12 text-black/60 leading-15">
+                  {windValues.speedUnit}
+                </p>
+                <p class="text-12 leading-15">Wind Speed</p>
+              </div>
+            </div>
+
+            <div class="flex gap-3 items-center">
+              <div class="text-30 font-500 leading-30">
+                {windValues.windGusts}
+              </div>
+              <div class="flex flex-col">
+                <p class="text-12 text-black/60 leading-15">
+                  {windValues.speedUnit}
+                </p>
+                <p class="text-12 leading-15">Wind Gust</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="flex gap-9 pl-6 bg-white rounded-2 overflow-hidden">
@@ -785,64 +918,90 @@
           {/if}
         </div>
       </div>
-      <div class="light p-3 w-full">
-        <p class="uppercase text-12 mb-6">UV Index</p>
+      <div class="light p-6 w-full">
+        <p class="uppercase text-12">UV Index</p>
 
-        <div
-          data-uv={uvValues.level}
-          class="mx-auto mb-6 size-60 rounded-full flex items-center justify-center"
-        >
-          <span
-            class="w-full text-center text-36 leading-30 pb-3 font-400 text-white"
+        <div class="relative flex justify-center" aria-hidden="true">
+          <svg
+            width="134"
+            height="134"
+            viewBox="5 -12 171 178"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
-            {uvValues.currentUV}
-          </span>
-        </div>
-
-        <p class="mb-6 text-12 text-center">{uvValues.description}</p>
-
-        <div
-          class="grid grid-rows-1 grid-cols-12 gap-1 mb-1 text-10 text-center leading-13 text-white font-600"
-        >
-          <div data-uv="Low" class="h-13 rounded-2">1</div>
-          <div data-uv="Low" class="h-13 rounded-2">2</div>
-          <div data-uv="Moderate" class="h-13 rounded-2">3</div>
-          <div data-uv="Moderate" class="h-13 rounded-2">4</div>
-          <div data-uv="Moderate" class="h-13 rounded-2">5</div>
-          <div data-uv="High" class="h-13 rounded-2">6</div>
-          <div data-uv="High" class="h-13 rounded-2">7</div>
-          <div data-uv="Very High" class="h-13 rounded-2">8</div>
-          <div data-uv="Very High" class="h-13 rounded-2">9</div>
-          <div data-uv="Very High" class="h-13 rounded-2">10</div>
-          <div data-uv="Extreme" class="col-span-2 h-13 rounded-2">11+</div>
-        </div>
-
-        <div
-          class="grid grid-rows-1 grid-cols-12 gap-1 text-7 text-center leading-13 text-white font-600"
-        >
-          <div data-uv="Low" class="col-span-2 h-13 rounded-2">Low</div>
-          <div data-uv="Moderate" class="col-span-3 h-13 rounded-2">
-            Moderate
+            <path
+              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+              transform="rotate(13 90.5 80)"
+              fill="none"
+              stroke="#5C2E91"
+              stroke-width="8"
+              stroke-linecap="round"
+            ></path>
+            <path
+              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+              transform="rotate(-52 90.5 80)"
+              fill="none"
+              stroke="#D13438"
+              stroke-width="8"
+              stroke-linecap="round"
+            ></path>
+            <path
+              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+              transform="rotate(-115 90.5 80)"
+              fill="none"
+              stroke="#FF8C00"
+              stroke-width="8"
+              stroke-linecap="round"
+            ></path>
+            <path
+              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+              transform="rotate(-178 90.5 80)"
+              fill="none"
+              stroke="#FDE300"
+              stroke-width="8"
+              stroke-linecap="round"
+            ></path>
+            <path
+              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+              transform="rotate(-243 90.5 80)"
+              fill="none"
+              stroke="#73AA24"
+              stroke-width="8"
+              stroke-linecap="round"
+            ></path>
+            {#if uvValues.currentUV}
+              <g>
+                <circle
+                  cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
+                  cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
+                  r="10"
+                  fill={uvCoordinates[uvValues.currentUV - 1]?.color}
+                ></circle>
+                <circle
+                  cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
+                  cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
+                  r="11.5"
+                  stroke="white"
+                  stroke-width="3"
+                ></circle>
+              </g>
+            {/if}
+          </svg>
+          <div class="absolute w-full h-full flex items-center justify-center">
+            <div class="text-36 leading-36">{uvValues.currentUV}</div>
           </div>
-          <div data-uv="High" class="col-span-2 h-13 rounded-2">High</div>
-          <div data-uv="Very High" class="col-span-3 h-13 rounded-2">
-            Very High
-          </div>
-          <div data-uv="Extreme" class="col-span-2 h-13 rounded-2">Extreme</div>
         </div>
+
+        <p class="text-14 font-600">{uvValues.level}</p>
+        <p class="text-12 leading-16">
+          {uvValues.description}
+        </p>
       </div>
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Pressure</p>
 
         <div class="w-full px-12 mb-6 flex justify-between items-center">
-          <div class="flex flex-col">
-            <h1 class="text-24 font-500">
-              {pressureValues.pressureHpa} <small>hPa</small>
-            </h1>
-            <p class="text-12 text-center">
-              {pressureValues.pressureDescription}
-            </p>
-          </div>
           <div class="flex flex-col items-center justify-between">
             <div class="text-12 mb-3 font-500">High</div>
             <div
@@ -855,23 +1014,43 @@
             </div>
             <div class="text-12 mt-3 font-500">Low</div>
           </div>
+          <div class="flex flex-col">
+            <h1 class="text-24 font-500">
+              {pressureValues.pressureHpa} <small>hPa</small>
+            </h1>
+            <p class="text-12 text-center">
+              {pressureValues.pressureDescription}
+            </p>
+          </div>
         </div>
       </div>
       <div class="light p-6 w-full">
-        <p class="uppercase text-12">Humidity</p>
-        <div class="flex flex-col items-center">
-          <MaterialSymbolsHumidityPercentage
-            width="50"
-            height="50"
-            color="#228be6"
-          />
-          <p class="mt-3 text-14 font-600">{humidityValues.humidity}%</p>
-          <p class="text-12">
-            Dew point: {humidityValues.dewPoint}°
-          </p>
-          <p class="text-12">{humidityValues.humidityDescription}</p>
+        <p class="uppercase text-12 mb-24">Humidity</p>
+        <div class="flex items-center justify-center gap-30">
+          <div class="relative h-100 w-10 rounded-8 bg-black/10">
+            <div
+              class="float-left w-10 rounded-8 absolute bottom-0 bg-[#228be6]"
+              style="height: {humidityValues.humidity}%;"
+            ></div>
+          </div>
+
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-col">
+              <div class="text-30 font-500 leading-30">
+                {humidityValues.humidity}%
+              </div>
+              <p class="text-12 leading-15">Relative Humidity</p>
+            </div>
+            <div class="flex flex-col">
+              <div class="text-30 font-500 leading-30">
+                {humidityValues.dewPoint}°
+              </div>
+              <p class="text-12 leading-15">Dew point</p>
+            </div>
+          </div>
         </div>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Cloud Cover</p>
         <div class="flex flex-col items-center">
@@ -1155,25 +1334,5 @@
 
   option::checkmark {
     display: none;
-  }
-
-  [data-uv="Low"] {
-    @apply bg-green-500;
-  }
-
-  [data-uv="Moderate"] {
-    @apply bg-yellow-500;
-  }
-
-  [data-uv="High"] {
-    @apply bg-orange-500;
-  }
-
-  [data-uv="Very High"] {
-    @apply bg-red-500;
-  }
-
-  [data-uv="Extreme"] {
-    @apply bg-purple-500;
   }
 </style>
