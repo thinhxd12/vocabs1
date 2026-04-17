@@ -260,11 +260,11 @@
 
 <svelte:head>
   {#if $isPaused}
-    <title>Paused 🍅</title>
+    <title>🍅 Paused!</title>
   {:else if $currentMode === "focus"}
-    <title>{formatTimerString($secondsRemaining)} - Time to focus! ⏳</title>
+    <title>{formatTimerString($secondsRemaining)} ⏳ Time to focus!</title>
   {:else}
-    <title>{formatTimerString($secondsRemaining)} - Time for a break! 🌴</title>
+    <title>{formatTimerString($secondsRemaining)} 🌴 Time for a break!</title>
   {/if}
 
   <meta name="Pomodoro" content="Pomodoro" />
