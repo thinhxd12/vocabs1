@@ -24,7 +24,8 @@
   import UilSchedule from "~icons/uil/schedule";
   import MaterialSymbolsFeatureSearchOutline from "~icons/material-symbols/feature-search-outline";
   import MaterialSymbolsDashboardRounded from "~icons/material-symbols/dashboard-rounded";
-  import SolarSadSquareBold from "~icons/solar/sad-square-bold";
+  import SolarSadSquareOutline from "~icons/solar/sad-square-outline";
+  import SolarSmileSquareLinear from "~icons/solar/smile-square-linear";
   import MajesticonsUnlockOpenLine from "~icons/majesticons/unlock-open-line";
   import CodiconQuestion from "~icons/codicon/question";
 
@@ -119,6 +120,18 @@
         </button>
       </div>
 
+      <button
+        class="btn-nav"
+        class:active={$showTranslate}
+        onclick={async (e) => {
+          e.currentTarget.blur();
+          await goto("/vocab");
+          $showTranslate = true;
+        }}
+      >
+        <BiTranslate width="14" height="14" />
+      </button>
+
       <a
         href="/dashboard"
         class:active={page.url.pathname === "/dashboard"}
@@ -165,18 +178,6 @@
         <CodiconQuestion width="14" height="14" />
       </a>
 
-      <button
-        class="btn-nav"
-        class:active={$showTranslate}
-        onclick={async (e) => {
-          e.currentTarget.blur();
-          await goto("/vocab");
-          $showTranslate = true;
-        }}
-      >
-        <BiTranslate width="14" height="14" />
-      </button>
-
       <a
         href="/highlights"
         class="btn-nav"
@@ -198,7 +199,15 @@
         class="btn-nav"
         class:active={page.url.pathname === "/sad"}
       >
-        <SolarSadSquareBold width="14" height="14" />
+        <SolarSadSquareOutline width="14" height="14" />
+      </a>
+
+      <a
+        href="/happy"
+        class="btn-nav"
+        class:active={page.url.pathname === "/happy"}
+      >
+        <SolarSmileSquareLinear width="14" height="14" />
       </a>
 
       <form method="post" action="/login?/signout">

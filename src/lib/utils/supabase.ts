@@ -185,6 +185,18 @@ export type Database = {
         };
         Relationships: [];
       };
+      happydays_table: {
+        Row: {
+          created_at: string;
+        };
+        Insert: {
+          created_at?: string;
+        };
+        Update: {
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       schedule_table: {
         Row: {
           count: number;
