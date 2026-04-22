@@ -185,15 +185,21 @@ export type Database = {
         };
         Relationships: [];
       };
-      happydays_table: {
+      diary_table: {
         Row: {
-          created_at: string;
+          id: string;
+          date: string;
+          text: string;
         };
         Insert: {
-          created_at?: string;
+          id: string;
+          date: string;
+          text: string;
         };
         Update: {
-          created_at?: string;
+          id?: string;
+          date?: string;
+          text?: string;
         };
         Relationships: [];
       };

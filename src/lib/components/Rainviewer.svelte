@@ -25,6 +25,8 @@
       const latestTime = data.radar.past[data.radar.past.length - 1];
       const host = data.host;
       radarUrl = `${host}${latestTime.path}/512/{z}/{x}/{y}/2/1_1.png`;
+    } else {
+      radarUrl = "";
     }
   }
 
@@ -95,8 +97,7 @@
       </RasterTileSource>
     {/if}
 
-    <Marker lnglat={lonLat}></Marker>
-
+    <Marker lnglat={lonLat} scale={0.72} color="#228be6" />
     <NavigationControl />
     <ScaleControl />
     <GlobeControl />

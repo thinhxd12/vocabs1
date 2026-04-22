@@ -62,6 +62,7 @@
         playsinline
         class="absolute top-0 left-0 w-90 h-full object-cover object-top"
         in:fly={{ y: "-100%", duration: 600 }}
+        style="filter: brightness(90%);"
       >
         Your browser does not support the video tag.
       </video>

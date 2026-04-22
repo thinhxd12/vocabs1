@@ -25,7 +25,6 @@
   import MaterialSymbolsFeatureSearchOutline from "~icons/material-symbols/feature-search-outline";
   import MaterialSymbolsDashboardRounded from "~icons/material-symbols/dashboard-rounded";
   import SolarSadSquareOutline from "~icons/solar/sad-square-outline";
-  import SolarSmileSquareLinear from "~icons/solar/smile-square-linear";
   import MajesticonsUnlockOpenLine from "~icons/majesticons/unlock-open-line";
   import CodiconQuestion from "~icons/codicon/question";
 
@@ -200,14 +199,6 @@
         class:active={page.url.pathname === "/sad"}
       >
         <SolarSadSquareOutline width="14" height="14" />
-      </a>
-
-      <a
-        href="/happy"
-        class="btn-nav"
-        class:active={page.url.pathname === "/happy"}
-      >
-        <SolarSmileSquareLinear width="14" height="14" />
       </a>
 
       <form method="post" action="/login?/signout">

@@ -16,6 +16,7 @@
   import MaterialSymbolsCalendarAddOnRounded from "~icons/material-symbols/calendar-add-on-rounded";
   import Modal from "$lib/components/Modal.svelte";
   import { addToast } from "$lib/store/layoutstore";
+  import StreamlinePlumpFeatherPenSolid from "~icons/streamline-plump/feather-pen-solid";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -75,6 +76,9 @@
   <div
     class="absolute z-3 flex justify-center items-center right-3 top-3 gap-3"
   >
+    <a href="/diary" class="calendar-button">
+      <StreamlinePlumpFeatherPenSolid width="14" height="14" />
+    </a>
     <button class="calendar-button" onclick={() => (showReset = !showReset)}>
       <MaterialSymbolsSettingsRounded width="14" height="14" />
     </button>

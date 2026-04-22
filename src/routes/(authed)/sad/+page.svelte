@@ -53,7 +53,8 @@
     const { data, error } = await layoutData.supabase
       .from("saddays_table")
       .insert({});
-    getDataPaginationByIndex(currentPage);
+    await getTablePaginationLength();
+    getDataPaginationByIndex(1);
   }
 
   async function deleteDay(day: string) {
