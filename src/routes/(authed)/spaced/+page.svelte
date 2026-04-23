@@ -51,7 +51,7 @@
         .from("memories_table")
         .select("*")
         .is("due", null)
-        .order("id", { ascending: true })
+        .order("created_at", { ascending: true })
         .limit(30);
       if (data) {
         $listCardContent = data;
@@ -61,7 +61,7 @@
         .from("memories_table")
         .select("*")
         .is("due", null)
-        .order("id", { ascending: true })
+        .order("created_at", { ascending: true })
         .limit(30 - data.length);
       if (dataMore) {
         $listCardContent = [...data, ...dataMore];
@@ -145,18 +145,18 @@
   async function handleShowTranslate() {
     showTranslate = !showTranslate;
     if (translateWord === "" && currentWord !== "") {
-      const url = `https://vocabs3.vercel.app/trans?text=${currentWord}&from=auto&to=vi`;
+      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${currentWord}`;
       const response = await fetch(url);
       const data = await response.json();
       if (data) {
-        translateWord = data.translation;
+        translateWord = data[0][0];
       }
     }
   }
 </script>
 
 <svelte:head>
-  <title>📚</title>
+  <title>🌟</title>
   <meta name="spaced" content="Spaced Repetition!" />
 </svelte:head>
 
@@ -191,7 +191,7 @@
   {#if previews}
     <div class="w-full flex">
       <button
-        class="bg-green-800 py-6 flex flex-col flex-1 items-center justify-center gap-3"
+        class="bg-green-800/80 hover:bg-green-800 py-6 flex flex-col flex-1 items-center justify-center gap-3"
         onclick={() => handleRate(previews![1].card)}
       >
         <div class="w-full text-14 leading-18 text-center">
@@ -202,7 +202,7 @@
         </div>
       </button>
       <button
-        class="bg-green-600 py-6 flex flex-col flex-1 items-center justify-center gap-3"
+        class="bg-green-600/80 hover:bg-green-600 py-6 flex flex-col flex-1 items-center justify-center gap-3"
         onclick={() => handleRate(previews![2].card)}
       >
         <div class="w-full text-14 leading-18 text-center">
@@ -213,7 +213,7 @@
         </div>
       </button>
       <button
-        class="bg-green-400 py-6 flex flex-col flex-1 items-center justify-center gap-3"
+        class="bg-green-400/80 hover:bg-green-400 py-6 flex flex-col flex-1 items-center justify-center gap-3"
         onclick={() => handleRate(previews![3].card)}
       >
         <div class="w-full text-14 leading-18 text-center">
@@ -224,7 +224,7 @@
         </div>
       </button>
       <button
-        class="bg-green-200 py-6 flex flex-col flex-1 items-center justify-center gap-3"
+        class="bg-green-200/80 hover:bg-green-200 py-6 flex flex-col flex-1 items-center justify-center gap-3"
         onclick={() => handleRate(previews![4].card)}
       >
         <div class="w-full text-14 leading-18 text-center">
