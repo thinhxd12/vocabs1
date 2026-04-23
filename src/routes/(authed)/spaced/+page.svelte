@@ -17,6 +17,7 @@
   import { onMount } from "svelte";
   import BiTranslate from "~icons/bi/translate";
   import FluentList20Filled from "~icons/fluent/list-20-filled";
+  import { fly } from "svelte/transition";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -39,19 +40,20 @@
   });
 
   async function getList() {
-    const now = new Date().toISOString();
+    const now = new Date().getTime();
     const { data } = await layoutData.supabase
       .from("memories_table")
       .select("*")
+      .order("created_at", { ascending: false })
       .lte("due", now)
-      .order("due", { ascending: true })
+      .gt("due", 0)
       .limit(30);
     if (data && data.length === 0) {
       const { data } = await layoutData.supabase
         .from("memories_table")
         .select("*")
-        .is("due", null)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
+        .eq("due", 0)
         .limit(30);
       if (data) {
         $listCardContent = data;
@@ -60,8 +62,8 @@
       const { data: dataMore } = await layoutData.supabase
         .from("memories_table")
         .select("*")
-        .is("due", null)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
+        .eq("due", 0)
         .limit(30 - data.length);
       if (dataMore) {
         $listCardContent = [...data, ...dataMore];
@@ -72,7 +74,8 @@
       }
     }
     prepareCard();
-    currentWord = $listCardContent[$listCardCount].word;
+    $listCardCount = 0;
+    currentWord = $listCardContent[0].word;
   }
 
   let previews = $state<IPreview>();
@@ -93,8 +96,8 @@
       ({ card, log }) => ({
         card: {
           ...card,
-          due: card.due.toISOString(),
-          last_review: card.last_review?.toISOString() ?? null,
+          due: card.due.getTime(),
+          last_review: card.last_review?.getTime() ?? null,
         },
       }),
     );
@@ -164,7 +167,7 @@
 
 <Container>
   {#if $listCardContent.length}
-    <div class="dark w-full min-h-74 rounded-2 p-6 flex items-center">
+    <div class="dark w-full min-h-148 rounded-2 p-6 flex items-center">
       {#if showTranslate}
         <p
           class="w-full break-words text-center text-21 font-500 uppercase leading-28"
@@ -172,11 +175,14 @@
           {translateWord}
         </p>
       {:else}
-        <p
-          class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
-        >
-          {currentWord}
-        </p>
+        {#key currentWord}
+          <p
+            class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
+            in:fly={{ y: -30, duration: 600 }}
+          >
+            {currentWord}
+          </p>
+        {/key}
       {/if}
     </div>
   {/if}

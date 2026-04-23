@@ -330,10 +330,10 @@ export interface Card {
   created_at: string;
   word: string;
   difficulty: number;
-  due: string;
+  due: number;
   elapsed_days: number;
   lapses: number;
-  last_review?: string;
+  last_review?: number;
   learning_steps: number;
   reps: number;
   scheduled_days: number;
