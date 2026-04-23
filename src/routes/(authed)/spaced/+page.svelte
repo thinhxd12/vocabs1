@@ -149,7 +149,7 @@
       const response = await fetch(url);
       const data = await response.json();
       if (data) {
-        translateWord = data[0].translation;
+        translateWord = data.translation;
       }
     }
   }
@@ -157,7 +157,7 @@
 
 <svelte:head>
   <title>📚</title>
-  <meta name="fsrs" content="Spaced Repetition!" />
+  <meta name="spaced" content="Spaced Repetition!" />
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
