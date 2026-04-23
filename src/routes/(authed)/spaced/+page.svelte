@@ -192,7 +192,10 @@
     <div class="w-full flex">
       <button
         class="bg-green-800/80 hover:bg-green-800 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={() => handleRate(previews![1].card)}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleRate(previews![1].card);
+        }}
       >
         <div class="w-full text-14 leading-18 text-center">
           {calculateTimeDiff(previews[1].card.due)}
@@ -203,7 +206,10 @@
       </button>
       <button
         class="bg-green-600/80 hover:bg-green-600 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={() => handleRate(previews![2].card)}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleRate(previews![2].card);
+        }}
       >
         <div class="w-full text-14 leading-18 text-center">
           {calculateTimeDiff(previews[2].card.due)}
@@ -214,7 +220,10 @@
       </button>
       <button
         class="bg-green-400/80 hover:bg-green-400 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={() => handleRate(previews![3].card)}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleRate(previews![3].card);
+        }}
       >
         <div class="w-full text-14 leading-18 text-center">
           {calculateTimeDiff(previews[3].card.due)}
@@ -225,7 +234,10 @@
       </button>
       <button
         class="bg-green-200/80 hover:bg-green-200 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={() => handleRate(previews![4].card)}
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleRate(previews![4].card);
+        }}
       >
         <div class="w-full text-14 leading-18 text-center">
           {calculateTimeDiff(previews[4].card.due)}
