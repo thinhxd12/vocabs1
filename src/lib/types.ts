@@ -324,3 +324,19 @@ export interface YearProgressType {
   date: string;
   count: string;
 }
+
+export interface Card {
+  id: string;
+  created_at: string;
+  word: string;
+  difficulty: number;
+  due: string;
+  elapsed_days: number;
+  lapses: number;
+  last_review?: string;
+  learning_steps: number;
+  reps: number;
+  scheduled_days: number;
+  stability: number;
+  state: number;
+}

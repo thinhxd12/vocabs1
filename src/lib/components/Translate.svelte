@@ -46,26 +46,27 @@
   async function handleGetTranslateWord(word: string) {
     const { data: dataMemories } = await page.data.supabase
       .from("memories_table")
-      .select("*")
+      .select("word,created_at")
       .eq("word", word.toLowerCase());
 
     if (dataMemories.length)
       addToast({
         type: "error",
-        title: `Memorized "${dataMemories[0].word}"!`,
+        title: `Memorized <b>"${dataMemories[0].word}"</b>!`,
         message: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}.`,
       });
 
     const { data: dataVocab } = await page.data.supabase
       .from("vocab_table")
       .select("*")
-      .eq("word", word.toLowerCase());
+      .eq("word", word.toLowerCase())
+      .limit(1);
 
     if (dataVocab.length)
       addToast({
         type: "error",
         title: "Error!",
-        message: `There is a word "${dataVocab[0].word}" exist.`,
+        message: `There is a word <b>"${dataVocab[0].word}"</b> exist.`,
       });
 
     const data = await Promise.all([

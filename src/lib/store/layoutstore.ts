@@ -1,4 +1,5 @@
 import type {
+  Card,
   LocationType,
   OpenMeteoResponse,
   ToastType,
@@ -57,3 +58,6 @@ export const addToast = ({
     timeout,
   }));
 };
+
+export const listCardContent = writable<Card[]>([]);
+export const listCardCount = writable<number>(0);

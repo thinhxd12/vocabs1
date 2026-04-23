@@ -47,8 +47,8 @@
     {/if}
 
     <div class="toast-text">
-      <h3>{$toast.title}</h3>
-      <p>{$toast.message}</p>
+      <h3>{@html $toast.title}</h3>
+      <p>{@html $toast.message}</p>
     </div>
   </div>
 </dialog>

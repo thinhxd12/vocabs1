@@ -27,6 +27,7 @@
   import SolarSadSquareOutline from "~icons/solar/sad-square-outline";
   import MajesticonsUnlockOpenLine from "~icons/majesticons/unlock-open-line";
   import CodiconQuestion from "~icons/codicon/question";
+  import SimpleIconsAnki from "~icons/simple-icons/anki";
 
   async function handleDailyProgress(num: number) {
     $currentProgress = num;
@@ -199,6 +200,14 @@
         class:active={page.url.pathname === "/sad"}
       >
         <SolarSadSquareOutline width="14" height="14" />
+      </a>
+
+      <a
+        href="/spaced"
+        class="btn-nav"
+        class:active={page.url.pathname === "/spaced"}
+      >
+        <SimpleIconsAnki width="14" height="14" />
       </a>
 
       <form method="post" action="/login?/signout">
