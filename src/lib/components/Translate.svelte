@@ -8,7 +8,7 @@
   import { v7 as uuidv7 } from "uuid";
   import { page } from "$app/state";
   import { dev } from "$app/environment";
-  import { format, addHours } from "date-fns";
+  import { format } from "date-fns";
   import SolarMagniferLinear from "~icons/solar/magnifer-linear";
 
   let translateWord = $state<DBInsert["vocab_table"]>({
@@ -53,7 +53,7 @@
       addToast({
         type: "error",
         title: `Memorized <b>"${dataMemories[0].word}"</b>!`,
-        message: `${format(addHours(dataMemories[0].created_at, 7), "cccc, yyyy-MM-dd' at 'p")}.`,
+        message: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}.`,
       });
 
     const { data: dataVocab } = await page.data.supabase
