@@ -5,6 +5,7 @@
     Rating,
     type Card,
     type CardInput,
+    type Grade,
     type IPreview,
   } from "ts-fsrs";
   import type { PageProps } from "./$types";
@@ -14,9 +15,8 @@
     listCardContent,
     listCardCount,
   } from "$lib/store/layoutstore";
-  import { onMount } from "svelte";
   import BiTranslate from "~icons/bi/translate";
-  import FluentList20Filled from "~icons/fluent/list-20-filled";
+  import Fa7SolidListUl from "~icons/fa7-solid/list-ul";
   import { fly } from "svelte/transition";
 
   let { data: layoutData }: PageProps = $props();
@@ -35,11 +35,8 @@
     relearning_steps: ["10m"],
   });
 
-  onMount(() => {
-    getList();
-  });
-
   async function getList() {
+    $listCardContent = [];
     const now = new Date().getTime();
     const { data } = await layoutData.supabase
       .from("memories_table")
@@ -74,6 +71,7 @@
       }
     }
     prepareCard();
+    showTranslate = false;
     $listCardCount = 0;
     currentWord = $listCardContent[0].word;
   }
@@ -82,25 +80,19 @@
 
   function prepareCard() {
     if ($listCardContent.length === 0) return;
-    const now = new Date();
     let { id, word, created_at, ...card } = $listCardContent[$listCardCount];
     if (!card.due) card = createEmptyCard();
-    previews = scheduler.repeat(card, now);
+    previews = scheduler.repeat(card, new Date());
   }
 
-  async function handleRate(card: Card | CardInput) {
-    const saved = scheduler.next(
-      card,
-      new Date(),
-      Rating.Good,
-      ({ card, log }) => ({
-        card: {
-          ...card,
-          due: card.due.getTime(),
-          last_review: card.last_review?.getTime() ?? null,
-        },
-      }),
-    );
+  async function handleRate(card: Card | CardInput, rate: Grade) {
+    const saved = scheduler.next(card, new Date(), rate, ({ card, log }) => ({
+      card: {
+        ...card,
+        due: card.due.getTime(),
+        last_review: card.last_review?.getTime() ?? null,
+      },
+    }));
 
     const { error } = await layoutData.supabase
       .from("memories_table")
@@ -134,8 +126,7 @@
   }
 
   function calculateTimeDiff(due: Date) {
-    const now = new Date();
-    let diffMs = due.getTime() - now.getTime();
+    let diffMs = due.getTime() - new Date().getTime();
 
     const diffMin = Math.round(diffMs / (1000 * 60));
     const diffHour = Math.round(diffMs / (1000 * 60 * 60));
@@ -156,109 +147,162 @@
       }
     }
   }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
+    switch (true) {
+      case e.key === " ":
+        handleShowTranslate();
+        break;
+      case e.key === "1":
+        handleRate(previews![Rating.Again].card, Rating.Again);
+        break;
+      case e.key === "2":
+        handleRate(previews![Rating.Hard].card, Rating.Hard);
+        break;
+      case e.key === "3":
+        handleRate(previews![Rating.Good].card, Rating.Good);
+        break;
+      case e.key === "4":
+        handleRate(previews![Rating.Easy].card, Rating.Easy);
+        break;
+      default:
+        break;
+    }
+  }
 </script>
 
 <svelte:head>
-  <title>🌟</title>
+  <title>✨</title>
   <meta name="spaced" content="Spaced Repetition!" />
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 
 <Container>
-  {#if $listCardContent.length}
-    <div class="dark w-full min-h-148 rounded-2 p-6 flex items-center">
-      {#if showTranslate}
+  <div class="flex-1"></div>
+
+  <div
+    class="relative dark min-h-178 mainContent w-full rounded-2 p-6 flex items-center"
+  >
+    {#if showTranslate}
+      <p class="w-full break-words text-center text-21 font-500 leading-28">
+        {translateWord}
+      </p>
+    {:else}
+      {#key currentWord}
         <p
-          class="w-full break-words text-center text-21 font-500 uppercase leading-28"
+          class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
+          in:fly={{ y: -30, duration: 600 }}
+          style="text-shadow: 0 0 6px rgba(0,0,0,0.9);"
         >
-          {translateWord}
+          {currentWord}
         </p>
-      {:else}
-        {#key currentWord}
-          <p
-            class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
-            in:fly={{ y: -30, duration: 600 }}
-          >
-            {currentWord}
-          </p>
-        {/key}
+      {/key}
+    {/if}
+
+    <button
+      class="btn-layout absolute left-3 bottom-3"
+      onclick={(e) => {
+        e.currentTarget.blur();
+        getList();
+      }}
+    >
+      <Fa7SolidListUl width="16" height="16" />
+    </button>
+
+    {#if currentWord !== ""}
+      <button
+        class=" btn-layout absolute right-3 bottom-3"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handleShowTranslate();
+        }}
+      >
+        <BiTranslate width="14" height="14" />
+      </button>
+    {/if}
+  </div>
+
+  <div class="w-full flex-1 flex items-end">
+    <div class="w-full flex rounded-2 overflow-hidden">
+      {#if previews}
+        <button
+          class="bg-green-800/80 hover:bg-green-800 py-6 flex flex-col flex-1 items-center justify-center"
+          onclick={(e) => {
+            e.currentTarget.blur();
+            handleRate(previews![Rating.Again].card, Rating.Again);
+          }}
+        >
+          <div class="w-full text-14 leading-18 text-center">
+            {calculateTimeDiff(previews[Rating.Again].card.due)}
+          </div>
+          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+            Again
+          </div>
+          <span class="text-10 leading-10">(1)</span>
+        </button>
+        <button
+          class="bg-green-600/80 hover:bg-green-600 py-6 flex flex-col flex-1 items-center justify-center"
+          onclick={(e) => {
+            e.currentTarget.blur();
+            handleRate(previews![Rating.Hard].card, Rating.Hard);
+          }}
+        >
+          <div class="w-full text-14 leading-18 text-center">
+            {calculateTimeDiff(previews[Rating.Hard].card.due)}
+          </div>
+          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+            Hard
+          </div>
+          <span class="text-10 leading-10">(2)</span>
+        </button>
+        <button
+          class="bg-green-400/80 hover:bg-green-400 py-6 flex flex-col flex-1 items-center justify-center"
+          onclick={(e) => {
+            e.currentTarget.blur();
+            handleRate(previews![Rating.Good].card, Rating.Good);
+          }}
+        >
+          <div class="w-full text-14 leading-18 text-center">
+            {calculateTimeDiff(previews[Rating.Good].card.due)}
+          </div>
+          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+            Good
+          </div>
+          <span class="text-10 leading-10">(3)</span>
+        </button>
+        <button
+          class="bg-green-200/80 hover:bg-green-200 py-6 flex flex-col flex-1 items-center justify-center"
+          onclick={(e) => {
+            e.currentTarget.blur();
+            handleRate(previews![Rating.Easy].card, Rating.Easy);
+          }}
+        >
+          <div class="w-full text-1Rating.Easy leading-18 text-center">
+            {calculateTimeDiff(previews[Rating.Easy].card.due)}
+          </div>
+          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+            Easy
+          </div>
+          <span class="text-10 leading-10">(4)</span>
+        </button>
       {/if}
     </div>
-  {/if}
-  <div class="flex-1 w-full flex gap-3 items-end justify-end">
-    <button class="btn-layout" onclick={getList}>
-      <FluentList20Filled width="16" height="16" />
-    </button>
-    <button class=" btn-layout" onclick={handleShowTranslate}>
-      <BiTranslate width="14" height="14" />
-    </button>
   </div>
-  {#if previews}
-    <div class="w-full flex">
-      <button
-        class="bg-green-800/80 hover:bg-green-800 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleRate(previews![1].card);
-        }}
-      >
-        <div class="w-full text-14 leading-18 text-center">
-          {calculateTimeDiff(previews[1].card.due)}
-        </div>
-        <div class="h-24 w-full uppercase text-18 leading-18 font-600">
-          Again
-        </div>
-      </button>
-      <button
-        class="bg-green-600/80 hover:bg-green-600 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleRate(previews![2].card);
-        }}
-      >
-        <div class="w-full text-14 leading-18 text-center">
-          {calculateTimeDiff(previews[2].card.due)}
-        </div>
-        <div class="h-24 w-full uppercase text-18 leading-18 font-600">
-          Hard
-        </div>
-      </button>
-      <button
-        class="bg-green-400/80 hover:bg-green-400 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleRate(previews![3].card);
-        }}
-      >
-        <div class="w-full text-14 leading-18 text-center">
-          {calculateTimeDiff(previews[3].card.due)}
-        </div>
-        <div class="h-24 w-full uppercase text-18 leading-18 font-600">
-          Good
-        </div>
-      </button>
-      <button
-        class="bg-green-200/80 hover:bg-green-200 py-6 flex flex-col flex-1 items-center justify-center gap-3"
-        onclick={(e) => {
-          e.currentTarget.blur();
-          handleRate(previews![4].card);
-        }}
-      >
-        <div class="w-full text-14 leading-18 text-center">
-          {calculateTimeDiff(previews[4].card.due)}
-        </div>
-        <div class="h-24 w-full uppercase text-18 leading-18 font-600">
-          Easy
-        </div>
-      </button>
-    </div>
-  {/if}
 </Container>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
   .btn-layout {
-    @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
+    @apply size-18 flex items-center justify-center outline-none overflow-hidden bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
     backdrop-filter: blur(12px);
+  }
+
+  .mainContent {
+    background: url("$lib/assets/images/sky.webp");
+    background-size: cover;
+    background-position: left center;
   }
 </style>
