@@ -18,6 +18,7 @@
   import BiTranslate from "~icons/bi/translate";
   import Fa7SolidListUl from "~icons/fa7-solid/list-ul";
   import { fly } from "svelte/transition";
+  import { onMount } from "svelte";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -35,13 +36,22 @@
     relearning_steps: ["10m"],
   });
 
+  onMount(() => {
+    if ($listCardContent.length) {
+      currentWord = $listCardContent[$listCardCount].word;
+      translateWord = "";
+      showTranslate = false;
+      prepareCard();
+    }
+  });
+
   async function getList() {
     $listCardContent = [];
     const now = new Date().getTime();
     const { data } = await layoutData.supabase
       .from("memories_table")
       .select("*")
-      .order("created_at", { ascending: false })
+      .order("due")
       .lte("due", now)
       .gt("due", 0)
       .limit(30);
@@ -93,7 +103,6 @@
         last_review: card.last_review?.getTime() ?? null,
       },
     }));
-
     const { error } = await layoutData.supabase
       .from("memories_table")
       .update({ ...saved.card })
@@ -202,7 +211,7 @@
     {/if}
 
     <button
-      class="btn-layout absolute left-3 bottom-3"
+      class="btn-layout absolute right-3 top-3"
       onclick={(e) => {
         e.currentTarget.blur();
         getList();

@@ -8,14 +8,26 @@ import { getTotalMemories } from "$lib/store/navstore";
 import { page } from "$app/state";
 import { addToast } from "$lib/store/layoutstore";
 
-async function fetchWithRetry(url: string, options = {}, retries = 9) {
+export async function fetchWithRetry(
+  url: string,
+  options = {},
+  retries = 9,
+  delay = 1000,
+) {
   try {
     const response = await fetch(url, options);
     if (!response.ok) throw new Error("Network response was not ok");
     return await response.json();
   } catch (error) {
     if (retries > 0) {
-      return fetchWithRetry(url, options, retries - 1);
+      // 1. Calculate Jitter: Adds a random percentage (0-100%) to the current delay
+      const jitter = Math.random() * delay;
+      const sleepTime = delay + jitter;
+
+      await new Promise((resolve) => setTimeout(resolve, sleepTime));
+
+      // 2. Exponential Backoff: Double the base delay for the next attempt
+      return fetchWithRetry(url, options, retries - 1, delay * 2);
     }
     throw error;
   }

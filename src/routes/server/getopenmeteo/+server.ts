@@ -1,4 +1,5 @@
 import type { OpenMeteoResponse } from "$lib/types.js";
+import { fetchWithRetry } from "$lib/utils/functions";
 import { error } from "@sveltejs/kit";
 
 export async function GET({ url }) {
@@ -67,13 +68,13 @@ export async function GET({ url }) {
     const url2 = "https://air-quality-api.open-meteo.com/v1/air-quality?";
     const params2 = new URLSearchParams(param2).toString();
 
-    const responses = await Promise.all([
-      fetch(url1 + params1),
-      fetch(url2 + params2),
+    const data = await Promise.all([
+      fetchWithRetry(url1 + params1),
+      fetchWithRetry(url2 + params2),
     ]);
 
-    const data1 = await responses[0].json();
-    const data2 = await responses[1].json();
+    const data1 = data[0];
+    const data2 = data[1];
 
     const result: OpenMeteoResponse = {
       latitude: data1.latitude,
