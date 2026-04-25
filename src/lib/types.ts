@@ -79,6 +79,11 @@ export interface TranslateType {
   wordTranscription: string;
 }
 
+export interface WikiTranslationType {
+  partOfSpeech: string;
+  translation: string[];
+}
+
 export interface CurrentlyWeatherType {
   apparentTemperature: number;
   isDayTime: boolean;

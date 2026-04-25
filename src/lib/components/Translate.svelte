@@ -2,15 +2,19 @@
   import { enhance } from "$app/forms";
   import { showTranslate } from "$lib/store/vocabstore";
   import { addToast } from "$lib/store/layoutstore";
-  import type { DBInsert, TranslateType, VocabMeaningType } from "$lib/types";
+  import type {
+    DBInsert,
+    VocabMeaningType,
+    WikiTranslationType,
+  } from "$lib/types";
   import { autofocus, getTranslationArr } from "$lib/utils/functions";
   import Definition from "./Definition.svelte";
   import { v7 as uuidv7 } from "uuid";
   import { page } from "$app/state";
-  import { dev } from "$app/environment";
   import { format } from "date-fns";
   import SolarMagniferLinear from "~icons/solar/magnifer-linear";
 
+  let translations = $state<WikiTranslationType[]>([]);
   let translateWord = $state<DBInsert["vocab_table"]>({
     id: uuidv7(),
     word: "",
@@ -22,11 +26,13 @@
   let translationText = $state<string>();
 
   async function getTranslateData(text: string) {
-    if (dev) return;
-    const url = `https://vocabs3.vercel.app/trans?text=${text}&from=auto&to=vi`;
+    // const url = `https://vocabs3.vercel.app/trans?text=${text}&from=auto&to=vi`;
+    const url = `/server/getwiktionary?word=${text}`;
     const response = await fetch(url);
     const data = await response.json();
-    if (data) return data as TranslateType;
+    if (data) {
+      translations = data;
+    }
   }
 
   async function getTextDataWebster(text: string) {
@@ -74,16 +80,7 @@
       getTranslateData(word.toLowerCase()),
     ]);
     if (data[0]) {
-      translateWord = {
-        ...data[0]!,
-        meanings: data[0]!.meanings.map((item, index) => {
-          if (index === 0)
-            item.translation = [data[1]?.translation.toLowerCase() || ""];
-          return {
-            ...item,
-          };
-        }),
-      };
+      translateWord = data[0];
       meaningsText = JSON.stringify(translateWord.meanings, null, "     ");
       translationText = makeTranslationText(translateWord.meanings);
     }
@@ -119,7 +116,9 @@
   }
 </script>
 
-<div class="w-main h-[calc(100vh-44px)] overflow-hidden flex flex-col gap-2">
+<div
+  class="w-main h-[calc(100vh-44px)] overflow-y-scroll no-scrollbar flex flex-col gap-2"
+>
   <form
     name="insertvocab"
     action="?/insertNewVocab"
@@ -190,7 +189,7 @@
     />
 
     <textarea
-      class="w-full my-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
+      class="w-full golden my-scrollbar cursor-auto border-0 bg-transparent p-6 text-12 font-400 leading-15 outline-none border-b border-white/30"
       name="meanings"
       autocomplete="off"
       onkeydown={(e) => e.stopPropagation()}
@@ -201,6 +200,19 @@
         handleChangeTranslationMeanings(e.currentTarget.value);
       }}
     ></textarea>
+
+    <div
+      class="w-full max-h-150 my-scrollbar overflow-y-auto p-6 flex flex-col min-h-30 mb-3 border-0 border-b border-white/30"
+    >
+      {#each translations as item}
+        <div class="w-full flex flex-col mb-6">
+          <h3 class="text-14 font-600 leading-18 mb-3">{item.partOfSpeech}</h3>
+          {#each item.translation as el}
+            <p class="text-12 leading-15 indent-12">{el}</p>
+          {/each}
+        </div>
+      {/each}
+    </div>
 
     <input
       class="mb-3 w-full border-0 h-30 border-b border-white/30 bg-transparent p-3 pl-15 text-12 font-400 leading-15 outline-none"
@@ -231,9 +243,7 @@
     </div>
   </form>
 
-  <div
-    class="w-full h-[calc(100vh-368px-44px)] flex flex-col gap-2 no-scrollbar overflow-y-scroll"
-  >
+  <div class="w-full flex flex-col gap-2">
     <Definition item={translateWord} />
   </div>
 </div>

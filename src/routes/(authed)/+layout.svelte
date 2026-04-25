@@ -16,6 +16,7 @@
   import type { WeatherQueryParams } from "$lib/types";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import { onDestroy, onMount } from "svelte";
+  import { dev } from "$app/environment";
 
   let { children } = $props();
 
@@ -65,7 +66,7 @@
     }
 
     now.setMinutes(nextIntervalMinutes, 0, 0);
-    const delay = now.getTime() - Date.now() + 300;
+    const delay = now.getTime() - Date.now() + 30000;
     return delay;
   }
 

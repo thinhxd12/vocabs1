@@ -14,6 +14,7 @@ const config = {
         minimumCacheTTL: 300,
         domains: ["vocabs1.vercel.app"],
       },
+      maxDuration: 60,
     }),
   },
 };

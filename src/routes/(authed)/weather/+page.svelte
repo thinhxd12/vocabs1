@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import { showTimer } from "$lib/store/navstore";
@@ -208,6 +208,27 @@
     description: "No data",
     hasSnow: false,
   });
+
+  onMount(() => {
+    if (!$weatherData) {
+      getCurrentWeatherData();
+    }
+  });
+
+  async function getCurrentWeatherData() {
+    const currentLocation = $locationList.find(
+      (item) => item.id === $currentLocationId,
+    );
+    if (currentLocation) {
+      let param: WeatherQueryParams = {
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        tempUnit: "c",
+        model: $currentForecastModel,
+      };
+      $weatherData = await getOpenMeteoWeather(param);
+    }
+  }
 
   function getCurrentConditions() {
     if ($weatherData) {

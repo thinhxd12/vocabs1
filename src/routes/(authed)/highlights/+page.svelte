@@ -466,7 +466,7 @@
       keyPressed = false;
     }, 400);
 
-    if (flipCover && $highlight!.like) {
+    if (flipCover && $highlight && $highlight.like) {
       flagTimeoutId = setTimeout(() => {
         tweenRibbon.target = likeBookmark ? 580 : 480;
       }, 400);

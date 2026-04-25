@@ -19,12 +19,13 @@
   import Fa7SolidListUl from "~icons/fa7-solid/list-ul";
   import { fly } from "svelte/transition";
   import { onMount } from "svelte";
+  import type { WikiTranslationType } from "$lib/types";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
   let currentWord = $state<string>("");
   let paused0 = $state<boolean>(true);
-  let translateWord = $state<string>("");
+  let translations = $state<WikiTranslationType[]>([]);
   let showTranslate = $state<boolean>(false);
 
   const scheduler = fsrs({
@@ -39,7 +40,7 @@
   onMount(() => {
     if ($listCardContent.length) {
       currentWord = $listCardContent[$listCardCount].word;
-      translateWord = "";
+      translations = [];
       showTranslate = false;
       prepareCard();
     }
@@ -120,14 +121,14 @@
     $listCardCount++;
     if ($listCardCount < $listCardContent.length) {
       currentWord = $listCardContent[$listCardCount].word;
-      translateWord = "";
+      translations = [];
       showTranslate = false;
       prepareCard();
     } else {
       src0 = "/sounds/mp3_Ding.mp3";
       paused0 = false;
       currentWord = "";
-      translateWord = "";
+      translations = [];
       previews = undefined;
       $listCardContent = [];
       $listCardCount = 0;
@@ -147,12 +148,12 @@
 
   async function handleShowTranslate() {
     showTranslate = !showTranslate;
-    if (translateWord === "" && currentWord !== "") {
-      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${currentWord}`;
+    if (translations.length === 0 && currentWord !== "") {
+      const url = `/server/getwiktionary?word=${currentWord}`;
       const response = await fetch(url);
       const data = await response.json();
       if (data) {
-        translateWord = data[0][0];
+        translations = data;
       }
     }
   }
@@ -192,12 +193,17 @@
   <div class="flex-1"></div>
 
   <div
-    class="relative dark min-h-178 mainContent w-full rounded-2 p-6 flex items-center"
+    class="relative dark min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-9 flex flex-col justify-center items-center"
   >
     {#if showTranslate}
-      <p class="w-full break-words text-center text-21 font-500 leading-28">
-        {translateWord}
-      </p>
+      {#each translations as item}
+        <div class="w-full flex flex-col mb-6">
+          <h3 class="text-14 font-600 leading-18 mb-3">{item.partOfSpeech}</h3>
+          {#each item.translation as el}
+            <p class="text-14 leading-18 indent-12">{el}</p>
+          {/each}
+        </div>
+      {/each}
     {:else}
       {#key currentWord}
         <p
@@ -237,7 +243,7 @@
     <div class="w-full flex rounded-2 overflow-hidden">
       {#if previews}
         <button
-          class="bg-green-800/80 hover:bg-green-800 py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-800 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Again].card, Rating.Again);
@@ -252,7 +258,7 @@
           <span class="text-10 leading-10">(1)</span>
         </button>
         <button
-          class="bg-green-600/80 hover:bg-green-600 py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-600 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Hard].card, Rating.Hard);
@@ -267,7 +273,7 @@
           <span class="text-10 leading-10">(2)</span>
         </button>
         <button
-          class="bg-green-400/80 hover:bg-green-400 py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-400 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Good].card, Rating.Good);
@@ -282,7 +288,7 @@
           <span class="text-10 leading-10">(3)</span>
         </button>
         <button
-          class="bg-green-200/80 hover:bg-green-200 py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-200 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Easy].card, Rating.Easy);
