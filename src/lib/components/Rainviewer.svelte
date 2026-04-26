@@ -9,6 +9,7 @@
     RasterLayer,
     RasterTileSource,
     Marker,
+    FullScreenControl,
   } from "svelte-maplibre-gl";
 
   type RainviewerCoord = {
@@ -97,6 +98,7 @@
       </RasterTileSource>
     {/if}
 
+    <FullScreenControl position="top-right" />
     <Marker lnglat={lonLat} scale={0.72} color="#228be6" />
     <NavigationControl />
     <ScaleControl />

@@ -27,6 +27,7 @@
   let paused0 = $state<boolean>(true);
   let translations = $state<WikiTranslationType[]>([]);
   let showTranslate = $state<boolean>(false);
+  let activedButton = $state<number>(0);
 
   const scheduler = fsrs({
     request_retention: 0.9,
@@ -166,19 +167,26 @@
         break;
       case e.key === "1":
         handleRate(previews![Rating.Again].card, Rating.Again);
+        activedButton = 1;
         break;
       case e.key === "2":
         handleRate(previews![Rating.Hard].card, Rating.Hard);
+        activedButton = 2;
         break;
       case e.key === "3":
         handleRate(previews![Rating.Good].card, Rating.Good);
+        activedButton = 3;
         break;
       case e.key === "4":
         handleRate(previews![Rating.Easy].card, Rating.Easy);
+        activedButton = 4;
         break;
       default:
         break;
     }
+    setTimeout(() => {
+      activedButton = 0;
+    }, 150);
   }
 </script>
 
@@ -243,7 +251,8 @@
     <div class="w-full flex rounded-2 overflow-hidden">
       {#if previews}
         <button
-          class="bg-green-800 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-800 btn-main"
+          class:btnActive={activedButton === 1}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Again].card, Rating.Again);
@@ -258,7 +267,8 @@
           <span class="text-10 leading-10">(1)</span>
         </button>
         <button
-          class="bg-green-600 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-600 btn-main"
+          class:btnActive={activedButton === 2}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Hard].card, Rating.Hard);
@@ -273,7 +283,8 @@
           <span class="text-10 leading-10">(2)</span>
         </button>
         <button
-          class="bg-green-400 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-400 btn-main"
+          class:btnActive={activedButton === 3}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Good].card, Rating.Good);
@@ -288,7 +299,8 @@
           <span class="text-10 leading-10">(3)</span>
         </button>
         <button
-          class="bg-green-200 hover:brightness-[1.06] py-6 flex flex-col flex-1 items-center justify-center"
+          class="bg-green-200 btn-main"
+          class:btnActive={activedButton === 4}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Easy].card, Rating.Easy);
@@ -319,5 +331,13 @@
     background: url("$lib/assets/images/sky.webp");
     background-size: cover;
     background-position: left center;
+  }
+
+  .btn-main {
+    @apply hover:brightness-[1.1] active:scale-95 py-6 flex flex-col flex-1 items-center justify-center;
+  }
+
+  .btnActive {
+    @apply scale-95 brightness-[1.1];
   }
 </style>
