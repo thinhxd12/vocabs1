@@ -153,8 +153,18 @@
       const url = `/server/getwiktionary?word=${currentWord}`;
       const response = await fetch(url);
       const data = await response.json();
-      if (data) {
+      if (data.length) {
         translations = data;
+      } else {
+        const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${currentWord}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        translations = [
+          {
+            partOfSpeech: "Translation",
+            translation: [data[0][0]],
+          },
+        ];
       }
     }
   }
