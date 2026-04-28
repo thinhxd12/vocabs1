@@ -20,6 +20,7 @@
   import { fly } from "svelte/transition";
   import { onMount } from "svelte";
   import type { WikiTranslationType } from "$lib/types";
+  import { format } from "date-fns";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -222,14 +223,24 @@
           {/each}
         </div>
       {/each}
-    {:else}
+    {:else if currentWord}
       {#key currentWord}
         <p
-          class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
+          class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-30"
           in:fly={{ y: -30, duration: 600 }}
           style="text-shadow: 0 0 6px rgba(0,0,0,0.9);"
         >
           {currentWord}
+        </p>
+
+        <p
+          class="absolute bottom-3 left-3 text-12 leading-15"
+          in:fly={{ y: -15, duration: 600 }}
+        >
+          {format(
+            $listCardContent[$listCardCount].created_at,
+            "cccc, yyyy-MM-dd' at 'p",
+          )}
         </p>
       {/key}
     {/if}

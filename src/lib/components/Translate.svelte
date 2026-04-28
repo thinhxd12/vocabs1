@@ -58,7 +58,7 @@
     if (dataMemories.length)
       addToast({
         type: "error",
-        title: `Memorized <b>"${dataMemories[0].word}"</b>!`,
+        title: `Memorized: <b>${dataMemories[0].word}</b>.`,
         message: `${format(dataMemories[0].created_at, "cccc, yyyy-MM-dd' at 'p")}.`,
       });
 

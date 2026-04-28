@@ -1,5 +1,10 @@
 <script lang="ts">
   import { page } from "$app/state";
+  import {
+    currentMode,
+    secondsRemaining,
+    showPomodoroTimer,
+  } from "$lib/store/layoutstore";
   import { sendNotification, showTimer } from "$lib/store/navstore";
   import {
     formatTimerString,
@@ -8,23 +13,24 @@
   } from "$lib/utils/functions";
   import { onDestroy } from "svelte";
   import RiAlarmLine from "~icons/ri/alarm-line";
+  import TablerSquareLetterFFilled from "~icons/tabler/square-letter-f-filled";
 
   const timeCount = 6 * 60;
   let interval: ReturnType<typeof setInterval>;
   let now = $state<number>(0);
   let end = $state<number>(0);
-  let secondsRemaining = $state<number>(timeCount);
+  let secondsCount = $state<number>(timeCount);
 
   function startCountdown() {
     clearInterval(interval);
     now = Date.now();
-    end = now + secondsRemaining * 1000;
+    end = now + secondsCount * 1000;
     interval = setInterval(updateTimer, 1000);
   }
 
   function updateTimer() {
     now = Date.now();
-    secondsRemaining = Math.round((end - now) / 1000);
+    secondsCount = Math.round((end - now) / 1000);
     if (now >= end) {
       sendNotification();
       stopCountdown();
@@ -34,7 +40,7 @@
   function stopCountdown() {
     clearInterval(interval);
     $showTimer = false;
-    secondsRemaining = timeCount;
+    secondsCount = timeCount;
   }
 
   $effect(() => {
@@ -50,13 +56,31 @@
 
 <svelte:head>
   {#if $showTimer && page.url.pathname !== "/pomodoro"}
-    <title>{formatTimerString(secondsRemaining)}</title>
+    <title>{formatTimerString(secondsCount)}</title>
   {/if}
 </svelte:head>
 
-{#if $showTimer}
+{#if $showPomodoroTimer}
+  <a href="/pomodoro" class="btn-pomodoro">
+    {#if $currentMode === "focus"}
+      <TablerSquareLetterFFilled width="14" height="14" />
+    {:else}
+      <span
+        class="min-w-36 flex items-center justify-center text-9 leading-15 font-600"
+      >
+        <span class="w-1/2 text-right">
+          {padWithZeroes(secondsToMinutes($secondsRemaining))}
+        </span>
+        <span class="min-w-6">:</span>
+        <span class="w-1/2 text-left">
+          {padWithZeroes($secondsRemaining % 60)}
+        </span>
+      </span>
+    {/if}
+  </a>
+{:else if $showTimer}
   <button
-    class="btn-timer group relative"
+    class="btn-timer group"
     onclick={stopCountdown}
     class:timerPlay={$showTimer}
   >
@@ -64,11 +88,11 @@
       class="absolute w-full flex items-center justify-center text-9 leading-15 text-white group-hover:opacity-0"
     >
       <span class="w-1/2 text-right">
-        {padWithZeroes(secondsToMinutes(secondsRemaining))}
+        {padWithZeroes(secondsToMinutes(secondsCount))}
       </span>
       <span class="min-w-6">:</span>
       <span class="w-1/2 text-left">
-        {padWithZeroes(secondsRemaining % 60)}
+        {padWithZeroes(secondsCount % 60)}
       </span>
     </span>
     <span
@@ -86,11 +110,15 @@
 
 <style lang="postcss">
   .btn-timer {
-    @apply h-16 min-w-18 flex items-center justify-center rounded-2 bg-white/20 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
+    @apply relative h-16 min-w-18 flex items-center justify-center rounded-2 bg-white/20 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .btn-menu {
     @apply h-16 min-w-18 flex items-center justify-center rounded-2 bg-white/20 hover:bg-white/40 text-black/60 ring-1 ring-black/5 shadow shadow-black/30;
+  }
+
+  .btn-pomodoro {
+    @apply relative h-16 min-w-18 flex items-center justify-center rounded-2 bg-green-400/60 text-black ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .timerPlay {

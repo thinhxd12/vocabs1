@@ -12,8 +12,14 @@
     intervals,
     isMuted,
     isPaused,
-    addToast,
-    isFocusDone,
+    showPomodoroTimer,
+    updateDisplay,
+    startTimer,
+    pauseTimer,
+    percent,
+    srcAudio,
+    pauseAudio,
+    clearIntervalTimer,
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
@@ -47,159 +53,39 @@
   let showSetting = $state<boolean>(false);
   let showReport = $state<boolean>(false);
   let showHeatmap = $state<boolean>(false);
-  let interval: ReturnType<typeof setInterval>;
-  let pauseAudio = $state<boolean>(true);
-  let srcAudio = $state<string>("/sounds/mp3_break.ogg");
   let currentPage = $state<number>(1);
   let itemsPerPage = Math.floor((innerHeight.current! - 44 - 24 * 3 - 26) / 24);
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
-  let percent = $state<number>(100);
-
-  let now = $state<number>(0);
-  let end = $state<number>(0);
 
   onMount(() => {
     $wakeEnable = true;
+    $showPomodoroTimer = false;
     updateDisplay();
     if (!$isPaused) {
       startTimer();
     }
   });
 
-  function startTimer() {
-    clearInterval(interval);
-    $isPaused = false;
-    now = Date.now();
-    end = now + $secondsRemaining * 1000;
-    interval = setInterval(updateTimer, 1000);
-  }
-
-  function updateTimer() {
-    now = Date.now();
-    $secondsRemaining = Math.round((end - now) / 1000);
-    updateDisplay();
-    if (now >= end) {
-      endTimer();
-    }
-  }
-
-  function pauseTimer() {
-    clearInterval(interval);
-    $isPaused = true;
-  }
-
-  function endTimer() {
-    percent = 0;
-    switch ($currentMode) {
-      case "focus":
-        srcAudio = "/sounds/mp3_break.ogg";
-        pauseAudio = false;
-        if ($currentInterval >= $intervals) {
-          $currentMode = "longbreak";
-          $secondsRemaining = minutesToSeconds($longbreakMinutes);
-        } else {
-          $currentMode = "shortbreak";
-          $secondsRemaining = minutesToSeconds($shortbreakMinutes);
-        }
-        isFocusDone.set(true);
-        submitReport();
-        startTimer();
-        break;
-      case "shortbreak":
-        srcAudio = "/sounds/mp3_focus.ogg";
-        pauseAudio = false;
-        if ($isFocusDone) {
-          $currentInterval =
-            $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
-          isFocusDone.set(false);
-        }
-        $currentMode = "focus";
-        $secondsRemaining = minutesToSeconds($focusMinutes);
-        startTimer();
-        break;
-      case "longbreak":
-        srcAudio = "/sounds/mp3_focus.ogg";
-        pauseAudio = false;
-        if ($isFocusDone) {
-          $currentInterval =
-            $currentInterval + 1 > $intervals ? 1 : $currentInterval + 1;
-          isFocusDone.set(false);
-        }
-        $currentMode = "focus";
-        $secondsRemaining = minutesToSeconds($focusMinutes);
-        startTimer();
-        break;
-      default:
-        break;
-    }
-  }
-
-  function updateDisplay() {
-    switch ($currentMode) {
-      case "focus":
-        percent = 100 - ($secondsRemaining / $focusMinutes / 6) * 10;
-        break;
-      case "shortbreak":
-        percent = 100 - ($secondsRemaining / $shortbreakMinutes / 6) * 10;
-        break;
-      case "longbreak":
-        percent = 100 - ($secondsRemaining / $longbreakMinutes / 6) * 10;
-        break;
-      default:
-        break;
-    }
-  }
-
   function handleChangeMode(mode: typeof $currentMode) {
     switch (mode) {
       case "focus":
         $secondsRemaining = minutesToSeconds($focusMinutes);
         $currentMode = "focus";
+        startTimer();
         break;
       case "shortbreak":
         $secondsRemaining = minutesToSeconds($shortbreakMinutes);
         $currentMode = "shortbreak";
+        startTimer();
         break;
       case "longbreak":
         $secondsRemaining = minutesToSeconds($longbreakMinutes);
         $currentMode = "longbreak";
+        startTimer();
         break;
       default:
         break;
-    }
-    startTimer();
-  }
-
-  async function submitReport() {
-    const { data } = await layoutData.supabase
-      .from("pomodoro_table")
-      .select("time")
-      .eq("date", todayDate);
-
-    if (data && data.length) {
-      const { error } = await layoutData.supabase
-        .from("pomodoro_table")
-        .update({
-          time: data[0].time + $focusMinutes,
-        })
-        .eq("date", todayDate);
-      if (error)
-        addToast({
-          type: "error",
-          title: "Error!",
-          message: error.message as string,
-        });
-    } else {
-      const { error } = await layoutData.supabase
-        .from("pomodoro_table")
-        .insert({ date: todayDate, time: $focusMinutes });
-      if (error)
-        addToast({
-          type: "error",
-          title: "Error!",
-          message: error.message as string,
-        });
     }
   }
 
@@ -237,12 +123,16 @@
   }
 
   function handleMuteAudio() {
-    pauseAudio = true;
+    pauseAudio.set(true);
     isMuted.update((val) => (val = !val));
   }
 
   onDestroy(() => {
-    clearInterval(interval);
+    if ($currentMode === "focus" || $isPaused) {
+      clearIntervalTimer();
+    } else {
+      $showPomodoroTimer = true;
+    }
   });
 
   function onKeyDown(e: KeyboardEvent) {
@@ -270,7 +160,7 @@
   <meta name="Pomodoro" content="Pomodoro" />
 </svelte:head>
 
-<audio src={srcAudio} muted={$isMuted} bind:paused={pauseAudio} preload="auto"
+<audio src={$srcAudio} muted={$isMuted} bind:paused={$pauseAudio} preload="auto"
 ></audio>
 
 <Container fullscreen>
@@ -563,7 +453,7 @@
               : longbreakImage}
           alt="pbg"
           class="absolute z-20 h-full w-0 object-cover object-[-45px] transition-all duration-300"
-          style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {percent}%;"
+          style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {$percent}%;"
         />
 
         {#if $isPaused}
