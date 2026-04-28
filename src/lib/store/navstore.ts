@@ -7,7 +7,7 @@ import { v7 as uuidv7 } from "uuid";
 import { archiveVocab, shuffle } from "$lib/utils/functions";
 import cloverImage from "$lib/assets/images/clover.webp";
 import { goto } from "$app/navigation";
-import { addToast } from "./layoutstore";
+import { addToast, timezone } from "./layoutstore";
 
 export const showTimer = writable<boolean>(false);
 export const totalMemories = writable<number>(0);
@@ -31,7 +31,9 @@ export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
   undefined,
 );
 
-const todayDate = format(new Date(), "yyyy-MM-dd");
+const now = new Date();
+const localTime = now.toLocaleString("en-US", { timeZone: get(timezone) });
+const todayDate = format(localTime, "yyyy-MM-dd");
 
 export async function getTotalMemories() {
   const { count } = await page.data.supabase

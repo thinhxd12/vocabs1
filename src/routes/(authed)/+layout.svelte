@@ -5,6 +5,7 @@
     currentForecastModel,
     currentLocationId,
     locationList,
+    timezone,
     weatherData,
   } from "$lib/store/layoutstore";
   import { getUserSettingsData } from "$lib/store/localstore";
@@ -24,6 +25,7 @@
   let timeout: ReturnType<typeof setTimeout>;
 
   onMount(async () => {
+    $timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     getTotalMemories();
     await getSchedule();
     getTodaySchedule();

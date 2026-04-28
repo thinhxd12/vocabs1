@@ -31,6 +31,7 @@ export const showPomodoroTimer = writable<boolean>(false);
 export const percent = writable<number>(100);
 export const srcAudio = writable<string>("/sounds/mp3_break.ogg");
 export const pauseAudio = writable<boolean>(true);
+export const timezone = writable<string>("UTC");
 
 export const locationList = writable<LocationType[]>([]);
 export const currentLocationId = writable<string>("");
@@ -186,7 +187,9 @@ export function updateDisplay() {
 }
 
 async function submitReport() {
-  const todayDate = format(new Date(), "yyyy-MM-dd");
+  const now = new Date();
+  const localTime = now.toLocaleString("en-US", { timeZone: get(timezone) });
+  const todayDate = format(localTime, "yyyy-MM-dd");
 
   const { data } = await page.data.supabase
     .from("pomodoro_table")
