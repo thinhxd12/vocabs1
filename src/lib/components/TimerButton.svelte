@@ -118,7 +118,7 @@
   }
 
   .btn-pomodoro {
-    @apply relative h-16 min-w-18 flex items-center justify-center rounded-2 bg-green-400/60 text-black ring-1 ring-black/5 shadow shadow-black/30;
+    @apply relative h-16 min-w-18 flex items-center justify-center rounded-2 bg-[#228be6] text-black ring-1 ring-black/5 shadow shadow-black/30;
   }
 
   .timerPlay {
