@@ -9,7 +9,7 @@ import type {
 import { get, writable } from "svelte/store";
 import type { BookDetailType, HighlightType } from "../types";
 import { minutesToSeconds } from "$lib/utils/functions";
-import { format } from "date-fns";
+import { getTodayDate } from "./navstore";
 
 export const highlight = writable<HighlightType | undefined>();
 export const currentHighlightId = writable<string>("");
@@ -187,10 +187,7 @@ export function updateDisplay() {
 }
 
 async function submitReport() {
-  const now = new Date();
-  const localTime = now.toLocaleString("en-US", { timeZone: get(timezone) });
-  const todayDate = format(localTime, "yyyy-MM-dd");
-
+  const todayDate = getTodayDate();
   const { data } = await page.data.supabase
     .from("pomodoro_table")
     .select("time")

@@ -31,9 +31,11 @@ export const quizRender = writable<DBSelect["vocab_table"] | undefined>(
   undefined,
 );
 
-const now = new Date();
-const localTime = now.toLocaleString("en-US", { timeZone: get(timezone) });
-const todayDate = format(localTime, "yyyy-MM-dd");
+export function getTodayDate() {
+  const now = new Date();
+  const localTime = now.toLocaleString("en-US", { timeZone: get(timezone) });
+  return format(localTime, "yyyy-MM-dd");
+}
 
 export async function getTotalMemories() {
   const { count } = await page.data.supabase
@@ -54,7 +56,7 @@ export function getTodaySchedule() {
   const scheduleValue = get(schedule);
   if (scheduleValue) {
     let index = scheduleValue.findIndex(
-      (item) => item.date === todayDate || item.date === null,
+      (item) => item.date === getTodayDate() || item.date === null,
     );
 
     if (index > -1) {
@@ -188,7 +190,7 @@ export async function updateTodayScheduleLocal() {
     const { data } = await page.data.supabase
       .from("schedule_table")
       .update({
-        date: new Date(todayDate),
+        date: getTodayDate(),
         count: currentCount + 1,
       })
       .eq("id", currentProgressSchedule.id);
