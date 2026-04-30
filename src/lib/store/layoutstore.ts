@@ -32,6 +32,7 @@ export const percent = writable<number>(100);
 export const srcAudio = writable<string>("/sounds/mp3_break.ogg");
 export const pauseAudio = writable<boolean>(true);
 export const timezone = writable<string>("UTC");
+export const fsrsparams = writable<string>("[]");
 
 export const locationList = writable<LocationType[]>([]);
 export const currentLocationId = writable<string>("");

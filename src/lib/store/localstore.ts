@@ -13,6 +13,7 @@ import {
   currentForecastModel,
   currentLocationId,
   focusMinutes,
+  fsrsparams,
   intervals,
   locationList,
   longbreakMinutes,
@@ -244,7 +245,7 @@ export async function getUserSettingsData() {
     const { data } = await page.data.supabase
       .from("dashboard_table")
       .select(
-        "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel",
+        "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel,fsrsparams",
       )
       .eq("user", "thinh");
     if (data) {
@@ -263,6 +264,7 @@ function setStoreUserSettings(setting: UserType) {
   currentLocationId.set(setting.currentLocationId);
   yearProgressList.set(setting.progress);
   currentForecastModel.set(setting.currentForecastModel);
+  fsrsparams.set(setting.fsrsparams);
 }
 
 export async function saveUserSetting() {
@@ -270,7 +272,7 @@ export async function saveUserSetting() {
   const { data } = await page.data.supabase
     .from("dashboard_table")
     .select(
-      "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel",
+      "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel,fsrsparams",
     )
     .eq("user", "thinh");
   if (data) {

@@ -315,6 +315,7 @@ export type UserType = {
   progress: Array<YearProgressType>;
   currentLocationId: string;
   currentForecastModel: string;
+  fsrsparams: string;
 };
 
 export interface LocationType {

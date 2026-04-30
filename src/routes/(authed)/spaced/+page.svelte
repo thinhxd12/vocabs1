@@ -12,8 +12,10 @@
   import Container from "$lib/components/Container.svelte";
   import {
     addToast,
+    fsrsparams,
     listCardContent,
     listCardCount,
+    timezone,
   } from "$lib/store/layoutstore";
   import BiTranslate from "~icons/bi/translate";
   import Fa7SolidListUl from "~icons/fa7-solid/list-ul";
@@ -21,6 +23,9 @@
   import { onMount } from "svelte";
   import type { WikiTranslationType } from "$lib/types";
   import { format } from "date-fns";
+  import { enhance } from "$app/forms";
+  import { saveUserSetting } from "$lib/store/localstore";
+  import MingcuteAiFill from "~icons/mingcute/ai-fill";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -29,15 +34,19 @@
   let translations = $state<WikiTranslationType[]>([]);
   let showTranslate = $state<boolean>(false);
   let activedButton = $state<number>(0);
+  let startTime = $state<number>(0);
 
-  const scheduler = fsrs({
-    request_retention: 0.9,
-    maximum_interval: 36500,
-    enable_fuzz: true,
-    enable_short_term: true,
-    learning_steps: ["15m"],
-    relearning_steps: ["10m"],
-  });
+  function getScheduler() {
+    return fsrs({
+      request_retention: 0.9,
+      maximum_interval: 36500,
+      enable_fuzz: true,
+      enable_short_term: true,
+      learning_steps: ["15m"],
+      relearning_steps: ["10m"],
+      w: JSON.parse($fsrsparams),
+    });
+  }
 
   onMount(() => {
     if ($listCardContent.length) {
@@ -95,20 +104,34 @@
     if ($listCardContent.length === 0) return;
     let { id, word, created_at, ...card } = $listCardContent[$listCardCount];
     if (!card.due) card = createEmptyCard();
+    const scheduler = getScheduler();
     previews = scheduler.repeat(card, new Date());
+    startTime = Date.now();
   }
 
   async function handleRate(card: Card | CardInput, rate: Grade) {
+    const scheduler = getScheduler();
+
+    if (!scheduler) return;
     const saved = scheduler.next(card, new Date(), rate, ({ card, log }) => ({
       card: {
         ...card,
         due: card.due.getTime(),
         last_review: card.last_review?.getTime() ?? null,
       },
+      log: {
+        ...log,
+        due: log.due.getTime(),
+        review: log.review.getTime(),
+      },
     }));
+
+    // SaveCard
     const { error } = await layoutData.supabase
       .from("memories_table")
-      .update({ ...saved.card })
+      .update({
+        ...saved.card,
+      })
       .eq("id", $listCardContent[$listCardCount].id);
     if (error)
       addToast({
@@ -116,6 +139,25 @@
         title: "Error!",
         message: error.message as string,
       });
+
+    // SaveLog
+    const duration = Date.now() - startTime;
+    const { error: errorLog } = await layoutData.supabase
+      .from("reviewlogs_table")
+      .insert({
+        review_time: saved.log.review,
+        card_id: $listCardContent[$listCardCount].id,
+        review_rating: saved.log.rating,
+        review_duration: duration,
+        review_state: saved.log.state,
+      });
+    if (errorLog)
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: errorLog.message as string,
+      });
+
     handleSetNextWord();
   }
 
@@ -199,6 +241,22 @@
       activedButton = 0;
     }, 150);
   }
+
+  async function setFSRSparams(data: number[]) {
+    const { error } = await layoutData.supabase
+      .from("dashboard_table")
+      .update({ fsrsparams: JSON.stringify(data) })
+      .eq("user", "thinh");
+    if (error) {
+      addToast({
+        type: "error",
+        title: "Error!",
+        message: error.message as string,
+      });
+    } else {
+      saveUserSetting();
+    }
+  }
 </script>
 
 <svelte:head>
@@ -212,7 +270,7 @@
   <div class="flex-1"></div>
 
   <div
-    class="relative dark min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-9 flex flex-col justify-center items-center"
+    class="relative dark min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-21 flex flex-col justify-center items-center"
   >
     {#if showTranslate}
       {#each translations as item}
@@ -244,6 +302,46 @@
         </p>
       {/key}
     {/if}
+
+    <form
+      method="post"
+      action="?/optimize"
+      use:enhance={({ formElement, formData, action, cancel }) => {
+        return async ({ result, update }) => {
+          if (result.type === "failure") {
+            addToast({
+              type: "error",
+              title: "Error!",
+              message: result.data?.error as string,
+            });
+          } else if (result.type === "success") {
+            addToast({
+              type: "success",
+              title: "Success!",
+              message: "Optimize successfully.",
+            });
+            setFSRSparams((result.data?.data as any)?.parameters);
+          }
+        };
+      }}
+    >
+      <input
+        type="text"
+        name="tz"
+        autocomplete="off"
+        value={$timezone}
+        hidden
+      />
+      <button
+        class="btn-layout absolute left-3 top-3"
+        type="submit"
+        onclick={(e) => {
+          e.currentTarget.blur();
+        }}
+      >
+        <MingcuteAiFill width="16" height="16" />
+      </button>
+    </form>
 
     <button
       class="btn-layout absolute right-3 top-3"
