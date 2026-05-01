@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     createEmptyCard,
-    fsrs,
     Rating,
     type Card,
     type CardInput,
@@ -12,20 +11,20 @@
   import Container from "$lib/components/Container.svelte";
   import {
     addToast,
-    fsrsparams,
     listCardContent,
     listCardCount,
+    scheduler,
     timezone,
   } from "$lib/store/layoutstore";
   import BiTranslate from "~icons/bi/translate";
-  import Fa7SolidListUl from "~icons/fa7-solid/list-ul";
   import { fly } from "svelte/transition";
   import { onMount } from "svelte";
   import type { WikiTranslationType } from "$lib/types";
   import { format } from "date-fns";
   import { enhance } from "$app/forms";
   import { saveUserSetting } from "$lib/store/localstore";
-  import MingcuteAiFill from "~icons/mingcute/ai-fill";
+  import RiMagicFill from "~icons/ri/magic-fill";
+  import PhListStar from "~icons/ph/list-star";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -35,18 +34,6 @@
   let showTranslate = $state<boolean>(false);
   let activedButton = $state<number>(0);
   let startTime = $state<number>(0);
-
-  function getScheduler() {
-    return fsrs({
-      request_retention: 0.9,
-      maximum_interval: 36500,
-      enable_fuzz: true,
-      enable_short_term: true,
-      learning_steps: ["15m"],
-      relearning_steps: ["10m"],
-      w: JSON.parse($fsrsparams),
-    });
-  }
 
   onMount(() => {
     if ($listCardContent.length) {
@@ -104,16 +91,12 @@
     if ($listCardContent.length === 0) return;
     let { id, word, created_at, ...card } = $listCardContent[$listCardCount];
     if (!card.due) card = createEmptyCard();
-    const scheduler = getScheduler();
-    previews = scheduler.repeat(card, new Date());
+    previews = $scheduler.repeat(card, new Date());
     startTime = Date.now();
   }
 
   async function handleRate(card: Card | CardInput, rate: Grade) {
-    const scheduler = getScheduler();
-
-    if (!scheduler) return;
-    const saved = scheduler.next(card, new Date(), rate, ({ card, log }) => ({
+    const saved = $scheduler.next(card, new Date(), rate, ({ card, log }) => ({
       card: {
         ...card,
         due: card.due.getTime(),
@@ -260,8 +243,8 @@
 </script>
 
 <svelte:head>
-  <title>✨</title>
-  <meta name="spaced" content="Spaced Repetition!" />
+  <title>❔</title>
+  <meta name="fsrs" content="Free Spaced Repetition Scheduler!" />
 </svelte:head>
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
@@ -270,29 +253,28 @@
   <div class="flex-1"></div>
 
   <div
-    class="relative dark min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-21 flex flex-col justify-center items-center"
+    class="relative min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-21 flex flex-col justify-center items-center"
   >
     {#if showTranslate}
       {#each translations as item}
         <div class="w-full flex flex-col mb-6">
           <h3 class="text-14 font-600 leading-18 mb-3">{item.partOfSpeech}</h3>
           {#each item.translation as el}
-            <p class="text-14 leading-18 indent-12">{el}</p>
+            <p class="text-14 leading-18 indent-12 font-500">{el}</p>
           {/each}
         </div>
       {/each}
     {:else if currentWord}
       {#key currentWord}
         <p
-          class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-30"
+          class="w-full break-words text-center font-constantine text-24 font-700 uppercase leading-30"
           in:fly={{ y: -30, duration: 600 }}
-          style="text-shadow: 0 0 6px rgba(0,0,0,0.9);"
         >
           {currentWord}
         </p>
 
         <p
-          class="absolute bottom-3 left-3 text-12 leading-15"
+          class="absolute bottom-1 left-3 text-11 leading-15 font-500"
           in:fly={{ y: -15, duration: 600 }}
         >
           {format(
@@ -339,7 +321,7 @@
           e.currentTarget.blur();
         }}
       >
-        <MingcuteAiFill width="16" height="16" />
+        <RiMagicFill width="16" height="16" />
       </button>
     </form>
 
@@ -350,7 +332,7 @@
         getList();
       }}
     >
-      <Fa7SolidListUl width="16" height="16" />
+      <PhListStar width="16" height="16" />
     </button>
 
     {#if currentWord !== ""}
@@ -370,7 +352,7 @@
     <div class="w-full flex rounded-2 overflow-hidden">
       {#if previews}
         <button
-          class="bg-green-800 btn-main"
+          class="bg-[#816c52] btn-main"
           class:btnActive={activedButton === 1}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -386,7 +368,7 @@
           <span class="text-10 leading-10">(1)</span>
         </button>
         <button
-          class="bg-green-600 btn-main"
+          class="bg-[#b09680] btn-main"
           class:btnActive={activedButton === 2}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -402,7 +384,7 @@
           <span class="text-10 leading-10">(2)</span>
         </button>
         <button
-          class="bg-green-400 btn-main"
+          class="bg-[#d5c8b9] btn-main"
           class:btnActive={activedButton === 3}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -418,7 +400,7 @@
           <span class="text-10 leading-10">(3)</span>
         </button>
         <button
-          class="bg-green-200 btn-main"
+          class="bg-[#f3f1ef] btn-main"
           class:btnActive={activedButton === 4}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -442,14 +424,14 @@
 
 <style lang="postcss">
   .btn-layout {
-    @apply size-18 flex items-center justify-center outline-none overflow-hidden bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
+    @apply size-20 flex items-center justify-center outline-none overflow-hidden bg-black/20 border border-black/10 text-black text-12 leading-18 rounded-2 hover:bg-black/25 shadow-sm shadow-black/30;
     backdrop-filter: blur(12px);
   }
 
   .mainContent {
-    background: url("$lib/assets/images/sky.webp");
+    background: url("$lib/assets/images/paper.webp");
     background-size: cover;
-    background-position: left center;
+    background-position: top center;
   }
 
   .btn-main {

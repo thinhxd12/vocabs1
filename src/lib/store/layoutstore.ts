@@ -6,10 +6,11 @@ import type {
   ToastType,
   YearProgressType,
 } from "$lib/types";
-import { get, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import type { BookDetailType, HighlightType } from "../types";
 import { minutesToSeconds } from "$lib/utils/functions";
 import { getTodayDate } from "./navstore";
+import { fsrs } from "ts-fsrs";
 
 export const highlight = writable<HighlightType | undefined>();
 export const currentHighlightId = writable<string>("");
@@ -33,6 +34,18 @@ export const srcAudio = writable<string>("/sounds/mp3_break.ogg");
 export const pauseAudio = writable<boolean>(true);
 export const timezone = writable<string>("UTC");
 export const fsrsparams = writable<string>("[]");
+
+export const scheduler = derived(fsrsparams, ($params) => {
+  return fsrs({
+    request_retention: 0.9,
+    maximum_interval: 36500,
+    enable_fuzz: true,
+    enable_short_term: true,
+    learning_steps: ["15m"],
+    relearning_steps: ["10m"],
+    w: JSON.parse($params),
+  });
+});
 
 export const locationList = writable<LocationType[]>([]);
 export const currentLocationId = writable<string>("");

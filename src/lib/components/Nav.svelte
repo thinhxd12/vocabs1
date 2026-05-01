@@ -204,9 +204,9 @@
       </a>
 
       <a
-        href="/spaced"
+        href="/fsrs"
         class="btn-nav"
-        class:active={page.url.pathname === "/spaced"}
+        class:active={page.url.pathname === "/fsrs"}
       >
         <SimpleIconsAnki width="14" height="14" />
       </a>
@@ -265,7 +265,7 @@
           $listContent.length) *
           90}px;"
       />
-    {:else if page.url.pathname === "/spaced"}
+    {:else if page.url.pathname === "/fsrs"}
       <img
         src={sunrise}
         alt="btn-play"

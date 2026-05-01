@@ -26,13 +26,15 @@
 
   onMount(async () => {
     $timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    getTotalMemories();
-    await getSchedule();
-    getTodaySchedule();
-
     await getUserSettingsData();
-    await getNavWeatherData();
-    startInterval();
+    if (!dev) {
+      getTotalMemories();
+      await getSchedule();
+      getTodaySchedule();
+
+      await getNavWeatherData();
+      startInterval();
+    }
   });
 
   async function getNavWeatherData() {
