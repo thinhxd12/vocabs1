@@ -27,7 +27,7 @@
   onMount(async () => {
     $timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     await getUserSettingsData();
-    if (!dev) {
+    if (dev) {
       getTotalMemories();
       await getSchedule();
       getTodaySchedule();

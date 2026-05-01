@@ -103,9 +103,9 @@ const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   73: "snow", // Moderate snow
   75: "snow", // Heavy snow
   77: "snow", // Snow grains
-  80: "light-shower", // Slight rain showers
-  81: "shower", // Moderate rain showers
-  82: "shower", // Violent rain showers
+  80: "light-showers", // Slight rain showers
+  81: "showers", // Moderate rain showers
+  82: "showers", // Violent rain showers
   85: "snow", // Slight snow showers
   86: "snow", // Heavy snow showers
   95: "thunderstorm", // Thunderstorm
@@ -155,8 +155,8 @@ export function getWeatherInfo(
     "snow",
     "thunderstorm",
     "drizzle",
-    "light-shower",
-    "shower",
+    "light-showers",
+    "showers",
   ]);
 
   const background = backgroundsWithoutDayNight.has(backgroundImage)

@@ -1221,7 +1221,7 @@
             {@html formatTime(item.time)}
           </h1>
 
-          <div class="light h-150 w-full relative">
+          <div class="light flex-1 w-full relative">
             <img
               src="/navweather/{item.background}.webp"
               alt="wtb"
@@ -1249,7 +1249,7 @@
 
             {#if item.precipitation_probability}
               <p
-                class="text-12 leading-16 text-center font-500 text-blue-200"
+                class="mb-9 text-12 leading-16 text-center font-500 text-blue-200"
                 style="text-shadow: 0px 0px 3px #000000"
               >
                 {item.precipitation_probability}%
