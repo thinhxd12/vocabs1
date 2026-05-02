@@ -253,7 +253,7 @@
   <div class="flex-1"></div>
 
   <div
-    class="relative min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-21 flex flex-col justify-center items-center"
+    class="relative min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-24 flex flex-col justify-center items-center"
   >
     {#if showTranslate}
       {#each translations as item}
@@ -359,10 +359,10 @@
             handleRate(previews![Rating.Again].card, Rating.Again);
           }}
         >
-          <div class="w-full text-14 leading-18 text-center">
+          <div class="mt-6 w-full text-13 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Again].card.due)}
           </div>
-          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
             Again
           </div>
         </button>
@@ -374,10 +374,10 @@
             handleRate(previews![Rating.Hard].card, Rating.Hard);
           }}
         >
-          <div class="w-full text-14 leading-18 text-center">
+          <div class="mt-6 w-full text-13 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Hard].card.due)}
           </div>
-          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
             Hard
           </div>
         </button>
@@ -389,10 +389,10 @@
             handleRate(previews![Rating.Good].card, Rating.Good);
           }}
         >
-          <div class="w-full text-14 leading-18 text-center">
+          <div class="mt-6 w-full text-13 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Good].card.due)}
           </div>
-          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
             Good
           </div>
         </button>
@@ -404,10 +404,10 @@
             handleRate(previews![Rating.Easy].card, Rating.Easy);
           }}
         >
-          <div class="w-full text-14 leading-18 text-center">
+          <div class="mt-6 w-full text-13 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Easy].card.due)}
           </div>
-          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
             Easy
           </div>
         </button>
@@ -431,7 +431,7 @@
   }
 
   .btn-main {
-    @apply hover:brightness-[1.1] active:scale-95 py-6 flex flex-col flex-1 items-center justify-center;
+    @apply hover:brightness-[1.1] active:scale-95 flex flex-col flex-1 items-center justify-center;
   }
 
   .btnActive {
