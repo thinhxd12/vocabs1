@@ -257,7 +257,7 @@
   >
     {#if showTranslate}
       {#each translations as item}
-        <div class="w-full flex flex-col mb-6">
+        <div class="w-full h-full flex flex-col justify-center">
           <h3 class="text-14 font-600 leading-18 mb-3">{item.partOfSpeech}</h3>
           {#each item.translation as el}
             <p class="text-14 leading-18 indent-12 font-500">{el}</p>
@@ -352,7 +352,7 @@
     <div class="w-full flex rounded-2 overflow-hidden">
       {#if previews}
         <button
-          class="bg-[#816c52] btn-main"
+          class="bg-green-600 btn-main"
           class:btnActive={activedButton === 1}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -362,13 +362,12 @@
           <div class="w-full text-14 leading-18 text-center">
             {calculateTimeDiff(previews[Rating.Again].card.due)}
           </div>
-          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
             Again
           </div>
-          <span class="text-10 leading-10">(1)</span>
         </button>
         <button
-          class="bg-[#b09680] btn-main"
+          class="bg-green-400 btn-main"
           class:btnActive={activedButton === 2}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -378,13 +377,12 @@
           <div class="w-full text-14 leading-18 text-center">
             {calculateTimeDiff(previews[Rating.Hard].card.due)}
           </div>
-          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
             Hard
           </div>
-          <span class="text-10 leading-10">(2)</span>
         </button>
         <button
-          class="bg-[#d5c8b9] btn-main"
+          class="bg-green-300 btn-main"
           class:btnActive={activedButton === 3}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -394,26 +392,24 @@
           <div class="w-full text-14 leading-18 text-center">
             {calculateTimeDiff(previews[Rating.Good].card.due)}
           </div>
-          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
             Good
           </div>
-          <span class="text-10 leading-10">(3)</span>
         </button>
         <button
-          class="bg-[#f3f1ef] btn-main"
+          class="bg-green-100 btn-main"
           class:btnActive={activedButton === 4}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Easy].card, Rating.Easy);
           }}
         >
-          <div class="w-full text-1Rating.Easy leading-18 text-center">
+          <div class="w-full text-14 leading-18 text-center">
             {calculateTimeDiff(previews[Rating.Easy].card.due)}
           </div>
-          <div class="h-24 w-full uppercase text-18 leading-24 font-600">
+          <div class="mb-9 h-24 w-full uppercase text-18 leading-24 font-600">
             Easy
           </div>
-          <span class="text-10 leading-10">(4)</span>
         </button>
       {/if}
     </div>
