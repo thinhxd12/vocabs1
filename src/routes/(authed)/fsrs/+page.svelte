@@ -34,6 +34,7 @@
   let showTranslate = $state<boolean>(false);
   let activedButton = $state<number>(0);
   let startTime = $state<number>(0);
+  const NUMBER_WORDS = 24;
 
   onMount(() => {
     if ($listCardContent.length) {
@@ -53,24 +54,24 @@
       .order("due")
       .lte("due", now)
       .gt("due", 0)
-      .limit(30);
+      .limit(NUMBER_WORDS);
     if (data && data.length === 0) {
       const { data } = await layoutData.supabase
         .from("memories_table")
         .select("*")
         .order("created_at", { ascending: false })
         .eq("due", 0)
-        .limit(30);
+        .limit(NUMBER_WORDS);
       if (data) {
         $listCardContent = data;
       }
-    } else if (data && data.length < 30) {
+    } else if (data && data.length < NUMBER_WORDS) {
       const { data: dataMore } = await layoutData.supabase
         .from("memories_table")
         .select("*")
         .order("created_at", { ascending: false })
         .eq("due", 0)
-        .limit(30 - data.length);
+        .limit(NUMBER_WORDS - data.length);
       if (dataMore) {
         $listCardContent = [...data, ...dataMore];
       }
@@ -277,17 +278,14 @@
           >
             {currentWord}
           </p>
-
-          <p
-            class="absolute bottom-1 left-3 text-11 leading-15 font-500"
-            in:fly={{ y: -15, duration: 600 }}
-          >
-            {format(
-              $listCardContent[$listCardCount].created_at,
-              "cccc, yyyy-MM-dd' at 'p",
-            )}
-          </p>
         {/key}
+
+        <p class="absolute bottom-1 left-3 text-11 leading-15 font-500">
+          {format(
+            $listCardContent[$listCardCount].created_at,
+            "cccc, yyyy-MM-dd' at 'p",
+          )}
+        </p>
       </div>
     {/if}
 
