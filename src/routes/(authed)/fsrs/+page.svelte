@@ -253,36 +253,42 @@
   <div class="flex-1"></div>
 
   <div
-    class="relative min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2 p-24 flex flex-col justify-center items-center"
+    class="relative min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2"
   >
     {#if showTranslate}
-      {#each translations as item}
-        <div class="w-full h-full flex flex-col justify-center">
-          <h3 class="text-14 font-600 leading-18 mb-3">{item.partOfSpeech}</h3>
+      <div class="w-full h-full flex flex-col justify-center px-28 py-24">
+        {#each translations as item}
+          <h3
+            class="text-14 font-600 leading-24 uppercase [&:not(:first-of-type)]:mt-6"
+          >
+            {item.partOfSpeech}
+          </h3>
           {#each item.translation as el}
-            <p class="text-14 leading-18 indent-12 font-500">{el}</p>
+            <p class="text-14 leading-18 indent-15 font-500">{el}</p>
           {/each}
-        </div>
-      {/each}
+        {/each}
+      </div>
     {:else if currentWord}
-      {#key currentWord}
-        <p
-          class="w-full break-words text-center font-constantine text-24 font-700 uppercase leading-30"
-          in:fly={{ y: -30, duration: 600 }}
-        >
-          {currentWord}
-        </p>
+      <div class="relative w-full h-full flex items-center justify-center">
+        {#key currentWord}
+          <p
+            class="w-full break-words text-center font-constantine text-24 font-700 uppercase leading-30"
+            in:fly={{ y: -30, duration: 600 }}
+          >
+            {currentWord}
+          </p>
 
-        <p
-          class="absolute bottom-1 left-3 text-11 leading-15 font-500"
-          in:fly={{ y: -15, duration: 600 }}
-        >
-          {format(
-            $listCardContent[$listCardCount].created_at,
-            "cccc, yyyy-MM-dd' at 'p",
-          )}
-        </p>
-      {/key}
+          <p
+            class="absolute bottom-1 left-3 text-11 leading-15 font-500"
+            in:fly={{ y: -15, duration: 600 }}
+          >
+            {format(
+              $listCardContent[$listCardCount].created_at,
+              "cccc, yyyy-MM-dd' at 'p",
+            )}
+          </p>
+        {/key}
+      </div>
     {/if}
 
     <form

@@ -143,6 +143,7 @@ export function getWeatherInfo(
     "sleetthunder",
     "snow",
     "snowthunder",
+    "nodata",
   ]);
 
   const icon = iconsWithoutDayNight.has(liquidIcon)
