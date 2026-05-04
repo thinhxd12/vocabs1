@@ -25,10 +25,11 @@
       let data = await response.json();
       const latestTime = data.radar.past[data.radar.past.length - 1];
       const host = data.host;
-      radarUrl = `${host}${latestTime.path}/512/{z}/{x}/{y}/2/1_1.png`;
+      radarUrl = `${host}${latestTime.path}/512/{z}/{x}/{y}/8/1_1.png`;
     } else {
       radarUrl = "";
     }
+    // radarUrl='https://tilecache.rainviewer.com/v2/radar/58a1467b0554/512/3/7/3/8/1_1.png'
   }
 
   let radarUrl = $state("");
@@ -64,7 +65,7 @@
     ],
   ]);
 
-  let name = $state("Dark Matter");
+  let name = $state("Rainviewer");
   let style = $derived(STYLES.get(name)!);
 </script>
 
@@ -83,9 +84,9 @@
   <MapLibre
     class="light w-full min-h-290 h-290"
     {style}
-    zoom={7}
+    zoom={7.4}
     center={lonLat}
-    maxZoom={7}
+    maxZoom={7.4}
     attributionControl={false}
   >
     {#if radarUrl}
@@ -107,4 +108,14 @@
 </div>
 
 <style lang="postcss">
+  :global {
+    .maplibregl-ctrl {
+      margin: 3px !important;
+    }
+
+    .maplibregl-ctrl button {
+      width: 24px !important;
+      height: 24px !important;
+    }
+  }
 </style>
