@@ -29,7 +29,6 @@
     } else {
       radarUrl = "";
     }
-    // radarUrl='https://tilecache.rainviewer.com/v2/radar/58a1467b0554/512/3/7/3/8/1_1.png'
   }
 
   let radarUrl = $state("");
@@ -63,9 +62,22 @@
       "Dark Matter",
       "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
     ],
+    [
+      "Colorful",
+      "https://tiles.versatiles.org/assets/styles/colorful/style.json",
+    ],
+    ["Fiord", "https://tiles.openfreemap.org/styles/fiord"],
+    [
+      "Alidade Smooth",
+      "https://tiles.stadiamaps.com/styles/alidade_smooth.json",
+    ],
+    [
+      "Alidade Smooth Dark",
+      "https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json",
+    ],
   ]);
 
-  let name = $state("Rainviewer");
+  let name = $state("Alidade Smooth");
   let style = $derived(STYLES.get(name)!);
 </script>
 
