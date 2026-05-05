@@ -40,9 +40,6 @@
   } from "$lib/store/layoutstore";
   import { saveUserSetting } from "$lib/store/localstore";
   import type { PageProps } from "./$types";
-  import FluentEmojiFlatSnowflake from "~icons/fluent-emoji-flat/snowflake";
-  import FluentEmojiFlatCloud from "~icons/fluent-emoji-flat/cloud";
-  import MaterialSymbolsWaterDrop from "~icons/material-symbols/water-drop";
   import Rainviewer from "$lib/components/Rainviewer.svelte";
 
   let { data: layoutData }: PageProps = $props();
@@ -915,17 +912,21 @@
         <div class="flex flex-col items-center">
           {#if precipitationValues.hasPrecipitation}
             {#if precipitationValues.hasRain}
-              <MaterialSymbolsWaterDrop
-                width="50"
-                height="50"
-                color="#228be6"
+              <img
+                src="/navweather/drizzle.webp"
+                alt="icon"
+                class="size-110 object-cover object-bottom mx-auto my-12 rounded-full"
               />
               <p class="mt-3 text-14 font-600">
                 {precipitationValues.formattedRain}
               </p>
               <p class="text-12">in 15 minutes</p>
             {:else if precipitationValues.hasSnow}
-              <FluentEmojiFlatSnowflake width="50" height="50" />
+              <img
+                src="/navweather/snow.webp"
+                alt="icon"
+                class="size-110 object-cover object-bottom mx-auto my-12 rounded-full"
+              />
               <p class="mt-3 text-14 font-600">
                 {precipitationValues.formattedSnow}
               </p>
@@ -1020,20 +1021,16 @@
         </p>
       </div>
       <div class="light p-6 w-full">
-        <p class="uppercase text-12">Pressure</p>
+        <p class="uppercase text-12 mb-12">Pressure</p>
 
         <div class="w-full px-12 mb-6 flex justify-between items-center">
-          <div class="flex flex-col items-center justify-between">
-            <div class="text-12 mb-3 font-500">High</div>
-            <div
-              class="w-6 h-100 rounded-3 relative bg-gradient-to-b from-white/20 via-white to-white/20"
-            >
-              <span
-                class="absolute -left-4 -translate-y-1/2 w-14 h-4 rounded-3 bg-white shadow shadow-black/30"
-                style="bottom: {pressureValues.normalizedValue}%;"
-              ></span>
-            </div>
-            <div class="text-12 mt-3 font-500">Low</div>
+          <div
+            class="w-9 h-100 rounded-full shadow shadow-black/30 relative bg-gradient-to-b from-white via-white to-white/10"
+          >
+            <span
+              class="absolute -left-4 -translate-y-1/2 w-17 h-5 rounded-3 bg-white shadow shadow-black/30"
+              style="bottom: {pressureValues.normalizedValue}%;"
+            ></span>
           </div>
           <div class="flex flex-col">
             <h1 class="text-24 font-500">
@@ -1046,11 +1043,13 @@
         </div>
       </div>
       <div class="light p-6 w-full">
-        <p class="uppercase text-12 mb-24">Humidity</p>
+        <p class="uppercase text-12 mb-12">Humidity</p>
         <div class="flex items-center justify-center gap-30">
-          <div class="relative h-100 w-10 rounded-8 bg-black/10">
+          <div
+            class="relative h-100 w-9 rounded-full bg-white/10 shadow shadow-black/30"
+          >
             <div
-              class="float-left w-10 rounded-8 absolute bottom-0 bg-[#228be6]"
+              class="float-left w-full rounded-full absolute bottom-0 bg-[#228be6]"
               style="height: {humidityValues.humidity}%;"
             ></div>
           </div>
@@ -1075,7 +1074,11 @@
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Cloud Cover</p>
         <div class="flex flex-col items-center">
-          <FluentEmojiFlatCloud width="50" height="50" />
+          <img
+            src="/cloud/{cloudCoverValues.cloudCoverDescription}.webp"
+            alt="icon"
+            class="size-110 object-cover mx-auto my-12 rounded-full"
+          />
           <p class="mt-3 text-14 font-600">{cloudCoverValues.cloudCover}%</p>
           <p class="text-12">{cloudCoverValues.cloudCoverDescription}</p>
         </div>
