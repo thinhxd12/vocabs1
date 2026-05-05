@@ -12,7 +12,6 @@
   onMount(() => {
     if ("wakeLock" in navigator) {
       isDisabled = false;
-      handleVisibilityChange();
     }
   });
 
@@ -49,18 +48,18 @@
   });
 
   function handleVisibilityChange() {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        toggleWakeLock($wakeEnable);
-      } else {
-        if (wakeLock) {
-          wakeLock = null;
-          status = false;
-        }
+    if (document.visibilityState === "visible") {
+      toggleWakeLock($wakeEnable);
+    } else {
+      if (wakeLock) {
+        wakeLock = null;
+        status = false;
       }
-    });
+    }
   }
 </script>
+
+<svelte:document onvisibilitychange={handleVisibilityChange} />
 
 <button
   class="btn-menu"

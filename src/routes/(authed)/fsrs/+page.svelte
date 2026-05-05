@@ -241,6 +241,12 @@
       saveUserSetting();
     }
   }
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === "visible") {
+      startTime = Date.now();
+    }
+  }
 </script>
 
 <svelte:head>
@@ -248,16 +254,20 @@
   <meta name="fsrs" content="Free Spaced Repetition Scheduler!" />
 </svelte:head>
 
+<svelte:document onvisibilitychange={handleVisibilityChange} />
+
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 
 <Container>
   <div class="flex-1"></div>
 
   <div
-    class="relative min-h-178 max-h-[calc(100vh-44px-64px)] overflow-y-scroll no-scrollbar mainContent w-full rounded-2"
+    class="mainContent relative min-h-178 max-h-[calc(100vh-44px-64px)] w-full rounded-2"
   >
     {#if showTranslate}
-      <div class="w-full h-full flex flex-col justify-center px-28 py-24">
+      <div
+        class="mainContent w-full h-full overflow-y-scroll no-scrollbar px-30 py-21"
+      >
         {#each translations as item}
           <h3
             class="text-14 font-600 leading-24 uppercase [&:not(:first-of-type)]:mt-6"
@@ -432,6 +442,7 @@
     background: url("$lib/assets/images/paper.webp");
     background-size: cover;
     background-position: top center;
+    background-attachment: local;
   }
 
   .btn-main {
