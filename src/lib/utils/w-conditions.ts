@@ -53,7 +53,7 @@ const WEATHER_CODE_DESCRIPTIONS: Record<number, string> = {
 
 const WEATHER_CODE_TO_LIQUID_ICON: Record<number, string> = {
   0: "sun", // Clear sky
-  1: "sun", // Mainly clear
+  1: "lightcloud", // Mainly clear
   2: "partlycloud", // Partly cloudy
   3: "cloud", // Overcast
   45: "fog", // Fog

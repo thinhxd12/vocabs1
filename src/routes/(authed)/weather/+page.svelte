@@ -56,6 +56,7 @@
   type DailyForecast = {
     date: string;
     icon: string;
+    description: string;
     temp_max: number;
     temp_min: number;
     temp_current?: number;
@@ -441,35 +442,6 @@
     }
   }
 
-  let windTickArray = Array.from({ length: 72 }).map((_, i) => {
-    const angle = i * 5;
-    const isCardinal = angle % 90 === 0;
-    const isMajor = angle % 30 === 0;
-
-    let length = 5;
-    let width = 1;
-    let opacity = 0.15;
-
-    if (isCardinal) {
-      length = 15;
-      width = 2;
-      opacity = 0.5;
-    } else if (isMajor) {
-      length = 10;
-      width = 1.5;
-      opacity = 0.3;
-    }
-
-    const rad = (angle * Math.PI) / 180;
-    const r1 = 65;
-    const r2 = 65 - length;
-    const x1 = 75 + r1 * Math.sin(rad);
-    const y1 = 75 - r1 * Math.cos(rad);
-    const x2 = 75 + r2 * Math.sin(rad);
-    const y2 = 75 - r2 * Math.cos(rad);
-    return { x1, y1, x2, y2, width, opacity };
-  });
-
   type ForecastResults = {
     hourlyForecasts: HourlyForecast[];
     dailyForecasts: DailyForecast[];
@@ -511,13 +483,14 @@
     const skipToday = currentHourIndex >= 20;
     const dailyForecastsRaw: DailyForecast[] = $weatherData.daily.time.map(
       (date, index) => {
-        let { icon } = getWeatherInfo(
+        let { icon, description } = getWeatherInfo(
           $weatherData!.daily.weather_code[index],
           1,
         );
         return {
           date,
           icon,
+          description,
           weather_code: $weatherData!.daily.weather_code[index],
           temp_max: $weatherData!.daily.temperature_2m_max[index],
           temp_min: $weatherData!.daily.temperature_2m_min[index],
@@ -545,8 +518,8 @@
     const validTemps = allTemps.filter(
       (t): t is number => typeof t === "number" && !Number.isNaN(t),
     );
-    const minTempScale = Math.floor(Math.min(...validTemps) - 5);
-    const maxTempScale = Math.ceil(Math.max(...validTemps) + 5);
+    const minTempScale = Math.floor(Math.min(...validTemps));
+    const maxTempScale = Math.ceil(Math.max(...validTemps));
     const tempRange = maxTempScale - minTempScale;
 
     return {
@@ -1135,7 +1108,7 @@
                   overflow: hidden"
           >
             <img
-              src="/openmeteo/icons/01d.svg"
+              src="/liquid/48/sun.png"
               alt="sunicon"
               class="size-20 object-cover"
             />
@@ -1266,9 +1239,11 @@
     <h1 class="text-24">7-Day Forecast</h1>
     <div class="flex flex-wrap gap-2">
       {#each dailyData as item}
-        <div class="light w-full h-36 flex px-9 rounded-2">
-          <div class="flex items-center">
-            <span class="text-16 font-500 min-w-60">
+        <div
+          class="light w-full h-36 flex items-center justify-between pl-9 rounded-2"
+        >
+          <div class="flex items-center flex-1">
+            <span class="text-16 font-500 min-w-50">
               {formatDay(item.date, $weatherData.current.time)}</span
             >
             <img
@@ -1282,28 +1257,39 @@
                 {item.precipitation_probability}%
               {/if}
             </span>
+
+            <div
+              class="text-12 w-120 overflow-hidden whitespace-nowrap text-ellipsis"
+            >
+              {item.description}
+            </div>
           </div>
 
-          <div class="flex justify-start items-center flex-1 h-full">
-            <span class="text-12 text-black/60 min-w-30 text-center">
+          <div class="flex w-120 justify-end items-center h-full">
+            <div
+              class="text-12 text-black/60 min-w-30 text-center"
+              style="margin-left: {((item.temp_min - tempScale.min) /
+                tempScale.range) *
+                60}px;"
+            >
               {formatTemperature(item.temp_min)}
-            </span>
+            </div>
 
-            <span
-              class="h-5 rounded-full bg-[#228be6]"
-              style="width: {((item.temp_max - item.temp_min) /
+            <div
+              class="h-6 rounded-full bg-[#228be6]"
+              style="min-width: {((item.temp_max - item.temp_min) /
                 tempScale.range) *
-                50}%;"
-            ></span>
+                90}px;"
+            ></div>
 
-            <span
+            <div
               class="min-w-30 text-12 text-center"
-              style="margin-right: {((item.temp_min - tempScale.min) /
+              style="margin-right: {((tempScale.max - item.temp_max) /
                 tempScale.range) *
-                50}%;"
+                60}px;"
             >
               {formatTemperature(item.temp_max)}
-            </span>
+            </div>
           </div>
         </div>
       {/each}
