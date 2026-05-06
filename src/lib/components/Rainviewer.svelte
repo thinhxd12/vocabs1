@@ -1,5 +1,6 @@
 <script lang="ts">
   import { currentLocationId, locationList } from "$lib/store/layoutstore";
+  import { format } from "date-fns";
   import { untrack } from "svelte";
   import {
     MapLibre,
@@ -19,21 +20,22 @@
 
   const API_URL = "https://api.rainviewer.com/public/weather-maps.json";
 
+  let radarUrl = $state<string>("");
+  let latestTime = $state<number>(0);
+  let lonLat = $state<RainviewerCoord>({ lng: 0, lat: 0 });
+
   async function loadData() {
     const response = await fetch(API_URL);
     if (response.status === 200) {
       let data = await response.json();
-      const latestTime = data.radar.past[data.radar.past.length - 1];
+      const latestData = data.radar.past[data.radar.past.length - 1];
+      latestTime = latestData.time;
       const host = data.host;
-      radarUrl = `${host}${latestTime.path}/512/{z}/{x}/{y}/8/1_1.png`;
+      radarUrl = `${host}${latestData.path}/512/{z}/{x}/{y}/2/1_1.png`;
     } else {
       radarUrl = "";
     }
   }
-
-  let radarUrl = $state("");
-
-  let lonLat = $state<RainviewerCoord>({ lng: 106.395781, lat: 10.583642 });
 
   $effect(() => {
     $currentLocationId;
@@ -52,7 +54,14 @@
   });
 
   const STYLES = new Map<string, string | maplibregl.StyleSpecification>([
-    ["Rainviewer", "https://maps.rainviewer.com/styles/m2/style.json"],
+    [
+      "Alidade Smooth",
+      "https://tiles.stadiamaps.com/styles/alidade_smooth.json",
+    ],
+    [
+      "Alidade Smooth Dark",
+      "https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json",
+    ],
     ["Voyager", "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"],
     [
       "Positron",
@@ -67,24 +76,17 @@
       "https://tiles.versatiles.org/assets/styles/colorful/style.json",
     ],
     ["Fiord", "https://tiles.openfreemap.org/styles/fiord"],
-    [
-      "Alidade Smooth",
-      "https://tiles.stadiamaps.com/styles/alidade_smooth.json",
-    ],
-    [
-      "Alidade Smooth Dark",
-      "https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json",
-    ],
   ]);
 
   let name = $state("Alidade Smooth");
   let style = $derived(STYLES.get(name)!);
 </script>
 
-<div class="flex flex-col w-main">
+<div class="relative flex flex-col w-main">
   <select
     onchange={(e) => (style = e.currentTarget.value)}
     class="light w-full h-24 text-12 outline-none"
+    name="rainviewer"
   >
     {#each STYLES as item}
       <option value={item[1]} selected={item[0] === name}>
@@ -92,6 +94,14 @@
       </option>
     {/each}
   </select>
+
+  {#if latestTime}
+    <div
+      class="absolute top-25 left-0 z-9 maplibregl-ctrl maplibregl-ctrl-scale font-600 !py-2 !px-6 !text-11 font-helvetica"
+    >
+      at {format(new Date(latestTime * 1000), "p")}
+    </div>
+  {/if}
 
   <MapLibre
     class="light w-full min-h-290 h-290"
