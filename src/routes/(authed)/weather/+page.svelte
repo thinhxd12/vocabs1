@@ -64,6 +64,7 @@
     precipitation_probability: number;
   };
 
+  let sunSVGpath = $state<SVGPathElement>();
   let hourlyData = $state<HourlyForecast[]>([]);
   let dailyData = $state<DailyForecast[]>([]);
   let tempScale = $state<{
@@ -518,8 +519,8 @@
     const validTemps = allTemps.filter(
       (t): t is number => typeof t === "number" && !Number.isNaN(t),
     );
-    const minTempScale = Math.floor(Math.min(...validTemps));
-    const maxTempScale = Math.ceil(Math.max(...validTemps));
+    const minTempScale = Math.round(Math.min(...validTemps));
+    const maxTempScale = Math.round(Math.max(...validTemps));
     const tempRange = maxTempScale - minTempScale;
 
     return {
@@ -667,6 +668,16 @@
       color: "#5C2E91",
     },
   ];
+
+  function getSunPosition(t: number) {
+    if (!sunSVGpath) return;
+    const startPoint = 0.22;
+    const endPoint = 0.78;
+    const position = (t / 100) * (endPoint - startPoint) + startPoint;
+    const totalLength = sunSVGpath.getTotalLength();
+    const point = sunSVGpath.getPointAtLength(totalLength * position);
+    return { x: point.x, y: point.y };
+  }
 </script>
 
 <svelte:head>
@@ -880,6 +891,7 @@
           <p class="text-12 leading-16 pb-3">{windValues.description}</p>
         </div>
       </div>
+
       <div class="light p-6 w-full">
         <p class="mb-3 uppercase text-12">Precipitation</p>
         <div class="flex flex-col items-center">
@@ -913,6 +925,7 @@
           {/if}
         </div>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12">UV Index</p>
 
@@ -993,6 +1006,7 @@
           {uvValues.description}
         </p>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12 mb-12">Pressure</p>
 
@@ -1015,6 +1029,7 @@
           </div>
         </div>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12 mb-12">Humidity</p>
         <div class="flex items-center justify-center gap-30">
@@ -1056,6 +1071,7 @@
           <p class="text-12">{cloudCoverValues.cloudCoverDescription}</p>
         </div>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Visibility</p>
         <h1 class="text-48 font-400">
@@ -1064,55 +1080,64 @@
         </h1>
         <p class="text-12">{visibilityValues.visibilityDescription}</p>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Sunrise / Sunset</p>
-
-        <div class="h-80 relative">
+        <div class="relative -mt-50 ml-15 -mb-15">
           <svg
-            width="100%"
-            height="80"
-            viewBox="0 0 200 80"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            width="150"
+            height="150"
+            viewBox="0 0 150 150"
+            xmlns="http://w3.org"
           >
-            <path
-              d="M 20 60 Q 100 10, 180 60"
-              stroke="currentColor"
-              stroke-width="2"
-              fill="none"
-              opacity="0.2"
+            <defs>
+              <path
+                id="curve"
+                d="M 0 125 C 40 110 45 70 75 70 S 110 110 150 125"
+                fill="none"
+                bind:this={sunSVGpath}
+              />
+
+              <mask id="maskTop">
+                <rect x="0" y="0" width="150" height="100" fill="white" />
+              </mask>
+
+              <mask id="maskBottom">
+                <rect x="0" y="100" width="150" height="50" fill="white" />
+              </mask>
+            </defs>
+
+            <use
+              href="#curve"
+              stroke="#efb839"
+              stroke-width="6"
+              mask="url(#maskTop)"
             />
 
-            <path
-              d="M 20 60 Q 100 10, 180 60"
-              stroke="currentColor"
-              stroke-width="2"
-              fill="none"
-              opacity="0.6"
-              stroke-dasharray={`${sunValues.sunPosition * 2.2} 220`}
+            <use
+              href="#curve"
+              stroke="#dee1e5"
+              stroke-width="6"
+              mask="url(#maskBottom)"
             />
 
-            <circle cx="20" cy="60" r="3" fill="currentColor" opacity="0.4" />
-
-            <circle cx="180" cy="60" r="3" fill="currentColor" opacity="0.4" />
+            <line
+              x1="0"
+              y1="100"
+              x2="150"
+              y2="100"
+              stroke="black"
+              stroke-opacity="0.2"
+              stroke-width="1"
+            />
           </svg>
 
           <div
-            style="position: absolute; 
-            left: {10 + sunValues.sunPosition * 0.8}%; 
-            top: {60 -
-              Math.sin((sunValues.sunPosition / 100) * Math.PI) * 37}px; 
-                transform: translate(-50%, -50%);
-                 width: 20;
-                  height: 20;
-                  overflow: hidden"
-          >
-            <img
-              src="/liquid/48/sun.png"
-              alt="sunicon"
-              class="size-20 object-cover"
-            />
-          </div>
+            class="absolute size-15 bg-[#ff6b00] rounded-full -translate-x-1/2 -translate-y-1/2"
+            style="box-shadow: 0 0 9px #ff6b00; left: {getSunPosition(
+              sunValues.sunPosition,
+            )?.x}px; top: {getSunPosition(sunValues.sunPosition)?.y}px;"
+          ></div>
         </div>
 
         <div class="flex justify-between">
@@ -1127,6 +1152,7 @@
           </div>
         </div>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Air Quality</p>
 
@@ -1175,6 +1201,7 @@
 
         <p class="text-12 text-center">{aiqValues.description}</p>
       </div>
+
       {#if snowValues.hasSnow}
         <div class="light p-6 w-full">
           <p class="uppercase text-12">Snow Depth</p>
@@ -1266,27 +1293,24 @@
           </div>
 
           <div class="flex w-120 justify-end items-center h-full">
-            <div
-              class="text-12 text-black/60 min-w-30 text-center"
-              style="margin-left: {((item.temp_min - tempScale.min) /
-                tempScale.range) *
-                60}px;"
-            >
+            <div class="text-12 text-black/60 min-w-30 text-center">
               {formatTemperature(item.temp_min)}
             </div>
 
             <div
               class="h-6 rounded-full bg-[#228be6]"
-              style="min-width: {((item.temp_max - item.temp_min) /
+              style="min-width: {((Math.round(item.temp_max) -
+                Math.round(item.temp_min)) /
                 tempScale.range) *
-                90}px;"
+                50}%;"
             ></div>
 
             <div
               class="min-w-30 text-12 text-center"
-              style="margin-right: {((tempScale.max - item.temp_max) /
+              style="margin-right: {((tempScale.max -
+                Math.round(item.temp_max)) /
                 tempScale.range) *
-                60}px;"
+                50}%;"
             >
               {formatTemperature(item.temp_max)}
             </div>
