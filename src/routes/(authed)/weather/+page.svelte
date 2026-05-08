@@ -752,20 +752,21 @@
         </h1>
         <p class="text-12">{currentValues.feelsLikeDescription}</p>
       </div>
+
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Wind</p>
 
-        <div class="mx-auto size-110 relative" aria-hidden="true">
+        <div class="mx-auto relative size-120" aria-hidden="true">
           <svg
-            width="110"
-            height="110"
-            viewBox="0 0 180 180"
+            width="120"
+            height="120"
+            viewBox="0 0 120 120"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <g transform="translate(90, 90) rotate(-80)">
+            <g transform="translate(60, 60) rotate(-80)">
               <circle
-                r="80"
+                r="50"
                 stroke="#0000001a"
                 stroke-width="8"
                 pathLength="360"
@@ -775,9 +776,9 @@
               />
             </g>
 
-            <g transform="translate(90, 90) rotate(10)">
+            <g transform="translate(60, 60) rotate(10)">
               <circle
-                r="80"
+                r="50"
                 stroke="#0000001a"
                 stroke-width="8"
                 pathLength="360"
@@ -787,9 +788,9 @@
               />
             </g>
 
-            <g transform="translate(90, 90) rotate(100)">
+            <g transform="translate(60, 60) rotate(100)">
               <circle
-                r="80"
+                r="50"
                 stroke="#0000001a"
                 stroke-width="8"
                 pathLength="360"
@@ -799,9 +800,9 @@
               />
             </g>
 
-            <g transform="translate(90, 90) rotate(190)">
+            <g transform="translate(60, 60) rotate(190)">
               <circle
-                r="80"
+                r="50"
                 stroke="#0000001a"
                 stroke-width="8"
                 pathLength="360"
@@ -814,17 +815,18 @@
             <path
               d="M 86.325 40.3742 C 86.9141 37.7765 90.5908 37.7098 91.2738 40.2843 L 112.0053 118.42840000000001 C 113.7162 124.8774 108.87360000000001 131.20420000000001 102.2016 131.23680000000002 L 78.5064 131.35250000000002 C 71.94605 131.3845 67.06373 125.3014 68.51471 118.9034 L 86.325 40.3742Z"
               fill="#228be6"
-              transform="rotate({windValues.windDirection - 180} 90 90)"
+              transform="rotate({windValues.windDirection -
+                180} 60 60) scale(0.66666666666666666666666666666667)"
             >
             </path>
 
             <g
-              transform="translate(90, 90) rotate({calculateWindRotate(
+              transform="translate(60, 60) rotate({calculateWindRotate(
                 windValues.windDirection,
               )})"
             >
               <circle
-                r="80"
+                r="50"
                 stroke="#228be6"
                 stroke-width="8"
                 pathLength="360"
@@ -840,12 +842,12 @@
             S
           </div>
           <div
-            class="text-12 absolute top-1/2 left-7 -translate-x-1/2 -translate-y-1/2"
+            class="text-12 absolute top-1/2 left-10 -translate-x-1/2 -translate-y-1/2"
           >
             W
           </div>
           <div
-            class="text-12 absolute top-1/2 right-7 translate-x-5 -translate-y-1/2"
+            class="text-12 absolute top-1/2 right-12 translate-x-5 -translate-y-1/2"
           >
             E
           </div>
@@ -929,82 +931,86 @@
       <div class="light p-6 w-full">
         <p class="uppercase text-12">UV Index</p>
 
-        <div class="relative flex justify-center" aria-hidden="true">
-          <svg
-            width="134"
-            height="134"
-            viewBox="5 -12 171 178"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
-              transform="rotate(13 90.5 80)"
+        <div class="flex flex-col justify-center items-center">
+          <div class="relative flex justify-center" aria-hidden="true">
+            <svg
+              width="120"
+              height="120"
+              viewBox="5 -12 171 178"
               fill="none"
-              stroke="#5C2E91"
-              stroke-width="8"
-              stroke-linecap="round"
-            ></path>
-            <path
-              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
-              transform="rotate(-52 90.5 80)"
-              fill="none"
-              stroke="#D13438"
-              stroke-width="8"
-              stroke-linecap="round"
-            ></path>
-            <path
-              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
-              transform="rotate(-115 90.5 80)"
-              fill="none"
-              stroke="#FF8C00"
-              stroke-width="8"
-              stroke-linecap="round"
-            ></path>
-            <path
-              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
-              transform="rotate(-178 90.5 80)"
-              fill="none"
-              stroke="#FDE300"
-              stroke-width="8"
-              stroke-linecap="round"
-            ></path>
-            <path
-              d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
-              transform="rotate(-243 90.5 80)"
-              fill="none"
-              stroke="#73AA24"
-              stroke-width="8"
-              stroke-linecap="round"
-            ></path>
-            {#if uvValues.currentUV}
-              <g>
-                <circle
-                  cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
-                  cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
-                  r="10"
-                  fill={uvCoordinates[uvValues.currentUV - 1]?.color}
-                ></circle>
-                <circle
-                  cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
-                  cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
-                  r="11.5"
-                  stroke="white"
-                  stroke-width="3"
-                ></circle>
-              </g>
-            {/if}
-          </svg>
-          <div class="absolute w-full h-full flex items-center justify-center">
-            <div class="text-36 leading-36">{uvValues.currentUV}</div>
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+                transform="rotate(13 90.5 80)"
+                fill="none"
+                stroke="#5C2E91"
+                stroke-width="10"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+                transform="rotate(-52 90.5 80)"
+                fill="none"
+                stroke="#D13438"
+                stroke-width="10"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+                transform="rotate(-115 90.5 80)"
+                fill="none"
+                stroke="#FF8C00"
+                stroke-width="10"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+                transform="rotate(-178 90.5 80)"
+                fill="none"
+                stroke="#FDE300"
+                stroke-width="10"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M 90.5 80 m 76 0 a 76 76 0 0 1 -32 62.3 "
+                transform="rotate(-243 90.5 80)"
+                fill="none"
+                stroke="#73AA24"
+                stroke-width="10"
+                stroke-linecap="round"
+              ></path>
+              {#if uvValues.currentUV}
+                <g>
+                  <circle
+                    cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
+                    cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
+                    r="10"
+                    fill={uvCoordinates[uvValues.currentUV - 1]?.color}
+                  ></circle>
+                  <circle
+                    cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
+                    cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
+                    r="11.5"
+                    stroke="white"
+                    stroke-width="3"
+                  ></circle>
+                </g>
+              {/if}
+            </svg>
+            <div
+              class="absolute w-full h-full flex items-center justify-center"
+            >
+              <div class="text-36 leading-36">{uvValues.currentUV}</div>
+            </div>
           </div>
-        </div>
 
-        <p class="text-14 font-600">{uvValues.level}</p>
-        <p class="text-12 leading-16">
-          {uvValues.description}
-        </p>
+          <p class="text-14 font-600">{uvValues.level}</p>
+          <p class="text-12 leading-16">
+            {uvValues.description}
+          </p>
+        </div>
       </div>
 
       <div class="light p-6 w-full">
@@ -1156,50 +1162,52 @@
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Air Quality</p>
 
-        <div class="size-100 mx-auto relative flex justify-center items-center">
-          <svg
-            width="120"
-            height="120"
-            viewBox="-15 -15 150 150"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-            style="transform:rotate(-90deg)"
-            class="absolute"
-          >
-            <circle
-              r="50"
-              cx="60"
-              cy="60"
-              fill="transparent"
-              stroke="#e0e0e0"
-              stroke-width="9"
-            ></circle>
-            <circle
-              r="50"
-              cx="60"
-              cy="60"
-              stroke={aiqValues.color}
-              stroke-width="10"
-              stroke-dashoffset="{(100 - aiqValues.aqi / 3) * 3}px"
-              fill="transparent"
-              stroke-dasharray="314px"
-            ></circle>
-          </svg>
+        <div class="flex flex-col justify-center items-center">
+          <div class="size-120 -mb-6 relative flex justify-center items-center">
+            <svg
+              width="120"
+              height="120"
+              viewBox="-15 -15 150 150"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              style="transform:rotate(-90deg)"
+              class="absolute"
+            >
+              <circle
+                r="50"
+                cx="60"
+                cy="60"
+                fill="transparent"
+                stroke="#e0e0e0"
+                stroke-width="10"
+              ></circle>
+              <circle
+                r="50"
+                cx="60"
+                cy="60"
+                stroke={aiqValues.color}
+                stroke-width="10"
+                stroke-dashoffset="{(100 - aiqValues.aqi / 3) * 3}px"
+                fill="transparent"
+                stroke-dasharray="314px"
+              ></circle>
+            </svg>
 
-          <div class="flex flex-col items-center">
-            <p class="text-16 font-500">{Math.round(aiqValues.aqi)}</p>
-            <p class="text-12 text-black/60">AQI</p>
+            <div class="flex flex-col items-center">
+              <p class="text-16 font-500">{Math.round(aiqValues.aqi)}</p>
+              <p class="text-12 text-black/60">AQI</p>
+            </div>
           </div>
-        </div>
 
-        <div
-          class="w-4/5 h-22 mx-auto rounded-full text-12 leading-22 font-600 text-center"
-          style="background-color: {aiqValues.color};"
-        >
-          {aiqValues.level}
-        </div>
+          <span
+            class="mb-6 rounded-full text-12 leading-22 font-600 text-center px-10"
+            style="background-color: {aiqValues.color};"
+          >
+            {aiqValues.level}
+          </span>
 
-        <p class="text-12 text-center">{aiqValues.description}</p>
+          <p class="text-12 text-center">{aiqValues.description}</p>
+        </div>
       </div>
 
       {#if snowValues.hasSnow}
