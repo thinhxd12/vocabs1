@@ -931,7 +931,7 @@
       <div class="light p-6 w-full">
         <p class="uppercase text-12">UV Index</p>
 
-        <div class="flex flex-col justify-center items-center">
+        <div class="mt-9 flex flex-col justify-center items-center">
           <div class="relative flex justify-center" aria-hidden="true">
             <svg
               width="120"
@@ -1162,7 +1162,7 @@
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Air Quality</p>
 
-        <div class="flex flex-col justify-center items-center">
+        <div class="-mt-9 flex flex-col justify-center items-center">
           <div class="size-120 -mb-6 relative flex justify-center items-center">
             <svg
               width="120"

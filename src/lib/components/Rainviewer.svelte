@@ -11,7 +11,13 @@
     RasterTileSource,
     Marker,
     FullScreenControl,
+    HillshadeLayer,
+    RasterDEMTileSource,
   } from "svelte-maplibre-gl";
+  import { type StyleSpecification } from "maplibre-gl";
+  import myStyle from "$lib/json/style@440_theme@light_lang@en.json";
+
+  // edit basemap style json at https://maplibre.org/maputnik/
 
   type RainviewerCoord = {
     lng: number;
@@ -22,7 +28,7 @@
 
   let radarUrl = $state<string>("");
   let latestTime = $state<number>(0);
-  let lonLat = $state<RainviewerCoord>({ lng: 0, lat: 0 });
+  let lonLat = $state<RainviewerCoord>({ lng: 106.395781, lat: 10.583642 });
 
   async function loadData() {
     const response = await fetch(API_URL);
@@ -52,52 +58,12 @@
       }
     });
   });
-
-  const STYLES = new Map<string, string | maplibregl.StyleSpecification>([
-    [
-      "Alidade Smooth",
-      "https://tiles.stadiamaps.com/styles/alidade_smooth.json",
-    ],
-    [
-      "Alidade Smooth Dark",
-      "https://tiles.stadiamaps.com/styles/alidade_smooth_dark.json",
-    ],
-    ["Voyager", "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"],
-    [
-      "Positron",
-      "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-    ],
-    [
-      "Dark Matter",
-      "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-    ],
-    [
-      "Colorful",
-      "https://tiles.versatiles.org/assets/styles/colorful/style.json",
-    ],
-    ["Fiord", "https://tiles.openfreemap.org/styles/fiord"],
-  ]);
-
-  let name = $state("Alidade Smooth");
-  let style = $derived(STYLES.get(name)!);
 </script>
 
 <div class="relative flex flex-col w-main">
-  <select
-    onchange={(e) => (style = e.currentTarget.value)}
-    class="light w-full h-24 text-12 outline-none"
-    name="rainviewer"
-  >
-    {#each STYLES as item}
-      <option value={item[1]} selected={item[0] === name}>
-        {item[0]}
-      </option>
-    {/each}
-  </select>
-
   {#if latestTime}
     <div
-      class="absolute top-25 left-0 z-9 maplibregl-ctrl maplibregl-ctrl-scale font-600 !py-2 !px-6 !text-11 font-helvetica"
+      class="absolute top-0 left-0 z-9 maplibregl-ctrl maplibregl-ctrl-scale font-600 !py-2 !px-6 !text-11 font-helvetica"
     >
       at {format(new Date(latestTime * 1000), "p")}
     </div>
@@ -105,7 +71,7 @@
 
   <MapLibre
     class="light w-full min-h-290 h-290"
-    {style}
+    style={myStyle as StyleSpecification}
     zoom={7.4}
     center={lonLat}
     maxZoom={7.4}
@@ -117,13 +83,17 @@
         tiles={[radarUrl]}
         tileSize={512}
       >
-        <RasterLayer id="rainviewer-layer" paint={{ "raster-opacity": 0.9 }} />
+        <RasterLayer id="rainviewer-layer" paint={{ "raster-opacity": 1.0 }} />
       </RasterTileSource>
     {/if}
 
+    <RasterDEMTileSource url="https://tiles.mapterhorn.com/tilejson.json">
+      <HillshadeLayer paint={{ "hillshade-exaggeration": 0.3 }} />
+    </RasterDEMTileSource>
+
     <FullScreenControl position="top-right" />
     <Marker lnglat={lonLat} scale={0.72} color="#228be6" />
-    <NavigationControl />
+    <NavigationControl showCompass={false} />
     <ScaleControl />
     <GlobeControl />
   </MapLibre>
