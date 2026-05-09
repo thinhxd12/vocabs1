@@ -236,7 +236,7 @@
       "source": "protomaps",
       "source-layer": "water",
       "filter": ["==", "$type", "Polygon"],
-      "paint": {"fill-color": "rgba(0, 54, 163, 0.24)"}
+      "paint": {"fill-color": "#88b1c3"}
     },
     {
       "id": "water_stream",
@@ -252,7 +252,7 @@
       "type": "line",
       "source": "protomaps",
       "source-layer": "water",
-      "minzoom": 9,
+      "minzoom": 5,
       "filter": ["in", "kind", "river"],
       "paint": {
         "line-color": "#80deea",
@@ -1059,7 +1059,7 @@
       "filter": [">", "kind_detail", 2],
       "paint": {
         "line-color": "#adadad",
-        "line-width": 0.6,
+        "line-width": 0.9,
         "line-dasharray": [
           "step",
           ["zoom"],
@@ -3588,7 +3588,7 @@
       "type": "symbol",
       "source": "protomaps",
       "source-layer": "places",
-      "filter": ["==", "kind", "locality"],
+      "filter": ["all", ["==", "kind", "locality"]],
       "layout": {
         "icon-image": ["step", ["zoom"], "townspot", 8, ""],
         "icon-size": 0,
@@ -3972,8 +3972,8 @@
         "text-radial-offset": 0.4
       },
       "paint": {
-        "text-color": "#5c5c5c",
-        "text-halo-color": "#e0e0e0",
+        "text-color": "rgba(0, 0, 0, 1)",
+        "text-halo-color": "rgba(255, 255, 255, 1)",
         "text-halo-width": 1
       }
     },
