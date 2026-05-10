@@ -15,7 +15,7 @@
     RasterDEMTileSource,
   } from "svelte-maplibre-gl";
   import { type StyleSpecification } from "maplibre-gl";
-  import myStyle from "$lib/json/style@440_theme@light_lang@en.json";
+  import myStyle from "$lib/json/positron.json";
 
   // edit basemap style json at https://maplibre.org/maputnik/
 
