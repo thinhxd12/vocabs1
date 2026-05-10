@@ -88,7 +88,7 @@
     {/if}
 
     <RasterDEMTileSource url="https://tiles.mapterhorn.com/tilejson.json">
-      <HillshadeLayer paint={{ "hillshade-exaggeration": 0.3 }} />
+      <HillshadeLayer paint={{ "hillshade-exaggeration": 0.1 }} />
     </RasterDEMTileSource>
 
     <FullScreenControl position="top-right" />

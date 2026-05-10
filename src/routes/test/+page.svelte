@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Rainviewer from "$lib/components/Rainviewer.svelte";
+
   const timeZoneFormatterCache = new Map<string, Intl.DateTimeFormat>();
 
   const getTimeZoneFormatter = (timeZone: string) => {
@@ -42,6 +44,7 @@
 <div
   class="absolute w-full h-full z-10 flex flex-col justify-center items-center"
 >
+  <Rainviewer />
   <button>click</button>
 </div>
 
