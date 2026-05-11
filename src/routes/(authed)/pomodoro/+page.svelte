@@ -145,6 +145,7 @@
     if (e.key.toLocaleLowerCase() === "m") {
       handleMuteAudio();
     }
+    pauseAudio.set(true);
   }
 </script>
 
