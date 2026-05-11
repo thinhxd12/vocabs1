@@ -133,6 +133,7 @@
     } else {
       $showPomodoroTimer = true;
     }
+    pauseAudio.set(true);
   });
 
   function onKeyDown(e: KeyboardEvent) {
