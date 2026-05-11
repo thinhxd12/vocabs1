@@ -1,7 +1,7 @@
 <script lang="ts">
   import { currentLocationId, locationList } from "$lib/store/layoutstore";
   import { format } from "date-fns";
-  import { untrack } from "svelte";
+  import { onDestroy, onMount, untrack } from "svelte";
   import {
     MapLibre,
     NavigationControl,
@@ -16,30 +16,35 @@
   } from "svelte-maplibre-gl";
   import { type StyleSpecification } from "maplibre-gl";
   import myStyle from "$lib/json/protomaps.json";
-
-  // edit basemap style json at https://maplibre.org/maputnik/
+  // https://maplibre.org/maputnik/
 
   type RainviewerCoord = {
     lng: number;
     lat: number;
   };
 
+  type RadarPast = {
+    time: number;
+    path: string;
+  };
+
   const API_URL = "https://api.rainviewer.com/public/weather-maps.json";
 
+  let interval: ReturnType<typeof setInterval>;
+  let radarHost = $state<string>("");
   let radarUrl = $state<string>("");
-  let latestTime = $state<number>(0);
-  let lonLat = $state<RainviewerCoord>({ lng: 106.395781, lat: 10.583642 });
+  let radarData = $state<RadarPast[]>([]);
+  let animationPosition = $state<number>(0);
+  let lonLat = $state<RainviewerCoord>({ lng: 51.5074, lat: -0.1278 });
 
   async function loadData() {
     const response = await fetch(API_URL);
     if (response.status === 200) {
-      let data = await response.json();
-      const latestData = data.radar.past[data.radar.past.length - 1];
-      latestTime = latestData.time;
-      const host = data.host;
-      radarUrl = `${host}${latestData.path}/512/{z}/{x}/{y}/2/1_1.png`;
-    } else {
-      radarUrl = "";
+      const data = await response.json();
+      radarHost = data.host;
+      radarData = data.radar.past;
+      animationPosition = data.radar.past.length - 1;
+      showFrame();
     }
   }
 
@@ -54,19 +59,49 @@
           lng: Number(currentLocation.longitude),
           lat: Number(currentLocation.latitude),
         };
-        loadData();
       }
     });
+  });
+
+  onMount(() => {
+    loadData();
+  });
+
+  function playStop() {
+    clearInterval(interval);
+    animationPosition = 0;
+    interval = setInterval(updateFrame, 500);
+  }
+
+  function updateFrame() {
+    animationPosition++;
+    if (animationPosition >= radarData.length) {
+      clearInterval(interval);
+      animationPosition = radarData.length - 1;
+    }
+    showFrame();
+  }
+
+  function showFrame() {
+    radarUrl =
+      radarHost +
+      radarData[animationPosition].path +
+      "/512/{z}/{x}/{y}/2/1_1.png";
+  }
+
+  onDestroy(() => {
+    clearInterval(interval);
   });
 </script>
 
 <div class="relative flex flex-col w-main">
-  {#if latestTime}
-    <div
+  {#if radarData.length}
+    <button
       class="absolute top-0 left-0 z-9 maplibregl-ctrl maplibregl-ctrl-scale font-600 !py-2 !px-6 !text-11 font-helvetica"
+      onclick={playStop}
     >
-      at {format(new Date(latestTime * 1000), "p")}
-    </div>
+      at {format(new Date(radarData[animationPosition].time * 1000), "p")}
+    </button>
   {/if}
 
   <MapLibre
@@ -77,13 +112,20 @@
     maxZoom={7.4}
     attributionControl={false}
   >
-    {#if radarUrl}
+    {#if radarData.length}
       <RasterTileSource
         id="rainviewer-source"
         tiles={[radarUrl]}
         tileSize={512}
       >
-        <RasterLayer id="rainviewer-layer" paint={{ "raster-opacity": 1.0 }} />
+        <RasterLayer
+          id="rainviewer-layer"
+          paint={{
+            "raster-opacity": 0.9,
+            "raster-opacity-transition": { duration: 0, delay: 0 },
+            "raster-fade-duration": 0,
+          }}
+        />
       </RasterTileSource>
     {/if}
 
