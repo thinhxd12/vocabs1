@@ -1,7 +1,13 @@
 <script lang="ts">
   async function name() {
-    const response = await fetch(`/server/gettest`);
-    console.log("🚀 ~ name ~ response:", response)
+    const titleParam = "Discourses and Selected Writings";
+    const authorParam = "Epictetus";
+    const response = await fetch(
+      `/server/getbookinfo?query=${titleParam}&author=${authorParam}`,
+    );
+    const data = await response.json();
+    console.log("🚀 ~ name ~ response:", response);
+    console.log("🚀 ~ name ~ data:", data)
   }
 </script>
 

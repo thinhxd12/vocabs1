@@ -1,9 +1,6 @@
 import type { BookDetailType } from "$lib/types";
 import { error } from "@sveltejs/kit";
 import { load, type Cheerio, type CheerioAPI } from "cheerio";
-import puppeteer from "puppeteer-extra";
-import Adblocker from "puppeteer-extra-plugin-adblocker";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 type BookSearchType = {
   title: string | null;
@@ -28,36 +25,6 @@ export async function GET({ url }) {
   } catch (e) {
     error(404);
   }
-}
-
-/**
- * Initialize a new browser page with common settings
- * @returns {Promise<{browser: Browser, page: Page}>}
- */
-
-async function initializeBrowser() {
-  puppeteer.use(Adblocker({ blockTrackers: true })).use(StealthPlugin());
-  const browser = await puppeteer.launch({
-    headless: true,
-  });
-  const page = await browser.newPage();
-  return { browser, page };
-}
-
-/**
- * Navigate to the search page and wait for results
- * @param {Page} page - Puppeteer page object
- * @param {string} url - Search URL
- * @param {string} query - Search query
- * @param {string} searchType - Type of search
- * @param {string} searchField - Field being searched
- */
-async function navigateToSearchPage(page: any, url: any) {
-  await page.goto(url, { waitUntil: "networkidle2" });
-  await page.waitForSelector('tr[itemtype="http://schema.org/Book"]', {
-    visible: true,
-    timeout: 10000,
-  });
 }
 
 // https://www.npmjs.com/package/goodreads-cli
@@ -95,21 +62,41 @@ async function searchBook(
   searchType = "books",
   searchField = "all",
 ) {
-  const { browser, page } = await initializeBrowser();
-
-  try {
-    const searchUrl = buildSearchUrl(query, searchType, searchField);
-    await navigateToSearchPage(page, searchUrl);
-
-    const html = await page.content();
+  const searchUrl = buildSearchUrl(query, searchType, searchField);
+  const html = await getSearchResultHtml(searchUrl);
+  if (html) {
     const searchResult = parseSearchResults(html, author);
     if (searchResult && searchResult.goodreadsId) {
-      const bookInfo = await lookupBook(page, searchResult.goodreadsId);
+      const bookInfo = await lookupBook(searchResult.goodreadsId);
       return bookInfo;
     }
-    return null;
-  } finally {
-    await browser.close();
+  }
+  return null;
+}
+
+async function getSearchResultHtml(pageurl: string) {
+  const url = "https://api.firecrawl.dev/v2/scrape";
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer fc-3e726e5198464320a5fbac65c2e1e7a9",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url: pageurl,
+      onlyMainContent: false,
+      maxAge: 172800000,
+      parsers: ["pdf"],
+      formats: ["html"],
+    }),
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const json = await response.json();
+    return json.data.html;
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -224,12 +211,9 @@ function initializeBookObject($el: Cheerio<any>) {
  * @param {string} goodreadsId - ID of the book to look up
  * @returns {Promise<Object>} Book details
  */
-async function lookupBook(page: any, goodreadsId: string) {
-  await navigateToBookPage(page, goodreadsId);
-  await handleBookDetailsExpansion(page);
-
-  const html = await page.content();
-  return parseBookDetails(html);
+async function lookupBook(goodreadsId: string) {
+  const htmlText = await navigateToBookPage(goodreadsId);
+  return parseBookDetails(htmlText);
 }
 
 /**
@@ -237,72 +221,12 @@ async function lookupBook(page: any, goodreadsId: string) {
  * @param {Page} page - Puppeteer page object
  * @param {string} goodreadsId - ID of the book to look up
  */
-async function navigateToBookPage(page: any, goodreadsId: string) {
+async function navigateToBookPage(goodreadsId: string) {
   const url = `${BASE_DETAIL_URL}${goodreadsId}`;
 
-  await page.goto(url, {
-    waitUntil: ["load", "networkidle0"],
-    timeout: 30000,
-  });
-
-  await page.waitForSelector(".BookPageMetadataSection", {
-    visible: true,
-    timeout: 10000,
-  });
-  await page.evaluate(
-    () => new Promise((resolve) => setTimeout(resolve, 1000)),
-  );
-}
-
-/**
- * Handle the book details expansion if necessary
- * @param {Page} page - Puppeteer page object
- */
-async function handleBookDetailsExpansion(page: any) {
-  const [detailsButton] = await Promise.all([
-    page
-      .waitForSelector('button[aria-label="Book details and editions"]', {
-        visible: true,
-        timeout: 10000,
-      })
-      .catch(() => null),
-    page
-      .waitForSelector(".EditionDetails", { visible: true, timeout: 10000 })
-      .catch(() => null),
-  ]);
-
-  if (detailsButton) {
-    await Promise.all([
-      page
-        .waitForNavigation({ waitUntil: "networkidle0", timeout: 10000 })
-        .catch(() => {}),
-      detailsButton.click(),
-    ]);
-
-    await page
-      .waitForSelector(".EditionDetails", { visible: true, timeout: 10000 })
-      .catch(() => {});
-  }
-
-  // Add new code to handle the "...more" button for genres
-  const moreGenresButton = await page
-    .waitForSelector(
-      '.BookPageMetadataSection__genres button[aria-label="Show all items in the list"]',
-      { timeout: 5000 },
-    )
-    .catch(() => null);
-
-  if (moreGenresButton) {
-    await moreGenresButton.click();
-    // Wait a moment for new genres to load
-    await page.evaluate(
-      () => new Promise((resolve) => setTimeout(resolve, 500)),
-    );
-  }
-
-  await page.evaluate(
-    () => new Promise((resolve) => setTimeout(resolve, 2000)),
-  );
+  const response = await fetch(url);
+  const responseText = await response.text();
+  return responseText;
 }
 
 /**
