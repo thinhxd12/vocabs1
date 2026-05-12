@@ -230,7 +230,7 @@
 
   async function handleSetBookmark(data: DBSelect["bookmark_table"]) {
     handleCloseBook(data);
-    if (data.bookTile !== $highlight?.bookTile) {
+    if (data.bookTile !== $highlight?.bookTile || !$bookInfo) {
       handleGetBookInfo(data);
     }
 
@@ -529,12 +529,13 @@
   }
 
   async function handleUpdateNote() {
-    if (noteContent !== $highlight!.note) {
-      $highlight!.note = noteContent;
+    if (!$highlight) return;
+    if (noteContent !== $highlight.note) {
+      $highlight.note = noteContent;
       const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ note: noteContent })
-        .eq("id", $highlight!.id);
+        .eq("id", $highlight.id);
 
       if (error) {
         addToast({

@@ -165,6 +165,7 @@
       >
         <p
           class="w-full break-words text-center font-constantine text-21 font-700 uppercase leading-28"
+          class:right={answer === $quizRender.word}
         >
           {answer}
         </p>
@@ -206,5 +207,9 @@
 
   .quiz-choice-false {
     @apply cursor-pointer w-full h-36 rounded-2 select-none overflow-hidden text-center text-15 leading-18 !bg-red-500/60 font-400;
+  }
+
+  .right {
+    @apply text-green-300;
   }
 </style>
