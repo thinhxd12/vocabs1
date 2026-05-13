@@ -1,13 +1,12 @@
 <script lang="ts">
   async function name() {
+    console.time("label");
     const titleParam = "Discourses and Selected Writings";
     const authorParam = "Epictetus";
     const response = await fetch(
       `/server/getbookinfo?query=${titleParam}&author=${authorParam}`,
     );
-    const data = await response.json();
-    console.log("🚀 ~ name ~ response:", response);
-    console.log("🚀 ~ name ~ data:", data)
+    console.timeEnd("label");
   }
 </script>
 

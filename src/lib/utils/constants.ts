@@ -25,6 +25,7 @@ export const URL_IMAGE_MAIN_PAGE =
   "https://www.getdailyart.com/en/21/paul-signac/the-red-buoy-saint-tropez";
 
 export const DEFAULT_CORS_PROXY = "https://mywebapp.abcworker.workers.dev/";
+export  const SCRAPER_API_URL = "https://render-s90n.onrender.com";
 
 export const mapTables = {
   vocabulary: "vocabulary",

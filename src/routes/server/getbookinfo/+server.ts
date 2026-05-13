@@ -1,6 +1,8 @@
 import type { BookDetailType } from "$lib/types";
+import { SCRAPER_API_URL } from "$lib/utils/constants";
 import { error } from "@sveltejs/kit";
 import { load, type Cheerio, type CheerioAPI } from "cheerio";
+import { SCRAPER_SECRET_KEY } from "$env/static/private";
 
 type BookSearchType = {
   title: string | null;
@@ -15,8 +17,8 @@ type BookSearchType = {
 export async function GET({ url }) {
   const query = url.searchParams.get("query");
   const author = url.searchParams.get("author");
-  if (!query) error(400, "not found");
-  if (!author) error(400, "not found");
+  if (!query) error(400, "not found query");
+  if (!author) error(400, "not found author");
 
   try {
     const info = await searchBook(query, author);
@@ -63,7 +65,7 @@ async function searchBook(
   searchField = "all",
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
-  const html = await getSearchResultHtml(searchUrl);
+  const html = await getHtmlMethod1(searchUrl);
   if (html) {
     const searchResult = parseSearchResults(html, author);
     if (searchResult && searchResult.goodreadsId) {
@@ -74,7 +76,7 @@ async function searchBook(
   return null;
 }
 
-async function getSearchResultHtml(pageurl: string) {
+async function getHtmlMethod1(pageurl: string) {
   const url = "https://api.firecrawl.dev/v2/scrape";
   const options = {
     method: "POST",
@@ -98,6 +100,22 @@ async function getSearchResultHtml(pageurl: string) {
   } catch (error) {
     console.error(error);
   }
+}
+
+async function getHtmlMethod2(pageurl: string) {
+  const response = await fetch(`${SCRAPER_API_URL}/api/scrape`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Scraper-Key": SCRAPER_SECRET_KEY,
+    },
+    body: JSON.stringify({ url: pageurl }),
+  });
+  const data = await response.json();
+  if (data.success) {
+    return data.html;
+  }
+  return "";
 }
 
 /**
