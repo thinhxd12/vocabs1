@@ -65,7 +65,9 @@ async function searchBook(
   searchField = "all",
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
-  const html = await getHtmlMethod1(searchUrl);
+
+  let html = await getHtmlMethod1(searchUrl);
+  if (!html) html = await getHtmlMethod2(searchUrl);
   if (html) {
     const searchResult = parseSearchResults(html, author);
     if (searchResult && searchResult.goodreadsId) {
@@ -77,6 +79,22 @@ async function searchBook(
 }
 
 async function getHtmlMethod1(pageurl: string) {
+  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Scraper-Key": SCRAPER_SECRET_KEY,
+    },
+    body: JSON.stringify({ url: pageurl }),
+  });
+  const data = await response.json();
+  if (data.success) {
+    return data.html;
+  }
+  return "";
+}
+
+async function getHtmlMethod2(pageurl: string) {
   const url = "https://api.firecrawl.dev/v2/scrape";
   const options = {
     method: "POST",
@@ -93,27 +111,10 @@ async function getHtmlMethod1(pageurl: string) {
     }),
   };
 
-  try {
-    const response = await fetch(url, options);
+  const response = await fetch(url, options);
+  if (response.status === 200) {
     const json = await response.json();
     return json.data.html;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function getHtmlMethod2(pageurl: string) {
-  const response = await fetch(`${SCRAPER_API_URL}/api/scrape`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Scraper-Key": SCRAPER_SECRET_KEY,
-    },
-    body: JSON.stringify({ url: pageurl }),
-  });
-  const data = await response.json();
-  if (data.success) {
-    return data.html;
   }
   return "";
 }
