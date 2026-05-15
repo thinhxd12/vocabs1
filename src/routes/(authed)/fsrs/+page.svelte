@@ -262,20 +262,20 @@
   <div class="flex-1"></div>
 
   <div
-    class="mainContent relative min-h-178 max-h-[calc(100vh-44px-64px)] w-full rounded-2"
+    class="main text-white relative min-h-178 max-h-[calc(100vh-44px-64px)] w-full rounded-2"
   >
-    {#if showTranslate}
+    {#if showTranslate && translations.length}
       <div
-        class="mainContent w-full h-full overflow-y-scroll no-scrollbar px-30 py-21"
+        class="main w-full h-full overflow-y-scroll no-scrollbar px-30 py-21"
       >
         {#each translations as item}
           <h3
-            class="text-14 font-600 leading-24 uppercase [&:not(:first-of-type)]:mt-6"
+            class="text-16 font-800 leading-24 italic [&:not(:first-of-type)]:mt-9"
           >
             {item.partOfSpeech}
           </h3>
           {#each item.translation as el}
-            <p class="text-14 leading-18 indent-15 font-500">{el}</p>
+            <p class="text-13 leading-18 indent-15 font-500">{el}</p>
           {/each}
         {/each}
       </div>
@@ -433,16 +433,13 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
-  .btn-layout {
-    @apply size-20 flex items-center justify-center outline-none overflow-hidden bg-black/20 border border-black/10 text-black text-12 leading-18 rounded-2 hover:bg-black/25 shadow-sm shadow-black/30;
-    backdrop-filter: blur(12px);
+  .main {
+    background: url("$lib/assets/images/clock.png");
+    background-attachment: local;
   }
 
-  .mainContent {
-    background: url("$lib/assets/images/paper.webp");
-    background-size: cover;
-    background-position: top center;
-    background-attachment: local;
+  .btn-layout {
+    @apply size-20 flex items-center justify-center outline-none overflow-hidden border border-black/10 text-[#71767b] text-12 leading-18 rounded-2 hover:text-[#00ba7c];
   }
 
   .btn-main {

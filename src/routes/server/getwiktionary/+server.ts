@@ -1,4 +1,6 @@
+import { SCRAPER_SECRET_KEY } from "$env/static/private";
 import type { WikiTranslationType } from "$lib/types";
+import { SCRAPER_API_URL } from "$lib/utils/constants";
 import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
 
@@ -16,6 +18,22 @@ async function fetchGetText(url: string) {
   }
 }
 
+async function getHtmlMethod(pageurl: string) {
+  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Scraper-Key": SCRAPER_SECRET_KEY,
+    },
+    body: JSON.stringify({ url: pageurl }),
+  });
+  const data = await response.json();
+  if (data.success) {
+    return data.html;
+  }
+  return "";
+}
+
 export async function GET({ url }) {
   const word = url.searchParams.get("word");
   if (!word) error(404);
@@ -23,7 +41,10 @@ export async function GET({ url }) {
   try {
     const urlWiki = `https://vi.wiktionary.org/w/rest.php/v1/page/${word}/html`;
 
-    const html = await fetchGetText(urlWiki);
+    let html = await fetchGetText(urlWiki);
+    const L = load(html);
+    const title = L("title").text();
+    if (title === "Wikimedia Error") html = await getHtmlMethod(urlWiki);
     const $ = load(html);
     let result: WikiTranslationType[] = [];
     $("section").each((index, element) => {
