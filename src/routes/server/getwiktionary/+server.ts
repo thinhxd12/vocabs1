@@ -11,42 +11,47 @@ async function fetchGetText(url: string) {
         "cache-control": "no-cache",
       },
     });
-    let text = await response.text();
-    return text;
+    let html = await response.text();
+    if (html.includes("Wikimedia Error")) {
+      throw new Error();
+    }
+    return html;
   } catch (error) {
-    return "";
+    console.error(error);
   }
 }
 
 async function getHtmlMethod(pageurl: string) {
-  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Scraper-Key": SCRAPER_SECRET_KEY,
-    },
-    body: JSON.stringify({ url: pageurl }),
-  });
-  const data = await response.json();
-  if (data.success) {
-    return data.html;
+  try {
+    const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Scraper-Key": SCRAPER_SECRET_KEY,
+      },
+      body: JSON.stringify({ url: pageurl }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      return data.html;
+    } else throw new Error();
+  } catch (error) {
+    console.error(error);
   }
-  return "";
 }
 
 export async function GET({ url }) {
   const word = url.searchParams.get("word");
   if (!word) error(404);
+  const urlWiki = `https://vi.wiktionary.org/w/rest.php/v1/page/${word}/html`;
 
   try {
-    const urlWiki = `https://vi.wiktionary.org/w/rest.php/v1/page/${word}/html`;
-
-    let html = await fetchGetText(urlWiki);
-    const L = load(html);
-    const title = L("title").text();
-    if (title === "Wikimedia Error") html = await getHtmlMethod(urlWiki);
-    const $ = load(html);
+    const html = await Promise.any([
+      fetchGetText(urlWiki),
+      getHtmlMethod(urlWiki),
+    ]);
     let result: WikiTranslationType[] = [];
+    const $ = load(html);
     $("section").each((index, element) => {
       const partOfSpeech = $(element).find("h3").text();
       const translation = $(element)
@@ -80,6 +85,6 @@ export async function GET({ url }) {
 
     return new Response(JSON.stringify(result));
   } catch (error) {
-    console.error(error);
+    return new Response(JSON.stringify([]));
   }
 }

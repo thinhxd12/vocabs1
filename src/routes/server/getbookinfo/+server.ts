@@ -65,58 +65,72 @@ async function searchBook(
   searchField = "all",
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
-
-  let html = await getHtmlMethod1(searchUrl);
-  if (!html) html = await getHtmlMethod2(searchUrl);
-  if (html) {
+  try {
+    const html = await Promise.any([
+      getHtmlMethod1(searchUrl),
+      getHtmlMethod2(searchUrl),
+    ]);
     const searchResult = parseSearchResults(html, author);
     if (searchResult && searchResult.goodreadsId) {
       const bookInfo = await lookupBook(searchResult.goodreadsId);
       return bookInfo;
     }
+  } catch (error) {
+    return null;
   }
-  return null;
 }
 
 async function getHtmlMethod1(pageurl: string) {
-  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Scraper-Key": SCRAPER_SECRET_KEY,
-    },
-    body: JSON.stringify({ url: pageurl }),
-  });
-  const data = await response.json();
-  if (data.success) {
-    return data.html;
+  try {
+    const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Scraper-Key": SCRAPER_SECRET_KEY,
+      },
+      body: JSON.stringify({ url: pageurl }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      const html = data.html;
+      if (html.includes("tableList")) {
+        return html;
+      } else throw new Error();
+    } else throw new Error();
+  } catch (error) {
+    console.error(error);
   }
-  return "";
 }
 
 async function getHtmlMethod2(pageurl: string) {
-  const url = "https://api.firecrawl.dev/v2/scrape";
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer fc-3e726e5198464320a5fbac65c2e1e7a9",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      url: pageurl,
-      onlyMainContent: false,
-      maxAge: 172800000,
-      parsers: ["pdf"],
-      formats: ["html"],
-    }),
-  };
+  try {
+    const url = "https://api.firecrawl.dev/v2/scrape";
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer fc-3e726e5198464320a5fbac65c2e1e7a9",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: pageurl,
+        onlyMainContent: false,
+        maxAge: 172800000,
+        parsers: ["pdf"],
+        formats: ["html"],
+      }),
+    };
 
-  const response = await fetch(url, options);
-  if (response.status === 200) {
-    const json = await response.json();
-    return json.data.html;
+    const response = await fetch(url, options);
+    if (response.status === 200) {
+      const json = await response.json();
+      const html = json.data.html;
+      if (html.includes("tableList")) {
+        return html;
+      } else throw new Error();
+    } else throw new Error();
+  } catch (error) {
+    console.error(error);
   }
-  return "";
 }
 
 /**

@@ -122,6 +122,9 @@
       setBookContent($highlight.content);
       noteContent = $highlight.note;
       resetRenderBookmark();
+      if (!$bookInfo) {
+        handleGetBookInfo($highlight);
+      }
     } else {
       handleGetCurrentBookmark();
     }
