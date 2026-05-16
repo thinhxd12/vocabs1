@@ -25,6 +25,7 @@
   import { saveUserSetting } from "$lib/store/localstore";
   import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
+  import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -196,11 +197,20 @@
     }
   }
 
+  async function handlePlayAudio() {
+    paused0 = true;
+    src0 = `https://vocabs3.vercel.app/public/speech?text=${currentWord}`;
+    paused0 = false;
+  }
+
   function onKeyDown(e: KeyboardEvent) {
     if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
     switch (true) {
       case e.key === " ":
         handleShowTranslate();
+        if (showTranslate) {
+          handlePlayAudio();
+        }
         break;
       case e.key === "1":
         handleRate(previews![Rating.Again].card, Rating.Again);
@@ -290,7 +300,9 @@
           </p>
         {/key}
 
-        <p class="absolute bottom-1 left-3 text-11 leading-15 font-500">
+        <p
+          class="absolute bottom-1 left-0 right-0 text-11 leading-15 font-500 text-center"
+        >
           {format(
             $listCardContent[$listCardCount].created_at,
             "cccc, yyyy-MM-dd' at 'p",
@@ -351,13 +363,23 @@
 
     {#if currentWord !== ""}
       <button
-        class=" btn-layout absolute right-3 bottom-3"
+        class=" btn-layout absolute left-3 bottom-3"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowTranslate();
         }}
       >
         <BiTranslate width="14" height="14" />
+      </button>
+
+      <button
+        class=" btn-layout absolute right-3 bottom-3"
+        onclick={(e) => {
+          e.currentTarget.blur();
+          handlePlayAudio();
+        }}
+      >
+        <MaterialSymbolsVolumeUpRounded width="14" height="14" />
       </button>
     {/if}
   </div>
