@@ -66,10 +66,11 @@ async function searchBook(
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
   try {
-    const html = await Promise.any([
-      getHtmlMethod1(searchUrl),
-      getHtmlMethod2(searchUrl),
-    ]);
+    // const html = await Promise.any([
+    //   getHtmlMethod1(searchUrl),
+    //   getHtmlMethod2(searchUrl),
+    // ]);
+    const html = await getHtmlMethod1(searchUrl);
     const searchResult = parseSearchResults(html, author);
     if (searchResult && searchResult.goodreadsId) {
       const bookInfo = await lookupBook(searchResult.goodreadsId);
