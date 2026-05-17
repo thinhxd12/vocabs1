@@ -17,9 +17,10 @@
   }
 
   async function name1() {
-    const response = await fetch(`${SCRAPER_API_URL}/healthz`);
+    const url = `/server/getwiktionary?word=pesticide`;
+    const response = await fetch(url);
     const data = await response.json();
-    console.log("🚀 ~ name ~ data:", data);
+    console.log("🚀 ~ name1 ~ data:", data)
   }
 </script>
 

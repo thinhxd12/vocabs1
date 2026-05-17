@@ -40,7 +40,7 @@ export async function GET({ url }) {
 
   html = await Promise.any([fetchGetText(urlWiki), getHtmlMethod(urlWiki)]);
   const $ = load(html);
-  $("section").each((index, element) => {
+  $('section[data-mw-section-id="-1"]:first section').each((index, element) => {
     const partOfSpeech = $(element).find("h3").text();
     const translation = $(element)
       .find("h3 ~ ol li")
@@ -49,27 +49,6 @@ export async function GET({ url }) {
     if (partOfSpeech && translation.length)
       result.push({ partOfSpeech, translation });
   });
-
-  result = Object.values(
-    result.slice(1).reduce((acc: any, current: any) => {
-      const existing = acc[current.partOfSpeech];
-
-      if (existing) {
-        acc[current.partOfSpeech] = {
-          ...existing,
-          ...current,
-          translation: [
-            ...(existing.translation || []),
-            ...(current.translation || []),
-          ],
-        };
-      } else {
-        acc[current.partOfSpeech] = current;
-      }
-
-      return acc;
-    }, {}),
-  );
 
   return new Response(JSON.stringify(result));
 }
