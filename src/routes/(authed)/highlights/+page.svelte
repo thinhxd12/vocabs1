@@ -53,9 +53,9 @@
 
   let flipCover = $state<boolean>(false);
 
-  let flipTimeoutId: string | number | NodeJS.Timeout | undefined;
-  let flagTimeoutId: string | number | NodeJS.Timeout | undefined;
-  let keyDownTimeoutId: string | number | NodeJS.Timeout | undefined;
+  let flipTimeoutId: any;
+  let flagTimeoutId: any;
+  let keyDownTimeoutId: any;
   let currentPage = $state<number>(0);
   let flipPages = $state<BookPageContentType[]>([
     {
@@ -251,6 +251,7 @@
   }
 
   async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
+    bookInfo.set(undefined);
     let titleParam = data.bookTile;
     let authorParam = data.authors.split(";")[0];
 

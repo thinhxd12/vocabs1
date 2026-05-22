@@ -1,4 +1,4 @@
-import { SCRAPER_SECRET_KEY } from "$env/static/private";
+import { SECRET_SCRAPER_KEY } from "$env/static/private";
 import type { WikiTranslationType } from "$lib/types";
 import { SCRAPER_API_URL } from "$lib/utils/constants";
 import { error } from "@sveltejs/kit";
@@ -21,7 +21,7 @@ async function getHtmlMethod(pageurl: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Scraper-Key": SCRAPER_SECRET_KEY,
+      "X-Scraper-Key": SECRET_SCRAPER_KEY,
     },
     body: JSON.stringify({ url: pageurl }),
   });

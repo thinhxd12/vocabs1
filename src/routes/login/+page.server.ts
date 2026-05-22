@@ -2,11 +2,12 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { dev } from "$app/environment";
 import type { LayoutServerLoad } from "../$types";
+import { SECRET_LOGIN_EMAIL } from "$env/static/private";
 
 export const actions = {
   signin: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
-    const email = import.meta.env.VITE_LOGIN_EMAIL;
+    const email = SECRET_LOGIN_EMAIL;
     const password = formData.get("password") as string;
 
     if (password.length < 6) {

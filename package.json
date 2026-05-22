@@ -30,7 +30,7 @@
     "@darylserrano/kindle-clippings": "^2.2.5",
     "@open-spaced-repetition/binding": "^0.3.0",
     "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.48.0",
+    "@supabase/supabase-js": "^2.106.1",
     "cheerio": "^1.0.0",
     "date-fns": "^4.1.0",
     "sharp": "^0.33.5",

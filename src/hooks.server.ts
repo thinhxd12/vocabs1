@@ -1,13 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { redirect, type Handle } from "@sveltejs/kit";
-const PUBLIC_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const PUBLIC_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+import {
+  PUBLIC_SUPABASE_URL,
+  PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+} from "$env/static/public";
+
 const unProtectedRoutes = ["/login"];
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.supabase = createServerClient(
     PUBLIC_SUPABASE_URL,
-    PUBLIC_SUPABASE_ANON_KEY,
+    PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll: () => event.cookies.getAll(),
