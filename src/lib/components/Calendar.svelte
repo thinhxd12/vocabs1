@@ -2,10 +2,9 @@
   import type { CalendarDayType, DBSelect } from "$lib/types";
   import { format } from "date-fns";
   import { untrack } from "svelte";
-  import MingcuteUpLine from "~icons/mingcute/up-line";
-  import MingcuteDownLine from "~icons/mingcute/down-line";
   import { fly } from "svelte/transition";
-
+  import SolarArrowLeftBold from "~icons/solar/arrow-left-bold";
+  import SolarArrowRightBold from "~icons/solar/arrow-right-bold";
   import January from "$lib/assets/images/1.webp";
   import February from "$lib/assets/images/2.webp";
   import March from "$lib/assets/images/3.webp";
@@ -192,19 +191,19 @@
               {monthNames[month]}
               {year}</span
             >
-            <span class="flex items-center">
+            <span class="flex items-center gap-3">
               <button
                 onclick={prev}
                 class="size-24 flex items-center justify-center hover:text-white"
               >
-                <MingcuteUpLine width="16" height="16" />
+                <SolarArrowLeftBold width="16" height="16" />
               </button>
 
               <button
                 onclick={next}
                 class="size-24 flex items-center justify-center hover:text-white"
               >
-                <MingcuteDownLine width="16" height="16" />
+                <SolarArrowRightBold width="16" height="16" />
               </button>
             </span>
           </div>

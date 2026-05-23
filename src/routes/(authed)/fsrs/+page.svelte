@@ -26,6 +26,7 @@
   import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
+  import mainBG from "$lib/assets/images/jungle.webp";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -268,49 +269,8 @@
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 
-<Container>
-  <div class="flex-1"></div>
-
-  <div
-    class="main text-white relative min-h-178 max-h-[calc(100vh-44px-64px)] w-full rounded-2"
-  >
-    {#if showTranslate && translations.length}
-      <div
-        class="main w-full h-full overflow-y-scroll no-scrollbar px-30 py-21"
-      >
-        {#each translations as item}
-          <h3
-            class="text-16 font-800 leading-24 italic [&:not(:first-of-type)]:mt-9"
-          >
-            {item.partOfSpeech}
-          </h3>
-          {#each item.translation as el}
-            <p class="text-13 leading-18 indent-15 font-500">{el}</p>
-          {/each}
-        {/each}
-      </div>
-    {:else if currentWord}
-      <div class="relative w-full h-full flex items-center justify-center">
-        {#key currentWord}
-          <p
-            class="w-full break-words text-center font-constantine text-24 font-700 uppercase leading-30"
-            in:fly={{ y: -30, duration: 600 }}
-          >
-            {currentWord}
-          </p>
-        {/key}
-
-        <p
-          class="absolute bottom-1 left-0 right-0 text-11 leading-15 font-500 text-center"
-        >
-          {format(
-            $listCardContent[$listCardCount].created_at,
-            "cccc, yyyy-MM-dd' at 'p",
-          )}
-        </p>
-      </div>
-    {/if}
-
+<Container fullscreen>
+  <div class="w-main flex-1 flex justify-end items-start gap-3 pt-3">
     <form
       method="post"
       action="?/optimize"
@@ -341,29 +301,31 @@
         hidden
       />
       <button
-        class="btn-layout absolute left-3 top-3"
+        class="setting-button"
         type="submit"
         onclick={(e) => {
           e.currentTarget.blur();
         }}
       >
-        <RiMagicFill width="16" height="16" />
+        <RiMagicFill width="14" height="14" />
       </button>
     </form>
 
     <button
-      class="btn-layout absolute right-3 top-3"
+      class="setting-button"
       onclick={(e) => {
         e.currentTarget.blur();
         getList();
       }}
     >
-      <PhListStar width="16" height="16" />
+      <PhListStar width="14" height="14" />
     </button>
+
+    <div class="flex-1"></div>
 
     {#if currentWord !== ""}
       <button
-        class=" btn-layout absolute left-3 bottom-3"
+        class="setting-button"
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowTranslate();
@@ -373,7 +335,7 @@
       </button>
 
       <button
-        class=" btn-layout absolute right-3 bottom-3"
+        class="setting-button"
         onclick={(e) => {
           e.currentTarget.blur();
           handlePlayAudio();
@@ -384,68 +346,113 @@
     {/if}
   </div>
 
-  <div class="w-full flex-1 flex items-end">
-    <div class="w-full flex rounded-2 overflow-hidden">
+  <div class="flex-1 w-full flex justify-center items-center">
+    <div class="circle">
+      <div class="square">
+        <img
+          src={mainBG}
+          alt="bg"
+          class="absolute z-1 object-cover w-full h-full"
+        />
+
+        {#if showTranslate && translations.length}
+          <div
+            class="relative z-3 text-white w-full h-full flex flex-col justify-center overflow-y-scroll no-scrollbar p-15"
+            style="text-shadow: 0 0 3px black;"
+          >
+            {#each translations as item}
+              <h3
+                class="text-16 font-800 leading-24 italic [&:not(:first-of-type)]:mt-9"
+              >
+                {item.partOfSpeech}
+              </h3>
+              {#each item.translation as el}
+                <p class="text-13 leading-18 indent-15 font-500">{el}</p>
+              {/each}
+            {/each}
+          </div>
+        {:else if currentWord}
+          <div
+            class="relative z-3 text-white w-full h-full flex items-center justify-center"
+            style="text-shadow: 0 0 3px black;"
+          >
+            {#key currentWord}
+              <p
+                class="w-full break-words text-center font-constantine text-30 font-700 uppercase leading-36"
+                in:fly={{ y: -30, duration: 600 }}
+              >
+                {currentWord}
+              </p>
+            {/key}
+
+            <p
+              class="absolute bottom-1 left-0 right-0 text-11 leading-15 font-500 text-center"
+            >
+              {format(
+                $listCardContent[$listCardCount].created_at,
+                "cccc, yyyy-MM-dd' at 'p",
+              )}
+            </p>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </div>
+
+  <div class="w-main flex-1 flex items-end">
+    <div class="w-full flex overflow-hidden gap-2">
       {#if previews}
         <button
-          class="bg-green-600 btn-main"
+          class="bg-green-600/80 btn-main"
           class:btnActive={activedButton === 1}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Again].card, Rating.Again);
           }}
         >
-          <div class="mt-6 w-full text-13 leading-14 text-center">
+          <div class="w-full text-11 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Again].card.due)}
           </div>
-          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
-            Again
-          </div>
+          <div class="w-full uppercase text-14 leading-18 font-600">Again</div>
         </button>
         <button
-          class="bg-green-400 btn-main"
+          class="bg-green-400/80 btn-main"
           class:btnActive={activedButton === 2}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Hard].card, Rating.Hard);
           }}
         >
-          <div class="mt-6 w-full text-13 leading-14 text-center">
+          <div class="w-full text-11 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Hard].card.due)}
           </div>
-          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
-            Hard
-          </div>
+          <div class="w-full uppercase text-14 leading-18 font-600">Hard</div>
         </button>
         <button
-          class="bg-green-300 btn-main"
+          class="bg-green-300/80 btn-main"
           class:btnActive={activedButton === 3}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Good].card, Rating.Good);
           }}
         >
-          <div class="mt-6 w-full text-13 leading-14 text-center">
+          <div class="w-full text-11 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Good].card.due)}
           </div>
-          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
-            Good
-          </div>
+          <div class="w-full uppercase text-14 leading-18 font-600">Good</div>
         </button>
         <button
-          class="bg-green-100 btn-main"
+          class="bg-green-100/80 btn-main"
           class:btnActive={activedButton === 4}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Easy].card, Rating.Easy);
           }}
         >
-          <div class="mt-6 w-full text-13 leading-14 text-center">
+          <div class="w-full text-11 leading-14 text-center">
             {calculateTimeDiff(previews[Rating.Easy].card.due)}
           </div>
-          <div class="mb-15 h-24 w-full uppercase text-18 leading-24 font-600">
-            Easy
-          </div>
+          <div class="w-full uppercase text-14 leading-18 font-600">Easy</div>
         </button>
       {/if}
     </div>
@@ -455,20 +462,47 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
-  .main {
-    background: url("$lib/assets/images/clock.png");
-    background-attachment: local;
-  }
-
-  .btn-layout {
-    @apply size-20 flex items-center justify-center outline-none overflow-hidden border border-black/10 text-[#71767b] text-12 leading-18 rounded-2 hover:text-[#00ba7c];
-  }
-
   .btn-main {
-    @apply hover:brightness-[1.1] active:scale-95 flex flex-col flex-1 items-center justify-center;
+    @apply hover:brightness-[1.1] active:scale-95 flex flex-col flex-1 items-center justify-center py-2 rounded-2 border border-white/10;
+    backdrop-filter: blur(12px);
   }
 
   .btnActive {
     @apply scale-95 brightness-[1.1];
+  }
+
+  .setting-button {
+    @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
+    backdrop-filter: blur(12px);
+  }
+
+  .circle {
+    width: 540px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .square {
+    width: 379px;
+    aspect-ratio: 1;
+    border: 3px solid #000000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 500px) {
+    .circle {
+      width: 360px;
+    }
+
+    .square {
+      width: 253px;
+    }
   }
 </style>
