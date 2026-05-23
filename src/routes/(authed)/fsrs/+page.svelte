@@ -357,7 +357,7 @@
 
         {#if showTranslate && translations.length}
           <div
-            class="relative z-3 text-white w-full h-full flex flex-col justify-center overflow-y-scroll no-scrollbar p-15"
+            class="relative z-3 text-white w-full h-full overflow-y-scroll no-scrollbar px-15 pt-110 pb-15"
             style="text-shadow: 0 0 3px black;"
           >
             {#each translations as item}

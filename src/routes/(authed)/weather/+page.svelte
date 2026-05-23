@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, untrack } from "svelte";
+  import { onMount } from "svelte";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import { showTimer } from "$lib/store/navstore";
@@ -30,7 +30,7 @@
     formatTime,
     formatTimeWithMinutes,
   } from "$lib/utils/w-formatting";
-  import type { WeatherQueryParams } from "$lib/types";
+  import type { OpenMeteoResponse, WeatherQueryParams } from "$lib/types";
   import {
     addToast,
     currentForecastModel,
@@ -65,153 +65,11 @@
   };
 
   let sunSVGpath = $state<SVGPathElement>();
-  let hourlyData = $state<HourlyForecast[]>([]);
-  let dailyData = $state<DailyForecast[]>([]);
-  let tempScale = $state<{
-    min: number;
-    max: number;
-    range: number;
-  }>({
-    min: 0,
-    max: 0,
-    range: 0,
-  });
-
-  let currentValues = $state<{
-    icon: string;
-    actual: number;
-    feelsLike: number;
-    actualDescription: string;
-    background: string;
-    forecastStatement: string;
-    lastUpdated: string;
-    feelsLikeDescription: string;
-  }>({
-    icon: "nodata",
-    actual: 0,
-    feelsLike: 0,
-    actualDescription: "No data",
-    background: "",
-    forecastStatement: "No data",
-    lastUpdated: "No data",
-    feelsLikeDescription: "No data",
-  });
-
-  let windValues = $state<{
-    windSpeed: number;
-    windGusts: number;
-    windDirection: number;
-    directionLabel: string;
-    speedUnit: string;
-    image: string;
-    description: string;
-  }>({
-    windSpeed: 0,
-    windGusts: 0,
-    windDirection: 0,
-    directionLabel: "",
-    speedUnit: "km/h",
-    image: "0",
-    description: "",
-  });
-
-  let precipitationValues = $state<{
-    hasPrecipitation: boolean;
-    hasRain: boolean;
-    hasSnow: boolean;
-    formattedRain: string;
-    formattedSnow: string;
-    precipitationDescription: string;
-  }>({
-    hasPrecipitation: false,
-    hasRain: false,
-    hasSnow: false,
-    formattedRain: "mm",
-    formattedSnow: "cm",
-    precipitationDescription: "No data",
-  });
-
-  let pressureValues = $state<{
-    pressureHpa: number;
-    normalizedValue: number;
-    pressureDescription: string;
-  }>({
-    pressureHpa: 0,
-    normalizedValue: 0,
-    pressureDescription: "No data",
-  });
-
-  let humidityValues = $state<{
-    humidity: number;
-    dewPoint: number;
-    humidityDescription: string;
-  }>({
-    humidity: 0,
-    dewPoint: 0,
-    humidityDescription: "No data",
-  });
-
-  let cloudCoverValues = $state<{
-    cloudCover: number;
-    cloudCoverDescription: string;
-  }>({
-    cloudCover: 0,
-    cloudCoverDescription: "No data",
-  });
-
-  let visibilityValues = $state<{
-    visibilityValue: number;
-    visibilityUnit: string;
-    visibilityDescription: string;
-  }>({
-    visibilityValue: 0,
-    visibilityUnit: "No data",
-    visibilityDescription: "No data",
-  });
-
-  let sunValues = $state<{
-    sunrise: string;
-    sunset: string;
-    sunPosition: number;
-  }>({
-    sunrise: "",
-    sunset: "",
-    sunPosition: 0,
-  });
-
-  let aiqValues = $state<{
-    aqi: number;
-    level: string;
-    color: string;
-    description: string;
-  }>({ aqi: 0, level: "None", color: "yellow", description: "No data" });
-
-  let uvValues = $state<{
-    currentUV: number;
-    indicatorPercent: number;
-    level: string;
-    description: string;
-  }>({
-    currentUV: 0,
-    indicatorPercent: 0,
-    level: "No data",
-    description: "No data",
-  });
-
-  let snowValues = $state<{
-    snowDepth: string;
-    description: string;
-    hasSnow: boolean;
-  }>({
-    snowDepth: "0",
-    description: "No data",
-    hasSnow: false,
-  });
 
   onMount(() => {
-    if (!$weatherData) {
-      getCurrentWeatherData();
-    }
+    if ($weatherData) {
+      weather.setData($weatherData);
+    } else getCurrentWeatherData();
   });
 
   async function getCurrentWeatherData() {
@@ -225,321 +83,11 @@
         tempUnit: "c",
         model: $currentForecastModel,
       };
-      $weatherData = await getOpenMeteoWeather(param);
+      const data = await getOpenMeteoWeather(param);
+      $weatherData = data;
+      weather.setData(data);
     }
   }
-
-  function getCurrentConditions() {
-    if ($weatherData) {
-      const {
-        icon: current_icon,
-        description: current_description,
-        background: current_background,
-      } = getWeatherInfo(
-        $weatherData.current.weather_code,
-        $weatherData.current.is_day,
-      );
-      let forecastStatement = generateForecastStatement($weatherData);
-      const now = Date.now();
-      const fulfilledTimeStamp = new Date($weatherData.current.time).getTime();
-      const diffMs = Math.max(0, now - fulfilledTimeStamp);
-      let lastUpdated = formatRelativeFromMs(diffMs);
-
-      const feelsLike = Math.round($weatherData.current.apparent_temperature);
-      const actual = Math.round($weatherData.current.temperature_2m);
-      const feelsLikeDescription = getFeelsLikeDescription(
-        feelsLike,
-        actual,
-        $weatherData.current.wind_speed_10m,
-        $weatherData.current.relative_humidity_2m,
-      );
-
-      currentValues = {
-        icon: current_icon,
-        actualDescription: current_description,
-        background: current_background,
-        actual,
-        feelsLike,
-        forecastStatement,
-        lastUpdated,
-        feelsLikeDescription,
-      };
-
-      let windSpeed = Math.round($weatherData.current.wind_speed_10m || 0);
-      let windGusts = Math.round($weatherData.current.wind_gusts_10m || 0);
-      let windDirection = $weatherData.current.wind_direction_10m || 0;
-      let directionLabel = getWindDirection(windDirection);
-      let windInfo = getBeaufortInfo($weatherData.current.wind_speed_10m || 0);
-
-      windValues = {
-        windSpeed,
-        windGusts,
-        windDirection,
-        directionLabel,
-        speedUnit: "km/h",
-        image: windInfo.level,
-        description: windInfo.description,
-      };
-
-      const tempUnit = "c";
-      const rain = $weatherData.current.rain ?? 0;
-      const showers = $weatherData.current.showers ?? 0;
-      const snowfall = $weatherData.current.snowfall ?? 0;
-
-      // Total liquid precipitation (rain + showers)
-      const totalLiquid = rain + showers;
-
-      // Format values
-      let formattedRain = formatPrecipitation(tempUnit, totalLiquid);
-      let formattedSnow = formatPrecipitation(tempUnit, snowfall);
-
-      // Determine primary precipitation type
-      let hasRain = totalLiquid > 0;
-      let hasSnow = snowfall > 0;
-      let hasPrecipitation = hasRain || hasSnow;
-
-      // Description - optimized with early returns
-      const getDescription = (): string => {
-        if (!hasPrecipitation) return "No precipitation";
-        if (hasRain && hasSnow) return "Mixed precipitation";
-        if (hasRain) return totalLiquid < 0.1 ? "Light rain" : "Rain";
-        return snowfall < 0.1 ? "Light snow" : "Snow";
-      };
-
-      let precipitationDescription = getDescription();
-
-      precipitationValues = {
-        hasPrecipitation,
-        hasRain,
-        hasSnow,
-        formattedRain,
-        formattedSnow,
-        precipitationDescription,
-      };
-
-      const pressureValue = $weatherData.current.pressure_msl;
-      const pressureHpa = $weatherData.current.pressure_msl || 1013;
-      const normalizedValue =
-        tempUnit === "c"
-          ? Math.max(0, Math.min(100, ((pressureHpa - 1000) / 40) * 100))
-          : Math.max(
-              0,
-              Math.min(100, ((Number(pressureValue) - 29.53) / 1.18) * 100),
-            );
-
-      let pressureDescription = getPressureDescription(pressureHpa);
-
-      pressureValues = {
-        pressureHpa,
-        normalizedValue,
-        pressureDescription,
-      };
-
-      let humidity = Math.round($weatherData.current.relative_humidity_2m);
-      let humidityDescription = getHumidityDescription(humidity);
-
-      humidityValues = {
-        humidity,
-        dewPoint: Math.round($weatherData.current.dew_point_2m),
-        humidityDescription,
-      };
-
-      let cloudCover = Math.round($weatherData.current.cloud_cover);
-      let cloudCoverDescription = getCloudCoverDescription(cloudCover);
-
-      cloudCoverValues = {
-        cloudCover,
-        cloudCoverDescription,
-      };
-
-      const visibilityMeters = Math.round($weatherData.current.visibility);
-
-      // Convert to miles (imperial) or kilometers (metric)
-      const visibilityValue =
-        tempUnit === "c"
-          ? Math.round(visibilityMeters / 1000) // km (whole number)
-          : Math.round((visibilityMeters / 1000) * 0.621371); // mi (whole number)
-      const visibilityUnit = tempUnit === "c" ? "km" : "mi";
-      const visibilityDescription = getVisibilityDescription(
-        visibilityValue,
-        tempUnit === "c",
-      );
-
-      visibilityValues = {
-        visibilityValue,
-        visibilityUnit,
-        visibilityDescription,
-      };
-
-      const sunriseISO = $weatherData.daily.sunrise[0];
-      const sunsetISO = $weatherData.daily.sunset[0];
-      const sunrise = sunriseISO ? formatTimeWithMinutes(sunriseISO) : "--:--";
-      const sunset = sunsetISO ? formatTimeWithMinutes(sunsetISO) : "--:--";
-      const sunPosition = calculateSunPosition(
-        $weatherData.current.time,
-        sunriseISO,
-        sunsetISO,
-      );
-
-      sunValues = {
-        sunrise,
-        sunset,
-        sunPosition,
-      };
-
-      const snowDepthMeters = $weatherData.current.snow_depth ?? 0;
-      const hasSnowMetters = snowDepthMeters > 0;
-
-      const formattedSnowDepth = hasSnowMetters
-        ? formatSnowDepth(tempUnit, snowDepthMeters)
-        : "0";
-      let descriptionSnow = "No snow on ground";
-      if (hasSnowMetters) {
-        const inches = snowDepthMeters * 39.3701;
-        if (inches < 1) {
-          descriptionSnow = "Light snow cover";
-        } else if (inches < 6) {
-          descriptionSnow = "Moderate snow depth";
-        } else {
-          descriptionSnow = "Significant snow depth";
-        }
-      }
-
-      snowValues = {
-        hasSnow: hasSnowMetters,
-        snowDepth: formattedSnowDepth,
-        description: descriptionSnow,
-      };
-
-      const aqi = $weatherData.current.us_aqi || 0;
-      const { level: aqi_level, color } = getAQILevel(aqi);
-      const aqi_description = getAQIDescription(aqi);
-      aiqValues = {
-        aqi,
-        level: aqi_level,
-        color,
-        description: aqi_description,
-      };
-
-      let currentUV = Math.round($weatherData.current.uv_index || 0);
-      const indiNumber = currentUV > 11 ? 12 : currentUV;
-      const uvScale = 11;
-      const indicatorPercent = (indiNumber / uvScale) * 100;
-      const { level: uv_level, description: uv_description } =
-        getUVInfo(currentUV);
-      uvValues = {
-        currentUV,
-        indicatorPercent,
-        level: uv_level,
-        description: uv_description,
-      };
-
-      const forecastData = calculateForecast();
-      if (forecastData) {
-        hourlyData = forecastData.hourlyForecasts;
-        dailyData = forecastData.dailyForecasts;
-        tempScale = forecastData.tempScale;
-      }
-    }
-  }
-
-  type ForecastResults = {
-    hourlyForecasts: HourlyForecast[];
-    dailyForecasts: DailyForecast[];
-    tempScale: {
-      min: number;
-      max: number;
-      range: number;
-    };
-  };
-
-  function calculateForecast(): ForecastResults | null {
-    if (!$weatherData?.hourly || !$weatherData?.hourly) {
-      return null;
-    }
-
-    // Parse the hour directly from the ISO string to avoid timezone conversion
-    const currentHourIndex = getHourFromISO($weatherData.current.time);
-    // Generate hourly forecast starting from current hour
-    const hourlyForecasts: HourlyForecast[] = Array.from(
-      { length: 12 },
-      (_, i) => {
-        let { icon, description, background } = getWeatherInfo(
-          $weatherData!.hourly.weather_code[i],
-          $weatherData!.hourly.is_day[i],
-        );
-        return {
-          time: $weatherData!.hourly.time[i],
-          temp: $weatherData!.hourly.temperature_2m[i],
-          icon,
-          background,
-          description,
-          precipitation_probability:
-            $weatherData!.hourly.precipitation_probability[i],
-        };
-      },
-    ).filter((item): item is HourlyForecast => item !== null);
-    // Skip "Today" in daily forecast if it's after 8 PM (late evening)
-    // At this point, users are more interested in tomorrow's forecast
-    const skipToday = currentHourIndex >= 20;
-    const dailyForecastsRaw: DailyForecast[] = $weatherData.daily.time.map(
-      (date, index) => {
-        let { icon, description } = getWeatherInfo(
-          $weatherData!.daily.weather_code[index],
-          1,
-        );
-        return {
-          date,
-          icon,
-          description,
-          weather_code: $weatherData!.daily.weather_code[index],
-          temp_max: $weatherData!.daily.temperature_2m_max[index],
-          temp_min: $weatherData!.daily.temperature_2m_min[index],
-          temp_current:
-            index === 0 && !skipToday
-              ? $weatherData!.hourly.temperature_2m[currentHourIndex]
-              : undefined,
-          feels_like: $weatherData!.daily.apparent_temperature_max[index],
-          precipitation_probability:
-            $weatherData!.daily.precipitation_probability_max[index],
-        };
-      },
-    );
-    // Filter out today if it's late evening
-    const dailyForecasts = skipToday
-      ? dailyForecastsRaw.slice(1)
-      : dailyForecastsRaw;
-
-    // Calculate dynamic temperature scale based on actual data
-    const allTemps = dailyForecasts.flatMap((f) => [
-      f.temp_min,
-      f.temp_max,
-      f.temp_current,
-    ]);
-    const validTemps = allTemps.filter(
-      (t): t is number => typeof t === "number" && !Number.isNaN(t),
-    );
-    const minTempScale = Math.round(Math.min(...validTemps));
-    const maxTempScale = Math.round(Math.max(...validTemps));
-    const tempRange = maxTempScale - minTempScale;
-
-    return {
-      hourlyForecasts,
-      dailyForecasts,
-      tempScale: {
-        min: minTempScale,
-        max: maxTempScale,
-        range: tempRange,
-      },
-    };
-  }
-
-  $effect(() => {
-    $weatherData;
-    untrack(() => {
-      if ($weatherData) getCurrentConditions();
-    });
-  });
 
   async function setCurrentLocation(id: string) {
     const { error } = await layoutData.supabase
@@ -562,7 +110,9 @@
           tempUnit: "c",
           model: $currentForecastModel,
         };
-        $weatherData = await getOpenMeteoWeather(param);
+        const data = await getOpenMeteoWeather(param);
+        $weatherData = data;
+        weather.setData(data);
       }
     }
   }
@@ -678,6 +228,310 @@
     const point = sunSVGpath.getPointAtLength(totalLength * position);
     return { x: point.x, y: point.y };
   }
+
+  class WeatherForecast {
+    data = $state<OpenMeteoResponse | undefined>(undefined);
+
+    setData(value: OpenMeteoResponse) {
+      this.data = value;
+    }
+
+    get current() {
+      if (!this.data) return;
+      const temperature = Math.round(this.data.current.temperature_2m);
+      const { icon, description, background } = getWeatherInfo(
+        this.data.current.weather_code,
+        this.data.current.is_day,
+      );
+      const forecastStatement = generateForecastStatement(this.data);
+      const now = Date.now();
+      const fulfilledTimeStamp = new Date(this.data.current.time).getTime();
+      const diffMs = Math.max(0, now - fulfilledTimeStamp);
+      const lastUpdated = formatRelativeFromMs(diffMs);
+      return {
+        temperature,
+        icon,
+        description,
+        background,
+        forecastStatement,
+        lastUpdated,
+      };
+    }
+
+    get feelslike() {
+      if (!this.data) return;
+      const temperature = Math.round(this.data.current.apparent_temperature);
+      const actual = Math.round(this.data.current.temperature_2m);
+      const description = getFeelsLikeDescription(
+        temperature,
+        actual,
+        this.data.current.wind_speed_10m,
+        this.data.current.relative_humidity_2m,
+      );
+      return {
+        temperature,
+        description,
+      };
+    }
+
+    get wind() {
+      if (!this.data) return;
+      const direction = this.data.current.wind_direction_10m || 0;
+      const directionLabel = getWindDirection(direction);
+      const speed = Math.round(this.data.current.wind_speed_10m || 0);
+      const gusts = Math.round(this.data.current.wind_gusts_10m || 0);
+      const unit = "km/h";
+      const windInfo = getBeaufortInfo(this.data.current.wind_speed_10m || 0);
+      return {
+        direction,
+        directionLabel,
+        speed,
+        gusts,
+        unit,
+        image: windInfo.level,
+        description: windInfo.description,
+      };
+    }
+
+    get precipitation() {
+      if (!this.data) return;
+      const tempUnit = "c";
+      const rain = this.data.current.rain ?? 0;
+      const showers = this.data.current.showers ?? 0;
+      const snowfall = this.data.current.snowfall ?? 0;
+
+      // Total liquid precipitation (rain + showers)
+      const totalLiquid = rain + showers;
+
+      // Format values
+      const formattedRain = formatPrecipitation(tempUnit, totalLiquid);
+      const formattedSnow = formatPrecipitation(tempUnit, snowfall);
+
+      // Determine primary precipitation type
+      const hasRain = totalLiquid > 0;
+      const hasSnow = snowfall > 0;
+      const hasPrecipitation = hasRain || hasSnow;
+
+      // Description - optimized with early returns
+      const getDescription = (): string => {
+        if (!hasPrecipitation) return "No precipitation";
+        if (hasRain && hasSnow) return "Mixed precipitation";
+        if (hasRain) return totalLiquid < 0.1 ? "Light rain" : "Rain";
+        return snowfall < 0.1 ? "Light snow" : "Snow";
+      };
+
+      const precipitationDescription = getDescription();
+
+      return {
+        hasPrecipitation,
+        hasRain,
+        hasSnow,
+        formattedRain,
+        formattedSnow,
+        precipitationDescription,
+      };
+    }
+
+    get uvIndex() {
+      if (!this.data) return;
+      const value = Math.round(this.data.current.uv_index || 0);
+      const { level, description } = getUVInfo(value);
+      return {
+        value,
+        level,
+        description,
+      };
+    }
+
+    get pressure() {
+      if (!this.data) return;
+
+      const tempUnit = "c";
+      const pressureValue = this.data.current.pressure_msl;
+      const pressureHpa = this.data.current.pressure_msl || 1013;
+      const normalizedValue =
+        tempUnit === "c"
+          ? Math.max(0, Math.min(100, ((pressureHpa - 1000) / 40) * 100))
+          : Math.max(
+              0,
+              Math.min(100, ((Number(pressureValue) - 29.53) / 1.18) * 100),
+            );
+
+      const description = getPressureDescription(pressureHpa);
+      return {
+        value: pressureHpa,
+        percent: Math.round(normalizedValue),
+        description,
+      };
+    }
+
+    get humidity() {
+      if (!this.data) return;
+      const value = Math.round(this.data.current.relative_humidity_2m);
+      const description = getHumidityDescription(value);
+      const dewpoint = Math.round(this.data.current.dew_point_2m);
+      return { value, description, dewpoint };
+    }
+
+    get cloudcover() {
+      if (!this.data) return;
+      const value = Math.round(this.data.current.cloud_cover);
+      const description = getCloudCoverDescription(value);
+      return { value, description };
+    }
+
+    get visibility() {
+      if (!this.data) return;
+      const tempUnit = "c";
+      const visibilityMeters = Math.round(this.data.current.visibility);
+      const value =
+        tempUnit === "c"
+          ? Math.round(visibilityMeters / 1000) // km (whole number)
+          : Math.round((visibilityMeters / 1000) * 0.621371); // mi (whole number)
+      const unit = tempUnit === "c" ? "km" : "mi";
+      const description = getVisibilityDescription(value, tempUnit === "c");
+      return { value, description, unit };
+    }
+
+    get sunrise() {
+      if (!this.data) return;
+      const sunriseISO = this.data.daily.sunrise[0];
+      const sunsetISO = this.data.daily.sunset[0];
+      const sunrise = sunriseISO ? formatTimeWithMinutes(sunriseISO) : "--:--";
+      const sunset = sunsetISO ? formatTimeWithMinutes(sunsetISO) : "--:--";
+      const position = calculateSunPosition(
+        this.data.current.time,
+        sunriseISO,
+        sunsetISO,
+      );
+      return {
+        sunrise,
+        sunset,
+        position: Math.round(position),
+      };
+    }
+
+    get aiq() {
+      if (!this.data) return;
+      const value = this.data.current.us_aqi || 0;
+      const { level, color } = getAQILevel(value);
+      const description = getAQIDescription(value);
+      return {
+        value,
+        level,
+        color,
+        description,
+      };
+    }
+
+    get snow() {
+      if (!this.data) return;
+      const tempUnit = "c";
+      const snowDepthMeters = this.data.current.snow_depth ?? 0;
+      const hasSnowMetters = snowDepthMeters > 0;
+
+      const formattedSnowDepth = hasSnowMetters
+        ? formatSnowDepth(tempUnit, snowDepthMeters)
+        : "0";
+      let descriptionSnow = "No snow on ground";
+      if (hasSnowMetters) {
+        const inches = snowDepthMeters * 39.3701;
+        if (inches < 1) {
+          descriptionSnow = "Light snow cover";
+        } else if (inches < 6) {
+          descriptionSnow = "Moderate snow depth";
+        } else {
+          descriptionSnow = "Significant snow depth";
+        }
+      }
+      return {
+        hasSnow: hasSnowMetters,
+        snowDepth: formattedSnowDepth,
+        description: descriptionSnow,
+      };
+    }
+
+    get hourly() {
+      if (!this.data) return;
+      const hourlyForecasts: HourlyForecast[] = Array.from(
+        { length: 12 },
+        (_, i) => {
+          let { icon, description, background } = getWeatherInfo(
+            this.data!.hourly.weather_code[i],
+            this.data!.hourly.is_day[i],
+          );
+          return {
+            time: this.data!.hourly.time[i],
+            temp: this.data!.hourly.temperature_2m[i],
+            icon,
+            background,
+            description,
+            precipitation_probability:
+              this.data!.hourly.precipitation_probability[i],
+          };
+        },
+      ).filter((item): item is HourlyForecast => item !== null);
+      return { data: hourlyForecasts };
+    }
+
+    get daily() {
+      if (!this.data) return;
+      const currentHourIndex = getHourFromISO(this.data.current.time);
+      const skipToday = currentHourIndex >= 20;
+      const dailyForecastsRaw: DailyForecast[] = this.data.daily.time.map(
+        (date, index) => {
+          let { icon, description } = getWeatherInfo(
+            this.data!.daily.weather_code[index],
+            1,
+          );
+          return {
+            date,
+            icon,
+            description,
+            weather_code: this.data!.daily.weather_code[index],
+            temp_max: this.data!.daily.temperature_2m_max[index],
+            temp_min: this.data!.daily.temperature_2m_min[index],
+            temp_current:
+              index === 0 && !skipToday
+                ? this.data!.hourly.temperature_2m[currentHourIndex]
+                : undefined,
+            feels_like: this.data!.daily.apparent_temperature_max[index],
+            precipitation_probability:
+              this.data!.daily.precipitation_probability_max[index],
+          };
+        },
+      );
+      // Filter out today if it's late evening
+      const dailyForecasts = skipToday
+        ? dailyForecastsRaw.slice(1)
+        : dailyForecastsRaw;
+
+      // Calculate dynamic temperature scale based on actual data
+      const allTemps = dailyForecasts.flatMap((f) => [
+        f.temp_min,
+        f.temp_max,
+        f.temp_current,
+      ]);
+      const validTemps = allTemps.filter(
+        (t): t is number => typeof t === "number" && !Number.isNaN(t),
+      );
+      const minTempScale = Math.round(Math.min(...validTemps));
+      const maxTempScale = Math.round(Math.max(...validTemps));
+      const tempRange = maxTempScale - minTempScale;
+      const time = this.data.current.time;
+      return {
+        data: dailyForecasts,
+        time,
+        tempScale: {
+          min: minTempScale,
+          max: maxTempScale,
+          range: tempRange,
+        },
+      };
+    }
+  }
+
+  const weather = new WeatherForecast();
 </script>
 
 <svelte:head>
@@ -688,71 +542,72 @@
 </svelte:head>
 
 <Container scrollable>
-  {#if $weatherData}
-    <div class="current">
-      {#if currentValues.background}
-        <video
-          src="/weathervideos/{currentValues.background}.mp4"
-          autoplay
-          loop
-          muted
-          playsinline
-          class="absolute top-0 left-0 w-full h-full object-cover object-top"
-        >
-          Your browser does not support the video tag.
-        </video>
-      {/if}
+  <div class="current">
+    <select
+      name="location"
+      onchange={(e) => setCurrentLocation(e.currentTarget.value)}
+      class="location-list relative mb-6 text-white"
+    >
+      {#each $locationList as item}
+        <option value={item.id} selected={item.id === $currentLocationId}>
+          {item.name}
+        </option>
+      {/each}
+    </select>
 
-      <select
-        name="location"
-        onchange={(e) => setCurrentLocation(e.currentTarget.value)}
-        class="location-list relative mb-6 text-white"
+    {#if weather.current}
+      <video
+        src="/weathervideos/{weather.current.background}.mp4"
+        autoplay
+        loop
+        muted
+        playsinline
+        class="absolute top-0 left-0 w-full h-full object-cover object-top"
       >
-        {#each $locationList as item}
-          <option value={item.id} selected={item.id === $currentLocationId}>
-            {item.name}
-          </option>
-        {/each}
-      </select>
+        Your browser does not support the video tag.
+      </video>
 
       <h1
         class="relative select-none indent-30 text-white text-135 font-300 leading-150 overflow-hidden text-center"
       >
-        {currentValues.actual}°
+        {weather.current.temperature}°
       </h1>
 
       <div class="relative flex justify-center items-center gap-9 mb-3">
         <img
-          src="/liquid/128/{currentValues.icon}.png"
+          src="/liquid/128/{weather.current.icon}.png"
           alt="icon"
           class="size-60 object-cover"
           style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
         />
         <span class="text-white text-18 font-400">
-          {currentValues.actualDescription}
+          {weather.current.description}
         </span>
       </div>
 
       <p class="relative text-white px-6 text-center text-15 leading-18 mb-3">
-        {currentValues.forecastStatement}
+        {weather.current.forecastStatement}
       </p>
       <p class="relative text-white/60 text-center text-11 mb-3">
-        Last updated {currentValues.lastUpdated}
+        Last updated {weather.current.lastUpdated}
       </p>
-    </div>
+    {/if}
+  </div>
 
-    <Rainviewer />
+  <Rainviewer />
 
-    <!-- DetailsGrid -->
-    <div class="w-full grid grid-cols-2 gap-2">
+  <div class="w-full grid grid-cols-2 gap-2">
+    {#if weather.feelslike}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Feels Like</p>
         <h1 class="text-48 font-400">
-          {currentValues.feelsLike}°
+          {weather.feelslike.temperature}°
         </h1>
-        <p class="text-12">{currentValues.feelsLikeDescription}</p>
+        <p class="text-12">{weather.feelslike.description}</p>
       </div>
+    {/if}
 
+    {#if weather.wind}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Wind</p>
 
@@ -815,14 +670,14 @@
             <path
               d="M 86.325 40.3742 C 86.9141 37.7765 90.5908 37.7098 91.2738 40.2843 L 112.0053 118.42840000000001 C 113.7162 124.8774 108.87360000000001 131.20420000000001 102.2016 131.23680000000002 L 78.5064 131.35250000000002 C 71.94605 131.3845 67.06373 125.3014 68.51471 118.9034 L 86.325 40.3742Z"
               fill="#228be6"
-              transform="rotate({windValues.windDirection -
+              transform="rotate({weather.wind.direction -
                 180} 60 60) scale(0.66666666666666666666666666666667)"
             >
             </path>
 
             <g
               transform="translate(60, 60) rotate({calculateWindRotate(
-                windValues.windDirection,
+                weather.wind.direction,
               )})"
             >
               <circle
@@ -830,7 +685,7 @@
                 stroke="#228be6"
                 stroke-width="8"
                 pathLength="360"
-                stroke-dasharray={calculateWindDash(windValues.windDirection)}
+                stroke-dasharray={calculateWindDash(weather.wind.direction)}
                 stroke-linecap="round"
                 fill="none"
               />
@@ -856,15 +711,15 @@
         <div class="flex justify-between">
           <div class="flex flex-col my-6 gap-5">
             <p class="text-12 leading-15">
-              From {windValues.directionLabel} ({windValues.windDirection}°)
+              From {weather.wind.directionLabel} ({weather.wind.direction}°)
             </p>
             <div class="flex gap-3 items-center">
               <div class="text-30 font-500 leading-30">
-                {windValues.windSpeed}
+                {weather.wind.speed}
               </div>
               <div class="flex flex-col">
                 <p class="text-12 text-black/60 leading-15">
-                  {windValues.speedUnit}
+                  {weather.wind.unit}
                 </p>
                 <p class="text-12 leading-15">Wind Speed</p>
               </div>
@@ -872,11 +727,11 @@
 
             <div class="flex gap-3 items-center">
               <div class="text-30 font-500 leading-30">
-                {windValues.windGusts}
+                {weather.wind.gusts}
               </div>
               <div class="flex flex-col">
                 <p class="text-12 text-black/60 leading-15">
-                  {windValues.speedUnit}
+                  {weather.wind.unit}
                 </p>
                 <p class="text-12 leading-15">Wind Gust</p>
               </div>
@@ -886,48 +741,52 @@
 
         <div class="flex gap-9 pl-6 bg-white rounded-2 overflow-hidden">
           <img
-            src="/beaufort-scale/{windValues.image}.png"
+            src="/beaufort-scale/{weather.wind.image}.png"
             alt="Beaufortimg"
             class="w-1/3 object-cover"
           />
-          <p class="text-12 leading-16 pb-3">{windValues.description}</p>
+          <p class="text-12 leading-16 pb-3">{weather.wind.description}</p>
         </div>
       </div>
+    {/if}
 
+    {#if weather.precipitation}
       <div class="light p-6 w-full">
         <p class="mb-3 uppercase text-12">Precipitation</p>
         <div class="flex flex-col items-center">
-          {#if precipitationValues.hasPrecipitation}
-            {#if precipitationValues.hasRain}
+          {#if weather.precipitation.hasPrecipitation}
+            {#if weather.precipitation.hasRain}
               <img
                 src="/navweather/drizzle.webp"
                 alt="icon"
                 class="size-110 object-cover object-bottom mx-auto my-12 rounded-full"
               />
               <p class="mt-3 text-14 font-600">
-                {precipitationValues.formattedRain}
+                {weather.precipitation.formattedRain}
               </p>
               <p class="text-12">in 15 minutes</p>
-            {:else if precipitationValues.hasSnow}
+            {:else if weather.precipitation.hasSnow}
               <img
                 src="/navweather/snow.webp"
                 alt="icon"
                 class="size-110 object-cover object-bottom mx-auto my-12 rounded-full"
               />
               <p class="mt-3 text-14 font-600">
-                {precipitationValues.formattedSnow}
+                {weather.precipitation.formattedSnow}
               </p>
               <p class="text-12">in 15 minutes</p>
             {/if}
           {:else}
             <p class="mt-45 text-14 font-600">None</p>
             <p class="text-12">
-              {precipitationValues.precipitationDescription}
+              {weather.precipitation.precipitationDescription}
             </p>
           {/if}
         </div>
       </div>
+    {/if}
 
+    {#if weather.uvIndex}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">UV Index</p>
 
@@ -981,17 +840,17 @@
                 stroke-width="10"
                 stroke-linecap="round"
               ></path>
-              {#if uvValues.currentUV}
+              {#if weather.uvIndex.value}
                 <g>
                   <circle
-                    cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
-                    cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
+                    cx={uvCoordinates[weather.uvIndex.value - 1]?.cx}
+                    cy={uvCoordinates[weather.uvIndex.value - 1]?.cy}
                     r="10"
-                    fill={uvCoordinates[uvValues.currentUV - 1]?.color}
+                    fill={uvCoordinates[weather.uvIndex.value - 1]?.color}
                   ></circle>
                   <circle
-                    cx={uvCoordinates[uvValues.currentUV - 1]?.cx}
-                    cy={uvCoordinates[uvValues.currentUV - 1]?.cy}
+                    cx={uvCoordinates[weather.uvIndex.value - 1]?.cx}
+                    cy={uvCoordinates[weather.uvIndex.value - 1]?.cy}
                     r="11.5"
                     stroke="white"
                     stroke-width="3"
@@ -1002,17 +861,19 @@
             <div
               class="absolute w-full h-full flex items-center justify-center"
             >
-              <div class="text-36 leading-36">{uvValues.currentUV}</div>
+              <div class="text-36 leading-36">{weather.uvIndex.value}</div>
             </div>
           </div>
 
-          <p class="text-14 font-600">{uvValues.level}</p>
+          <p class="text-14 font-600">{weather.uvIndex.level}</p>
           <p class="text-12 leading-16">
-            {uvValues.description}
+            {weather.uvIndex.description}
           </p>
         </div>
       </div>
+    {/if}
 
+    {#if weather.pressure}
       <div class="light p-6 w-full">
         <p class="uppercase text-12 mb-12">Pressure</p>
 
@@ -1022,71 +883,77 @@
           >
             <span
               class="absolute -left-4 -translate-y-1/2 w-17 h-5 rounded-3 bg-white shadow shadow-black/30"
-              style="bottom: {pressureValues.normalizedValue}%;"
+              style="bottom: {weather.pressure.percent}%;"
             ></span>
           </div>
           <div class="flex flex-col">
             <h1 class="text-24 font-500">
-              {pressureValues.pressureHpa} <small>hPa</small>
+              {weather.pressure.value} <small>hPa</small>
             </h1>
             <p class="text-12 text-center">
-              {pressureValues.pressureDescription}
+              {weather.pressure.description}
             </p>
           </div>
         </div>
       </div>
+    {/if}
 
+    {#if weather.humidity}
       <div class="light p-6 w-full">
         <p class="uppercase text-12 mb-12">Humidity</p>
         <div class="flex items-center justify-center gap-30">
-          <div
-            class="relative h-100 w-9 rounded-full bg-white/10 shadow shadow-black/30"
-          >
+          <div class="relative h-100 w-9 rounded-full bg-[#0000001a]">
             <div
               class="float-left w-full rounded-full absolute bottom-0 bg-[#228be6]"
-              style="height: {humidityValues.humidity}%;"
+              style="height: {weather.humidity.value}%;"
             ></div>
           </div>
 
           <div class="flex flex-col gap-6">
             <div class="flex flex-col">
               <div class="text-30 font-500 leading-30">
-                {humidityValues.humidity}%
+                {weather.humidity.value}%
               </div>
               <p class="text-12 leading-15">Relative Humidity</p>
             </div>
             <div class="flex flex-col">
               <div class="text-30 font-500 leading-30">
-                {humidityValues.dewPoint}°
+                {weather.humidity.dewpoint}°
               </div>
               <p class="text-12 leading-15">Dew point</p>
             </div>
           </div>
         </div>
       </div>
+    {/if}
 
+    {#if weather.cloudcover}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Cloud Cover</p>
         <div class="flex flex-col items-center">
           <img
-            src="/cloud/{cloudCoverValues.cloudCoverDescription}.webp"
+            src="/cloud/{weather.cloudcover.description}.webp"
             alt="icon"
             class="size-110 object-cover mx-auto my-12 rounded-full"
           />
-          <p class="mt-3 text-14 font-600">{cloudCoverValues.cloudCover}%</p>
-          <p class="text-12">{cloudCoverValues.cloudCoverDescription}</p>
+          <p class="mt-3 text-14 font-600">{weather.cloudcover.value}%</p>
+          <p class="text-12">{weather.cloudcover.description}</p>
         </div>
       </div>
+    {/if}
 
+    {#if weather.visibility}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Visibility</p>
         <h1 class="text-48 font-400">
-          {visibilityValues.visibilityValue}
-          <small>{visibilityValues.visibilityUnit}</small>
+          {weather.visibility.value}
+          <small>{weather.visibility.unit}</small>
         </h1>
-        <p class="text-12">{visibilityValues.visibilityDescription}</p>
+        <p class="text-12">{weather.visibility.description}</p>
       </div>
+    {/if}
 
+    {#if weather.sunrise}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Sunrise / Sunset</p>
         <div class="relative -mt-50 ml-15 -mb-15">
@@ -1141,24 +1008,26 @@
           <div
             class="absolute size-15 bg-[#ff6b00] rounded-full -translate-x-1/2 -translate-y-1/2"
             style="box-shadow: 0 0 9px #ff6b00; left: {getSunPosition(
-              sunValues.sunPosition,
-            )?.x}px; top: {getSunPosition(sunValues.sunPosition)?.y}px;"
+              weather.sunrise.position,
+            )?.x}px; top: {getSunPosition(weather.sunrise.position)?.y}px;"
           ></div>
         </div>
 
         <div class="flex justify-between">
           <div class="flex flex-col items-start">
             <span class="text-12">Sunrise</span>
-            <span class="text-14 font-600">{sunValues.sunrise} </span>
+            <span class="text-14 font-600">{weather.sunrise.sunrise} </span>
           </div>
 
           <div class="flex flex-col items-end">
             <span class="text-12">Sunset</span>
-            <span class="text-14 font-600">{sunValues.sunset}</span>
+            <span class="text-14 font-600">{weather.sunrise.sunset}</span>
           </div>
         </div>
       </div>
+    {/if}
 
+    {#if weather.aiq}
       <div class="light p-6 w-full">
         <p class="uppercase text-12">Air Quality</p>
 
@@ -1185,50 +1054,54 @@
                 r="50"
                 cx="60"
                 cy="60"
-                stroke={aiqValues.color}
+                stroke={weather.aiq.color}
                 stroke-width="10"
-                stroke-dashoffset="{(100 - aiqValues.aqi / 3) * 3}px"
+                stroke-dashoffset="{(100 - weather.aiq.value / 3) * 3}px"
                 fill="transparent"
                 stroke-dasharray="314px"
               ></circle>
             </svg>
 
             <div class="flex flex-col items-center">
-              <p class="text-16 font-500">{Math.round(aiqValues.aqi)}</p>
+              <p class="text-16 font-500">{weather.aiq.value}</p>
               <p class="text-12 text-black/60">AQI</p>
             </div>
           </div>
 
           <span
             class="mb-6 rounded-full text-12 leading-22 font-600 text-center px-10"
-            style="background-color: {aiqValues.color};"
+            style="background-color: {weather.aiq.color};"
           >
-            {aiqValues.level}
+            {weather.aiq.level}
           </span>
 
-          <p class="text-12 text-center">{aiqValues.description}</p>
+          <p class="text-12 text-center">{weather.aiq.description}</p>
         </div>
       </div>
+    {/if}
 
-      {#if snowValues.hasSnow}
-        <div class="light p-6 w-full">
-          <p class="uppercase text-12">Snow Depth</p>
+    {#if weather.snow && weather.snow.hasSnow}
+      <div class="light p-6 w-full">
+        <p class="uppercase text-12">Snow Depth</p>
+        <div class="flex flex-col items-center">
           <img
-            src="/liquid/128/snow.png"
+            src="/navweather/snow.webp"
             alt="icon"
-            class="size-60 object-cover mx-auto"
+            class="size-110 object-cover mx-auto my-12 rounded-full"
           />
-          <p class="text-14 font-600">{snowValues.snowDepth}</p>
-          <p class="text-12">{snowValues.description}</p>
+          <p class="mt-3 text-14 font-600">{weather.snow.snowDepth}</p>
+          <p class="text-12">{weather.snow.description}</p>
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
+  </div>
 
+  {#if weather.hourly}
     <h1 class="text-24">Hourly Forecast</h1>
     <div class="w-full grid grid-cols-4 gap-2">
-      {#each hourlyData as item}
+      {#each weather.hourly.data as item}
         <div class="light flex flex-col rounded-2 overflow-hidden">
-          <h1 class="pt-9 uppercase text-21 leading-24 font-500 text-center">
+          <h1 class=" uppercase text-21 leading-24 font-500 text-center">
             {@html formatTime(item.time)}
           </h1>
 
@@ -1270,16 +1143,18 @@
         </div>
       {/each}
     </div>
+  {/if}
 
+  {#if weather.daily}
     <h1 class="text-24">7-Day Forecast</h1>
     <div class="flex flex-wrap gap-2">
-      {#each dailyData as item}
+      {#each weather.daily.data as item}
         <div
           class="light w-full h-36 flex items-center justify-between pl-9 rounded-2"
         >
           <div class="flex items-center flex-1">
             <span class="text-16 font-500 min-w-50">
-              {formatDay(item.date, $weatherData.current.time)}</span
+              {formatDay(item.date, weather.daily.time)}</span
             >
             <img
               src="/liquid/48/{item.icon}.png"
@@ -1301,23 +1176,23 @@
           </div>
 
           <div class="flex w-120 justify-end items-center h-full">
-            <div class="text-12 text-black/60 min-w-30 text-center">
+            <div class="text-11 text-black/60 leading-16 min-w-30 text-center">
               {formatTemperature(item.temp_min)}
             </div>
 
             <div
-              class="h-6 rounded-full bg-[#228be6]"
+              class="h-6 mt-3 rounded-full bg-[#228be6]"
               style="min-width: {((Math.round(item.temp_max) -
                 Math.round(item.temp_min)) /
-                tempScale.range) *
+                weather.daily.tempScale.range) *
                 50}%;"
             ></div>
 
             <div
-              class="min-w-30 text-12 text-center"
-              style="margin-right: {((tempScale.max -
+              class="min-w-30 text-12 leading-16 text-center"
+              style="margin-right: {((weather.daily.tempScale.max -
                 Math.round(item.temp_max)) /
-                tempScale.range) *
+                weather.daily.tempScale.range) *
                 50}%;"
             >
               {formatTemperature(item.temp_max)}
@@ -1345,6 +1220,8 @@
 
   .location-list {
     width: 100%;
+    position: relative;
+    z-index: 99;
     text-align: center;
     appearance: none;
     -webkit-appearance: none;
