@@ -88,7 +88,7 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <main
-  class="relative h-screen w-screen flex flex-col items-center overflow-hidden"
+  class="relative h-screen w-screen z-10 flex flex-col items-center overflow-hidden"
 >
   {@render children()}
 
@@ -209,14 +209,15 @@
   {/if}
 </main>
 
-<div class="fixed w-screen h-screen inset-0 -z-1">
+<div class="fixed inset-0 z-1 bg-black"></div>
+<div class="grain"></div>
+<div class="fixed w-screen h-screen inset-0 z-3">
   {#if $layoutSetting.showImage}
     {#if $localImageStore.data.length}
       <img
         src={$localImageStore.data[$currentImageIndex].url}
         alt="main-layout-bg"
         class="w-full h-full object-cover"
-        loading="lazy"
       />
 
       <div
@@ -245,6 +246,15 @@
 </div>
 
 <style lang="postcss">
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
   .btn-layout {
     @apply size-18 flex items-center justify-center outline-none overflow-hidden bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
     backdrop-filter: blur(12px);

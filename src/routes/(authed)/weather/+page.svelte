@@ -559,7 +559,7 @@
 
   <div class="w-full grid grid-cols-2 gap-2">
     {#if weather.feelslike}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Feels Like</p>
         <h1 class="text-36 font-400 leading-50">
           {weather.feelslike.temperature}°
@@ -569,10 +569,10 @@
     {/if}
 
     {#if weather.wind}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Wind</p>
 
-        <div class="flex">
+        <div class="flex items-center">
           <div class="-ml-15 relative size-120" aria-hidden="true">
             <svg
               width="120"
@@ -663,13 +663,13 @@
               <p class="text-12 leading-15 text-white/60">Wind Speed</p>
               <p class="text-14 leading-15 mb-6">
                 {weather.wind.speed}
-                {weather.wind.unit}
+                <small>{weather.wind.unit}</small>
               </p>
 
               <p class="text-12 leading-15 text-white/60">Wind Gust</p>
               <p class="text-14 leading-15">
                 {weather.wind.gusts}
-                {weather.wind.unit}
+                <small>{weather.wind.unit}</small>
               </p>
             </div>
           </div>
@@ -689,7 +689,7 @@
     {/if}
 
     {#if weather.precipitation}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="mb-3 uppercase text-12">Precipitation</p>
         <div class="flex flex-col items-center">
           {#if weather.precipitation.hasPrecipitation}
@@ -697,7 +697,7 @@
               <img
                 src="/navweather/drizzle.webp"
                 alt="icon"
-                class="size-110 object-cover object-bottom mx-auto my-12 rounded-full"
+                class="size-90 object-cover object-bottom mx-auto my-12 rounded-full"
               />
               <p class="mt-3 text-14 font-600">
                 {weather.precipitation.formattedRain}
@@ -707,7 +707,7 @@
               <img
                 src="/navweather/snow.webp"
                 alt="icon"
-                class="size-110 object-cover object-bottom mx-auto my-12 rounded-full"
+                class="size-90 object-cover object-bottom mx-auto my-12 rounded-full"
               />
               <p class="mt-3 text-14 font-600">
                 {weather.precipitation.formattedSnow}
@@ -725,14 +725,14 @@
     {/if}
 
     {#if weather.uvIndex}
-      <div class="dark p-6 w-full">
-        <p class="uppercase text-12">UV Index</p>
+      <div class="dark p-6 aspect-square">
+        <p class="uppercase text-12 mb-12">UV Index</p>
 
-        <div class="mt-9 flex flex-col justify-center items-center">
+        <div class="flex flex-col justify-center items-center">
           <div class="relative flex justify-center" aria-hidden="true">
             <svg
-              width="120"
-              height="120"
+              width="100"
+              height="100"
               viewBox="5 -12 171 178"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -812,10 +812,10 @@
     {/if}
 
     {#if weather.pressure}
-      <div class="dark p-6 w-full">
-        <p class="uppercase text-12 mb-12">Pressure</p>
+      <div class="dark p-6 aspect-square">
+        <p class="uppercase text-12 mb-30">Pressure</p>
 
-        <div class="w-full px-12 mb-6 flex justify-center items-center gap-25">
+        <div class="w-full flex justify-center items-center gap-25">
           <div
             class="w-9 h-100 rounded-full shadow shadow-black/30 relative bg-gradient-to-b from-white via-white to-white/10"
           >
@@ -837,8 +837,8 @@
     {/if}
 
     {#if weather.humidity}
-      <div class="dark p-6 w-full">
-        <p class="uppercase text-12 mb-12">Humidity</p>
+      <div class="dark p-6 aspect-square">
+        <p class="uppercase text-12 mb-30">Humidity</p>
         <div class="flex items-center justify-center gap-25">
           <div class="relative h-100 w-9 rounded-full bg-white/10">
             <div
@@ -866,13 +866,13 @@
     {/if}
 
     {#if weather.cloudcover}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Cloud Cover</p>
         <div class="flex flex-col items-center">
           <img
             src="/cloud/{weather.cloudcover.description}.webp"
             alt="icon"
-            class="size-110 object-cover mx-auto my-12 rounded-full"
+            class="size-90 object-cover mx-auto my-12 rounded-full"
           />
           <p class="mt-3 text-14 font-600">{weather.cloudcover.value}%</p>
           <p class="text-12">{weather.cloudcover.description}</p>
@@ -881,7 +881,7 @@
     {/if}
 
     {#if weather.visibility}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Visibility</p>
         <h1 class="text-36 font-400 leading-50">
           {weather.visibility.value}
@@ -892,9 +892,9 @@
     {/if}
 
     {#if weather.sunrise}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Sunrise / Sunset</p>
-        <div class="relative -mt-50 ml-15 -mb-15">
+        <div class="relative -mt-40 ml-15 -mb-10">
           <svg
             width="150"
             height="150"
@@ -966,7 +966,7 @@
     {/if}
 
     {#if weather.aiq}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Air Quality</p>
 
         <div class="-mt-9 flex flex-col justify-center items-center">
@@ -1019,13 +1019,13 @@
     {/if}
 
     {#if weather.snow && weather.snow.hasSnow}
-      <div class="dark p-6 w-full">
+      <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Snow Depth</p>
         <div class="flex flex-col items-center">
           <img
             src="/navweather/snow.webp"
             alt="icon"
-            class="size-110 object-cover mx-auto my-12 rounded-full"
+            class="size-90 object-cover mx-auto my-12 rounded-full"
           />
           <p class="mt-3 text-14 font-600">{weather.snow.snowDepth}</p>
           <p class="text-12">{weather.snow.description}</p>
