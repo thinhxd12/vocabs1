@@ -117,45 +117,6 @@
     }
   }
 
-  function calculateWindRotate(angle: number) {
-    let alpha = 0;
-    if (angle <= 45) {
-      alpha = angle;
-    } else if (angle <= 135) {
-      alpha = angle - 90;
-    } else if (angle <= 225) {
-      alpha = angle - 180;
-    } else if (angle <= 315) {
-      alpha = angle - 270;
-    } else {
-      alpha = angle - 360;
-    }
-
-    if (alpha >= 10 && alpha <= 35) return angle - 90 - (alpha - 10);
-    else return angle - 90 - 25;
-  }
-
-  function calculateWindDash(angle: number) {
-    let alpha = 0;
-    if (angle <= 45) {
-      alpha = angle;
-    } else if (angle <= 135) {
-      alpha = angle - 90;
-    } else if (angle <= 225) {
-      alpha = angle - 180;
-    } else if (angle <= 315) {
-      alpha = angle - 270;
-    } else {
-      alpha = angle - 360;
-    }
-
-    if (alpha <= -35 || alpha >= 35) return "50 310";
-    if (alpha < 10 && alpha > -10)
-      return `${25 - alpha - 10} 20 ${25 + alpha - 10} 310`;
-    if (alpha >= 10) return `${25 + alpha - 10} ${360 - (25 + alpha - 10)}`;
-    if (alpha <= -10) return `${25 - alpha - 10} ${360 - (25 - alpha - 10)}`;
-  }
-
   const uvCoordinates = [
     {
       cx: 36.6,
@@ -598,9 +559,9 @@
 
   <div class="w-full grid grid-cols-2 gap-2">
     {#if weather.feelslike}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Feels Like</p>
-        <h1 class="text-48 font-400">
+        <h1 class="text-36 font-400 leading-50">
           {weather.feelslike.temperature}°
         </h1>
         <p class="text-12">{weather.feelslike.description}</p>
@@ -608,133 +569,108 @@
     {/if}
 
     {#if weather.wind}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Wind</p>
 
-        <div class="mx-auto relative size-120" aria-hidden="true">
-          <svg
-            width="120"
-            height="120"
-            viewBox="0 0 120 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g transform="translate(60, 60) rotate(-80)">
-              <circle
-                r="50"
-                stroke="#0000001a"
-                stroke-width="8"
-                pathLength="360"
-                stroke-dasharray="70 290"
-                stroke-linecap="round"
-                fill="none"
-              />
-            </g>
-
-            <g transform="translate(60, 60) rotate(10)">
-              <circle
-                r="50"
-                stroke="#0000001a"
-                stroke-width="8"
-                pathLength="360"
-                stroke-dasharray="70 290"
-                stroke-linecap="round"
-                fill="none"
-              />
-            </g>
-
-            <g transform="translate(60, 60) rotate(100)">
-              <circle
-                r="50"
-                stroke="#0000001a"
-                stroke-width="8"
-                pathLength="360"
-                stroke-dasharray="70 290"
-                stroke-linecap="round"
-                fill="none"
-              />
-            </g>
-
-            <g transform="translate(60, 60) rotate(190)">
-              <circle
-                r="50"
-                stroke="#0000001a"
-                stroke-width="8"
-                pathLength="360"
-                stroke-dasharray="70 290"
-                stroke-linecap="round"
-                fill="none"
-              />
-            </g>
-
-            <path
-              d="M 86.325 40.3742 C 86.9141 37.7765 90.5908 37.7098 91.2738 40.2843 L 112.0053 118.42840000000001 C 113.7162 124.8774 108.87360000000001 131.20420000000001 102.2016 131.23680000000002 L 78.5064 131.35250000000002 C 71.94605 131.3845 67.06373 125.3014 68.51471 118.9034 L 86.325 40.3742Z"
-              fill="#228be6"
-              transform="rotate({weather.wind.direction -
-                180} 60 60) scale(0.66666666666666666666666666666667)"
+        <div class="flex">
+          <div class="-ml-15 relative size-120" aria-hidden="true">
+            <svg
+              width="120"
+              height="120"
+              viewBox="0 0 120 120"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-            </path>
+              <g transform="translate(60, 60) rotate(-80)">
+                <circle
+                  r="40"
+                  stroke="#ffffff1a"
+                  stroke-width="4"
+                  pathLength="360"
+                  stroke-dasharray="70 290"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+              </g>
 
-            <g
-              transform="translate(60, 60) rotate({calculateWindRotate(
-                weather.wind.direction,
-              )})"
-            >
-              <circle
-                r="50"
-                stroke="#228be6"
-                stroke-width="8"
-                pathLength="360"
-                stroke-dasharray={calculateWindDash(weather.wind.direction)}
-                stroke-linecap="round"
-                fill="none"
-              />
-            </g>
-          </svg>
+              <g transform="translate(60, 60) rotate(10)">
+                <circle
+                  r="40"
+                  stroke="#ffffff1a"
+                  stroke-width="4"
+                  pathLength="360"
+                  stroke-dasharray="70 290"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+              </g>
 
-          <div class="text-12 absolute top-0 left-1/2 -translate-x-1/2">N</div>
-          <div class="text-12 absolute bottom-0 left-1/2 -translate-x-1/2">
-            S
-          </div>
-          <div
-            class="text-12 absolute top-1/2 left-10 -translate-x-1/2 -translate-y-1/2"
-          >
-            W
-          </div>
-          <div
-            class="text-12 absolute top-1/2 right-12 translate-x-5 -translate-y-1/2"
-          >
-            E
-          </div>
-        </div>
+              <g transform="translate(60, 60) rotate(100)">
+                <circle
+                  r="40"
+                  stroke="#ffffff1a"
+                  stroke-width="4"
+                  pathLength="360"
+                  stroke-dasharray="70 290"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+              </g>
 
-        <div class="flex justify-between">
-          <div class="flex flex-col my-6 gap-5">
-            <p class="text-12 leading-15">
-              From {weather.wind.directionLabel} ({weather.wind.direction}°)
-            </p>
-            <div class="flex gap-3 items-center">
-              <div class="text-30 font-500 leading-30">
-                {weather.wind.speed}
-              </div>
-              <div class="flex flex-col">
-                <p class="text-12 text-black/60 leading-15">
-                  {weather.wind.unit}
-                </p>
-                <p class="text-12 leading-15">Wind Speed</p>
-              </div>
+              <g transform="translate(60, 60) rotate(190)">
+                <circle
+                  r="40"
+                  stroke="#ffffff1a"
+                  stroke-width="4"
+                  pathLength="360"
+                  stroke-dasharray="70 290"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+              </g>
+
+              <path
+                fill="#228be6"
+                d="M 61.0453 41.1725 A 1.125 1.125 90 0 0 58.9547 41.1725 l -12.728 31.8197 a 1.125 1.125 90 0 0 1.548 1.424 l 12.2251 -6.1126 l 12.2236 6.1142 a 1.125 1.125 90 0 0 1.5496 -1.4256 z"
+                transform="rotate({weather.wind.direction - 180} 60 60)"
+              ></path>
+            </svg>
+
+            <div class="text-11 absolute top-13 left-1/2 -translate-x-1/2">
+              N
             </div>
+            <div class="text-11 absolute bottom-14 left-1/2 -translate-x-1/2">
+              S
+            </div>
+            <div
+              class="text-11 absolute top-1/2 left-22 -translate-x-1/2 -translate-y-1/2"
+            >
+              W
+            </div>
+            <div
+              class="text-11 absolute top-1/2 right-23 translate-x-5 -translate-y-1/2"
+            >
+              E
+            </div>
+          </div>
 
-            <div class="flex gap-3 items-center">
-              <div class="text-30 font-500 leading-30">
+          <div class="flex justify-between">
+            <div class="flex flex-col">
+              <p class="text-12 leading-15 text-white/60 mb-6">
+                From {weather.wind.directionLabel} ({weather.wind.direction}°)
+              </p>
+
+              <p class="text-12 leading-15 text-white/60">Wind Speed</p>
+              <p class="text-14 leading-15 mb-6">
+                {weather.wind.speed}
+                {weather.wind.unit}
+              </p>
+
+              <p class="text-12 leading-15 text-white/60">Wind Gust</p>
+              <p class="text-14 leading-15">
                 {weather.wind.gusts}
-              </div>
-              <div class="flex flex-col">
-                <p class="text-12 text-black/60 leading-15">
-                  {weather.wind.unit}
-                </p>
-                <p class="text-12 leading-15">Wind Gust</p>
-              </div>
+                {weather.wind.unit}
+              </p>
             </div>
           </div>
         </div>
@@ -745,13 +681,15 @@
             alt="Beaufortimg"
             class="w-1/3 object-cover"
           />
-          <p class="text-12 leading-16 pb-3">{weather.wind.description}</p>
+          <p class="text-12 leading-16 pb-3 text-black">
+            {weather.wind.description}
+          </p>
         </div>
       </div>
     {/if}
 
     {#if weather.precipitation}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="mb-3 uppercase text-12">Precipitation</p>
         <div class="flex flex-col items-center">
           {#if weather.precipitation.hasPrecipitation}
@@ -787,7 +725,7 @@
     {/if}
 
     {#if weather.uvIndex}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">UV Index</p>
 
         <div class="mt-9 flex flex-col justify-center items-center">
@@ -874,10 +812,10 @@
     {/if}
 
     {#if weather.pressure}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12 mb-12">Pressure</p>
 
-        <div class="w-full px-12 mb-6 flex justify-between items-center">
+        <div class="w-full px-12 mb-6 flex justify-center items-center gap-25">
           <div
             class="w-9 h-100 rounded-full shadow shadow-black/30 relative bg-gradient-to-b from-white via-white to-white/10"
           >
@@ -887,7 +825,7 @@
             ></span>
           </div>
           <div class="flex flex-col">
-            <h1 class="text-24 font-500">
+            <h1 class="text-20 font-500">
               {weather.pressure.value} <small>hPa</small>
             </h1>
             <p class="text-12 text-center">
@@ -899,28 +837,28 @@
     {/if}
 
     {#if weather.humidity}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12 mb-12">Humidity</p>
-        <div class="flex items-center justify-center gap-30">
-          <div class="relative h-100 w-9 rounded-full bg-[#0000001a]">
+        <div class="flex items-center justify-center gap-25">
+          <div class="relative h-100 w-9 rounded-full bg-white/10">
             <div
-              class="float-left w-full rounded-full absolute bottom-0 bg-[#228be6]"
+              class="float-left w-full rounded-full absolute bottom-0 bg-white/90"
               style="height: {weather.humidity.value}%;"
             ></div>
           </div>
 
           <div class="flex flex-col gap-6">
             <div class="flex flex-col">
-              <div class="text-30 font-500 leading-30">
+              <p class="text-12 leading-15 text-white/60">Relative Humidity</p>
+              <div class="text-14 font-500 leading-18">
                 {weather.humidity.value}%
               </div>
-              <p class="text-12 leading-15">Relative Humidity</p>
             </div>
             <div class="flex flex-col">
-              <div class="text-30 font-500 leading-30">
+              <p class="text-12 leading-15 text-white/60">Dew point</p>
+              <div class="text-14 font-500 leading-18">
                 {weather.humidity.dewpoint}°
               </div>
-              <p class="text-12 leading-15">Dew point</p>
             </div>
           </div>
         </div>
@@ -928,7 +866,7 @@
     {/if}
 
     {#if weather.cloudcover}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Cloud Cover</p>
         <div class="flex flex-col items-center">
           <img
@@ -943,9 +881,9 @@
     {/if}
 
     {#if weather.visibility}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Visibility</p>
-        <h1 class="text-48 font-400">
+        <h1 class="text-36 font-400 leading-50">
           {weather.visibility.value}
           <small>{weather.visibility.unit}</small>
         </h1>
@@ -954,7 +892,7 @@
     {/if}
 
     {#if weather.sunrise}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Sunrise / Sunset</p>
         <div class="relative -mt-50 ml-15 -mb-15">
           <svg
@@ -989,7 +927,7 @@
 
             <use
               href="#curve"
-              stroke="#dee1e5"
+              stroke="#ffffff1a"
               stroke-width="6"
               mask="url(#maskBottom)"
             />
@@ -1015,20 +953,20 @@
 
         <div class="flex justify-between">
           <div class="flex flex-col items-start">
-            <span class="text-12">Sunrise</span>
-            <span class="text-14 font-600">{weather.sunrise.sunrise} </span>
+            <span class="text-12 text-white/60">Sunrise</span>
+            <span class="text-14 font-500">{weather.sunrise.sunrise} </span>
           </div>
 
           <div class="flex flex-col items-end">
-            <span class="text-12">Sunset</span>
-            <span class="text-14 font-600">{weather.sunrise.sunset}</span>
+            <span class="text-12 text-white/60">Sunset</span>
+            <span class="text-14 font-500">{weather.sunrise.sunset}</span>
           </div>
         </div>
       </div>
     {/if}
 
     {#if weather.aiq}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Air Quality</p>
 
         <div class="-mt-9 flex flex-col justify-center items-center">
@@ -1047,7 +985,7 @@
                 cx="60"
                 cy="60"
                 fill="transparent"
-                stroke="#e0e0e0"
+                stroke="#ffffff1a"
                 stroke-width="10"
               ></circle>
               <circle
@@ -1064,12 +1002,12 @@
 
             <div class="flex flex-col items-center">
               <p class="text-16 font-500">{weather.aiq.value}</p>
-              <p class="text-12 text-black/60">AQI</p>
+              <p class="text-12 text-white/60">AQI</p>
             </div>
           </div>
 
           <span
-            class="mb-6 rounded-full text-12 leading-22 font-600 text-center px-10"
+            class="mb-6 rounded-full text-12 text-black leading-22 font-500 text-center px-10"
             style="background-color: {weather.aiq.color};"
           >
             {weather.aiq.level}
@@ -1081,7 +1019,7 @@
     {/if}
 
     {#if weather.snow && weather.snow.hasSnow}
-      <div class="light p-6 w-full">
+      <div class="dark p-6 w-full">
         <p class="uppercase text-12">Snow Depth</p>
         <div class="flex flex-col items-center">
           <img
@@ -1100,7 +1038,7 @@
     <h1 class="text-24">Hourly Forecast</h1>
     <div class="w-full grid grid-cols-4 gap-2">
       {#each weather.hourly.data as item}
-        <div class="light flex flex-col rounded-2 overflow-hidden">
+        <div class="dark flex flex-col rounded-2 overflow-hidden">
           <h1 class=" uppercase text-21 leading-24 font-500 text-center">
             {@html formatTime(item.time)}
           </h1>
@@ -1150,7 +1088,7 @@
     <div class="flex flex-wrap gap-2">
       {#each weather.daily.data as item}
         <div
-          class="light w-full h-36 flex items-center justify-between pl-9 rounded-2"
+          class="dark w-full h-36 flex items-center justify-between pl-9 rounded-2"
         >
           <div class="flex items-center flex-1">
             <span class="text-16 font-500 min-w-50">
@@ -1176,7 +1114,7 @@
           </div>
 
           <div class="flex w-120 justify-end items-center h-full">
-            <div class="text-11 text-black/60 leading-16 min-w-30 text-center">
+            <div class="text-11 text-white/60 leading-16 min-w-30 text-center">
               {formatTemperature(item.temp_min)}
             </div>
 
