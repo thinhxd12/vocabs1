@@ -17,7 +17,7 @@
   <p class="font-sfpro text-24 text-secondary-white mb-9 indent-6">Log in</p>
   <form
     name="signin"
-    action="?/signin"
+    action="/login"
     method="post"
     use:enhance={({ formElement, formData, action, cancel }) => {
       creating = true;

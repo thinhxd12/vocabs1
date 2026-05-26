@@ -1,11 +1,10 @@
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { dev } from "$app/environment";
-import type { LayoutServerLoad } from "../$types";
 import { SECRET_LOGIN_EMAIL } from "$env/static/private";
 
 export const actions = {
-  signin: async ({ cookies, request, locals: { supabase } }) => {
+  default: async ({ cookies, request, locals: { supabase } }) => {
     const formData = await request.formData();
     const email = SECRET_LOGIN_EMAIL;
     const password = formData.get("password") as string;
@@ -26,7 +25,7 @@ export const actions = {
         error: error.message,
       });
     } else {
-      cookies.set("session_id", email, {
+      cookies.set("session_id", "thinh", {
         path: "/",
         httpOnly: true,
         sameSite: "strict",
@@ -36,18 +35,4 @@ export const actions = {
       throw redirect(303, "/vocab");
     }
   },
-  signout: async ({ cookies, locals: { supabase, safeGetSession } }) => {
-    cookies.delete("session_id", { path: "/" });
-    const { user } = await safeGetSession();
-    if (user) {
-      await supabase.auth.signOut();
-      redirect(303, "/login");
-    }
-  },
 } satisfies Actions;
-
-export const load: LayoutServerLoad = async ({ locals, cookies }) => {
-  if (locals.user) {
-    throw redirect(308, cookies.get("redirect_to") || "/vocab");
-  }
-};

@@ -5,7 +5,7 @@ import {
   PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 } from "$env/static/public";
 
-const unProtectedRoutes = ["/login"];
+const unProtectedRoutes = ["/login", "/logout"];
 
 export const handle: Handle = async ({ event, resolve }) => {
   event.locals.supabase = createServerClient(
@@ -31,31 +31,23 @@ export const handle: Handle = async ({ event, resolve }) => {
     if (error) {
       // JWT validation has failed
       return { user: null };
-    }
-
-    return { user };
+    } else return { user: user.aud };
   };
 
   const sessionId = event.cookies.get("session_id");
   if (!sessionId && !unProtectedRoutes.includes(event.url.pathname)) {
+    await event.locals.supabase.auth.signOut();
     throw redirect(303, "/login");
   }
 
-  const {
-    data: { user },
-    error,
-  } = await event.locals.supabase.auth.getUser();
-
-  if (error || !user) {
-    if (!unProtectedRoutes.includes(event.url.pathname)) {
-      throw redirect(303, "/login");
-    }
+  const { user } = await event.locals.safeGetSession();
+  const isLoggingIn = event.url.pathname.startsWith("/login");
+  const isLoggingOut = event.url.pathname.startsWith("/logout");
+  if (user && isLoggingIn && !isLoggingOut) {
+    throw redirect(303, "/vocab");
   }
-
-  if (user && sessionId === user?.email) {
-    event.locals.user = {
-      email: user.email,
-    };
+  if (!user && !unProtectedRoutes.includes(event.url.pathname)) {
+    throw redirect(303, "/login");
   }
 
   return await resolve(event, {

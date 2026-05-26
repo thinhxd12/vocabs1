@@ -211,8 +211,8 @@
         <SimpleIconsAnki width="14" height="14" />
       </a>
 
-      <form method="post" action="/login?/signout">
-        <button class="btn-menu" onclick={() => localStorage.clear()}>
+      <form method="post" action="/logout">
+        <button class="btn-menu" type="submit" onclick={() => localStorage.clear()}>
           <MajesticonsUnlockOpenLine width="14" height="14" />
         </button>
       </form>
