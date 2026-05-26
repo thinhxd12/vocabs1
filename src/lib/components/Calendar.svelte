@@ -3,8 +3,6 @@
   import { format } from "date-fns";
   import { untrack } from "svelte";
   import { fly } from "svelte/transition";
-  import SolarArrowLeftBold from "~icons/solar/arrow-left-bold";
-  import SolarArrowRightBold from "~icons/solar/arrow-right-bold";
   import January from "$lib/assets/images/1.webp";
   import February from "$lib/assets/images/2.webp";
   import March from "$lib/assets/images/3.webp";
@@ -177,9 +175,14 @@
   </div>
 
   <div class="calendar">
-    <div class="flex justify-between items-center px-6 pt-9 pb-2">
-      <div class="flex items-center gap-6 select-none text-[#71767b]">
-        <h3 class="font-rubik font-300 text-54 leading-40">
+    <div class="flex justify-between items-center px-6">
+      <div class="flex items-center gap-6 pt-6 select-none text-[#71767b]">
+        <button
+          class="month-button left-button"
+          aria-label="left"
+          onclick={prev}
+        ></button>
+        <h3 class="font-rubik font-300 text-54 leading-45">
           {now.getDate()}
         </h3>
         <div class="flex flex-col">
@@ -191,26 +194,16 @@
               {monthNames[month]}
               {year}</span
             >
-            <span class="flex items-center gap-3">
-              <button
-                onclick={prev}
-                class="size-24 flex items-center justify-center hover:text-white"
-              >
-                <SolarArrowLeftBold width="16" height="16" />
-              </button>
-
-              <button
-                onclick={next}
-                class="size-24 flex items-center justify-center hover:text-white"
-              >
-                <SolarArrowRightBold width="16" height="16" />
-              </button>
-            </span>
           </div>
         </div>
+        <button
+          class="month-button right-button"
+          aria-label="right"
+          onclick={next}
+        ></button>
       </div>
 
-      <div class="font-rubik text-8 leading-9 font-300 pb-6 text-[#71767b]">
+      <div class="font-rubik text-8 leading-9 font-300 text-[#71767b]">
         {#each $yearProgressList as item}
           <p class="flex gap-6">
             <span>{item.date}</span>
@@ -287,5 +280,30 @@
 
   .day:nth-of-type(7n + 1) .schedule {
     color: #ff3333;
+  }
+
+  .month-button {
+    margin-bottom: 6px;
+    width: 16px;
+    height: 42px;
+    transition: all 0.1s;
+  }
+
+  .month-button:hover {
+    background-color: #71767b;
+  }
+
+  .month-button:active {
+    filter: brightness(1.1);
+  }
+
+  .left-button {
+    clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    padding-right: 6px;
+  }
+
+  .right-button {
+    clip-path: polygon(100% 50%, 0 0, 0 100%);
+    padding-left: 6px;
   }
 </style>
