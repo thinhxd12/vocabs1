@@ -26,7 +26,6 @@
   import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
-  import mainBG from "$lib/assets/images/jungle.webp";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -348,13 +347,7 @@
 
   <div class="flex-1 w-full flex justify-center items-center">
     <div class="circle">
-      <div class="square">
-        <img
-          src={mainBG}
-          alt="bg"
-          class="absolute z-1 object-cover w-full h-full"
-        />
-
+      <div class="square dark">
         {#if showTranslate && translations.length}
           <div
             class="relative z-3 text-white w-full h-full overflow-y-scroll no-scrollbar px-15 pt-110 pb-15"
@@ -403,7 +396,7 @@
     <div class="w-full flex overflow-hidden gap-2">
       {#if previews}
         <button
-          class="bg-green-600/80 btn-main"
+          class="bg-green-900/60 btn-main"
           class:btnActive={activedButton === 1}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -416,7 +409,7 @@
           <div class="w-full uppercase text-14 leading-18 font-600">Again</div>
         </button>
         <button
-          class="bg-green-400/80 btn-main"
+          class="bg-green-600/60 btn-main"
           class:btnActive={activedButton === 2}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -429,7 +422,7 @@
           <div class="w-full uppercase text-14 leading-18 font-600">Hard</div>
         </button>
         <button
-          class="bg-green-300/80 btn-main"
+          class="bg-green-400/60 btn-main"
           class:btnActive={activedButton === 3}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -442,7 +435,7 @@
           <div class="w-full uppercase text-14 leading-18 font-600">Good</div>
         </button>
         <button
-          class="bg-green-100/80 btn-main"
+          class="bg-green-100/60 btn-main"
           class:btnActive={activedButton === 4}
           onclick={(e) => {
             e.currentTarget.blur();
@@ -464,7 +457,8 @@
 <style lang="postcss">
   .btn-main {
     @apply hover:brightness-[1.1] active:scale-95 flex flex-col flex-1 items-center justify-center py-2 rounded-2 border border-white/10;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(9px);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
   }
 
   .btnActive {
