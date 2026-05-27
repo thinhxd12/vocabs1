@@ -66,11 +66,11 @@ async function searchBook(
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
   try {
-    // const html = await Promise.any([
-    //   getHtmlMethod1(searchUrl),
-    //   getHtmlMethod2(searchUrl),
-    // ]);
-    const html = await getHtmlMethod1(searchUrl);
+    const html = await Promise.any([
+      getHtmlMethod1(searchUrl),
+      getHtmlMethod2(searchUrl),
+    ]);
+    // const html = await getHtmlMethod2(searchUrl);
     const searchResult = parseSearchResults(html, author);
     if (searchResult && searchResult.goodreadsId) {
       const bookInfo = await lookupBook(searchResult.goodreadsId);
@@ -153,8 +153,8 @@ function parseSearchResults(
   });
 
   if (results.length) {
-    const res = results.filter((item) => item.authors.includes(author));
-    const sortedResults = res.sort((a, b) => {
+    // const res = results.filter((item) => item.authors.includes(author));
+    const sortedResults = results.sort((a, b) => {
       if (a.numberOfRatings === null) return 1;
       if (b.numberOfRatings === null) return -1;
       return Number(b.numberOfRatings) - Number(a.numberOfRatings);
