@@ -84,34 +84,22 @@ export type Database = {
         Row: {
           currentHighlightId: string | null;
           currentLocationId: string | null;
-          focusMinutes: number;
-          intervals: number;
           locations: Json | null;
-          longbreakMinutes: number;
           progress: Json | null;
-          shortbreakMinutes: number;
           user: string;
         };
         Insert: {
           currentHighlightId?: string | null;
           currentLocationId?: string | null;
-          focusMinutes?: number;
-          intervals?: number;
           locations?: Json | null;
-          longbreakMinutes?: number;
           progress?: Json | null;
-          shortbreakMinutes?: number;
           user: string;
         };
         Update: {
           currentHighlightId?: string | null;
           currentLocationId?: string | null;
-          focusMinutes?: number;
-          intervals?: number;
           locations?: Json | null;
-          longbreakMinutes?: number;
           progress?: Json | null;
-          shortbreakMinutes?: number;
           user?: string;
         };
         Relationships: [];

@@ -455,13 +455,13 @@
               : longbreakImage}
           alt="pbg"
           class="absolute z-20 h-full w-0 object-cover object-[-45px] transition-all duration-300"
-          style="box-shadow: rgba(0, 0, 0, 0.8) 2px 0px 3px; width: {$percent}%;"
+          style="box-shadow: rgba(0, 0, 0, 1) 1px 0px 1px; width: {$percent}%;"
         />
 
         {#if $isPaused}
           <div
             transition:fade={{ duration: 150 }}
-            class="absolute w-full h-full z-30 flex items-center justify-center bg-black/15"
+            class="absolute w-full h-full z-30 flex items-center justify-center"
             style="box-shadow: inset -24px -18px 36px 0px rgba(0,0,0,0.9), inset 24px 18px 36px 0px rgba(0,0,0,0.9);"
           ></div>
         {/if}
@@ -477,7 +477,7 @@
     width: 540px;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 3px solid #000000;
+    border: 4px solid #000000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -486,9 +486,9 @@
   }
 
   .square {
-    width: 379px;
+    width: 377px;
     aspect-ratio: 1;
-    border: 3px solid #000000;
+    border: 4px solid #000000;
     position: relative;
     overflow: hidden;
   }

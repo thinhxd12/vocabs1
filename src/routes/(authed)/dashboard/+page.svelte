@@ -4,11 +4,7 @@
     addToast,
     currentForecastModel,
     currentLocationId,
-    focusMinutes,
-    intervals,
     locationList,
-    longbreakMinutes,
-    shortbreakMinutes,
     weatherData,
     yearProgressList,
   } from "$lib/store/layoutstore";
@@ -19,7 +15,6 @@
   import { saveUserSetting } from "$lib/store/localstore";
   import type {
     LocationType,
-    UserType,
     WeatherQueryParams,
     YearProgressType,
   } from "$lib/types";
@@ -41,21 +36,6 @@
     { name: "KNMI Netherlands", value: "knmi_seamless" },
     { name: "DMI Denmark", value: "dmi_seamless" },
   ];
-
-  async function handleChangeInput(name: keyof UserType, value: any) {
-    const { error } = await layoutData.supabase
-      .from("dashboard_table")
-      .update({ [name]: value })
-      .eq("user", "thinh");
-    if (error) {
-      addToast({
-        type: "error",
-        title: "Error!",
-        message: error.message as string,
-      });
-    }
-    saveUserSetting();
-  }
 
   let newLocation = $state<LocationType>({
     id: "",
@@ -233,64 +213,6 @@
   </h1>
 
   <div class="w-full grid grid-cols-2 gap-3">
-    <h2 class="col-span-2 text-18 font-500">Pomodoro</h2>
-    <div class="dashboardItem">
-      <h3>Focus minutes</h3>
-      <input
-        type="number"
-        name="focusMinutes"
-        bind:value={$focusMinutes}
-        onchange={(e) => {
-          handleChangeInput(
-            e.currentTarget.name as keyof UserType,
-            Number(e.currentTarget.value),
-          );
-        }}
-      />
-    </div>
-    <div class="dashboardItem">
-      <h3>Short Break minutes</h3>
-      <input
-        type="number"
-        name="shortbreakMinutes"
-        bind:value={$shortbreakMinutes}
-        onchange={(e) => {
-          handleChangeInput(
-            e.currentTarget.name as keyof UserType,
-            Number(e.currentTarget.value),
-          );
-        }}
-      />
-    </div>
-    <div class="dashboardItem">
-      <h3>Long Break minutes</h3>
-      <input
-        type="number"
-        name="longbreakMinutes"
-        bind:value={$longbreakMinutes}
-        onchange={(e) => {
-          handleChangeInput(
-            e.currentTarget.name as keyof UserType,
-            Number(e.currentTarget.value),
-          );
-        }}
-      />
-    </div>
-    <div class="dashboardItem">
-      <h3>Interval</h3>
-      <input
-        type="number"
-        name="intervals"
-        bind:value={$intervals}
-        onchange={(e) => {
-          handleChangeInput(
-            e.currentTarget.name as keyof UserType,
-            Number(e.currentTarget.value),
-          );
-        }}
-      />
-    </div>
-
     <h2 class="col-span-2 text-18 font-500">Weather Locations</h2>
     <div class="dashboardItem col-span-2">
       <div class="dashboardRow grid-cols-12 mb-3">

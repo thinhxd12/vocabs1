@@ -12,12 +12,8 @@ import icescape from "$lib/assets/images/Icescape.jpg";
 import {
   currentForecastModel,
   currentLocationId,
-  focusMinutes,
   fsrsparams,
-  intervals,
   locationList,
-  longbreakMinutes,
-  shortbreakMinutes,
   yearProgressList,
 } from "./layoutstore";
 
@@ -245,7 +241,7 @@ export async function getUserSettingsData() {
     const { data } = await page.data.supabase
       .from("dashboard_table")
       .select(
-        "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel,fsrsparams",
+        "locations,currentLocationId,progress,currentForecastModel,fsrsparams",
       )
       .eq("user", "thinh");
     if (data) {
@@ -256,10 +252,6 @@ export async function getUserSettingsData() {
 }
 
 function setStoreUserSettings(setting: UserType) {
-  focusMinutes.set(setting.focusMinutes);
-  shortbreakMinutes.set(setting.shortbreakMinutes);
-  longbreakMinutes.set(setting.longbreakMinutes);
-  intervals.set(setting.intervals);
   locationList.set(setting.locations);
   currentLocationId.set(setting.currentLocationId);
   yearProgressList.set(setting.progress);
@@ -272,7 +264,7 @@ export async function saveUserSetting() {
   const { data } = await page.data.supabase
     .from("dashboard_table")
     .select(
-      "focusMinutes,shortbreakMinutes,longbreakMinutes,intervals,locations,currentLocationId,progress,currentForecastModel,fsrsparams",
+      "locations,currentLocationId,progress,currentForecastModel,fsrsparams",
     )
     .eq("user", "thinh");
   if (data) {

@@ -209,7 +209,7 @@
   {/if}
 </main>
 
-<div class="fixed inset-0 z-1 bg-black"></div>
+<div class="fixed inset-0 z-1 bg-[#0a0a0b]"></div>
 <div class="grain"></div>
 <div class="fixed w-screen h-screen inset-0 z-3">
   {#if $layoutSetting.showImage}
@@ -251,7 +251,7 @@
     inset: 0;
     pointer-events: none;
     z-index: 2;
-    opacity: 0.1;
+    opacity: 0.24;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
