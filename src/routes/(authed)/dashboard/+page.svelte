@@ -340,20 +340,6 @@
     @apply px-12 py-6 rounded-2 transition duration-100 bg-white/30 hover:bg-white/90 backdrop-blur-md ring-1 ring-black/5 shadow shadow-black/30;
   }
 
-  .dashboardItem h3 {
-    @apply bg-transparent text-14 font-500 cursor-default;
-  }
-
-  .dashboardItem > input {
-    @apply bg-transparent text-36 leading-36 font-500 w-full outline-none;
-  }
-
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
   .dashboardRow {
     @apply grid;
   }
