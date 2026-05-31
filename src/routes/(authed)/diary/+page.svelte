@@ -1,11 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type { DBSelect } from "$lib/types";
-  import { format } from "date-fns";
   import Container from "$lib/components/Container.svelte";
   import Pagination from "$lib/components/Pagination.svelte";
   import { innerHeight } from "svelte/reactivity/window";
-  import { showTimer } from "$lib/store/navstore";
+  import { getTodayDate, showTimer } from "$lib/store/navstore";
   import type { PageProps } from "./$types";
   import StreamlinePlumpFeatherPenSolid from "~icons/streamline-plump/feather-pen-solid";
   import Modal from "$lib/components/Modal.svelte";
@@ -14,7 +13,7 @@
   import { addToast } from "$lib/store/layoutstore";
   import { v7 as uuidv7 } from "uuid";
 
-  const todayDate = format(new Date(), "yyyy-MM-dd");
+  const todayDate = getTodayDate();
   let { data: layoutData }: PageProps = $props();
 
   let currentPage = $state<number>(1);
@@ -136,6 +135,18 @@
       showModal = false;
     }
   }
+
+  function handleOpenEdit() {
+    const lastItem = paginationItems.find((item) => item.date === todayDate);
+    if (lastItem) {
+      editItem = lastItem;
+    } else {
+      editItem.id = "";
+      editItem.date = todayDate;
+      editItem.text = "";
+    }
+    showModal = true;
+  }
 </script>
 
 <svelte:head>
@@ -190,10 +201,7 @@
     class="size-28 absolute bottom-3 right-3 opacity-70 hover:opacity-100"
     onclick={(e) => {
       e.currentTarget.blur();
-      editItem.id = "";
-      editItem.date = todayDate;
-      editItem.text = "";
-      showModal = true;
+      handleOpenEdit();
     }}
   >
     <StreamlinePlumpFeatherPenSolid width="24" height="24" />

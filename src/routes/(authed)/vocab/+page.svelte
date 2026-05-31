@@ -230,10 +230,7 @@
 </script>
 
 <svelte:head>
-  {#if !$showTimer}
-    <title>{$renderWord ? `${$renderWord.word}` : "vocabs"}</title>
-  {/if}
-
+  <title>vocabs</title>
   <meta name="Vocab" content="Some Vocab" />
 </svelte:head>
 

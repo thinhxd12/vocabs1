@@ -23,10 +23,9 @@
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
-  import { format } from "date-fns";
   import Modal from "$lib/components/Modal.svelte";
   import { innerHeight } from "svelte/reactivity/window";
-  import { wakeEnable } from "$lib/store/navstore";
+  import { getTodayDate, wakeEnable } from "$lib/store/navstore";
   import MaterialSymbolsInsertChartOutlineRounded from "~icons/material-symbols/insert-chart-outline-rounded";
   import MaterialSymbolsSettingsRounded from "~icons/material-symbols/settings-rounded";
   import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
@@ -49,7 +48,7 @@
 
   let { data: layoutData }: PageProps = $props();
 
-  const todayDate = format(new Date(), "yyyy-MM-dd");
+  const todayDate = getTodayDate();
   let showSetting = $state<boolean>(false);
   let showReport = $state<boolean>(false);
   let showHeatmap = $state<boolean>(false);
@@ -477,7 +476,7 @@
     width: 540px;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 4px solid #000000;
+    border: 9px solid #000000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -486,9 +485,9 @@
   }
 
   .square {
-    width: 377px;
+    width: 371px;
     aspect-ratio: 1;
-    border: 4px solid #000000;
+    border: 3px solid #000000;
     position: relative;
     overflow: hidden;
   }

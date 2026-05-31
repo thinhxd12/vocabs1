@@ -83,7 +83,7 @@
       {/if}
       <div class="w-full flex px-6 mb-3">
         <span
-          class="min-w-15 text-12 font-700 leading-15 border-r-2 border-black/45"
+          class="min-w-18 text-12 font-700 leading-15 border-r-2 border-black/45"
           >{index + 1}</span
         >
         <div class="pl-6">
