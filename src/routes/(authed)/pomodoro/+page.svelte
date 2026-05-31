@@ -166,7 +166,7 @@
 ></audio>
 
 <Container fullscreen>
-  <div class="min-w-main flex justify-between py-3">
+  <div class="min-w-[368px] flex justify-between py-3">
     <div class="flex gap-3 {$intervals > 15 ? 'pr-18' : ''}">
       <button
         class="setting-button"

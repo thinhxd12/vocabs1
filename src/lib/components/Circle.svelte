@@ -16,8 +16,8 @@
 
 <style lang="postcss">
   .container {
-    height: var(--height, 540px);
-    width: var(--width, 540px);
+    height: var(--height, 530px);
+    width: var(--width, 530px);
     position: relative;
     display: flex;
     align-items: center;
@@ -26,11 +26,12 @@
 
   .circle {
     position: absolute;
+    z-index: 3;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    padding: var(--border, 9px);
-    background: linear-gradient(to bottom right, #f9f0d9, #e0c384, #bfa054);
+    padding: var(--border, 3px);
+    background: linear-gradient(to bottom right, #c3aa71, #aa8a45, #886b2b);
     -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
@@ -41,27 +42,30 @@
 
   .square {
     position: absolute;
+    z-index: 3;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom right, #f9f0d9, #e0c384, #bfa054);
+    background: linear-gradient(to bottom right, #c3aa71, #aa8a45, #886b2b);
     clip-path: polygon(
-      16% 16%,
-      84% 16%,
-      84% 84%,
-      16% 84%,
-      16% 16%,
-      calc(16% + var(--border, 9px)) calc(16% + var(--border, 9px)),
-      calc(16% + var(--border, 9px)) calc(84% - var(--border, 9px)),
-      calc(84% - var(--border, 9px)) calc(84% - var(--border, 9px)),
-      calc(84% - var(--border, 9px)) calc(16% + var(--border, 9px)),
-      calc(16% + var(--border, 9px)) calc(16% + var(--border, 9px))
+      15% 15%,
+      85% 15%,
+      85% 85%,
+      15% 85%,
+      15% 15%,
+      calc(15% + var(--border, 3px)) calc(15% + var(--border, 3px)),
+      calc(15% + var(--border, 3px)) calc(85% - var(--border, 3px)),
+      calc(85% - var(--border, 3px)) calc(85% - var(--border, 3px)),
+      calc(85% - var(--border, 3px)) calc(15% + var(--border, 3px)),
+      calc(15% + var(--border, 3px)) calc(15% + var(--border, 3px))
     );
     clip-rule: evenodd;
   }
 
   .content {
-    width: calc(68% - 2 * var(--border, 9px));
-    height: calc(68% - 2 * var(--border, 9px));
+    position: relative;
+    z-index: 2;
+    width: calc(70% - var(--border, 3px));
+    height: calc(70% - var(--border, 3px));
   }
 
   @media screen and (max-width: 500px) {

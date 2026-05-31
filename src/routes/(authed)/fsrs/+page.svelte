@@ -270,7 +270,7 @@
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 
 <Container fullscreen>
-  <div class="w-main flex-1 flex justify-end items-start gap-3 pt-3">
+  <div class="w-[368px] flex-1 flex justify-end items-start gap-3 pt-3">
     <form
       method="post"
       action="?/optimize"
