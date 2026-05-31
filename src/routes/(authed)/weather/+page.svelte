@@ -503,7 +503,7 @@
 </svelte:head>
 
 <Container scrollable>
-  <div class="current">
+  <div class="current select-none">
     <select
       name="location"
       onchange={(e) => setCurrentLocation(e.currentTarget.value)}
@@ -557,7 +557,7 @@
 
   <Rainviewer />
 
-  <div class="w-full grid grid-cols-2 gap-2">
+  <div class="w-full grid grid-cols-2 gap-2 select-none">
     {#if weather.feelslike}
       <div class="dark p-6 aspect-square">
         <p class="uppercase text-12">Feels Like</p>

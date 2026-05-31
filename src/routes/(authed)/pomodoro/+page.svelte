@@ -45,6 +45,7 @@
   import TablerCircleLetterFFilled from "~icons/tabler/circle-letter-f-filled";
   import TablerCircleLetterSFilled from "~icons/tabler/circle-letter-s-filled";
   import TablerCircleLetterLFilled from "~icons/tabler/circle-letter-l-filled";
+  import Circle from "$lib/components/Circle.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -434,8 +435,8 @@
   </Modal>
 
   <div class="flex-1 w-full flex justify-center items-center">
-    <div class="circle">
-      <div class="square">
+    <Circle>
+      <div class="relative w-full h-full">
         <img
           src={$currentMode === "focus"
             ? focusImage
@@ -461,37 +462,17 @@
           <div
             transition:fade={{ duration: 150 }}
             class="absolute w-full h-full z-30 flex items-center justify-center"
-            style="box-shadow: inset -24px -18px 36px 0px rgba(0,0,0,0.9), inset 24px 18px 36px 0px rgba(0,0,0,0.9);"
+            style="box-shadow: inset -24px -18px 36px 0px rgba(0,0,0,0.8), inset 24px 18px 36px 0px rgba(0,0,0,0.9);"
           ></div>
         {/if}
       </div>
-    </div>
+    </Circle>
   </div>
 </Container>
 
 <svelte:window on:keydown={onKeyDown} />
 
 <style lang="postcss">
-  .circle {
-    width: 540px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 9px solid #000000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .square {
-    width: 371px;
-    aspect-ratio: 1;
-    border: 3px solid #000000;
-    position: relative;
-    overflow: hidden;
-  }
-
   .setting-button {
     @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
     backdrop-filter: blur(12px);
@@ -529,15 +510,5 @@
     color: #555;
     width: 100%;
     outline: 0;
-  }
-
-  @media screen and (max-width: 500px) {
-    .circle {
-      width: 360px;
-    }
-
-    .square {
-      width: 253px;
-    }
   }
 </style>

@@ -26,6 +26,7 @@
   import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
+  import Circle from "$lib/components/Circle.svelte";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -345,12 +346,12 @@
     {/if}
   </div>
 
-  <div class="flex-1 w-full flex justify-center items-center">
-    <div class="circle">
-      <div class="square dark">
+  <div class="flex-1 w-full flex items-center justify-center">
+    <Circle>
+      <div class="w-full h-full">
         {#if showTranslate && translations.length}
           <div
-            class="relative z-3 text-white w-full h-full overflow-y-scroll no-scrollbar px-15 pt-110 pb-15"
+            class="relative z-3 text-white w-full h-full overflow-y-scroll no-scrollbar px-15 pt-90 pb-15"
             style="text-shadow: 0 0 3px black;"
           >
             {#each translations as item}
@@ -389,7 +390,7 @@
           </div>
         {/if}
       </div>
-    </div>
+    </Circle>
   </div>
 
   <div class="w-main flex-1 flex items-end">
@@ -468,35 +469,5 @@
   .setting-button {
     @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
     backdrop-filter: blur(12px);
-  }
-
-  .circle {
-    width: 540px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 9px solid #000000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .square {
-    width: 371px;
-    aspect-ratio: 1;
-    border: 3px solid #000000;
-    position: relative;
-    overflow: hidden;
-  }
-
-  @media screen and (max-width: 500px) {
-    .circle {
-      width: 360px;
-    }
-
-    .square {
-      width: 253px;
-    }
   }
 </style>
