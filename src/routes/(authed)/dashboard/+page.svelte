@@ -20,6 +20,7 @@
   } from "$lib/types";
   import { v7 as uuidv7 } from "uuid";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
+  import { showTimer } from "$lib/store/navstore";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -204,6 +205,13 @@
     }
   }
 </script>
+
+<svelte:head>
+  {#if !$showTimer}
+    <title>⚙️</title>
+  {/if}
+  <meta name="dashboard" content="settings" />
+</svelte:head>
 
 <Container scrollable>
   <h1

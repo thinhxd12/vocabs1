@@ -27,6 +27,7 @@
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import Circle from "$lib/components/Circle.svelte";
+  import { showTimer } from "$lib/store/navstore";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -261,7 +262,9 @@
 </script>
 
 <svelte:head>
-  <title>❔</title>
+  {#if !$showTimer}
+    <title>❔</title>
+  {/if}
   <meta name="fsrs" content="Free Spaced Repetition Scheduler!" />
 </svelte:head>
 

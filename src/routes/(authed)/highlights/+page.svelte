@@ -572,7 +572,7 @@
 <svelte:head>
   {#if !$showTimer}
     <title>
-      {$highlight ? `${$highlight.bookTile}` : "📖"}
+      {$highlight ? `📖 ${$highlight.bookTile}` : "📖"}
     </title>
   {/if}
 

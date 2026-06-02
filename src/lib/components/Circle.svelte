@@ -31,7 +31,6 @@
     height: 100%;
     border-radius: 50%;
     padding: var(--border, 3px);
-    /* background: linear-gradient(to bottom right, #c3aa71, #aa8a45, #886b2b); */
     background: black;
     -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
@@ -46,7 +45,6 @@
     z-index: 3;
     width: 100%;
     height: 100%;
-    /* background: linear-gradient(to bottom right, #c3aa71, #aa8a45, #886b2b); */
     background: black;
     clip-path: polygon(
       15% 15%,

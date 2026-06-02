@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from "$app/state";
   import {
     currentMode,
     secondsRemaining,
@@ -55,7 +54,9 @@
 </script>
 
 <svelte:head>
-  {#if $showTimer && page.url.pathname !== "/pomodoro"}
+  {#if $showPomodoroTimer}
+    <title>{formatTimerString($secondsRemaining)}</title>
+  {:else if $showTimer}
     <title>{formatTimerString(secondsCount)}</title>
   {/if}
 </svelte:head>

@@ -230,7 +230,9 @@
 </script>
 
 <svelte:head>
-  <title>vocabs</title>
+  {#if !$showTimer}
+    <title>vocabs</title>
+  {/if}
   <meta name="Vocab" content="Some Vocab" />
 </svelte:head>
 
