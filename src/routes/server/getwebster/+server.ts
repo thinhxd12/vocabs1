@@ -7,6 +7,8 @@ import type {
   VocabMeaningType,
 } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
+import { SCRAPER_API_URL } from "$lib/utils/constants.js";
+import { SECRET_SCRAPER_KEY } from "$env/static/private";
 
 async function fetchGetText(url: string) {
   try {
@@ -20,6 +22,45 @@ async function fetchGetText(url: string) {
   } catch (error) {
     return "";
   }
+}
+
+async function getHtmlMethod1(pageurl: string) {
+  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Scraper-Key": SECRET_SCRAPER_KEY,
+    },
+    body: JSON.stringify({ url: pageurl }),
+  });
+  const data = await response.json();
+  if (data.success) {
+    return data.html;
+  } else throw new Error();
+}
+
+async function getHtmlMethod2(pageurl: string) {
+  const url = "https://api.firecrawl.dev/v2/scrape";
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer fc-3e726e5198464320a5fbac65c2e1e7a9",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url: pageurl,
+      onlyMainContent: false,
+      maxAge: 172800000,
+      parsers: ["pdf"],
+      formats: ["html"],
+    }),
+  };
+  const response = await fetch(url, options);
+  if (response.status === 200) {
+    const json = await response.json();
+    const html = json.data.html;
+    return html;
+  } else throw new Error();
 }
 
 async function getOedSoundURL(text: string) {
@@ -66,7 +107,7 @@ export async function GET({ url }) {
 
   try {
     const data = await Promise.all([
-      fetchGetText(urlWebter),
+      getHtmlMethod2(urlWebter),
       getLearnersMp3(text),
     ]);
     const $ = load(data[0]);
