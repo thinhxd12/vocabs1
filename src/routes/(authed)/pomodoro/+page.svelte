@@ -25,7 +25,7 @@
   import type { DBSelect } from "$lib/types";
   import Modal from "$lib/components/Modal.svelte";
   import { innerHeight } from "svelte/reactivity/window";
-  import { getTodayDate, wakeEnable } from "$lib/store/navstore";
+  import { getTodayDate, showTimer, wakeEnable } from "$lib/store/navstore";
   import MaterialSymbolsInsertChartOutlineRounded from "~icons/material-symbols/insert-chart-outline-rounded";
   import MaterialSymbolsSettingsRounded from "~icons/material-symbols/settings-rounded";
   import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
@@ -151,12 +151,14 @@
 </script>
 
 <svelte:head>
-  {#if $isPaused}
-    <title>🍅 Paused!</title>
-  {:else if $currentMode === "focus"}
-    <title>{formatTimerString($secondsRemaining)} ⏳ Time to focus!</title>
-  {:else}
-    <title>{formatTimerString($secondsRemaining)} 🌴 Time for a break!</title>
+  {#if !$showTimer}
+    {#if $isPaused}
+      <title>Paused!</title>
+    {:else if $currentMode === "focus"}
+      <title>{formatTimerString($secondsRemaining)} 🍅 Time to focus!</title>
+    {:else}
+      <title>{formatTimerString($secondsRemaining)} 🌴 Time for a break!</title>
+    {/if}
   {/if}
 
   <meta name="Pomodoro" content="Pomodoro" />
