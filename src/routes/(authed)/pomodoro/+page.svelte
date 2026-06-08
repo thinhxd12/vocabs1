@@ -446,18 +446,8 @@
               ? shortbreakImage
               : longbreakImage}
           alt="bg"
-          class="absolute z-10 object-cover object-[-45px] w-full h-full grayscale"
-        />
-
-        <img
-          src={$currentMode === "focus"
-            ? focusImage
-            : $currentMode === "shortbreak"
-              ? shortbreakImage
-              : longbreakImage}
-          alt="pbg"
-          class="absolute z-20 h-full w-0 object-cover object-[-45px] transition-all duration-300"
-          style="box-shadow: rgba(0, 0, 0, 1) 1px 0px 1px; width: {$percent}%;"
+          class="absolute z-10 object-cover object-[-45px] w-full h-full"
+          style="filter: grayscale({$percent / 100});"
         />
 
         {#if $isPaused}

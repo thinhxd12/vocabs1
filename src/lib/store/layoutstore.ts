@@ -115,7 +115,7 @@ export function clearIntervalTimer() {
 }
 
 export function endTimer() {
-  percent.set(0);
+  percent.set(100);
   switch (get(currentMode)) {
     case "focus":
       srcAudio.set("/sounds/mp3_break.ogg");
@@ -183,16 +183,18 @@ export function endTimer() {
 export function updateDisplay() {
   switch (get(currentMode)) {
     case "focus":
-      percent.set(100 - (get(secondsRemaining) / get(focusMinutes) / 6) * 10);
+      percent.set(
+        Math.round((get(secondsRemaining) / get(focusMinutes) / 6) * 10),
+      );
       break;
     case "shortbreak":
       percent.set(
-        100 - (get(secondsRemaining) / get(shortbreakMinutes) / 6) * 10,
+        Math.round((get(secondsRemaining) / get(shortbreakMinutes) / 6) * 10),
       );
       break;
     case "longbreak":
       percent.set(
-        100 - (get(secondsRemaining) / get(longbreakMinutes) / 6) * 10,
+        Math.round((get(secondsRemaining) / get(longbreakMinutes) / 6) * 10),
       );
       break;
     default:
