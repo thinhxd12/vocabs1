@@ -31,9 +31,9 @@
   import MaterialSymbolsLightBackgroundGridSmallSharp from "~icons/material-symbols-light/background-grid-small-sharp";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import MaterialSymbolsVolumeOffRounded from "~icons/material-symbols/volume-off-rounded";
-  import focusImage from "$lib/assets/images/Julien-Dupré-Stacking-Grain-Sheaves.avif";
-  import shortbreakImage from "$lib/assets/images/Julien-Dupré-Woman-Pouring-a-Drink.avif";
-  import longbreakImage from "$lib/assets/images/Julien-Dupré-Resting-in-the-Fields.avif";
+  import focusImage from "$lib/assets/images/Hans Adam Weissenkircher-Helios on His Chariot.webp";
+  import shortbreakImage from "$lib/assets/images/Giovanni Battista Tiepolo-Hermes.webp";
+  import longbreakImage from "$lib/assets/images/Peder Mork Monsted-Figures Resting in a River Landscape.webp";
   import Heatmap from "$lib/components/Heatmap.svelte";
   import {
     formatTimerString,
@@ -446,7 +446,7 @@
               ? shortbreakImage
               : longbreakImage}
           alt="bg"
-          class="absolute z-10 object-cover object-[-45px] w-full h-full"
+          class="absolute z-10 object-cover w-full h-full"
           style="filter: grayscale({$percent / 100});"
         />
 
