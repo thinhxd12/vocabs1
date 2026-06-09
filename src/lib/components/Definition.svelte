@@ -95,9 +95,7 @@
                 {def.letter}
               </span>
               {#if def.num}
-                <small
-                  class="inline-block min-w-16 text-12 font-500 leading-15"
-                >
+                <small class="inline-block min-w-15 text-9 font-500 leading-16">
                   {def.num}
                 </small>
               {/if}
