@@ -7,12 +7,24 @@ import { v7 as uuidv7 } from "uuid";
 import { archiveVocab, shuffle } from "$lib/utils/functions";
 import cloverImage from "$lib/assets/images/clover.webp";
 import { goto } from "$app/navigation";
-import { addToast, timezone } from "./layoutstore";
+import { addToast, currentTimestamp, timezone } from "./layoutstore";
 
 export const showTimer = writable<boolean>(false);
+export const endTime = writable<number>(0);
 export const totalMemories = writable<number>(0);
 export const wakeEnable = writable<boolean>(false);
 export const currentProgress = writable<number>(0);
+const timeCount = 6 * 60;
+
+export function startCountdown() {
+  let now = get(currentTimestamp);
+  endTime.set(now + timeCount * 1000);
+  showTimer.set(true);
+}
+
+export function stopCountdown() {
+  showTimer.set(false);
+}
 
 export const todaySchedule = writable<
   | {
@@ -208,7 +220,7 @@ export async function updateTodayScheduleLocal() {
   const currentProgressValue = get(currentProgress);
 
   if (currentProgressValue === 1) {
-    if (newTodayScheduleValue!.first.count < 12) showTimer.set(true);
+    if (newTodayScheduleValue!.first.count < 12) startCountdown();
     currentProgress.set(2);
     await handleGetListContent();
     await goto("/quiz");

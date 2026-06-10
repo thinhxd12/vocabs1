@@ -4,6 +4,7 @@
   import {
     currentForecastModel,
     currentLocationId,
+    currentTimestamp,
     locationList,
     timezone,
     weatherData,
@@ -17,7 +18,7 @@
   import type { WeatherQueryParams } from "$lib/types";
   import { getOpenMeteoWeather } from "$lib/utils/functions";
   import { onDestroy, onMount } from "svelte";
-  import { dev } from "$app/environment";
+  import { browser, dev } from "$app/environment";
 
   let { children } = $props();
 
@@ -25,6 +26,7 @@
   let timeout: ReturnType<typeof setTimeout>;
 
   onMount(async () => {
+    initWebWorker();
     $timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     await getUserSettingsData();
     if (!dev) {
@@ -74,9 +76,28 @@
     return delay;
   }
 
+  let worker: Worker;
+  async function initWebWorker() {
+    if (browser) {
+      if (window.Worker) {
+        const Worker = await import("$lib/workers/timer.worker?worker");
+        worker = new Worker.default();
+
+        worker.onmessage = (event) => {
+          currentTimestamp.set(event.data.timestamp);
+        };
+
+        worker.postMessage({ action: "START" });
+      }
+    }
+  }
+
   onDestroy(() => {
     clearInterval(interval);
     clearTimeout(timeout);
+    if (worker) {
+      worker.postMessage({ action: "STOP" });
+    }
   });
 </script>
 

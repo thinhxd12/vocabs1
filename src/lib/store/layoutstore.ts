@@ -21,6 +21,7 @@ export const currentMode = writable<"focus" | "shortbreak" | "longbreak">(
 );
 export const currentInterval = writable<number>(1);
 export const secondsRemaining = writable<number>(7 * 60);
+export const endTimestamp = writable<number>(0);
 export const focusMinutes = writable<number>(7);
 export const shortbreakMinutes = writable<number>(2);
 export const longbreakMinutes = writable<number>(15);
@@ -34,6 +35,7 @@ export const srcAudio = writable<string>("/sounds/mp3_break.ogg");
 export const pauseAudio = writable<boolean>(true);
 export const timezone = writable<string>("UTC");
 export const fsrsparams = writable<string>("[]");
+export const currentTimestamp = writable<number>(0);
 
 export const scheduler = derived(fsrsparams, ($params) => {
   return fsrs({
@@ -84,34 +86,14 @@ export const addToast = ({
 export const listCardContent = writable<Card[]>([]);
 export const listCardCount = writable<number>(0);
 
-let interval: ReturnType<typeof setInterval>;
-let now = 0;
-let end = 0;
-
 export function startTimer() {
   isPaused.set(false);
-  now = Date.now();
-  end = now + get(secondsRemaining) * 1000;
-  clearInterval(interval);
-  interval = setInterval(updateTimer, 1000);
-}
-
-export function updateTimer() {
-  now = Date.now();
-  secondsRemaining.set(Math.round((end - now) / 1000));
-  updateDisplay();
-  if (now >= end) {
-    endTimer();
-  }
+  let now = get(currentTimestamp);
+  endTimestamp.set(now + get(secondsRemaining) * 1000);
 }
 
 export function pauseTimer() {
-  clearInterval(interval);
   isPaused.set(true);
-}
-
-export function clearIntervalTimer() {
-  clearInterval(interval);
 }
 
 export function endTimer() {
@@ -150,7 +132,6 @@ export function endTimer() {
         startTimer();
       } else {
         isPaused.set(true);
-        clearInterval(interval);
       }
       break;
     case "longbreak":
@@ -172,7 +153,6 @@ export function endTimer() {
         startTimer();
       } else {
         isPaused.set(true);
-        clearInterval(interval);
       }
       break;
     default:

@@ -3,53 +3,55 @@
     currentMode,
     secondsRemaining,
     showPomodoroTimer,
+    currentTimestamp,
+    endTimer,
+    endTimestamp,
+    isPaused,
   } from "$lib/store/layoutstore";
-  import { sendNotification, showTimer } from "$lib/store/navstore";
+  import {
+    endTime,
+    sendNotification,
+    showTimer,
+    startCountdown,
+    stopCountdown,
+  } from "$lib/store/navstore";
   import {
     formatTimerString,
     padWithZeroes,
     secondsToMinutes,
   } from "$lib/utils/functions";
-  import { onDestroy } from "svelte";
   import RiAlarmLine from "~icons/ri/alarm-line";
   import TablerSquareLetterFFilled from "~icons/tabler/square-letter-f-filled";
 
-  const timeCount = 6 * 60;
-  let interval: ReturnType<typeof setInterval>;
-  let now = $state<number>(0);
-  let end = $state<number>(0);
-  let secondsCount = $state<number>(timeCount);
+  let secondsCount = $state<number>(0);
 
-  function startCountdown() {
-    clearInterval(interval);
-    now = Date.now();
-    end = now + secondsCount * 1000;
-    interval = setInterval(updateTimer, 1000);
-  }
-
-  function updateTimer() {
-    now = Date.now();
-    secondsCount = Math.round((end - now) / 1000);
-    if (now >= end) {
+  function calculateRemainingCountdown() {
+    const msLeft = $endTime - $currentTimestamp;
+    secondsCount = Math.round(msLeft / 1000);
+    if (msLeft <= 0) {
       sendNotification();
       stopCountdown();
     }
   }
 
-  function stopCountdown() {
-    clearInterval(interval);
-    $showTimer = false;
-    secondsCount = timeCount;
+  function calculateRemainingPomodoro() {
+    const msLeft = $endTimestamp - $currentTimestamp;
+    $secondsRemaining = Math.round(msLeft / 1000);
+    if (msLeft <= 0) {
+      endTimer();
+    }
   }
 
   $effect(() => {
     if ($showTimer) {
-      startCountdown();
+      calculateRemainingCountdown();
     }
   });
 
-  onDestroy(() => {
-    stopCountdown();
+  $effect(() => {
+    if (!$isPaused && $currentMode !== "focus") {
+      calculateRemainingPomodoro();
+    }
   });
 </script>
 
@@ -104,7 +106,7 @@
     </span>
   </button>
 {:else}
-  <button onclick={() => ($showTimer = true)} class="btn-menu">
+  <button onclick={startCountdown} class="btn-menu">
     <RiAlarmLine width="14" height="14" />
   </button>
 {/if}

@@ -19,7 +19,9 @@
     percent,
     srcAudio,
     pauseAudio,
-    clearIntervalTimer,
+    endTimestamp,
+    currentTimestamp,
+    endTimer,
   } from "$lib/store/layoutstore";
   import Pagination from "$lib/components/Pagination.svelte";
   import type { DBSelect } from "$lib/types";
@@ -66,6 +68,21 @@
       startTimer();
     }
   });
+
+  $effect(() => {
+    if (!$isPaused) {
+      calculateRemaining();
+    }
+  });
+
+  function calculateRemaining() {
+    const msLeft = $endTimestamp - $currentTimestamp;
+    $secondsRemaining = Math.round(msLeft / 1000);
+    updateDisplay();
+    if (msLeft <= 0) {
+      endTimer();
+    }
+  }
 
   function handleChangeMode(mode: typeof $currentMode) {
     switch (mode) {
@@ -128,9 +145,7 @@
   }
 
   onDestroy(() => {
-    if ($currentMode === "focus" || $isPaused) {
-      clearIntervalTimer();
-    } else {
+    if (!$isPaused) {
       $showPomodoroTimer = true;
     }
     pauseAudio.set(true);
