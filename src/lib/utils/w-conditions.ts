@@ -73,13 +73,13 @@ const WEATHER_CODE_TO_LIQUID_ICON: Record<number, string> = {
   75: "snow", // Heavy snow
   77: "snowthunder", // Snow grains
   80: "lightrainsun", // Slight rain showers
-  81: "rain", // Moderate rain showers
-  82: "rainthunder", // Violent rain showers
+  81: "lightrainsun", // Moderate rain showers
+  82: "rain", // Violent rain showers
   85: "sleetsun", // Slight snow showers
-  86: "sleetsun", // Heavy snow showers
+  86: "snow", // Heavy snow showers
   95: "rainthunder", // Thunderstorm
   96: "lightrainthundersun", // Thunderstorm with slight hail
-  99: "lightrainthundersun", // Thunderstorm with heavy hail
+  99: "rainthunder", // Thunderstorm with heavy hail
 };
 
 const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
