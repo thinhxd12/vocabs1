@@ -529,16 +529,16 @@
       </video>
 
       <h1
-        class="relative select-none indent-30 text-white text-135 font-300 leading-150 overflow-hidden text-center"
+        class="relative select-none indent-30 text-white text-135 font-300 leading-130 overflow-hidden text-center"
       >
         {weather.current.temperature}°
       </h1>
 
       <div class="relative flex justify-center items-center gap-9 mb-3">
         <img
-          src="/liquid/128/{weather.current.icon}.png"
+          src="/TheWeatherChannel/{weather.current.icon}.png"
           alt="icon"
-          class="size-60 object-cover"
+          class="size-90 object-cover"
           style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
         />
         <span class="text-white text-18 font-400">
@@ -1051,7 +1051,7 @@
             />
 
             <img
-              src="/liquid/128/{item.icon}.png"
+              src="/TheWeatherChannel/{item.icon}.png"
               alt="icon"
               class="size-60 object-cover mx-auto mt-12"
               style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
@@ -1095,7 +1095,7 @@
               {formatDay(item.date, weather.daily.time)}</span
             >
             <img
-              src="/liquid/48/{item.icon}.png"
+              src="/TheWeatherChannel/{item.icon}.png"
               alt="img"
               class="size-32 object-cover"
             />

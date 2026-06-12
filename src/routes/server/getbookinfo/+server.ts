@@ -70,11 +70,13 @@ async function searchBook(
       getHtmlMethod1(searchUrl),
       getHtmlMethod2(searchUrl),
     ]);
-    const searchResult = parseSearchResults(html, author);
-    if (searchResult && searchResult.goodreadsId) {
-      const bookInfo = await lookupBook(searchResult.goodreadsId);
-      return bookInfo;
-    }
+    if (html.includes("tableList")) {
+      const searchResult = parseSearchResults(html, author);
+      if (searchResult && searchResult.goodreadsId) {
+        const bookInfo = await lookupBook(searchResult.goodreadsId);
+        return bookInfo;
+      }
+    } else return null;
   } catch (error) {
     return null;
   }
@@ -91,10 +93,7 @@ async function getHtmlMethod1(pageurl: string) {
   });
   const data = await response.json();
   if (data.success) {
-    const html = data.html;
-    if (html.includes("tableList")) {
-      return html;
-    } else throw new Error();
+    return data.html;
   } else throw new Error();
 }
 
@@ -119,9 +118,7 @@ async function getHtmlMethod2(pageurl: string) {
   if (response.status === 200) {
     const json = await response.json();
     const html = json.data.html;
-    if (html.includes("tableList")) {
-      return html;
-    } else throw new Error();
+    return html;
   } else throw new Error();
 }
 
@@ -248,10 +245,8 @@ async function lookupBook(goodreadsId: string) {
  */
 async function navigateToBookPage(goodreadsId: string) {
   const url = `${BASE_DETAIL_URL}${goodreadsId}`;
-
-  const response = await fetch(url);
-  const responseText = await response.text();
-  return responseText;
+  const html = await Promise.any([getHtmlMethod1(url), getHtmlMethod2(url)]);
+  return html;
 }
 
 /**

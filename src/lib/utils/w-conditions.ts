@@ -82,6 +82,38 @@ const WEATHER_CODE_TO_LIQUID_ICON: Record<number, string> = {
   99: "rainthunder", // Thunderstorm with heavy hail
 };
 
+// 1998-2006 WeatherSTAR XL Icons
+const WEATHER_CODE_TO_TWC_ICON: Record<number, string> = {
+  0: "clear", // Clear sky
+  1: "mainlyclear", // Mainly clear
+  2: "partlycloud", // Partly cloudy
+  3: "cloud", // Overcast
+  45: "fog", // Fog
+  48: "fog", // Depositing rime fog
+  51: "drizzle", // Light drizzle
+  53: "drizzle", // Moderate drizzle
+  55: "drizzle", // Dense drizzle
+  56: "freezedrizzle", // Light freezing drizzle
+  57: "freezedrizzle", // Dense freezing drizzle
+  61: "lightrain", // Slight rain
+  63: "rain", // Moderate rain
+  65: "heavyrain", // Heavy rain
+  66: "lightfreezrain", // Slight freezing rain
+  67: "heavyfreezrain", // Heavy freezing rain
+  71: "lightsnow", // Slight snow
+  73: "snow", // Moderate snow
+  75: "heavysnow", // Heavy snow
+  77: "snowgrains", // Snow grains
+  80: "shower", // Slight rain showers
+  81: "shower", // Moderate rain showers
+  82: "shower", // Violent rain showers
+  85: "sleetsun", // Slight snow showers
+  86: "snowshower", // Heavy snow showers
+  95: "thunderstorm", // Thunderstorm
+  96: "thunderstorm", // Thunderstorm with slight hail
+  99: "thunderstorm", // Thunderstorm with heavy hail
+};
+
 const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   0: "clear", // Clear sky
   1: "clear", // Mainly clear
@@ -128,27 +160,30 @@ export function getWeatherInfo(
 } {
   const dayNight = isday ? "" : "-night";
   const description = WEATHER_CODE_DESCRIPTIONS[code] || "Unknown";
-  const liquidIcon = WEATHER_CODE_TO_LIQUID_ICON[code] || "nodata";
+  const iconName = WEATHER_CODE_TO_TWC_ICON[code] || "nodata";
   const backgroundImage = WEATHER_CODE_TO_BACKGROUND[code] || "cloudy";
 
   // Some icons don't have day/night variants, so we append conditionally
   const iconsWithoutDayNight = new Set([
     "cloud",
+    "drizzle",
     "fog",
+    "freezedrizzle",
+    "heavyfreezrain",
+    "heavyrain",
+    "heavysnow",
+    "lightfreezrain",
     "lightrain",
-    "lightrainthunder",
     "rain",
-    "rainthunder",
-    "sleet",
-    "sleetthunder",
     "snow",
-    "snowthunder",
+    "snowgrains",
+    "thunderstorm",
     "nodata",
   ]);
 
-  const icon = iconsWithoutDayNight.has(liquidIcon)
-    ? liquidIcon
-    : `${liquidIcon}${dayNight}`;
+  const icon = iconsWithoutDayNight.has(iconName)
+    ? iconName
+    : `${iconName}${dayNight}`;
 
   const backgroundsWithoutDayNight = new Set([
     "foggy",
