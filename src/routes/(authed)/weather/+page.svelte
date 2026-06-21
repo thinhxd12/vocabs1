@@ -1113,7 +1113,9 @@
             </div>
           </div>
 
-          <div class="flex w-120 justify-end items-center h-full">
+          <div
+            class="flex w-120 overflow-hidden justify-end items-center h-full"
+          >
             <div class="text-11 text-white/60 leading-16 min-w-30 text-center">
               {formatTemperature(item.temp_min)}
             </div>
