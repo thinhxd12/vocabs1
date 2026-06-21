@@ -39,7 +39,7 @@
     alt="icon"
     class="size-120 object-cover s-P2QlwJdd_0gk"
     style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
-    src="/TheWeatherChannel/{image}.png"
+    src="/metoffice/{image}.png"
   />
   <button onclick={name}>click</button>
   <button onclick={name1}>check</button>

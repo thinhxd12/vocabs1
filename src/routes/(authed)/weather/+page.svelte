@@ -536,7 +536,7 @@
 
       <div class="relative flex justify-center items-center gap-9 mb-3">
         <img
-          src="/TheWeatherChannel/{weather.current.icon}.png"
+          src="/metoffice/{weather.current.icon}.svg"
           alt="icon"
           class="size-90 object-cover"
           style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
@@ -1051,7 +1051,7 @@
             />
 
             <img
-              src="/TheWeatherChannel/{item.icon}.png"
+              src="/metoffice/{item.icon}.svg"
               alt="icon"
               class="size-60 object-cover mx-auto mt-12"
               style="filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.3));"
@@ -1095,7 +1095,7 @@
               {formatDay(item.date, weather.daily.time)}</span
             >
             <img
-              src="/TheWeatherChannel/{item.icon}.png"
+              src="/metoffice/{item.icon}.svg"
               alt="img"
               class="size-32 object-cover"
             />

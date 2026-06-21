@@ -114,6 +114,38 @@ const WEATHER_CODE_TO_TWC_ICON: Record<number, string> = {
   99: "thunderstorm", // Thunderstorm with heavy hail
 };
 
+// https://weather.metoffice.gov.uk/guides/what-does-this-forecast-mean
+const WEATHER_CODE_TO_MET_ICON: Record<number, string> = {
+  0: "clear", // Clear sky
+  1: "clear", // Mainly clear
+  2: "partlycloud", // Partly cloudy
+  3: "overcast", // Overcast
+  45: "fog", // Fog
+  48: "fog", // Depositing rime fog
+  51: "drizzle", // Light drizzle
+  53: "drizzle", // Moderate drizzle
+  55: "drizzle", // Dense drizzle
+  56: "drizzle", // Light freezing drizzle
+  57: "drizzle", // Dense freezing drizzle
+  61: "lightrain", // Slight rain
+  63: "rain", // Moderate rain
+  65: "rain", // Heavy rain
+  66: "sleetshower", // Slight freezing rain
+  67: "sleet", // Heavy freezing rain
+  71: "lightsnow", // Slight snow
+  73: "snow", // Moderate snow
+  75: "snow", // Heavy snow
+  77: "snow", // Snow grains
+  80: "lightrainshower", // Slight rain showers
+  81: "rainshower", // Moderate rain showers
+  82: "rainshower", // Violent rain showers
+  85: "lightsnowshower", // Slight snow showers
+  86: "snowshower", // Heavy snow showers
+  95: "thunder", // Thunderstorm
+  96: "thunder", // Thunderstorm with slight hail
+  99: "thunder", // Thunderstorm with heavy hail
+};
+
 const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   0: "clear", // Clear sky
   1: "clear", // Mainly clear
@@ -160,7 +192,7 @@ export function getWeatherInfo(
 } {
   const dayNight = isday ? "" : "-night";
   const description = WEATHER_CODE_DESCRIPTIONS[code] || "Unknown";
-  const iconName = WEATHER_CODE_TO_TWC_ICON[code] || "nodata";
+  const iconName = WEATHER_CODE_TO_MET_ICON[code] || "nodata";
   const backgroundImage = WEATHER_CODE_TO_BACKGROUND[code] || "cloudy";
 
   // Some icons don't have day/night variants, so we append conditionally
@@ -168,16 +200,16 @@ export function getWeatherInfo(
     "cloud",
     "drizzle",
     "fog",
-    "freezedrizzle",
-    "heavyfreezrain",
-    "heavyrain",
-    "heavysnow",
-    "lightfreezrain",
+    "overcast",
     "lightrain",
     "rain",
+    "sleet",
+    "lightsnow",
     "snow",
-    "snowgrains",
-    "thunderstorm",
+    "rain",
+    "snow",
+    "rainshower",
+    "thunder",
     "nodata",
   ]);
 
