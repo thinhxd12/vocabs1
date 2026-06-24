@@ -43,8 +43,8 @@ export const scheduler = derived(fsrsparams, ($params) => {
     maximum_interval: 36500,
     enable_fuzz: true,
     enable_short_term: true,
-    learning_steps: ["15m"],
-    relearning_steps: ["10m"],
+    learning_steps: ["9m"],
+    relearning_steps: ["6m"],
     w: JSON.parse($params),
   });
 });
