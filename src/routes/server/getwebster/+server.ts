@@ -233,9 +233,10 @@ export async function GET({ url }) {
         .find(".auth")
         .first()
         .text()
+        .replace(/[\n\r]+|\s{2,}/g, "")
         .trim()
         .replace("—", "")
-        .split(", ");
+        .split(",");
       let author = cred[cred.length - 3] ? cred[cred.length - 3] : "";
       let title = cred[cred.length - 2] ? cred[cred.length - 2] : "";
       let year = cred[cred.length - 1] ? cred[cred.length - 1] : "";
