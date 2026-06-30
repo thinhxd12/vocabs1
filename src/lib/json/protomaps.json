@@ -1,6 +1,6 @@
 {
   "version": 8,
-  "metadata": {"maputnik:renderer": "mlgljs"},
+  "metadata": { "maputnik:renderer": "mlgljs" },
   "sources": {
     "protomaps": {
       "attribution": "<a href=\"https://github.com/protomaps/basemaps\">Protomaps</a> © <a href=\"https://openstreetmap.org\">OpenStreetMap</a>",
@@ -17,7 +17,7 @@
     {
       "id": "background",
       "type": "background",
-      "paint": {"background-color": "#cccccc"}
+      "paint": { "background-color": "#cccccc" }
     },
     {
       "id": "earth",
@@ -25,7 +25,7 @@
       "source": "protomaps",
       "source-layer": "earth",
       "filter": ["==", "$type", "Polygon"],
-      "paint": {"fill-color": "#f7f7f7"}
+      "paint": { "fill-color": "#f7f7f7" }
     },
     {
       "id": "landcover",
@@ -123,7 +123,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["in", "kind", "allotments", "village_green", "playground"],
-      "paint": {"fill-color": "#9cd3b4", "fill-opacity": 0.7}
+      "paint": { "fill-color": "#9cd3b4", "fill-opacity": 0.7 }
     },
     {
       "id": "landuse_hospital",
@@ -131,7 +131,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["==", "kind", "hospital"],
-      "paint": {"fill-color": "#e4dad9"}
+      "paint": { "fill-color": "#e4dad9" }
     },
     {
       "id": "landuse_industrial",
@@ -139,7 +139,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["==", "kind", "industrial"],
-      "paint": {"fill-color": "#d1dde1"}
+      "paint": { "fill-color": "#d1dde1" }
     },
     {
       "id": "landuse_school",
@@ -147,7 +147,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["in", "kind", "school", "university", "college"],
-      "paint": {"fill-color": "#e4ded7"}
+      "paint": { "fill-color": "#e4ded7" }
     },
     {
       "id": "landuse_beach",
@@ -155,7 +155,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["in", "kind", "beach"],
-      "paint": {"fill-color": "#e8e4d0"}
+      "paint": { "fill-color": "#e8e4d0" }
     },
     {
       "id": "landuse_zoo",
@@ -163,7 +163,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["in", "kind", "zoo"],
-      "paint": {"fill-color": "#c6dcdc"}
+      "paint": { "fill-color": "#c6dcdc" }
     },
     {
       "id": "landuse_aerodrome",
@@ -171,7 +171,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["in", "kind", "aerodrome"],
-      "paint": {"fill-color": "#dadbdf"}
+      "paint": { "fill-color": "#dadbdf" }
     },
     {
       "id": "roads_runway",
@@ -222,7 +222,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["any", ["in", "kind", "runway", "taxiway"]],
-      "paint": {"fill-color": "#e9e9ed"}
+      "paint": { "fill-color": "#e9e9ed" }
     },
     {
       "id": "water-shadow",
@@ -230,7 +230,7 @@
       "source": "protomaps",
       "source-layer": "water",
       "filter": ["==", "$type", "Polygon"],
-      "layout": {"visibility": "visible"},
+      "layout": { "visibility": "visible" },
       "paint": {
         "fill-color": "#5e747f",
         "fill-antialias": true,
@@ -244,14 +244,19 @@
       "source": "protomaps",
       "source-layer": "water",
       "filter": ["==", "$type", "Polygon"],
-      "layout": {"visibility": "visible"},
+      "layout": { "visibility": "visible" },
       "paint": {
         "fill-color": "#b0d9f0",
         "fill-antialias": true,
         "fill-translate-anchor": "map",
         "fill-opacity": 1,
         "fill-translate": {
-          "stops": [[0, [0, 2]], [6, [0, 1]], [14, [0, 1]], [17, [0, 2]]]
+          "stops": [
+            [0, [0, 2]],
+            [6, [0, 1]],
+            [14, [0, 1]],
+            [17, [0, 2]]
+          ]
         }
       }
     },
@@ -262,7 +267,7 @@
       "source-layer": "water",
       "minzoom": 14,
       "filter": ["in", "kind", "stream"],
-      "paint": {"line-color": "#80deea", "line-width": 0.5}
+      "paint": { "line-color": "#80deea", "line-width": 0.5 }
     },
     {
       "id": "water_river",
@@ -292,7 +297,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["in", "kind", "pedestrian", "dam"],
-      "paint": {"fill-color": "#e3e0d4"}
+      "paint": { "fill-color": "#e3e0d4" }
     },
     {
       "id": "landuse_pier",
@@ -300,7 +305,7 @@
       "source": "protomaps",
       "source-layer": "landuse",
       "filter": ["==", "kind", "pier"],
-      "paint": {"fill-color": "#e0e0e0"}
+      "paint": { "fill-color": "#e0e0e0" }
     },
     {
       "id": "roads_tunnels_other_casing",
@@ -583,7 +588,7 @@
       "source": "protomaps",
       "source-layer": "buildings",
       "filter": ["in", "kind", "building", "building_part"],
-      "paint": {"fill-color": "#cccccc", "fill-opacity": 0.5}
+      "paint": { "fill-color": "#cccccc", "fill-opacity": 0.5 }
     },
     {
       "id": "roads_pier",
@@ -1058,7 +1063,12 @@
       "filter": ["<=", "kind_detail", 2],
       "paint": {
         "line-color": "#D2B3FF",
-        "line-width": {"stops": [[3, 0.5], [6, 2]]},
+        "line-width": {
+          "stops": [
+            [3, 0.5],
+            [6, 2]
+          ]
+        },
         "line-dasharray": [
           "step",
           ["zoom"],
@@ -1084,7 +1094,8 @@
           4,
           ["literal", [4, 2, 1, 2]]
         ]
-      }
+      },
+      "minzoom": 10
     },
     {
       "id": "roads_bridges_other_casing",
@@ -2950,7 +2961,7 @@
         "icon-rotation-alignment": "viewport",
         "text-rotation-alignment": "viewport"
       },
-      "paint": {"text-color": "#938a8d"}
+      "paint": { "text-color": "#938a8d" }
     },
     {
       "id": "roads_labels_major",
@@ -4350,7 +4361,7 @@
           8,
           ""
         ],
-        "icon-size": 0.6,
+        "icon-size": 0,
         "text-field": [
           "case",
           [
@@ -4706,7 +4717,7 @@
             ["<", ["get", "population_rank"], 9],
             12,
             [">=", ["get", "population_rank"], 9],
-            20,
+            15,
             0
           ],
           15,

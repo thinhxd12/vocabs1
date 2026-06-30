@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Rainviewer from "$lib/components/Rainviewer.svelte";
   import { SCRAPER_API_URL } from "$lib/utils/constants";
 
   async function name() {
@@ -43,6 +44,7 @@
   />
   <button onclick={name}>click</button>
   <button onclick={name1}>check</button>
+  <Rainviewer />
 </div>
 
 <style lang="postcss">

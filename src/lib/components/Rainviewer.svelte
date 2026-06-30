@@ -28,7 +28,8 @@
     path: string;
   };
 
-  const API_URL = "https://api.rainviewer.com/public/weather-maps.json";
+  // const API_URL = "https://api.rainviewer.com/public/weather-maps.json";
+  const API_URL = "https://api.librewxr.net/public/weather-maps.json";
 
   let interval: ReturnType<typeof setInterval>;
   let radarHost = $state<string>("");
@@ -86,7 +87,7 @@
     radarUrl =
       radarHost +
       radarData[animationPosition].path +
-      "/512/{z}/{x}/{y}/2/1_1.png";
+      "/512/{z}/{x}/{y}/2/1_1.webp?arrows=light";
   }
 
   onDestroy(() => {
@@ -107,9 +108,9 @@
   <MapLibre
     class="light w-full min-h-290 h-290"
     style={myStyle as StyleSpecification}
-    zoom={7.4}
+    zoom={9}
     center={lonLat}
-    maxZoom={7.4}
+    maxZoom={12}
     attributionControl={false}
   >
     {#if radarData.length}
@@ -121,7 +122,7 @@
         <RasterLayer
           id="rainviewer-layer"
           paint={{
-            "raster-opacity": 0.9,
+            "raster-opacity": 0.8,
             "raster-opacity-transition": { duration: 0, delay: 0 },
             "raster-fade-duration": 0,
           }}
