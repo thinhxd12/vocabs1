@@ -33,6 +33,7 @@
   import Container from "$lib/components/Container.svelte";
   import { addToast } from "$lib/store/layoutstore";
   import { showTimer } from "$lib/store/navstore";
+  import Chat from "$lib/components/Chat.svelte";
 
   let { data: layoutData }: PageProps = $props();
 
@@ -293,7 +294,10 @@
 
   async function copyBookMarkToClipboard() {
     try {
-      if (highlight) await navigator.clipboard.writeText($highlight!.content);
+      if (highlight)
+        await navigator.clipboard.writeText(
+          "explain this " + $highlight!.content,
+        );
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
@@ -842,6 +846,10 @@
       </div>
     </div>
   {/if}
+
+  <div class="absolute top-60 left-0 bottom-0 w-300">
+    <Chat />
+  </div>
 
   <div class="book" style="width: {pageWidth()}px; height: {pageHeight()}px;">
     <div
