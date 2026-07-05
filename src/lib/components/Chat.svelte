@@ -51,10 +51,6 @@
   <div
     class="w-full h-[calc(100%-30px)] overflow-y-scroll my-scrollbar bg-white p-6"
   >
-    {#if chatHistory.length === 0}
-      <p class="my-6 text-13 leading-16 text-center">Ask Gemini anything...</p>
-    {/if}
-
     {#each chatHistory as message}
       {#if message.role === "user"}
         <div class="flex justify-end">
