@@ -55,7 +55,7 @@
       {#if message.role === "user"}
         <div class="flex justify-end">
           <p
-            class="p-3 text-14 leading-16 bg-[#f0f2f5] rounded-3 max-w-240 clamped"
+            class="py-6 px-9 text-14 leading-16 bg-[#f0f2f5] rounded-6 max-w-240 clamped"
           >
             {message.text}
           </p>
@@ -74,23 +74,23 @@
 
   <form
     onsubmit={handleSubmit}
-    class="absolute bottom-0 w-full h-30 bg-white border-t border-black/10"
+    class="absolute bottom-0 w-full h-36 flex justify-between items-center bg-white border-t border-black/10"
   >
     <input
       type="text"
       bind:value={userInput}
       placeholder="Ask anything"
       disabled={loading}
-      class="w-[calc(100%-30px)] p-6 outline-none text-13 leading-16"
+      class="w-[calc(100%-30px)] h-full p-6 outline-none text-14 leading-16"
     />
 
     {#if userInput.trim()}
       <button
         type="submit"
         disabled={loading || !userInput.trim()}
-        class="absolute size-24 bg-green-400/80 text-white rounded-3 right-3 top-3 transition flex justify-center items-center"
+        class="size-28 mr-4 bg-black/80 text-white rounded-3 transition flex justify-center items-center"
       >
-        <ArrowUpIcon width={16} height={16} />
+        <ArrowUpIcon width={18} height={18} />
       </button>
     {/if}
   </form>
@@ -98,10 +98,10 @@
 
 <style lang="postcss">
   .chat-content {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background: transparent;
   }
 
   .markdown-body {

@@ -847,7 +847,12 @@
     </div>
   {/if}
 
-  <div class="absolute top-60 left-0 bottom-0 w-300">
+  <div
+    class="note-page absolute top-60 {flipCover
+      ? 'left-0'
+      : '-left-300'} bottom-0 w-300 transition-all duration-300 ease-in-out"
+  >
+    <div class="note-tape"></div>
     <Chat />
   </div>
 
@@ -1132,7 +1137,7 @@
         ? showNote
           ? 'right-0'
           : '-right-270'
-        : '-right-300'} bottom-300 w-300 transition-all duration-300 ease-in-out"
+        : '-right-300'} bottom-0 w-300 transition-all duration-300 ease-in-out"
     >
       <div class="note-tape"></div>
 
@@ -1411,7 +1416,7 @@
   .note-tape {
     position: absolute;
     display: block;
-    background-color: rgba(108, 212, 255, 1);
+    background-color: rgba(108, 212, 255, 0.8);
     width: 120px;
     height: 35px;
     left: 50%;
