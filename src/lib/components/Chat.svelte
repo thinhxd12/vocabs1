@@ -41,21 +41,18 @@
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.9.0/github-markdown-light.css"
-    integrity="sha512-fC9GEHUvmfnPM95rXpp+RrxHTBp49uLMO+K55poJ+E+sSry9Db2sBD6HqUJzoNr+4II3ueeRKzY4B0uE9PvL2A=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
   />
 </svelte:head>
 
 <div class="chat-content">
   <div
-    class="w-full h-[calc(100%-30px)] overflow-y-scroll my-scrollbar bg-white p-6"
+    class="w-full h-[calc(100%-60px)] mt-24 overflow-y-scroll my-scrollbar bg-white p-6"
   >
     {#each chatHistory as message}
       {#if message.role === "user"}
         <div class="flex justify-end">
           <p
-            class="py-6 px-9 text-14 leading-16 bg-[#f0f2f5] rounded-6 max-w-240 clamped"
+            class="py-3 px-12 text-14 leading-18 bg-[#f0f2f5] rounded-12 max-w-240 clamped"
           >
             {message.text}
           </p>
@@ -68,7 +65,7 @@
     {/each}
 
     {#if loading}
-      <div class="my-6 text-13 leading-16">Gemini is thinking...</div>
+      <div class="my-12 text-13 leading-16">Gemini is thinking...</div>
     {/if}
   </div>
 
@@ -79,6 +76,8 @@
     <input
       type="text"
       bind:value={userInput}
+      name="askinput"
+      autocomplete="off"
       placeholder="Ask anything"
       disabled={loading}
       class="w-[calc(100%-30px)] h-full p-6 outline-none text-14 leading-16"
