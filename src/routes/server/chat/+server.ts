@@ -20,7 +20,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json({ text: response.text });
   } catch (err) {
-    console.error("GenAI Error:", err);
     throw error(500, "Failed to generate content");
   }
 };

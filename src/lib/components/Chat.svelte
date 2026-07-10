@@ -1,10 +1,12 @@
 <script lang="ts">
   import { marked } from "marked";
   import ArrowUpIcon from "~icons/lucide/arrow-up";
+  import { tick } from "svelte";
 
-  let userInput = $state("");
-  let loading = $state(false);
+  let userInput = $state<string>("");
+  let loading = $state<boolean>(false);
   let chatHistory = $state<{ role: "user" | "ai"; text: string }[]>([]);
+  let chatElement: HTMLDivElement;
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
@@ -14,6 +16,9 @@
     chatHistory = [...chatHistory, { role: "user", text: currentPrompt }];
     userInput = "";
     loading = true;
+
+    await tick();
+    scrollToBottom(chatElement);
 
     try {
       const response = await fetch("/server/chat", {
@@ -35,6 +40,10 @@
       loading = false;
     }
   }
+
+  async function scrollToBottom(node: HTMLDivElement) {
+    node.scroll({ top: node.scrollHeight, behavior: "smooth" });
+  }
 </script>
 
 <svelte:head>
@@ -47,6 +56,7 @@
 <div class="chat-content">
   <div
     class="w-full h-[calc(100%-60px)] mt-24 overflow-y-scroll my-scrollbar bg-white p-6"
+    bind:this={chatElement}
   >
     {#each chatHistory as message}
       {#if message.role === "user"}
