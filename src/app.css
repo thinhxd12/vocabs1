@@ -6,10 +6,6 @@ img {
   -webkit-user-drag: none;
 }
 
-.no-scrollbar {
-  scrollbar-width: none;
-}
-
 body {
   scroll-behavior: smooth;
   box-sizing: border-box;
@@ -17,6 +13,10 @@ body {
 
 button:focus {
   outline: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
 }
 
 .golden {

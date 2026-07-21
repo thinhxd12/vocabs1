@@ -243,19 +243,32 @@
       text-align: right;
     }
 
-    .highlightContentFirstPage::first-letter {
-      initial-letter: 5;
+    .highlightContentFirstPage .highlightContent::first-letter {
+      float: left;
+      font-size: 150px;
       background: url("$lib/assets/images/TheEndoftheDay.webp") 0 0 no-repeat;
       background-size: cover;
       background-position: center;
-      padding: 9px 12px;
-      margin: 12px 6px 0 0;
-      font-family: "Baskervville";
+      padding: 10px 12px;
+      margin: 6px 6px 0 0;
+      font-family: "Baskervville", sans-serif;
       font-weight: 600;
       color: #f0f0f0;
-      border: 1px solid #111111;
       text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
       box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
+    }
+
+    @supports (initial-letter: 5) or (-webkit-initial-letter: 5) {
+      .highlightContentFirstPage .highlightContent::first-letter {
+        initial-letter: 5;
+        -webkit-initial-letter: 5;
+
+        float: none;
+        font-size: inherit;
+        line-height: inherit;
+
+        margin: 12px 6px 0 0;
+      }
     }
   }
 </style>
