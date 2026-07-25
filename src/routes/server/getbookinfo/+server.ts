@@ -141,13 +141,13 @@ function parseSearchResults(
   });
 
   if (results.length) {
-    // const res = results.filter((item) => item.authors.includes(author));
-    const sortedResults = results.sort((a, b) => {
-      if (a.numberOfRatings === null) return 1;
-      if (b.numberOfRatings === null) return -1;
-      return Number(b.numberOfRatings) - Number(a.numberOfRatings);
-    });
-    return sortedResults[0] || results[0];
+    const filteredFull = results.filter((item) =>
+      item.authors.includes(author),
+    );
+    const name = author.split(" ").pop();
+    const filteredName = results.filter((item) => item.authors.includes(name));
+    const result = filteredFull || filteredName || results[0];
+    return result[0];
   }
   return null;
 }
