@@ -75,6 +75,7 @@
   let translatedContent = $state<string>("");
   let expandDesc = $state<boolean>(false);
   let showNote = $state<boolean>(false);
+  let showChat = $state<boolean>(false);
   let noteContent = $state<string>("");
   let highlightEdit = $state<HighlightType>();
 
@@ -849,11 +850,21 @@
 
   <div
     class="note-page absolute top-60 {flipCover
-      ? 'left-0'
+      ? showChat
+        ? 'left-0'
+        : '-left-276'
       : '-left-300'} bottom-0 w-300 transition-all duration-300 ease-in-out"
   >
     <div class="note-tape"></div>
     <Chat />
+    <button
+      class="absolute w-24 top-0 bottom-36 right-0"
+      aria-label="openchat"
+      onclick={(e) => {
+        e.currentTarget.blur();
+        showChat = !showChat;
+      }}
+    ></button>
   </div>
 
   <div class="book" style="width: {pageWidth()}px; height: {pageHeight()}px;">
@@ -1076,15 +1087,17 @@
       </div>
     </div>
 
-    {#each flipPages as item}
-      <HighlightPage
-        data={item}
-        innerWidth={pageWidth() / 2 - 12 - 112}
-        innerHeight={pageHeight() - 24 - 96}
-        length={flipPages.length}
-        handleFlip={handleFlipPage}
-      />
-    {/each}
+    {#if tweenCover.current < -90}
+      {#each flipPages as item}
+        <HighlightPage
+          data={item}
+          innerWidth={pageWidth() / 2 - 12 - 112}
+          innerHeight={pageHeight() - 24 - 96}
+          length={flipPages.length}
+          handleFlip={handleFlipPage}
+        />
+      {/each}
+    {/if}
 
     {#if tweenCover.current < -170}
       <div class="frontShadow" style="z-index: 2;" in:shadowIn></div>
@@ -1136,7 +1149,7 @@
       class="note-page absolute top-60 {flipCover
         ? showNote
           ? 'right-0'
-          : '-right-270'
+          : '-right-276'
         : '-right-300'} bottom-0 w-300 transition-all duration-300 ease-in-out"
     >
       <div class="note-tape"></div>
@@ -1149,7 +1162,7 @@
       ></textarea>
 
       <button
-        class="absolute w-30 h-full left-0"
+        class="absolute w-24 h-full left-0 top-0"
         aria-label="opennote"
         onclick={(e) => {
           e.currentTarget.blur();
