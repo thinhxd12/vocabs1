@@ -101,7 +101,9 @@
   }
 </script>
 
-<div class="w-main h-[calc(100vh-44px)] overflow-hidden flex flex-col gap-2">
+<div
+  class="w-main h-[calc(100vh-44px)] overflow-y-scroll no-scrollbar flex flex-col gap-2"
+>
   <form
     name="editvocab"
     action="?/editVocab"
@@ -226,9 +228,8 @@
     </div>
   </form>
 
-  <div
-    class="w-full h-[calc(100vh-404px-44px)] flex flex-col gap-2 no-scrollbar overflow-y-scroll"
-  >
+  <!-- <div class="w-full flex-grow flex flex-col gap-2 items-center justify-center overflow-y-scroll"> -->
+  <div class="w-full flex flex-col gap-2">
     <Definition item={editRenderWord} onSelect={handleCheckEdit} />
   </div>
 </div>

@@ -310,15 +310,17 @@
         </div>
       {/if}
     {:else if $renderWord}
-      <Flip {flipNumber} />
       <div
-        class="h-[calc(100vh-150px-44px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
+        class="w-full h-[calc(100vh-44px)] overflow-y-scroll no-scrollbar flex flex-col gap-2"
       >
-        <Definition
-          item={$renderWord}
-          onCheck={handleCheck}
-          onEdit={handleEditFromDefinition}
-        />
+        <Flip {flipNumber} />
+        <div class="w-full flex flex-col gap-2">
+          <Definition
+            item={$renderWord}
+            onCheck={handleCheck}
+            onEdit={handleEditFromDefinition}
+          />
+        </div>
       </div>
     {/if}
   </Container>
