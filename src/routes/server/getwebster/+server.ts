@@ -85,7 +85,7 @@ async function getLearnersMp3(text: string) {
   const searchUrl = `https://www.oxfordlearnersdictionaries.com/definition/english/${text}`;
   const data = await fetchGetText(searchUrl);
   const doc = load(data);
-  const sound = doc(".audio_play_button.pron-us.icon-audio").attr(
+  const sound = doc(".sound.audio_play_button.pron-us.icon-audio").attr(
     "data-src-mp3",
   );
   if (sound) return sound;
@@ -113,7 +113,11 @@ export async function GET({ url }) {
     const $ = load(data[0]);
     result.word = $("h1.hword").text();
     result.audio = data[1] || "";
-    result.phonetics = $(".prons-entries-list-inline a").first().text().trim();
+    result.phonetics = $(".word-syllables-prons-header-content a.play-pron-v2")
+      .first()
+      .text()
+      .split("\u00A0")[0]
+      .trim();
 
     //Definitions
     $('div[id^="dictionary-entry-"]').each((index, element) => {
@@ -233,13 +237,10 @@ export async function GET({ url }) {
         .find(".auth")
         .first()
         .text()
-        .replace(/[\n\r]+|\s{2,}/g, "")
-        .trim()
         .replace("—", "")
-        .split(",");
-      let author = cred[cred.length - 3] ? cred[cred.length - 3] : "";
-      let title = cred[cred.length - 2] ? cred[cred.length - 2] : "";
-      let year = cred[cred.length - 1] ? cred[cred.length - 1] : "";
+        .trim();
+
+      const [author, title, year] = cred.split(",").map((item) => item.trim());
       let content = { sentence, author, title, year };
       exampleArray.push({ type, content });
     } else {
@@ -252,12 +253,11 @@ export async function GET({ url }) {
           .next()
           .find(".auth")
           .text()
-          .trim()
           .replace("—", "")
-          .split(", ");
-        let author = cred[cred.length - 3] ? cred[cred.length - 3] : "";
-        let title = cred[cred.length - 2] ? cred[cred.length - 2] : "";
-        let year = cred[cred.length - 1] ? cred[cred.length - 1] : "";
+          .trim();
+        const [author, title, year] = cred
+          .split(",")
+          .map((item) => item.trim());
         let content = { sentence, author, title, year };
         exampleArray.push({ type, content });
       });
