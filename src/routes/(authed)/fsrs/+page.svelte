@@ -36,7 +36,7 @@
   let translations = $state<WikiTranslationType[]>([]);
   let showTranslate = $state<boolean>(false);
   let activedButton = $state<number>(0);
-  let startTime = $state<number>(0);
+  // let startTime = $state<number>(0);
   const NUMBER_WORDS = 24;
 
   onMount(() => {
@@ -96,7 +96,7 @@
     let { id, word, created_at, ...card } = $listCardContent[$listCardCount];
     if (!card.due) card = createEmptyCard();
     previews = $scheduler.repeat(card, new Date());
-    startTime = Date.now();
+    // startTime = Date.now();
   }
 
   async function handleRate(card: Card | CardInput, rate: Grade) {
@@ -128,22 +128,22 @@
       });
 
     // SaveLog
-    const duration = Date.now() - startTime;
-    const { error: errorLog } = await layoutData.supabase
-      .from("reviewlogs_table")
-      .insert({
-        review_time: saved.log.review,
-        card_id: $listCardContent[$listCardCount].id,
-        review_rating: saved.log.rating,
-        review_duration: duration,
-        review_state: saved.log.state,
-      });
-    if (errorLog)
-      addToast({
-        type: "error",
-        title: "Error!",
-        message: errorLog.message as string,
-      });
+    // const duration = Date.now() - startTime;
+    // const { error: errorLog } = await layoutData.supabase
+    //   .from("reviewlogs_table")
+    //   .insert({
+    //     review_time: saved.log.review,
+    //     card_id: $listCardContent[$listCardCount].id,
+    //     review_rating: saved.log.rating,
+    //     review_duration: duration,
+    //     review_state: saved.log.state,
+    //   });
+    // if (errorLog)
+    //   addToast({
+    //     type: "error",
+    //     title: "Error!",
+    //     message: errorLog.message as string,
+    //   });
 
     handleSetNextWord();
   }
@@ -254,11 +254,11 @@
     }
   }
 
-  function handleVisibilityChange() {
-    if (document.visibilityState === "visible") {
-      startTime = Date.now();
-    }
-  }
+  // function handleVisibilityChange() {
+  //   if (document.visibilityState === "visible") {
+  //     startTime = Date.now();
+  //   }
+  // }
 </script>
 
 <svelte:head>
@@ -268,7 +268,7 @@
   <meta name="fsrs" content="Free Spaced Repetition Scheduler!" />
 </svelte:head>
 
-<svelte:document onvisibilitychange={handleVisibilityChange} />
+<!-- <svelte:document onvisibilitychange={handleVisibilityChange} /> -->
 
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 
