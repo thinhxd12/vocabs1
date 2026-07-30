@@ -14,7 +14,7 @@
     listCardContent,
     listCardCount,
     scheduler,
-    timezone,
+    // timezone,
   } from "$lib/store/layoutstore";
   import BiTranslate from "~icons/bi/translate";
   import { fly } from "svelte/transition";
@@ -23,7 +23,7 @@
   import { format } from "date-fns";
   import { enhance } from "$app/forms";
   import { saveUserSetting } from "$lib/store/localstore";
-  import RiMagicFill from "~icons/ri/magic-fill";
+  // import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import Circle from "$lib/components/Circle.svelte";
@@ -274,7 +274,7 @@
 
 <Container fullscreen>
   <div class="w-[368px] flex-1 flex justify-end items-start gap-3 pt-3">
-    <form
+    <!-- <form
       method="post"
       action="?/optimize"
       use:enhance={({ formElement, formData, action, cancel }) => {
@@ -312,7 +312,7 @@
       >
         <RiMagicFill width="14" height="14" />
       </button>
-    </form>
+    </form> -->
 
     <button
       class="setting-button"

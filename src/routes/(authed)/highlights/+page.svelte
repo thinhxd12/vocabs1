@@ -360,7 +360,7 @@
 
     document.body.appendChild(lDiv);
     if (fistPage) {
-      lDiv.className = "highlightContent highlightContentFirstPage";
+      lDiv.className = "highlightContentFirstPage highlightContent";
     } else {
       lDiv.className = "highlightContent";
     }

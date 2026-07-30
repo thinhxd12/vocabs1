@@ -32,12 +32,10 @@
     ? 4 + data.id
     : 4 + length - data.id}; transform: rotateY({tween.current}deg);"
 >
-  <div
-    class="frontPage frontPaper"
-    class:highlightContentFirstPage={data.id === 1}
-  >
+  <div class="frontPage frontPaper">
     <div
       class="highlightContent"
+      class:highlightContentFirstPage={data.id === 1}
       style="width: {innerWidth}px; height: {innerHeight}px;  margin: 3rem 3rem 3rem calc(4rem - {tween.current <=
       -90
         ? 2 * data.id
@@ -243,13 +241,13 @@
       text-align: right;
     }
 
-    .highlightContentFirstPage .highlightContent::first-letter {
+    .highlightContentFirstPage::first-letter {
       float: left;
       font-size: 150px;
       background: url("$lib/assets/images/TheEndoftheDay.webp") 0 0 no-repeat;
       background-size: cover;
       background-position: center;
-      padding: 10px 12px;
+      padding: 12px 6px;
       margin: 6px 6px 0 0;
       font-family: "Baskervville", sans-serif;
       font-weight: 600;
@@ -259,7 +257,7 @@
     }
 
     @supports (initial-letter: 5) or (-webkit-initial-letter: 5) {
-      .highlightContentFirstPage .highlightContent::first-letter {
+      .highlightContentFirstPage::first-letter {
         initial-letter: 5;
         -webkit-initial-letter: 5;
 
