@@ -27,7 +27,14 @@
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import Circle from "$lib/components/Circle.svelte";
-  import { showTimer } from "$lib/store/navstore";
+  import {
+    checkSchedule,
+    getSchedule,
+    getTodayDate,
+    getTodaySchedule,
+    showTimer,
+    todaySchedule,
+  } from "$lib/store/navstore";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -163,6 +170,7 @@
       previews = undefined;
       $listCardContent = [];
       $listCardCount = 0;
+      updateTodaySchedule();
     }
   }
 
@@ -259,6 +267,46 @@
   //     startTime = Date.now();
   //   }
   // }
+
+  async function updateTodaySchedule() {
+    await getSchedule();
+    getTodaySchedule();
+    if (!$todaySchedule) return;
+    if ($todaySchedule.first.count < 12) {
+      const { error } = await layoutData.supabase
+        .from("schedule_table")
+        .update({
+          date: getTodayDate(),
+          count: $todaySchedule.first.count + 1,
+        })
+        .eq("id", $todaySchedule.first.id);
+      if (error) {
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message as string,
+        });
+      }
+    } else {
+      const { error } = await layoutData.supabase
+        .from("schedule_table")
+        .update({
+          date: getTodayDate(),
+          count: $todaySchedule.second.count + 1,
+        })
+        .eq("id", $todaySchedule.second.id);
+      if (error) {
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message as string,
+        });
+      }
+    }
+    if ($todaySchedule.second.count + 1 > 11) checkSchedule();
+    await getSchedule();
+    getTodaySchedule();
+  }
 </script>
 
 <svelte:head>

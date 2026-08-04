@@ -243,7 +243,7 @@ type ResultType = {
   end: Date | null;
 };
 
-async function checkSchedule() {
+export async function checkSchedule() {
   const { data: schedule } = await page.data.supabase
     .from("schedule_table")
     .select("*")
