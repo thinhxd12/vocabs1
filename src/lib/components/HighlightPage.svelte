@@ -134,6 +134,7 @@
     font-size: 13px;
     font-weight: 600;
     color: #1e1915;
+    user-select: none;
   }
 
   .frontPage .pageNumber {
