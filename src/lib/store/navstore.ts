@@ -5,7 +5,7 @@ import { renderWord } from "$lib/store/vocabstore";
 import type { DBInsert, DBSelect } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
 import { archiveVocab, shuffle } from "$lib/utils/functions";
-import cloverImage from "$lib/assets/images/clover.webp";
+import cloverImage from "$lib/assets/images/2617511.png";
 import { goto } from "$app/navigation";
 import { addToast, currentTimestamp, timezone } from "./layoutstore";
 

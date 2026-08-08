@@ -131,7 +131,7 @@
     position: absolute;
     bottom: 1.5rem;
     font-family: "Copernicus", sans-serif;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #1e1915;
     user-select: none;
@@ -220,17 +220,12 @@
       font-family: "Bookerly", sans-serif;
       font-weight: 400;
       font-size: 15px;
-      line-height: 1.55;
-      letter-spacing: 0px;
-      overflow: hidden;
-      text-align: left;
-      text-size-adjust: 100%;
+      line-height: 1.5;
       color: #1e1915;
     }
 
     .highlightContent::selection {
       background-color: #fef135;
-      color: #000;
     }
 
     .highlightContent p {
@@ -244,17 +239,22 @@
 
     .highlightContentFirstPage::first-letter {
       float: left;
-      font-size: 150px;
-      background: url("$lib/assets/images/TheEndoftheDay.webp") 0 0 no-repeat;
+      font-size: 140px;
+      line-height: 1.5;
+      background: url("$lib/assets/images/Vincent_van_Gogh_The_Sower_1888.webp")
+        0 0 no-repeat;
       background-size: cover;
-      background-position: center;
-      padding: 12px 6px;
-      margin: 6px 6px 0 0;
+      background-position: bottom center;
+      padding: 12px;
+      margin: 6px 6px 0 3px;
       font-family: "Baskervville", sans-serif;
       font-weight: 600;
       color: #f0f0f0;
-      text-shadow: 0 3px 4px rgba(0, 0, 0, 1);
-      box-shadow: inset 0 1px 9px rgba(0, 0, 0, 1);
+      text-shadow: 0 6px 9px rgba(0, 0, 0, 1);
+      box-shadow:
+        0 3px 5px rgba(0, 0, 0, 1),
+        inset 0 6px 9px rgba(0, 0, 0, 1);
+      border: 2px solid #000000;
     }
 
     @supports (initial-letter: 5) or (-webkit-initial-letter: 5) {
