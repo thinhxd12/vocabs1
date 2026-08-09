@@ -135,7 +135,11 @@
 
   {#if $layoutSetting.showVideo}
     <div class="absolute right-3 top-3 flex gap-2">
-      <select bind:value={videoSrc} class="btn-layout !w-30" name="videobg">
+      <select
+        bind:value={videoSrc}
+        class="btn-layout !w-36 text-center"
+        name="videobg"
+      >
         {#each videos as item}
           <option value={item.value}>
             {item.label}

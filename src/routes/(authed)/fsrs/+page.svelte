@@ -18,10 +18,10 @@
   } from "$lib/store/layoutstore";
   import BiTranslate from "~icons/bi/translate";
   import { fly } from "svelte/transition";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import type { WikiTranslationType } from "$lib/types";
   import { format } from "date-fns";
-  import { enhance } from "$app/forms";
+  // import { enhance } from "$app/forms";
   import { saveUserSetting } from "$lib/store/localstore";
   // import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
@@ -44,7 +44,9 @@
   let showTranslate = $state<boolean>(false);
   let activedButton = $state<number>(0);
   // let startTime = $state<number>(0);
-  const NUMBER_WORDS = 24;
+  let isDisabled = $state<boolean>(false);
+  let numberWords = $state<number>(12);
+  let clickTimeout: ReturnType<typeof setTimeout>;
 
   onMount(() => {
     if ($listCardContent.length) {
@@ -57,6 +59,7 @@
 
   async function getList() {
     $listCardContent = [];
+    currentWord = "";
     const now = new Date().getTime();
     const { data } = await layoutData.supabase
       .from("memories_table")
@@ -64,24 +67,24 @@
       .order("due")
       .lte("due", now)
       .gt("due", 0)
-      .limit(NUMBER_WORDS);
+      .limit(numberWords);
     if (data && data.length === 0) {
       const { data } = await layoutData.supabase
         .from("memories_table")
         .select("*")
         .order("created_at", { ascending: false })
         .eq("due", 0)
-        .limit(NUMBER_WORDS);
+        .limit(numberWords);
       if (data) {
         $listCardContent = data;
       }
-    } else if (data && data.length < NUMBER_WORDS) {
+    } else if (data && data.length < numberWords) {
       const { data: dataMore } = await layoutData.supabase
         .from("memories_table")
         .select("*")
         .order("created_at", { ascending: false })
         .eq("due", 0)
-        .limit(NUMBER_WORDS - data.length);
+        .limit(numberWords - data.length);
       if (dataMore) {
         $listCardContent = [...data, ...dataMore];
       }
@@ -107,6 +110,12 @@
   }
 
   async function handleRate(card: Card | CardInput, rate: Grade) {
+    clearTimeout(clickTimeout);
+    isDisabled = true;
+    clickTimeout = setTimeout(() => {
+      isDisabled = false;
+    }, 3000);
+
     const saved = $scheduler.next(card, new Date(), rate, ({ card, log }) => ({
       card: {
         ...card,
@@ -223,18 +232,22 @@
         }
         break;
       case e.key === "1":
+        if (isDisabled) return;
         handleRate(previews![Rating.Again].card, Rating.Again);
         activedButton = 1;
         break;
       case e.key === "2":
+        if (isDisabled) return;
         handleRate(previews![Rating.Hard].card, Rating.Hard);
         activedButton = 2;
         break;
       case e.key === "3":
+        if (isDisabled) return;
         handleRate(previews![Rating.Good].card, Rating.Good);
         activedButton = 3;
         break;
       case e.key === "4":
+        if (isDisabled) return;
         handleRate(previews![Rating.Easy].card, Rating.Easy);
         activedButton = 4;
         break;
@@ -307,6 +320,19 @@
     await getSchedule();
     getTodaySchedule();
   }
+
+  function handleChangeNumber(e: any) {
+    if (numberWords > 99) {
+      numberWords = 99;
+    }
+    if (e.target.value === "") {
+      numberWords = 15;
+    }
+  }
+
+  onDestroy(() => {
+    clearTimeout(clickTimeout);
+  });
 </script>
 
 <svelte:head>
@@ -372,6 +398,19 @@
       <PhListStar width="14" height="14" />
     </button>
 
+    <input
+      class="input-button"
+      name="number"
+      autocomplete="off"
+      type="number"
+      min="1"
+      step="1"
+      max="99"
+      bind:value={numberWords}
+      onkeydown={(e) => e.stopPropagation()}
+      oninput={handleChangeNumber}
+    />
+
     <div class="flex-1"></div>
 
     {#if currentWord !== ""}
@@ -380,6 +419,9 @@
         onclick={(e) => {
           e.currentTarget.blur();
           handleShowTranslate();
+          if (showTranslate) {
+            handlePlayAudio();
+          }
         }}
       >
         <BiTranslate width="14" height="14" />
@@ -450,6 +492,7 @@
         <button
           class="bg-green-900/60 btn-main"
           class:btnActive={activedButton === 1}
+          disabled={isDisabled}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Again].card, Rating.Again);
@@ -460,9 +503,11 @@
           </div>
           <div class="w-full uppercase text-14 leading-18 font-600">Again</div>
         </button>
+
         <button
           class="bg-green-600/60 btn-main"
           class:btnActive={activedButton === 2}
+          disabled={isDisabled}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Hard].card, Rating.Hard);
@@ -473,9 +518,11 @@
           </div>
           <div class="w-full uppercase text-14 leading-18 font-600">Hard</div>
         </button>
+
         <button
           class="bg-green-400/60 btn-main"
           class:btnActive={activedButton === 3}
+          disabled={isDisabled}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Good].card, Rating.Good);
@@ -486,9 +533,11 @@
           </div>
           <div class="w-full uppercase text-14 leading-18 font-600">Good</div>
         </button>
+
         <button
           class="bg-green-100/60 btn-main"
           class:btnActive={activedButton === 4}
+          disabled={isDisabled}
           onclick={(e) => {
             e.currentTarget.blur();
             handleRate(previews![Rating.Easy].card, Rating.Easy);
@@ -520,5 +569,17 @@
   .setting-button {
     @apply size-18 flex items-center justify-center outline-none bg-white/15 border border-white/10 text-black text-12 leading-18 rounded-2 hover:bg-white/30;
     backdrop-filter: blur(12px);
+  }
+
+  .input-button {
+    @apply h-18 w-24  text-center outline-none bg-white/15 border border-white/10 text-black text-11 leading-18 rounded-2 overflow-hidden hover:bg-white/30;
+    backdrop-filter: blur(12px);
+    -moz-appearance: textfield !important;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 </style>

@@ -239,7 +239,7 @@
 
     .highlightContentFirstPage::first-letter {
       float: left;
-      font-size: 140px;
+      font-size: 133px;
       line-height: 1.5;
       background: url("$lib/assets/images/Vincent_van_Gogh_The_Sower_1888.webp")
         0 0 no-repeat;
