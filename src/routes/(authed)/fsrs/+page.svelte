@@ -114,7 +114,7 @@
     isDisabled = true;
     clickTimeout = setTimeout(() => {
       isDisabled = false;
-    }, 3000);
+    }, 2000);
 
     const saved = $scheduler.next(card, new Date(), rate, ({ card, log }) => ({
       card: {
@@ -197,11 +197,24 @@
   async function handleShowTranslate() {
     showTranslate = !showTranslate;
     if (translations.length === 0 && currentWord !== "") {
-      const url = `/server/getwiktionary?word=${currentWord}`;
+      const url = `https://dict.minhqnd.com/api/v1/lookup?word=${currentWord}&lang=en&def_lang=vi`;
       const response = await fetch(url);
       const data = await response.json();
-      if (data.length) {
-        translations = data;
+      if (response.status === 200) {
+        const res = data.results[0].meanings;
+        translations = Object.values(
+          res.reduce(
+            (acc: any, { pos, definition }: { pos: any; definition: any }) => {
+              if (!acc[pos]) {
+                acc[pos] = { partOfSpeech: pos, translation: [definition] };
+              } else {
+                acc[pos].translation = [...acc[pos].translation, definition];
+              }
+              return acc;
+            },
+            {},
+          ),
+        );
       } else {
         const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${currentWord}`;
         const response = await fetch(url);
@@ -453,6 +466,7 @@
               >
                 {item.partOfSpeech}
               </h3>
+
               {#each item.translation as el}
                 <p class="text-13 leading-18 indent-15 font-500">{el}</p>
               {/each}
