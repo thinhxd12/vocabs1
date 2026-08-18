@@ -16,7 +16,6 @@
   } from "svelte-maplibre-gl";
   import { type StyleSpecification } from "maplibre-gl";
   import myStyle from "$lib/json/protomaps.json";
-  // https://maplibre.org/maputnik/
 
   type RainviewerCoord = {
     lng: number;
@@ -32,7 +31,7 @@
   let radarUrl = $state<string>("");
   let radarData = $state<RadarPast[]>([]);
   let animationPosition = $state<number>(0);
-  let lonLat = $state<RainviewerCoord>({ lng: 106.395781, lat: 10.583642 });
+  let lonLat = $state<RainviewerCoord>({ lng: 51.5074, lat: -0.1278 });
 
   async function loadData() {
     generateRadarTimeline();
@@ -81,11 +80,9 @@
     const now = new Date();
     const timeline: RadarPast[] = [];
 
-    // 1. Force the current time object to UTC and round minutes down to the nearest 10
     const roundedMinutes = Math.floor((now.getUTCMinutes() - 8) / 10) * 10;
     now.setUTCMinutes(roundedMinutes, 0, 0);
 
-    // 2. Loop 12 times to collect the last 2 hours of data
     for (let i = 0; i < 12; i++) {
       const year = now.getUTCFullYear();
       const month = String(now.getUTCMonth() + 1).padStart(2, "0");
@@ -93,7 +90,6 @@
       const hours = String(now.getUTCHours()).padStart(2, "0");
       const minutes = String(now.getUTCMinutes()).padStart(2, "0");
 
-      // 3. Assemble strings matching your exact syntax
       const dateFolder = `${year}${month}${day}`;
       const fullTimestamp = `${year}${month}${day}${hours}${minutes}`;
       const path = `${dateFolder}/COM_${fullTimestamp}_CMAX00`;
@@ -101,7 +97,6 @@
 
       timeline.push({ time, path });
 
-      // 4. Step backward by 10 minutes for the next loop iteration
       now.setUTCMinutes(now.getUTCMinutes() - 10);
     }
     radarData = timeline;
