@@ -8,11 +8,11 @@
     ScaleControl,
     GlobeControl,
     RasterLayer,
+    RasterTileSource,
     Marker,
     FullScreenControl,
     HillshadeLayer,
     RasterDEMTileSource,
-    ImageSource,
   } from "svelte-maplibre-gl";
   import { type StyleSpecification } from "maplibre-gl";
   import myStyle from "$lib/json/protomaps.json";
@@ -24,19 +24,29 @@
   };
 
   type RadarPast = {
-    time: string;
+    time: number;
     path: string;
   };
 
+  // const API_URL = "https://api.rainviewer.com/public/weather-maps.json";
+  const API_URL = "https://api.librewxr.net/public/weather-maps.json";
+
   let interval: ReturnType<typeof setInterval>;
+  let radarHost = $state<string>("");
   let radarUrl = $state<string>("");
   let radarData = $state<RadarPast[]>([]);
   let animationPosition = $state<number>(0);
-  let lonLat = $state<RainviewerCoord>({ lng: 106.395781, lat: 10.583642 });
+  let lonLat = $state<RainviewerCoord>({ lng: 51.5074, lat: -0.1278 });
 
   async function loadData() {
-    generateRadarTimeline();
-    showFrame();
+    const response = await fetch(API_URL);
+    if (response.status === 200) {
+      const data = await response.json();
+      radarHost = data.host;
+      radarData = data.radar.past;
+      animationPosition = data.radar.past.length - 1;
+      showFrame();
+    }
   }
 
   $effect(() => {
@@ -60,51 +70,24 @@
 
   function playStop() {
     clearInterval(interval);
-    animationPosition = radarData.length - 1;
-    interval = setInterval(updateFrame, 1000);
+    animationPosition = 0;
+    interval = setInterval(updateFrame, 500);
   }
 
   function updateFrame() {
-    animationPosition--;
-    if (animationPosition === 0) {
+    animationPosition++;
+    if (animationPosition >= radarData.length) {
       clearInterval(interval);
-      animationPosition = 0;
+      animationPosition = radarData.length - 1;
     }
     showFrame();
   }
 
   function showFrame() {
-    radarUrl = `https://mywebapp.abcworker.workers.dev/http://hymetnet.gov.vn/dataout_web/COM/${radarData[animationPosition].path}.png`;
-  }
-
-  function generateRadarTimeline() {
-    const now = new Date();
-    const timeline: RadarPast[] = [];
-
-    // 1. Force the current time object to UTC and round minutes down to the nearest 10
-    const roundedMinutes = Math.floor((now.getUTCMinutes() - 8) / 10) * 10;
-    now.setUTCMinutes(roundedMinutes, 0, 0);
-
-    // 2. Loop 12 times to collect the last 2 hours of data
-    for (let i = 0; i < 12; i++) {
-      const year = now.getUTCFullYear();
-      const month = String(now.getUTCMonth() + 1).padStart(2, "0");
-      const day = String(now.getUTCDate()).padStart(2, "0");
-      const hours = String(now.getUTCHours()).padStart(2, "0");
-      const minutes = String(now.getUTCMinutes()).padStart(2, "0");
-
-      // 3. Assemble strings matching your exact syntax
-      const dateFolder = `${year}${month}${day}`;
-      const fullTimestamp = `${year}${month}${day}${hours}${minutes}`;
-      const path = `${dateFolder}/COM_${fullTimestamp}_CMAX00`;
-      const time = `${year}-${month}-${day}T${hours}:${minutes}:00Z`;
-
-      timeline.push({ time, path });
-
-      // 4. Step backward by 10 minutes for the next loop iteration
-      now.setUTCMinutes(now.getUTCMinutes() - 10);
-    }
-    radarData = timeline;
+    radarUrl =
+      radarHost +
+      radarData[animationPosition].path +
+      "/512/{z}/{x}/{y}/2/1_1.webp?arrows=light";
   }
 
   onDestroy(() => {
@@ -118,7 +101,7 @@
       class="absolute top-0 left-0 z-9 maplibregl-ctrl maplibregl-ctrl-scale font-600 !py-2 !px-6 !text-11 font-helvetica"
       onclick={playStop}
     >
-      at {format(new Date(radarData[animationPosition].time), "p")}
+      at {format(new Date(radarData[animationPosition].time * 1000), "p")}
     </button>
   {/if}
 
@@ -131,24 +114,20 @@
     attributionControl={false}
   >
     {#if radarData.length}
-      <ImageSource
-        id="radar-source"
-        url={radarUrl}
-        coordinates={[
-          [97, 25.2],
-          [115, 25.2],
-          [115, 7.2],
-          [97, 7.2],
-        ]}
+      <RasterTileSource
+        id="rainviewer-source"
+        tiles={[radarUrl]}
+        tileSize={512}
       >
         <RasterLayer
-          id="radar-layer"
+          id="rainviewer-layer"
           paint={{
-            "raster-opacity": 0.7,
+            "raster-opacity": 0.8,
+            "raster-opacity-transition": { duration: 0, delay: 0 },
             "raster-fade-duration": 0,
           }}
         />
-      </ImageSource>
+      </RasterTileSource>
     {/if}
 
     <RasterDEMTileSource url="https://tiles.mapterhorn.com/tilejson.json">
