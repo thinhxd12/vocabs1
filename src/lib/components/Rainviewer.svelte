@@ -16,6 +16,7 @@
   } from "svelte-maplibre-gl";
   import { type StyleSpecification } from "maplibre-gl";
   import myStyle from "$lib/json/protomaps.json";
+  import { DEFAULT_CORS_PROXY } from "$lib/utils/constants";
 
   type RainviewerCoord = {
     lng: number;
@@ -73,14 +74,16 @@
   }
 
   function showFrame() {
-    radarUrl = `https://mywebapp.abcworker.workers.dev/http://hymetnet.gov.vn/dataout_web/COM/${radarData[animationPosition].path}.png`;
+    radarUrl =
+      DEFAULT_CORS_PROXY +
+      `http://hymetnet.gov.vn/dataout_web/COM/${radarData[animationPosition].path}.png`;
   }
 
   function generateRadarTimeline() {
     const now = new Date();
     const timeline: RadarPast[] = [];
 
-    const roundedMinutes = Math.floor((now.getUTCMinutes() - 8) / 10) * 10;
+    const roundedMinutes = Math.floor((now.getUTCMinutes() - 6) / 10) * 10;
     now.setUTCMinutes(roundedMinutes, 0, 0);
 
     for (let i = 0; i < 12; i++) {
@@ -110,17 +113,23 @@
 <div class="relative flex flex-col w-main">
   {#if radarData.length}
     <button
-      class="absolute top-0 left-0 z-9 maplibregl-ctrl maplibregl-ctrl-scale font-600 !py-2 !px-6 !text-11 font-helvetica"
+      class="absolute top-0 left-0 z-9 m-3 border-2 border-[#333] bg-white font-600 py-2 px-6 text-11 font-helvetica"
       onclick={playStop}
     >
       at {format(new Date(radarData[animationPosition].time), "p")}
     </button>
   {/if}
 
+  <div
+    class="absolute bottom-30 left-0 z-9 pl-3 m-3 border-2 border-[#333] bg-white"
+  >
+    <img alt="dbz" src="/weather/DBZ.jpg" width="18" />
+  </div>
+
   <MapLibre
     class="light w-full min-h-290 h-290"
     style={myStyle as StyleSpecification}
-    zoom={9}
+    zoom={8}
     center={lonLat}
     maxZoom={12}
     attributionControl={false}
