@@ -7,7 +7,11 @@
     VocabMeaningType,
     WikiTranslationType,
   } from "$lib/types";
-  import { autofocus, getTranslationArr } from "$lib/utils/functions";
+  import {
+    autofocus,
+    getTranslation,
+    getTranslationArr,
+  } from "$lib/utils/functions";
   import Definition from "./Definition.svelte";
   import { v7 as uuidv7 } from "uuid";
   import { page } from "$app/state";
@@ -27,12 +31,13 @@
 
   async function getTranslateData(text: string) {
     // const url = `https://vocabs3.vercel.app/trans?text=${text}&from=auto&to=vi`;
-    const url = `/server/getwiktionary?word=${text}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    if (data) {
-      translations = data;
-    }
+    // const url = `/server/getwiktionary?word=${text}`;
+    // const response = await fetch(url);
+    // const data = await response.json();
+    // if (data) {
+    //   translations = data;
+    // }
+    translations = await getTranslation(text);
   }
 
   async function getTextDataWebster(text: string) {
@@ -50,10 +55,11 @@
   }
 
   async function handleGetTranslateWord(word: string) {
+    const cleanWord = word.toLowerCase();
     const { data: dataMemories } = await page.data.supabase
       .from("memories_table")
       .select("word,created_at")
-      .eq("word", word.toLowerCase());
+      .eq("word", cleanWord);
 
     if (dataMemories.length)
       addToast({
@@ -65,7 +71,7 @@
     const { data: dataVocab } = await page.data.supabase
       .from("vocab_table")
       .select("*")
-      .eq("word", word.toLowerCase())
+      .eq("word", cleanWord)
       .limit(1);
 
     if (dataVocab.length)
@@ -76,8 +82,8 @@
       });
 
     const data = await Promise.all([
-      getTextDataWebster(word.toLowerCase()),
-      getTranslateData(word.toLowerCase()),
+      getTextDataWebster(cleanWord),
+      getTranslateData(cleanWord),
     ]);
     if (data[0]) {
       translateWord = data[0];

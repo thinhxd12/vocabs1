@@ -2,6 +2,7 @@ import type {
   CurrentlyWeatherType,
   HourlyWeatherType,
   WeatherQueryParams,
+  WikiTranslationType,
 } from "../types";
 import { v7 as uuidv7 } from "uuid";
 import { getTotalMemories } from "$lib/store/navstore";
@@ -317,3 +318,28 @@ export const getOpenMeteoWeather = async ({
   }
   return undefined;
 };
+
+export async function getTranslation(
+  word: string,
+): Promise<WikiTranslationType[]> {
+  const url = `https://dict.minhqnd.com/api/v1/lookup?word=${word}&lang=en&def_lang=vi`;
+  const response = await fetch(url);
+  const data = await response.json();
+  if (response.status === 200) {
+    const res = data.results[0].meanings;
+    return Object.values(
+      res.reduce(
+        (acc: any, { pos, definition }: { pos: any; definition: any }) => {
+          if (!acc[pos]) {
+            acc[pos] = { partOfSpeech: pos, translation: [definition] };
+          } else {
+            acc[pos].translation = [...acc[pos].translation, definition];
+          }
+          return acc;
+        },
+        {},
+      ),
+    );
+  }
+  return [];
+}

@@ -35,6 +35,7 @@
     showTimer,
     todaySchedule,
   } from "$lib/store/navstore";
+  import { getTranslation } from "$lib/utils/functions";
 
   let { data: layoutData }: PageProps = $props();
   let src0 = $state<string>("");
@@ -197,25 +198,8 @@
   async function handleShowTranslate() {
     showTranslate = !showTranslate;
     if (translations.length === 0 && currentWord !== "") {
-      const url = `https://dict.minhqnd.com/api/v1/lookup?word=${currentWord}&lang=en&def_lang=vi`;
-      const response = await fetch(url);
-      const data = await response.json();
-      if (response.status === 200) {
-        const res = data.results[0].meanings;
-        translations = Object.values(
-          res.reduce(
-            (acc: any, { pos, definition }: { pos: any; definition: any }) => {
-              if (!acc[pos]) {
-                acc[pos] = { partOfSpeech: pos, translation: [definition] };
-              } else {
-                acc[pos].translation = [...acc[pos].translation, definition];
-              }
-              return acc;
-            },
-            {},
-          ),
-        );
-      } else {
+      translations = await getTranslation(currentWord);
+      if (translations.length === 0) {
         const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${currentWord}`;
         const response = await fetch(url);
         const data = await response.json();
