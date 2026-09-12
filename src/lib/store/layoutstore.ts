@@ -100,14 +100,16 @@ export function endTimer() {
   percent.set(100);
   switch (get(currentMode)) {
     case "focus":
-      srcAudio.set("/sounds/mp3_break.ogg");
-      pauseAudio.set(false);
       if (get(currentInterval) >= get(intervals)) {
         currentMode.set("longbreak");
         secondsRemaining.set(minutesToSeconds(get(longbreakMinutes)));
+        srcAudio.set("/sounds/mp3_longbreak.ogg");
+        pauseAudio.set(false);
       } else {
         currentMode.set("shortbreak");
         secondsRemaining.set(minutesToSeconds(get(shortbreakMinutes)));
+        srcAudio.set("/sounds/mp3_shortbreak.ogg");
+        pauseAudio.set(false);
       }
       isFocusDone.set(true);
       submitReport();

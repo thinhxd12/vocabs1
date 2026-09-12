@@ -6,70 +6,59 @@
   let { children }: Props = $props();
 </script>
 
-<div class="container">
-  <div class="circle"></div>
-  <div class="square"></div>
-  <div class="dark content">
-    {@render children?.()}
+<div class="circle-container">
+  <div class="circle-content">
+    <div class="square-container">
+      <div class="square-content">
+        {@render children?.()}
+      </div>
+    </div>
   </div>
 </div>
 
 <style lang="postcss">
-  .container {
-    height: var(--height, 530px);
-    width: var(--width, 530px);
+  .circle-container {
+    height: var(--height, 540px);
+    width: var(--width, 540px);
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    padding: 3px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(90deg, #9a7a3b 0%, #e6d3a1 100%);
+  }
+
+  .circle-content {
+    background: radial-gradient(circle, #060606 30%, #020406 100%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .circle {
-    position: absolute;
-    z-index: 3;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    padding: var(--border, 3px);
-    background: black;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+  .square-container {
+    width: 70.71%;
+    height: 70.71%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    background: linear-gradient(90deg, #8f763b 0%, #d2c28e 100%);
   }
 
-  .square {
-    position: absolute;
-    z-index: 3;
+  .square-content {
+    background: radial-gradient(circle, #060606 30%, #020406 100%);
     width: 100%;
     height: 100%;
-    background: black;
-    clip-path: polygon(
-      15% 15%,
-      85% 15%,
-      85% 85%,
-      15% 85%,
-      15% 15%,
-      calc(15% + var(--border, 3px)) calc(15% + var(--border, 3px)),
-      calc(15% + var(--border, 3px)) calc(85% - var(--border, 3px)),
-      calc(85% - var(--border, 3px)) calc(85% - var(--border, 3px)),
-      calc(85% - var(--border, 3px)) calc(15% + var(--border, 3px)),
-      calc(15% + var(--border, 3px)) calc(15% + var(--border, 3px))
-    );
-    clip-rule: evenodd;
-  }
-
-  .content {
-    position: relative;
-    z-index: 2;
-    width: calc(70% - var(--border, 3px));
-    height: calc(70% - var(--border, 3px));
   }
 
   @media screen and (max-width: 500px) {
-    .container {
+    .circle-container {
       height: 380px;
       width: 380px;
     }
