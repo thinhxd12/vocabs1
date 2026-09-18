@@ -297,7 +297,8 @@
     try {
       if (highlight)
         await navigator.clipboard.writeText(
-          "explain this " + $highlight!.content,
+          "Break down this quote, after that give me a clear, everyday example of what this looks like in practice today: " +
+            $highlight!.content,
         );
     } catch (err) {
       console.error("Failed to copy text: ", err);

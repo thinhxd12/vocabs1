@@ -135,8 +135,8 @@ async function handleCloseNotification() {
   const todayScheduleValue = get(todaySchedule);
   if (!todayScheduleValue) return;
   if (
-    todayScheduleValue.first.count < 12 ||
-    todayScheduleValue.second.count < 12
+    todayScheduleValue.first.count < 9 ||
+    todayScheduleValue.second.count < 9
   ) {
     await goto("/vocab");
     currentProgress.set(1);
@@ -220,7 +220,7 @@ export async function updateTodayScheduleLocal() {
   const currentProgressValue = get(currentProgress);
 
   if (currentProgressValue === 1) {
-    if (newTodayScheduleValue!.first.count < 12) startCountdown();
+    if (newTodayScheduleValue!.first.count < 9) startCountdown();
     currentProgress.set(2);
     await handleGetListContent();
     await goto("/quiz");
@@ -229,8 +229,8 @@ export async function updateTodayScheduleLocal() {
   }
 
   if (
-    newTodayScheduleValue!.first.count > 11 &&
-    newTodayScheduleValue!.second.count > 11
+    newTodayScheduleValue!.first.count > 8 &&
+    newTodayScheduleValue!.second.count > 8
   ) {
     if (get(currentProgress) === 3) currentProgress.set(0);
     checkSchedule();

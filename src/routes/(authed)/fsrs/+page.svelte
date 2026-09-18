@@ -282,7 +282,7 @@
     await getSchedule();
     getTodaySchedule();
     if (!$todaySchedule) return;
-    if ($todaySchedule.first.count < 12) {
+    if ($todaySchedule.first.count < 9) {
       const { error } = await layoutData.supabase
         .from("schedule_table")
         .update({
@@ -313,7 +313,7 @@
         });
       }
     }
-    if ($todaySchedule.second.count + 1 > 11) checkSchedule();
+    if ($todaySchedule.second.count + 1 > 8) checkSchedule();
     await getSchedule();
     getTodaySchedule();
   }
