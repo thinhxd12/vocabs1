@@ -1,8 +1,7 @@
 import type { BookDetailType } from "$lib/types";
-import { SCRAPER_API_URL } from "$lib/utils/constants";
+import { getHtmlMethod1, getHtmlMethod2 } from "$lib/utils/functions.server";
 import { error } from "@sveltejs/kit";
 import { load, type Cheerio, type CheerioAPI } from "cheerio";
-import { SECRET_SCRAPER_KEY } from "$env/static/private";
 
 type BookSearchType = {
   title: string | null;
@@ -70,7 +69,7 @@ async function searchBook(
       getHtmlMethod1(searchUrl),
       getHtmlMethod2(searchUrl),
     ]);
-    if (html.includes("tableList")) {
+    if (html.includes(`class="Books"`)) {
       const searchResult = parseSearchResults(html, author);
       if (searchResult && searchResult.goodreadsId) {
         const bookInfo = await lookupBook(searchResult.goodreadsId);
@@ -80,46 +79,6 @@ async function searchBook(
   } catch (error) {
     return null;
   }
-}
-
-async function getHtmlMethod1(pageurl: string) {
-  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Scraper-Key": SECRET_SCRAPER_KEY,
-    },
-    body: JSON.stringify({ url: pageurl }),
-  });
-  const data = await response.json();
-  if (data.success) {
-    return data.html;
-  } else throw new Error();
-}
-
-async function getHtmlMethod2(pageurl: string) {
-  const url = "https://api.firecrawl.dev/v2/scrape";
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer fc-3e726e5198464320a5fbac65c2e1e7a9",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      url: pageurl,
-      onlyMainContent: false,
-      maxAge: 172800000,
-      parsers: ["pdf"],
-      formats: ["html"],
-    }),
-  };
-
-  const response = await fetch(url, options);
-  if (response.status === 200) {
-    const json = await response.json();
-    const html = json.data.html;
-    return html;
-  } else throw new Error();
 }
 
 /**
@@ -135,19 +94,17 @@ function parseSearchResults(
   const $ = load(html);
   const results: BookSearchType[] = [];
 
-  $('tr[itemtype="http://schema.org/Book"]').each((index, element) => {
+  $("div.Book").each((index, element) => {
     const bookData = parseBookData($, element);
     results.push(bookData);
   });
 
   if (results.length) {
-    const filteredFull = results.filter((item) =>
-      item.authors.includes(author),
+    const sortedResults = results.sort(
+      (a: any, b: any) => a.numberOfRatings - b.numberOfRatings,
     );
-    const name = author.split(" ").pop();
-    const filteredName = results.filter((item) => item.authors.includes(name));
-    const result = filteredFull || filteredName || results[0];
-    return result[0];
+
+    return sortedResults[0];
   }
   return null;
 }
@@ -159,11 +116,19 @@ function parseSearchResults(
  * @returns {Object} Parsed book data
  */
 function parseBookData($: CheerioAPI, element: any) {
-  const book = initializeBookObject($(element));
-  parseAuthorsSearch($, $(element), book);
-  parsePublishedDateSearch($, $(element), book);
-  parseRatingsSearch($, $(element), book);
-  return book;
+  const detailsUrl =
+    "https://www.goodreads.com" +
+    $(element).find(".Book__content a").attr("href");
+  return {
+    title: $(element).find(".Book__content").text().trim() || null,
+    authors: [$(element).find(".BookAuthors").text().trim() || ""],
+    detailsUrl,
+    goodreadsId: detailsUrl.match(/\/show\/(\d+)/)?.[1] || null,
+    publishedYear: null,
+    averageRating: null,
+    numberOfRatings:
+      $(element).find(".BookStats__counts > span").first().text().trim() || "",
+  } as BookSearchType;
 }
 
 /**

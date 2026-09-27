@@ -9,8 +9,6 @@
 
     const urlS = `https://www.goodreads.com/search?utf8=%E2%9C%93&query=${titleParam}&search_type=books`;
 
-    const data = await response.json();
-    console.log("🚀 ~ name ~ data:", data);
     console.timeEnd("label");
   }
 
@@ -27,7 +25,8 @@
 <div
   class="absolute w-full h-full z-10 flex flex-col justify-center items-center"
 >
-  <button onclick={name1}>check</button>
+  <button onclick={name}>name</button>
+  <button onclick={name1}>name1</button>
   <button onclick={name2}>name2</button>
 </div>
 
