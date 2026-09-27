@@ -9,6 +9,7 @@ import type {
 import { v7 as uuidv7 } from "uuid";
 import { SCRAPER_API_URL } from "$lib/utils/constants.js";
 import { SECRET_SCRAPER_KEY } from "$env/static/private";
+import { SECRET_FIRECRAWL_KEY } from "$env/static/private";
 
 async function fetchGetText(url: string) {
   try {
@@ -44,7 +45,7 @@ async function getHtmlMethod2(pageurl: string) {
   const options = {
     method: "POST",
     headers: {
-      Authorization: "Bearer fc-3e726e5198464320a5fbac65c2e1e7a9",
+      Authorization: `Bearer ${SECRET_FIRECRAWL_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

@@ -1,7 +1,4 @@
 <script lang="ts">
-  import Rainviewer from "$lib/components/Rainviewer.svelte";
-  import { SCRAPER_API_URL } from "$lib/utils/constants";
-
   async function name() {
     console.time("label");
     const titleParam = "Discourses and Selected Writings";
@@ -17,14 +14,9 @@
     console.timeEnd("label");
   }
 
-  async function name1() {
-    const url = `/server/getwiktionary?word=pesticide`;
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log("🚀 ~ name1 ~ data:", data);
-  }
+  async function name1() {}
 
-  let image = $state("01");
+  async function name2() {}
 </script>
 
 <svelte:head>
@@ -35,16 +27,8 @@
 <div
   class="absolute w-full h-full z-10 flex flex-col justify-center items-center"
 >
-  <input bind:value={image} />
-  <img
-    alt="icon"
-    class="size-120 object-cover s-P2QlwJdd_0gk"
-    style="filter: drop-shadow(0px 0px 9px rgba(0, 0, 0, 0.3));"
-    src="/metoffice/{image}.png"
-  />
-  <button onclick={name}>click</button>
   <button onclick={name1}>check</button>
-  <Rainviewer />
+  <button onclick={name2}>name2</button>
 </div>
 
 <style lang="postcss">
