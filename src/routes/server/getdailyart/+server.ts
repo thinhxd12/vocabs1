@@ -1,9 +1,10 @@
 import { error } from "@sveltejs/kit";
 import { load } from "cheerio";
 import type { ArtImageType } from "$lib/types";
-import { DEFAULT_CORS_PROXY } from "$lib/utils/constants";
+import { proxyFetch } from "$lib/utils/proxy.server";
 import mainImage from "$lib/assets/images/main-image.webp";
 import mainAuthor from "$lib/assets/images/main-author.webp";
+import type { RequestHandler } from "./$types";
 
 let nextUrl = "https://www.getdailyart.com/en/24707/mykola-pymonenko/the-idyll";
 
@@ -19,11 +20,13 @@ const defaultArtImage: ArtImageType = {
     "<p>Hello July!</p> <p>Time for an artist who in my opinion, created one of the best images of Summer ... the French Pointillist, Paul Signac!</p> <p>Signac was a painter and an avid sailor. He created several marine paintings, including a series of views over the port of Saint-Tropez, where he settled in 1892.</p> <p>In this vertical painting, the eye initially fixes on the vibrant red-orange buoy, which contrasts with the water's deep blue. The reflections of the buildings then lead the viewer's eye to the background, with lighter tones. The divisionist technique and the combination of pure colors allowed Signac to depict a glittering sea, and the glimmering light of the Midi.</p> <p>The Pointillist painters differ from the Impressionists, most notably in the scientific dimension of their work. Regarding the rigor of his initial work, Signac's strokes have widened for this series; the division of tones is more relaxed.</p> <p>P.S. Our sale is on! Save 20% on our <a href=\"https://shop.dailyartmagazine.com/product-category/prints/?utm_campaign=DailyArt-Prints&amp;utm_medium=text&amp;utm_source=DailyArtapp&amp;utm_term=fine-art-prints\">Prints Collection</a> and order a high-quality reproduction of the greatest masterpieces.&nbsp;</p>",
 };
 
-export async function GET({ url }) {
+export const GET: RequestHandler = async ({ url }) => {
   try {
-    const response = await fetch(DEFAULT_CORS_PROXY + nextUrl, {
+    const response = await proxyFetch(nextUrl, {
       headers: {
         "cache-control": "no-cache",
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       },
     });
     if (response.status !== 200) error(400, "not found");

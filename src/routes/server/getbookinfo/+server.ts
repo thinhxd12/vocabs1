@@ -1,5 +1,5 @@
 import type { BookDetailType } from "$lib/types";
-import { getHtmlMethod1, getHtmlMethod2 } from "$lib/utils/functions.server";
+import { getHtml } from "$lib/utils/functions.server";
 import { error } from "@sveltejs/kit";
 import { load, type Cheerio, type CheerioAPI } from "cheerio";
 
@@ -65,10 +65,7 @@ async function searchBook(
 ) {
   const searchUrl = buildSearchUrl(query, searchType, searchField);
   try {
-    const html = await Promise.any([
-      getHtmlMethod1(searchUrl),
-      getHtmlMethod2(searchUrl),
-    ]);
+    const html = await getHtml(searchUrl);
     if (html.includes(`class="Books"`)) {
       const searchResult = parseSearchResults(html, author);
       if (searchResult && searchResult.goodreadsId) {
@@ -210,7 +207,7 @@ async function lookupBook(goodreadsId: string) {
  */
 async function navigateToBookPage(goodreadsId: string) {
   const url = `${BASE_DETAIL_URL}${goodreadsId}`;
-  const html = await Promise.any([getHtmlMethod1(url), getHtmlMethod2(url)]);
+  const html = await getHtml(url);
   return html;
 }
 

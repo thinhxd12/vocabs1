@@ -1,24 +1,9 @@
-import { SCRAPER_API_URL } from "$lib/utils/constants";
-import { SECRET_FIRECRAWL_KEY, SECRET_SCRAPER_KEY } from "$env/static/private";
+import { SECRET_FIRECRAWL_KEY } from "$env/static/private";
 
-export async function getHtmlMethod1(pageurl: string) {
-  const response = await fetch(`${SCRAPER_API_URL}/crawl`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Scraper-Key": SECRET_SCRAPER_KEY,
-    },
-    body: JSON.stringify({ url: pageurl }),
-  });
-  const data = await response.json();
-  if (data.success) {
-    return data.html;
-  } else throw new Error();
-}
+const FIRECRAWL_MAX_AGE_MS = 1000 * 60 * 60 * 48;
 
-export async function getHtmlMethod2(pageurl: string) {
-  const url = "https://api.firecrawl.dev/v2/scrape";
-  const options = {
+export async function getHtml(pageurl: string): Promise<string> {
+  const response = await fetch("https://api.firecrawl.dev/v2/scrape", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${SECRET_FIRECRAWL_KEY}`,
@@ -27,15 +12,21 @@ export async function getHtmlMethod2(pageurl: string) {
     body: JSON.stringify({
       url: pageurl,
       onlyMainContent: false,
-      maxAge: 172800000,
+      maxAge: FIRECRAWL_MAX_AGE_MS,
       parsers: ["pdf"],
       formats: ["html"],
     }),
-  };
-  const response = await fetch(url, options);
-  if (response.status === 200) {
-    const json = await response.json();
-    const html = json.data.html;
-    return html;
-  } else throw new Error();
+  });
+
+  if (response.status !== 200) {
+    throw new Error(`Firecrawl responded with ${response.status}`);
+  }
+
+  const json = await response.json();
+  const html = json?.data?.html;
+  if (typeof html !== "string" || html.length === 0) {
+    throw new Error(`Firecrawl returned no HTML for ${pageurl}`);
+  }
+
+  return html;
 }

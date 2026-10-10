@@ -16,7 +16,6 @@
   } from "svelte-maplibre-gl";
   import { type StyleSpecification } from "maplibre-gl";
   import myStyle from "$lib/json/protomaps.json";
-  import { DEFAULT_CORS_PROXY } from "$lib/utils/constants";
 
   type RainviewerCoord = {
     lng: number;
@@ -74,9 +73,8 @@
   }
 
   function showFrame() {
-    radarUrl =
-      DEFAULT_CORS_PROXY +
-      `http://hymetnet.gov.vn/dataout_web/COM/${radarData[animationPosition].path}.png`;
+    const target = `http://hymetnet.gov.vn/dataout_web/COM/${radarData[animationPosition].path}.png`;
+    radarUrl = `/server/proxy?url=${encodeURIComponent(target)}`;
   }
 
   function generateRadarTimeline() {

@@ -54,8 +54,5 @@ export const handle: Handle = async ({ event, resolve }) => {
     filterSerializedResponseHeaders(name) {
       return name === "content-range" || name === "x-supabase-api-version";
     },
-    preload: ({ type }) => {
-      return type === "font" || type === "js" || type === "css";
-    },
   });
 };

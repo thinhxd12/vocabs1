@@ -7,7 +7,7 @@ import type {
   VocabMeaningType,
 } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
-import { getHtmlMethod2 } from "$lib/utils/functions.server";
+import { getHtml } from "$lib/utils/functions.server";
 
 async function fetchGetText(url: string) {
   try {
@@ -67,7 +67,7 @@ export async function GET({ url }) {
 
   try {
     const data = await Promise.all([
-      getHtmlMethod2(urlWebter),
+      getHtml(urlWebter),
       getLearnersMp3(text),
     ]);
     const $ = load(data[0]);

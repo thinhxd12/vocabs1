@@ -483,6 +483,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: normal;
   font-weight: 400;
   src: url("$lib/fonts/baskervville/Baskervville-Regular.ttf")
@@ -491,6 +492,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: italic;
   font-weight: 400;
   src: url("$lib/fonts/baskervville/Baskervville-Italic.ttf") format("truetype");
@@ -498,6 +500,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: normal;
   font-weight: 500;
   src: url("$lib/fonts/baskervville/Baskervville-Medium.ttf") format("truetype");
@@ -505,6 +508,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: italic;
   font-weight: 500;
   src: url("$lib/fonts/baskervville/Baskervville-MediumItalic.ttf")
@@ -513,6 +517,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: normal;
   font-weight: 600;
   src: url("$lib/fonts/baskervville/Baskervville-SemiBold.ttf")
@@ -521,6 +526,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: italic;
   font-weight: 600;
   src: url("$lib/fonts/baskervville/Baskervville-SemiBoldItalic.ttf")
@@ -529,6 +535,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: normal;
   font-weight: 700;
   src: url("$lib/fonts/baskervville/Baskervville-Bold.ttf") format("truetype");
@@ -536,6 +543,7 @@
 
 @font-face {
   font-family: "Baskervville";
+  font-display: swap;
   font-style: italic;
   font-weight: 700;
   src: url("$lib/fonts/baskervville/Baskervville-BoldItalic.ttf")
