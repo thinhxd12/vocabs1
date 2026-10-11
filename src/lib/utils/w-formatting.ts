@@ -20,32 +20,33 @@ export function formatTemperature(temp: number): string {
 }
 
 /**
- * Convert ISO time string into human readable format.
+ * Convert ISO time string into human readable parts.
  * Parses the hour directly from the ISO string to avoid timezone conversion.
  *
  * @param isoTime - ISO time string (e.g., "2025-01-15T14:30:00")
- * @returns Formatted time string (e.g., "2 PM")
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
+ * @returns Object with the 12-hour `hour` and `period` (e.g., { hour: "2", period: "PM" })
  */
-export function formatTime(isoTime: string): string {
+export function formatTime(isoTime: string): {
+  hour: string;
+  period: "AM" | "PM";
+} {
   const timePart = isoTime.split("T")[1];
   const hour = Number.parseInt(timePart.split(":")[0], 10);
 
   // Convert 24-hour format to 12-hour format
   if (hour === 0) {
-    return "12<small>AM</small>";
+    return { hour: "12", period: "AM" };
   }
 
   if (hour < 12) {
-    return `${hour}<small>AM</small>`;
+    return { hour: String(hour), period: "AM" };
   }
 
   if (hour === 12) {
-    return "12<small>PM</small>";
+    return { hour: "12", period: "PM" };
   }
 
-  return `${hour - 12}<small>PM</small>`;
+  return { hour: String(hour - 12), period: "PM" };
 }
 
 /**

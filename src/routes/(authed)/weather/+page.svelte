@@ -30,7 +30,7 @@
     formatTime,
     formatTimeWithMinutes,
   } from "$lib/utils/w-formatting";
-  import type { OpenMeteoResponse, WeatherQueryParams } from "$lib/types";
+  import type { LocationType, WeatherQueryParams } from "$lib/types";
   import {
     addToast,
     currentForecastModel,
@@ -51,6 +51,7 @@
     background: string;
     description: string;
     precipitation_probability: number;
+    timeLabel: { hour: string; period: "AM" | "PM" };
   };
 
   type DailyForecast = {
@@ -65,28 +66,38 @@
   };
 
   let sunSVGpath = $state<SVGPathElement>();
+  let now = $state(Date.now());
+
+  function captureSunPath(node: SVGPathElement) {
+    sunSVGpath = node;
+  }
 
   onMount(() => {
-    if ($weatherData) {
-      weather.setData($weatherData);
-    } else getCurrentWeatherData();
+    if (!$weatherData) loadCurrentWeather();
   });
 
-  async function getCurrentWeatherData() {
+  $effect(() => {
+    const id = setInterval(() => (now = Date.now()), 30_000);
+    return () => clearInterval(id);
+  });
+
+  async function loadWeather(location: LocationType) {
+    const params: WeatherQueryParams = {
+      latitude: location.latitude,
+      longitude: location.longitude,
+      tempUnit: "c",
+      model: $currentForecastModel,
+    };
+    const data = await getOpenMeteoWeather(params);
+    if (!data) return;
+    $weatherData = data;
+  }
+
+  async function loadCurrentWeather() {
     const currentLocation = $locationList.find(
       (item) => item.id === $currentLocationId,
     );
-    if (currentLocation) {
-      let param: WeatherQueryParams = {
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-        tempUnit: "c",
-        model: $currentForecastModel,
-      };
-      const data = await getOpenMeteoWeather(param);
-      $weatherData = data;
-      weather.setData(data);
-    }
+    if (currentLocation) await loadWeather(currentLocation);
   }
 
   async function setCurrentLocation(id: string) {
@@ -100,21 +111,11 @@
         title: "Error!",
         message: error.message as string,
       });
-    } else {
-      saveUserSetting();
-      const currentLocation = $locationList.find((item) => item.id === id);
-      if (currentLocation) {
-        let param: WeatherQueryParams = {
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-          tempUnit: "c",
-          model: $currentForecastModel,
-        };
-        const data = await getOpenMeteoWeather(param);
-        $weatherData = data;
-        weather.setData(data);
-      }
+      return;
     }
+    saveUserSetting();
+    const currentLocation = $locationList.find((item) => item.id === id);
+    if (currentLocation) await loadWeather(currentLocation);
   }
 
   const uvCoordinates = [
@@ -191,58 +192,60 @@
   }
 
   class WeatherForecast {
-    data = $state<OpenMeteoResponse | undefined>(undefined);
+    data = $derived($weatherData);
 
-    setData(value: OpenMeteoResponse) {
-      this.data = value;
-    }
-
-    get current() {
-      if (!this.data) return;
-      const temperature = Math.round(this.data.current.temperature_2m);
+    current = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const temperature = Math.round(data.current.temperature_2m);
       const { icon, description, background } = getWeatherInfo(
-        this.data.current.weather_code,
-        this.data.current.is_day,
+        data.current.weather_code,
+        data.current.is_day,
       );
-      const forecastStatement = generateForecastStatement(this.data);
-      const now = Date.now();
-      const fulfilledTimeStamp = new Date(this.data.current.time).getTime();
-      const diffMs = Math.max(0, now - fulfilledTimeStamp);
-      const lastUpdated = formatRelativeFromMs(diffMs);
+      const forecastStatement = generateForecastStatement(data);
       return {
         temperature,
         icon,
         description,
         background,
         forecastStatement,
-        lastUpdated,
       };
-    }
+    });
 
-    get feelslike() {
-      if (!this.data) return;
-      const temperature = Math.round(this.data.current.apparent_temperature);
-      const actual = Math.round(this.data.current.temperature_2m);
+    lastUpdated = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const timestampMs =
+        Date.parse(`${data.current.time}Z`) - data.utc_offset_seconds * 1000;
+      return formatRelativeFromMs(now - timestampMs);
+    });
+
+    feelslike = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const temperature = Math.round(data.current.apparent_temperature);
+      const actual = Math.round(data.current.temperature_2m);
       const description = getFeelsLikeDescription(
         temperature,
         actual,
-        this.data.current.wind_speed_10m,
-        this.data.current.relative_humidity_2m,
+        data.current.wind_speed_10m,
+        data.current.relative_humidity_2m,
       );
       return {
         temperature,
         description,
       };
-    }
+    });
 
-    get wind() {
-      if (!this.data) return;
-      const direction = this.data.current.wind_direction_10m || 0;
+    wind = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const direction = data.current.wind_direction_10m || 0;
       const directionLabel = getWindDirection(direction);
-      const speed = Math.round(this.data.current.wind_speed_10m || 0);
-      const gusts = Math.round(this.data.current.wind_gusts_10m || 0);
+      const speed = Math.round(data.current.wind_speed_10m || 0);
+      const gusts = Math.round(data.current.wind_gusts_10m || 0);
       const unit = "km/h";
-      const windInfo = getBeaufortInfo(this.data.current.wind_speed_10m || 0);
+      const windInfo = getBeaufortInfo(data.current.wind_speed_10m || 0);
       return {
         direction,
         directionLabel,
@@ -252,36 +255,36 @@
         image: windInfo.level,
         description: windInfo.description,
       };
-    }
+    });
 
-    get precipitation() {
-      if (!this.data) return;
-      const tempUnit = "c";
-      const rain = this.data.current.rain ?? 0;
-      const showers = this.data.current.showers ?? 0;
-      const snowfall = this.data.current.snowfall ?? 0;
+    precipitation = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const rain = data.current.rain ?? 0;
+      const showers = data.current.showers ?? 0;
+      const snowfall = data.current.snowfall ?? 0;
 
       // Total liquid precipitation (rain + showers)
       const totalLiquid = rain + showers;
 
-      // Format values
-      const formattedRain = formatPrecipitation(tempUnit, totalLiquid);
-      const formattedSnow = formatPrecipitation(tempUnit, snowfall);
+      const formattedRain = formatPrecipitation("c", totalLiquid);
+      const formattedSnow = formatPrecipitation("c", snowfall);
 
-      // Determine primary precipitation type
       const hasRain = totalLiquid > 0;
       const hasSnow = snowfall > 0;
       const hasPrecipitation = hasRain || hasSnow;
 
-      // Description - optimized with early returns
-      const getDescription = (): string => {
-        if (!hasPrecipitation) return "No precipitation";
-        if (hasRain && hasSnow) return "Mixed precipitation";
-        if (hasRain) return totalLiquid < 0.1 ? "Light rain" : "Rain";
-        return snowfall < 0.1 ? "Light snow" : "Snow";
-      };
-
-      const precipitationDescription = getDescription();
+      const precipitationDescription = !hasPrecipitation
+        ? "No precipitation"
+        : hasRain && hasSnow
+          ? "Mixed precipitation"
+          : hasRain
+            ? totalLiquid < 0.1
+              ? "Light rain"
+              : "Rain"
+            : snowfall < 0.1
+              ? "Light snow"
+              : "Snow";
 
       return {
         hasPrecipitation,
@@ -291,77 +294,76 @@
         formattedSnow,
         precipitationDescription,
       };
-    }
+    });
 
-    get uvIndex() {
-      if (!this.data) return;
-      const value = Math.round(this.data.current.uv_index || 0);
+    uvIndex = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const value = Math.round(data.current.uv_index || 0);
       const { level, description } = getUVInfo(value);
       return {
         value,
         level,
         description,
       };
-    }
+    });
 
-    get pressure() {
-      if (!this.data) return;
+    uvPoint = $derived.by(() => {
+      const value = this.uvIndex?.value ?? 0;
+      if (!value) return;
+      return uvCoordinates[Math.min(value, uvCoordinates.length) - 1];
+    });
 
-      const tempUnit = "c";
-      const pressureValue = this.data.current.pressure_msl;
-      const pressureHpa = this.data.current.pressure_msl || 1013;
-      const normalizedValue =
-        tempUnit === "c"
-          ? Math.max(0, Math.min(100, ((pressureHpa - 1000) / 40) * 100))
-          : Math.max(
-              0,
-              Math.min(100, ((Number(pressureValue) - 29.53) / 1.18) * 100),
-            );
-
+    pressure = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const pressureHpa = data.current.pressure_msl || 1013;
+      const normalizedValue = Math.max(
+        0,
+        Math.min(100, ((pressureHpa - 1000) / 40) * 100),
+      );
       const description = getPressureDescription(pressureHpa);
       return {
         value: pressureHpa,
         percent: Math.round(normalizedValue),
         description,
       };
-    }
+    });
 
-    get humidity() {
-      if (!this.data) return;
-      const value = Math.round(this.data.current.relative_humidity_2m);
+    humidity = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const value = Math.round(data.current.relative_humidity_2m);
       const description = getHumidityDescription(value);
-      const dewpoint = Math.round(this.data.current.dew_point_2m);
+      const dewpoint = Math.round(data.current.dew_point_2m);
       return { value, description, dewpoint };
-    }
+    });
 
-    get cloudcover() {
-      if (!this.data) return;
-      const value = Math.round(this.data.current.cloud_cover);
+    cloudcover = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const value = Math.round(data.current.cloud_cover);
       const description = getCloudCoverDescription(value);
       return { value, description };
-    }
+    });
 
-    get visibility() {
-      if (!this.data) return;
-      const tempUnit = "c";
-      const visibilityMeters = Math.round(this.data.current.visibility);
-      const value =
-        tempUnit === "c"
-          ? Math.round(visibilityMeters / 1000) // km (whole number)
-          : Math.round((visibilityMeters / 1000) * 0.621371); // mi (whole number)
-      const unit = tempUnit === "c" ? "km" : "mi";
-      const description = getVisibilityDescription(value, tempUnit === "c");
-      return { value, description, unit };
-    }
+    visibility = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const visibilityKm = Math.round(data.current.visibility / 1000);
+      const description = getVisibilityDescription(visibilityKm, true);
+      return { value: visibilityKm, description, unit: "km" };
+    });
 
-    get sunrise() {
-      if (!this.data) return;
-      const sunriseISO = this.data.daily.sunrise[0];
-      const sunsetISO = this.data.daily.sunset[0];
+    sunrise = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const sunriseISO = data.daily.sunrise[0];
+      const sunsetISO = data.daily.sunset[0];
       const sunrise = sunriseISO ? formatTimeWithMinutes(sunriseISO) : "--:--";
       const sunset = sunsetISO ? formatTimeWithMinutes(sunsetISO) : "--:--";
       const position = calculateSunPosition(
-        this.data.current.time,
+        data.current.time,
         sunriseISO,
         sunsetISO,
       );
@@ -370,11 +372,12 @@
         sunset,
         position: Math.round(position),
       };
-    }
+    });
 
-    get aiq() {
-      if (!this.data) return;
-      const value = this.data.current.us_aqi || 0;
+    aiq = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const value = data.current.us_aqi || 0;
       const { level, color } = getAQILevel(value);
       const description = getAQIDescription(value);
       return {
@@ -383,19 +386,18 @@
         color,
         description,
       };
-    }
+    });
 
-    get snow() {
-      if (!this.data) return;
-      const tempUnit = "c";
-      const snowDepthMeters = this.data.current.snow_depth ?? 0;
-      const hasSnowMetters = snowDepthMeters > 0;
-
-      const formattedSnowDepth = hasSnowMetters
-        ? formatSnowDepth(tempUnit, snowDepthMeters)
+    snow = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const snowDepthMeters = data.current.snow_depth ?? 0;
+      const hasSnow = snowDepthMeters > 0;
+      const formattedSnowDepth = hasSnow
+        ? formatSnowDepth("c", snowDepthMeters)
         : "0";
       let descriptionSnow = "No snow on ground";
-      if (hasSnowMetters) {
+      if (hasSnow) {
         const inches = snowDepthMeters * 39.3701;
         if (inches < 1) {
           descriptionSnow = "Light snow cover";
@@ -406,59 +408,65 @@
         }
       }
       return {
-        hasSnow: hasSnowMetters,
+        hasSnow,
         snowDepth: formattedSnowDepth,
         description: descriptionSnow,
       };
-    }
+    });
 
-    get hourly() {
-      if (!this.data) return;
-      const hourlyForecasts: HourlyForecast[] = Array.from(
-        { length: 12 },
-        (_, i) => {
-          let { icon, description, background } = getWeatherInfo(
-            this.data!.hourly.weather_code[i],
-            this.data!.hourly.is_day[i],
+    hourly = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const {
+        weather_code,
+        is_day,
+        temperature_2m,
+        precipitation_probability,
+      } = data.hourly;
+      const hourlyForecasts: HourlyForecast[] = data.hourly.time
+        .slice(0, 12)
+        .map((time, i) => {
+          const { icon, description, background } = getWeatherInfo(
+            weather_code[i],
+            is_day[i],
           );
           return {
-            time: this.data!.hourly.time[i],
-            temp: this.data!.hourly.temperature_2m[i],
+            time,
+            temp: temperature_2m[i],
             icon,
             background,
             description,
-            precipitation_probability:
-              this.data!.hourly.precipitation_probability[i],
+            precipitation_probability: precipitation_probability[i],
+            timeLabel: formatTime(time),
           };
-        },
-      ).filter((item): item is HourlyForecast => item !== null);
+        });
       return { data: hourlyForecasts };
-    }
+    });
 
-    get daily() {
-      if (!this.data) return;
-      const currentHourIndex = getHourFromISO(this.data.current.time);
+    daily = $derived.by(() => {
+      const data = this.data;
+      if (!data) return;
+      const currentHourIndex = getHourFromISO(data.current.time);
       const skipToday = currentHourIndex >= 20;
-      const dailyForecastsRaw: DailyForecast[] = this.data.daily.time.map(
+      const dailyForecastsRaw: DailyForecast[] = data.daily.time.map(
         (date, index) => {
-          let { icon, description } = getWeatherInfo(
-            this.data!.daily.weather_code[index],
+          const { icon, description } = getWeatherInfo(
+            data.daily.weather_code[index],
             1,
           );
           return {
             date,
             icon,
             description,
-            weather_code: this.data!.daily.weather_code[index],
-            temp_max: this.data!.daily.temperature_2m_max[index],
-            temp_min: this.data!.daily.temperature_2m_min[index],
+            temp_max: data.daily.temperature_2m_max[index],
+            temp_min: data.daily.temperature_2m_min[index],
             temp_current:
               index === 0 && !skipToday
-                ? this.data!.hourly.temperature_2m[currentHourIndex]
+                ? Math.round(data.current.temperature_2m)
                 : undefined,
-            feels_like: this.data!.daily.apparent_temperature_max[index],
+            feels_like: data.daily.apparent_temperature_max[index],
             precipitation_probability:
-              this.data!.daily.precipitation_probability_max[index],
+              data.daily.precipitation_probability_max[index],
           };
         },
       );
@@ -476,23 +484,32 @@
       const validTemps = allTemps.filter(
         (t): t is number => typeof t === "number" && !Number.isNaN(t),
       );
-      const minTempScale = Math.round(Math.min(...validTemps));
-      const maxTempScale = Math.round(Math.max(...validTemps));
+      const minTempScale = validTemps.length
+        ? Math.round(Math.min(...validTemps))
+        : 0;
+      const maxTempScale = validTemps.length
+        ? Math.round(Math.max(...validTemps))
+        : 0;
       const tempRange = maxTempScale - minTempScale;
-      const time = this.data.current.time;
       return {
         data: dailyForecasts,
-        time,
+        time: data.current.time,
         tempScale: {
           min: minTempScale,
           max: maxTempScale,
-          range: tempRange,
+          range: tempRange || 1,
         },
       };
-    }
+    });
   }
 
   const weather = new WeatherForecast();
+
+  const sunPosition = $derived.by(() => {
+    const sunrise = weather.sunrise;
+    if (!sunrise || !sunSVGpath) return;
+    return getSunPosition(sunrise.position);
+  });
 </script>
 
 <svelte:head>
@@ -509,7 +526,7 @@
       onchange={(e) => setCurrentLocation(e.currentTarget.value)}
       class="location-list relative mb-6 text-white"
     >
-      {#each $locationList as item}
+      {#each $locationList as item (item.id)}
         <option value={item.id} selected={item.id === $currentLocationId}>
           {item.name}
         </option>
@@ -550,7 +567,7 @@
         {weather.current.forecastStatement}
       </p>
       <p class="relative text-white/60 text-center text-11 mb-3">
-        Last updated {weather.current.lastUpdated}
+        Last updated {weather.lastUpdated}
       </p>
     {/if}
   </div>
@@ -778,17 +795,17 @@
                 stroke-width="10"
                 stroke-linecap="round"
               ></path>
-              {#if weather.uvIndex.value}
+              {#if weather.uvPoint}
                 <g>
                   <circle
-                    cx={uvCoordinates[weather.uvIndex.value - 1]?.cx}
-                    cy={uvCoordinates[weather.uvIndex.value - 1]?.cy}
+                    cx={weather.uvPoint.cx}
+                    cy={weather.uvPoint.cy}
                     r="10"
-                    fill={uvCoordinates[weather.uvIndex.value - 1]?.color}
+                    fill={weather.uvPoint.color}
                   ></circle>
                   <circle
-                    cx={uvCoordinates[weather.uvIndex.value - 1]?.cx}
-                    cy={uvCoordinates[weather.uvIndex.value - 1]?.cy}
+                    cx={weather.uvPoint.cx}
+                    cy={weather.uvPoint.cy}
                     r="11.5"
                     stroke="white"
                     stroke-width="3"
@@ -906,7 +923,7 @@
                 id="curve"
                 d="M 0 125 C 40 110 45 70 75 70 S 110 110 150 125"
                 fill="none"
-                bind:this={sunSVGpath}
+                {@attach captureSunPath}
               />
 
               <mask id="maskTop">
@@ -945,9 +962,7 @@
 
           <div
             class="absolute size-15 bg-[#ff6b00] rounded-full -translate-x-1/2 -translate-y-1/2"
-            style="box-shadow: 0 0 9px #ff6b00; left: {getSunPosition(
-              weather.sunrise.position,
-            )?.x}px; top: {getSunPosition(weather.sunrise.position)?.y}px;"
+            style="box-shadow: 0 0 9px #ff6b00; left: {sunPosition?.x}px; top: {sunPosition?.y}px;"
           ></div>
         </div>
 
@@ -1037,10 +1052,10 @@
   {#if weather.hourly}
     <h1 class="text-24">Hourly Forecast</h1>
     <div class="w-full grid grid-cols-4 gap-2">
-      {#each weather.hourly.data as item}
+      {#each weather.hourly.data as item (item.time)}
         <div class="dark flex flex-col rounded-2 overflow-hidden">
-          <h1 class=" uppercase text-21 leading-24 font-500 text-center">
-            {@html formatTime(item.time)}
+          <h1 class="uppercase text-21 leading-24 font-500 text-center">
+            {item.timeLabel.hour}<small>{item.timeLabel.period}</small>
           </h1>
 
           <div class="light flex-1 w-full relative">
@@ -1086,7 +1101,7 @@
   {#if weather.daily}
     <h1 class="text-24">7-Day Forecast</h1>
     <div class="flex flex-wrap gap-2">
-      {#each weather.daily.data as item}
+      {#each weather.daily.data as item (item.date)}
         <div
           class="dark w-full h-36 flex items-center justify-between pl-9 rounded-2"
         >

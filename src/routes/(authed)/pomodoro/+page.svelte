@@ -56,7 +56,9 @@
   let showReport = $state<boolean>(false);
   let showHeatmap = $state<boolean>(false);
   let currentPage = $state<number>(1);
-  let itemsPerPage = Math.floor((innerHeight.current! - 44 - 24 * 3 - 26) / 24);
+  let itemsPerPage = $derived(
+    Math.floor((innerHeight.current! - 44 - 24 * 3 - 26) / 24),
+  );
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["pomodoro_table"][]>([]);
 
@@ -119,7 +121,8 @@
   }
 
   async function getDataPaginationByIndex(index: number) {
-    const totalPages = Math.ceil(totalItems! / itemsPerPage);
+    if (!totalItems) return;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
     const { data } = await layoutData.supabase
@@ -141,7 +144,7 @@
 
   function handleMuteAudio() {
     pauseAudio.set(true);
-    isMuted.update((val) => (val = !val));
+    isMuted.update((val) => !val);
   }
 
   onDestroy(() => {
@@ -247,12 +250,12 @@
     </div>
 
     <div class="h-18 flex justify-center items-center gap-6">
-      {#each { length: $currentInterval } as item, i}
+      {#each { length: $currentInterval } as _, i (i)}
         <div
           class="size-3 rounded-full bg-black shadow-sm shadow-black/60 ring-1 ring-black"
         ></div>
       {/each}
-      {#each { length: $intervals - $currentInterval } as item, i}
+      {#each { length: $intervals - $currentInterval } as _, i (i)}
         <div
           class="size-3 rounded-full shadow-sm shadow-black/60 ring-1 ring-black"
         ></div>
@@ -325,7 +328,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each paginationItems as item}
+            {#each paginationItems as item (item.date)}
               <tr
                 class="h-24 w-full border-b border-[#f0f0f0] text-12 leading-14"
               >

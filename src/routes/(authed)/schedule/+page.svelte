@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { resolve } from "$app/paths";
   import Calendar from "$lib/components/Calendar.svelte";
   import {
     getSchedule,
@@ -20,15 +21,13 @@
 
   let { data: layoutData }: PageProps = $props();
 
-  let src = $state<string>("");
-  let paused = $state<boolean>(true);
   let showReset = $state<boolean>(false);
   let showCreate = $state<boolean>(false);
 
   let currentPage = $state<number>(1);
-  let itemsPerPage = 5;
+  const itemsPerPage = 5;
   let totalItems = $state<number | undefined>(undefined);
-  let paginationItems = $state<DBSelect["progress_table"][] | null>(null);
+  let paginationItems = $state<DBSelect["progress_table"][]>([]);
 
   async function getTablePaginationLength() {
     const { count } = await layoutData.supabase
@@ -43,7 +42,8 @@
   }
 
   async function getDataPaginationByIndex(index: number) {
-    const totalPages = Math.ceil(totalItems! / itemsPerPage);
+    if (!totalItems) return;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
     const { data } = await layoutData.supabase
@@ -52,14 +52,12 @@
       .order("id", { ascending: true })
       .range(from, to);
 
-    if (data && data.length) {
-      paginationItems = data;
-    }
+    if (data) paginationItems = data;
   }
 
   onMount(async () => {
     await getTablePaginationLength();
-    getDataPaginationByIndex(1);
+    await getDataPaginationByIndex(1);
   });
 </script>
 
@@ -70,13 +68,11 @@
   <meta name="Schedule" content="Some Schedule" />
 </svelte:head>
 
-<audio {src} bind:paused preload="auto"></audio>
-
 <Container>
   <div
     class="absolute z-3 flex justify-center items-center right-3 top-3 gap-3"
   >
-    <a href="/diary" class="calendar-button">
+    <a href={resolve("/diary")} class="calendar-button">
       <StreamlinePlumpFeatherPenSolid width="14" height="14" />
     </a>
     <button class="calendar-button" onclick={() => (showReset = !showReset)}>
@@ -98,7 +94,7 @@
           action="?/setProgress"
           method="post"
           class="w-full bg-white grid grid-cols-3 grid-rows-3 gap-3 p-3"
-          use:enhance={({ formElement, formData, action, cancel }) => {
+          use:enhance={() => {
             return async ({ result }) => {
               if (result.type === "failure") {
                 addToast({
@@ -191,7 +187,7 @@
         action="?/setSchedule"
         method="post"
         class="w-full bg-white flex items-center justify-center"
-        use:enhance={({ formElement, formData, action, cancel }) => {
+        use:enhance={() => {
           return async ({ result }) => {
             if (result.type === "failure") {
               addToast({
@@ -252,7 +248,7 @@
   {/if}
 
   <div class="w-full flex flex-col gap-1 items-center">
-    {#each paginationItems as item}
+    {#each paginationItems as item (item.id)}
       <div
         class="w-full rounded-2 overflow-hidden font-rubik text-12 leading-23 h-21 flex items-center select-none"
       >

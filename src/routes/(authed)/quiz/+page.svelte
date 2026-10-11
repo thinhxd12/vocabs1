@@ -12,6 +12,7 @@
   import { shuffle } from "$lib/utils/functions";
   import Container from "$lib/components/Container.svelte";
   import Flip from "$lib/components/Flip.svelte";
+  import type { DBSelect } from "$lib/types";
 
   let src0 = $state<string>("");
   let paused0 = $state<boolean>(true);
@@ -21,12 +22,16 @@
   let options = $state<string[]>([]);
   let submitted = $state<boolean>(false);
   let answer = $state<string>("");
-  let flipNumber = $state<number>(0);
+  let checkedWord = $state<DBSelect["vocab_table"] | undefined>(undefined);
+  let flipNumber = $derived(
+    $quizRender
+      ? $quizRender.number - (checkedWord === $quizRender ? 1 : 0)
+      : 0,
+  );
 
   onMount(() => {
     if ($listContent.length) {
       $quizRender = $listContent[$listCount];
-      flipNumber = $quizRender.number;
       createOptions();
       submitted = false;
     }
@@ -43,12 +48,13 @@
     options = randomChoices.map((item) => item.word);
   }
 
-  function submitAnswer(answer: string) {
+  function submitAnswer(choice: string) {
     submitted = true;
+    value = choice;
     if (!$quizRender) return;
-    if (answer === $quizRender.word) {
+    if (choice === $quizRender.word) {
       handleCheckWord($quizRender);
-      flipNumber = $quizRender.number - 1;
+      checkedWord = $quizRender;
       src1 = $quizRender.audio;
       paused1 = false;
     } else {
@@ -68,7 +74,6 @@
     if ($listCount < $listContent.length) {
       submitted = false;
       $quizRender = $listContent[$listCount];
-      flipNumber = $quizRender!.number;
       createOptions();
     } else {
       src0 = "/sounds/mp3_Ding.mp3";
@@ -130,8 +135,8 @@
     <div
       class="relative h-[calc(100vh-150px-76px-42px)] w-full flex flex-col gap-2 overflow-y-scroll no-scrollbar"
     >
-      {#each $quizRender.meanings as entry}
-        {#each entry.definitions.filter((item) => item.image) as el}
+      {#each $quizRender.meanings as entry (entry.partOfSpeech)}
+        {#each entry.definitions.filter((item) => item.image) as el (el.hash)}
           <div class="relative w-full min-h-fit rounded-2 overflow-hidden">
             <div class="relative w-382 h-215">
               {#key el.image}
@@ -172,7 +177,7 @@
       </div>
     {:else}
       <div class="w-full outline-none grid grid-cols-2 grid-rows-2 gap-2">
-        {#each options as item}
+        {#each options as item (item)}
           <button
             class={submitted
               ? item == value

@@ -177,6 +177,32 @@ const WEATHER_CODE_TO_BACKGROUND: Record<number, string> = {
   99: "thunderstorm", // Thunderstorm with heavy hail
 };
 
+// Some icons don't have day/night variants, so we append conditionally
+const ICONS_WITHOUT_DAY_NIGHT = new Set([
+  "cloud",
+  "drizzle",
+  "fog",
+  "overcast",
+  "lightrain",
+  "rain",
+  "sleet",
+  "lightsnow",
+  "snow",
+  "rainshower",
+  "thunder",
+  "nodata",
+]);
+
+const BACKGROUNDS_WITHOUT_DAY_NIGHT = new Set([
+  "foggy",
+  "rain",
+  "snow",
+  "thunderstorm",
+  "drizzle",
+  "light-showers",
+  "showers",
+]);
+
 /**
  * @param code - weather code
  * @param isday
@@ -195,39 +221,11 @@ export function getWeatherInfo(
   const iconName = WEATHER_CODE_TO_MET_ICON[code] || "nodata";
   const backgroundImage = WEATHER_CODE_TO_BACKGROUND[code] || "cloudy";
 
-  // Some icons don't have day/night variants, so we append conditionally
-  const iconsWithoutDayNight = new Set([
-    "cloud",
-    "drizzle",
-    "fog",
-    "overcast",
-    "lightrain",
-    "rain",
-    "sleet",
-    "lightsnow",
-    "snow",
-    "rain",
-    "snow",
-    "rainshower",
-    "thunder",
-    "nodata",
-  ]);
-
-  const icon = iconsWithoutDayNight.has(iconName)
+  const icon = ICONS_WITHOUT_DAY_NIGHT.has(iconName)
     ? iconName
     : `${iconName}${dayNight}`;
 
-  const backgroundsWithoutDayNight = new Set([
-    "foggy",
-    "rain",
-    "snow",
-    "thunderstorm",
-    "drizzle",
-    "light-showers",
-    "showers",
-  ]);
-
-  const background = backgroundsWithoutDayNight.has(backgroundImage)
+  const background = BACKGROUNDS_WITHOUT_DAY_NIGHT.has(backgroundImage)
     ? backgroundImage
     : `${backgroundImage}${dayNight}`;
 

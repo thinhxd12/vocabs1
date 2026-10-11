@@ -11,8 +11,8 @@
   let { data: layoutData }: PageProps = $props();
 
   let currentPage = $state<number>(1);
-  let itemsPerPage = Math.floor(
-    (innerHeight.current! - 46 - 30 - 42 - 30) / 30,
+  let itemsPerPage = $derived(
+    Math.floor((innerHeight.current! - 46 - 30 - 42 - 30) / 30),
   );
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["saddays_table"][]>([]);
@@ -31,11 +31,12 @@
 
   onMount(async () => {
     await getTablePaginationLength();
-    getDataPaginationByIndex(1);
+    await getDataPaginationByIndex(1);
   });
 
   async function getDataPaginationByIndex(index: number) {
-    const totalPages = Math.ceil(totalItems! / itemsPerPage);
+    if (!totalItems) return;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
     const { data } = await layoutData.supabase
@@ -50,19 +51,17 @@
   }
 
   async function addDay() {
-    const { data, error } = await layoutData.supabase
-      .from("saddays_table")
-      .insert({});
+    await layoutData.supabase.from("saddays_table").insert({});
     await getTablePaginationLength();
-    getDataPaginationByIndex(1);
+    await getDataPaginationByIndex(1);
   }
 
   async function deleteDay(day: string) {
-    const { error } = await layoutData.supabase
+    await layoutData.supabase
       .from("saddays_table")
       .delete()
       .eq("created_at", day);
-    getDataPaginationByIndex(currentPage);
+    await getDataPaginationByIndex(currentPage);
   }
 </script>
 
@@ -82,7 +81,7 @@
     <li class="!shadow-none hover:!bg-transparent">
       <button aria-label="add" class="btn-add" onclick={addDay}></button>
     </li>
-    {#each paginationItems as item}
+    {#each paginationItems as item (item.created_at)}
       <li class="light w-main">
         <button
           aria-label="delete"

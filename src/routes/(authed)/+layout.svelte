@@ -44,7 +44,7 @@
       (item) => item.id === $currentLocationId,
     );
     if (currentLocation) {
-      let param: WeatherQueryParams = {
+      const param: WeatherQueryParams = {
         latitude: currentLocation.latitude,
         longitude: currentLocation.longitude,
         tempUnit: "c",
@@ -64,7 +64,7 @@
 
   function calculateNextInterval() {
     const now = new Date();
-    let minutes = now.getMinutes();
+    const minutes = now.getMinutes();
     let nextIntervalMinutes = Math.ceil(minutes / 15) * 15;
     if (nextIntervalMinutes === 60) {
       nextIntervalMinutes = 0;
@@ -80,8 +80,8 @@
   async function initWebWorker() {
     if (browser) {
       if (window.Worker) {
-        const Worker = await import("$lib/workers/timer.worker?worker");
-        worker = new Worker.default();
+        const TimerWorker = await import("$lib/workers/timer.worker?worker");
+        worker = new TimerWorker.default();
 
         worker.onmessage = (event) => {
           currentTimestamp.set(event.data.timestamp);

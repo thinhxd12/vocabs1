@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import type {
+    BookDetailType,
     BookPageContentType,
     DBSelect,
     HighlightType,
@@ -14,6 +15,7 @@
   import {
     highlight,
     bookInfo,
+    bookInfoCache,
     currentHighlightId,
   } from "$lib/store/layoutstore";
   import { innerHeight } from "svelte/reactivity/window";
@@ -54,9 +56,10 @@
 
   let flipCover = $state<boolean>(false);
 
-  let flipTimeoutId: any;
-  let flagTimeoutId: any;
-  let keyDownTimeoutId: any;
+  let flipTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let flagTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let resetTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let measureEl: HTMLDivElement | undefined;
   let currentPage = $state<number>(0);
   let flipPages = $state<BookPageContentType[]>([
     {
@@ -79,11 +82,11 @@
   let noteContent = $state<string>("");
   let highlightEdit = $state<HighlightType>();
 
-  const pageWidth = () => {
-    const width = Math.round(ratio * (innerHeight.current! - 150));
+  const pageHeight = $derived((innerHeight.current ?? 0) - 150);
+  const pageWidth = $derived.by(() => {
+    const width = Math.round(ratio * ((innerHeight.current ?? 0) - 150));
     return width % 2 !== 0 ? width + 1 : width;
-  };
-  const pageHeight = () => innerHeight.current! - 150;
+  });
 
   async function handleGetCurrentId() {
     const { data, error } = await layoutData.supabase
@@ -94,10 +97,10 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     }
-    if (data) {
+    if (data?.length) {
       $currentHighlightId = data[0].currentHighlightId;
     }
   }
@@ -110,7 +113,7 @@
       .eq("id", $currentHighlightId)
       .limit(1);
 
-    if (data) {
+    if (data?.length) {
       handleGetBookInfo(data[0]);
       highlight.set(data[0]);
       setBookContent(data[0].content);
@@ -133,7 +136,8 @@
   });
 
   async function handleGetNextBookmark() {
-    if (!highlight || isRandomed) return;
+    if (!$highlight) return;
+    isRandomed = false;
     showNote = false;
     handleUpdateNote();
 
@@ -144,7 +148,7 @@
       .gt("id", $highlight!.id)
       .limit(1);
 
-    if (data) {
+    if (data?.length) {
       handleSetBookmark(data[0]);
     } else {
       const { data } = await layoutData.supabase
@@ -152,12 +156,13 @@
         .select()
         .order("id", { ascending: true })
         .limit(1);
-      if (data) handleSetBookmark(data[0]);
+      if (data?.length) handleSetBookmark(data[0]);
     }
   }
 
   async function handleGetPrevBookmark() {
-    if (!highlight || isRandomed) return;
+    if (!$highlight) return;
+    isRandomed = false;
     showNote = false;
     handleUpdateNote();
 
@@ -168,7 +173,7 @@
       .lt("id", $highlight!.id)
       .limit(1);
 
-    if (data) {
+    if (data?.length) {
       handleSetBookmark(data[0]);
     } else {
       const { data } = await layoutData.supabase
@@ -176,7 +181,7 @@
         .select()
         .order("id", { ascending: false })
         .limit(1);
-      if (data) handleSetBookmark(data[0]);
+      if (data?.length) handleSetBookmark(data[0]);
     }
   }
 
@@ -198,7 +203,7 @@
         flipCover = false;
       }, flipPages.length * 150);
 
-      setTimeout(
+      resetTimeoutId = setTimeout(
         () => {
           currentPage = 0;
           highlight.set(data);
@@ -247,31 +252,38 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     }
   }
 
   async function handleGetBookInfo(data: DBSelect["bookmark_table"]) {
-    bookInfo.set(undefined);
-    let titleParam = data.bookTile;
-    let authorParam = data.authors.split(";")[0];
+    const titleParam = data.bookTile;
+    const authorParam = data.authors.split(";")[0];
+    const cacheKey = `${titleParam}::${authorParam}`;
 
-    const response = await fetch(
-      `/server/getbookinfo?query=${titleParam}&author=${authorParam}`,
-    );
+    if (bookInfoCache.has(cacheKey)) {
+      bookInfo.set(bookInfoCache.get(cacheKey));
+      return;
+    }
+
+    bookInfo.set(undefined);
+    const params = new URLSearchParams({
+      query: titleParam,
+      author: authorParam,
+    });
+
+    const response = await fetch(`/server/getbookinfo?${params}`);
     if (response.status === 200) {
-      let data = await response.json();
-      if (data.coverImage) {
-        bookInfo.set(data);
-      } else {
-        bookInfo.set(undefined);
-      }
+      const info: BookDetailType = await response.json();
+      const value = info.coverImage ? info : undefined;
+      bookInfoCache.set(cacheKey, value);
+      bookInfo.set(value);
     }
   }
 
   async function handleCheckBookmark() {
-    if (!highlight) return;
+    if (!$highlight) return;
     if (likeBookmark) {
       const newLike = $highlight!.like - 1;
       tweenRibbon.target = newLike === 0 ? 21 : 480;
@@ -281,6 +293,12 @@
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", $highlight!.id);
+      if (error)
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message,
+        });
     } else {
       const newLike = $highlight!.like + 1;
       tweenRibbon.target = 580;
@@ -290,6 +308,12 @@
         .from("bookmark_table")
         .update({ like: newLike })
         .eq("id", $highlight!.id);
+      if (error)
+        addToast({
+          type: "error",
+          title: "Error!",
+          message: error.message,
+        });
     }
   }
 
@@ -310,12 +334,10 @@
     handleUpdateNote();
 
     isRandomed = true;
-    const { data, error } = await layoutData.supabase.rpc(
-      "get_random_bookmark",
-    );
+    const { data } = await layoutData.supabase.rpc("get_random_bookmark");
 
-    if (data.length) {
-      if (data.bookTile !== $highlight?.bookTile) {
+    if (data?.length) {
+      if (data[0].bookTile !== $highlight?.bookTile) {
         handleGetBookInfo(data[0]);
       }
       handleCloseBook(data[0]);
@@ -323,7 +345,7 @@
   }
 
   async function handleDeleteBookmark() {
-    if (!highlight) return;
+    if (!$highlight) return;
     const { error } = await layoutData.supabase
       .from("bookmark_table")
       .delete()
@@ -332,7 +354,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       addToast({
@@ -349,34 +371,36 @@
    * Get height of the text.
    * @param pText - string
    * @param pWidth - page width
-   * @param fistPage - fistPage
+   * @param firstPage - firstPage
    * @returns The height of the pText
    */
   function getHeightTextPage(
     pText: string,
     pWidth: number,
-    fistPage: boolean = false,
+    firstPage: boolean = false,
   ) {
-    let lDiv = document.createElement("div");
-
-    document.body.appendChild(lDiv);
-    if (fistPage) {
-      lDiv.className = "highlightContentFirstPage highlightContent";
-    } else {
-      lDiv.className = "highlightContent";
+    if (!measureEl) {
+      measureEl = document.createElement("div");
+      measureEl.setAttribute("aria-hidden", "true");
+      measureEl.style.position = "absolute";
+      measureEl.style.visibility = "hidden";
+      measureEl.style.left = "-9999px";
+      measureEl.style.top = "0";
+      measureEl.style.pointerEvents = "none";
+      document.body.appendChild(measureEl);
     }
-    lDiv.innerHTML = pText;
-    lDiv.style.width = String(pWidth) + "px";
-
-    const height = lDiv.clientHeight;
-    document.body.removeChild(lDiv);
-    return height;
+    measureEl.className = firstPage
+      ? "highlightContentFirstPage highlightContent"
+      : "highlightContent";
+    measureEl.innerHTML = pText;
+    measureEl.style.width = String(pWidth) + "px";
+    return measureEl.clientHeight;
   }
 
   function splitIntoBlocks(text: string) {
     const words = text.trim().split(" ");
-    let maxHeight = pageHeight() - 24 - 96;
-    let maxWidth = pageWidth() / 2 - 12 - 112;
+    let maxHeight = pageHeight - 24 - 96;
+    let maxWidth = pageWidth / 2 - 12 - 112;
 
     const flattenedArray = words.reduce(
       (acc: string[], cur: string, index: number) => {
@@ -433,7 +457,7 @@
 
   async function translateContent() {
     if (!translatedContent.length) {
-      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${$highlight!.content}`;
+      const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=vi&q=${encodeURIComponent($highlight!.content)}`;
       const response = await fetch(url);
       const data = await response.json();
       translatedContent = data[0][0];
@@ -541,7 +565,7 @@
   async function handleUpdateNote() {
     if (!$highlight) return;
     if (noteContent !== $highlight.note) {
-      $highlight.note = noteContent;
+      highlight.update((n) => (n ? { ...n, note: noteContent } : n));
       const { error } = await layoutData.supabase
         .from("bookmark_table")
         .update({ note: noteContent })
@@ -551,7 +575,7 @@
         addToast({
           type: "error",
           title: "Error!",
-          message: error.message as string,
+          message: error.message,
         });
       }
     }
@@ -559,15 +583,18 @@
 
   function handleShowEdit() {
     handleUpdateNote();
+    if (!$highlight) return;
     showEdit = true;
     isSubmitting = false;
-    highlightEdit = $highlight;
+    highlightEdit = { ...$highlight };
   }
 
   onDestroy(() => {
     clearTimeout(flipTimeoutId);
     clearTimeout(flagTimeoutId);
-    clearTimeout(keyDownTimeoutId);
+    clearTimeout(resetTimeoutId);
+    measureEl?.remove();
+    measureEl = undefined;
     handleUpdateNote();
     if (isRandomed) {
       $highlight = $bookInfo = undefined;
@@ -799,7 +826,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each insertData as item}
+            {#each insertData as item (item.id)}
               <tr>
                 <td
                   class="max-w-200 overflow-hidden whitespace-nowrap text-ellipsis"
@@ -868,7 +895,7 @@
     ></button>
   </div>
 
-  <div class="book" style="width: {pageWidth()}px; height: {pageHeight()}px;">
+  <div class="book" style="width: {pageWidth}px; height: {pageHeight}px;">
     <div
       class="flip flipCover"
       style="z-index: {tweenCover.current <= -90
@@ -878,7 +905,7 @@
       <div class="frontPage">
         <div
           class="frontCover"
-          style="width: {pageWidth() / 2}px; height: {pageHeight()}px;"
+          style="width: {pageWidth / 2}px; height: {pageHeight}px;"
         >
           {#if $bookInfo}
             <img
@@ -905,7 +932,7 @@
       <div class="backPage">
         <div
           class="infoPage"
-          style="width: {pageWidth() / 2}px; height: {pageHeight()}px;"
+          style="width: {pageWidth / 2}px; height: {pageHeight}px;"
         >
           <div class="infoPageContent frontCoverPaper">
             <div
@@ -938,14 +965,14 @@
                 {/if}
 
                 {#if $bookInfo.numberOfRatings}
-                  <div class="mb-3 flex items-center justify-center">
+                  <div class="mb-6 mt-3 flex items-center justify-center">
                     <StarRating
                       rating={Number($bookInfo.rating)}
                       size={20}
                       gap={6}
                     />
                     <span
-                      class="ml-9 pt-2 text-18 font-bookerly leading-18 text-[#1e1915] font-600"
+                      class="ml-9 pt-3 text-15 font-bookerly leading-18 text-[#1e1915] font-400"
                     >
                       {$bookInfo.rating}
                     </span>
@@ -1037,29 +1064,49 @@
               {/if}
             </div>
             <div class="w-full py-6 flex justify-center items-baseline">
-              <button class="btn-menu" onclick={() => translateContent()}>
+              <button
+                class="btn-menu"
+                aria-label="Translate highlight"
+                onclick={() => translateContent()}
+              >
                 <MaterialSymbolsTranslateRounded width="15" height="15" />
               </button>
 
-              <button class="btn-menu" onclick={copyBookMarkToClipboard}>
+              <button
+                class="btn-menu"
+                aria-label="Copy highlight"
+                onclick={copyBookMarkToClipboard}
+              >
                 <MaterialSymbolsContentCopyOutlineRounded
                   width="15"
                   height="15"
                 />
               </button>
 
-              <button class="btn-menu" onclick={getRandomBookmark}>
+              <button
+                class="btn-menu"
+                aria-label="Random highlight"
+                onclick={getRandomBookmark}
+              >
                 <MaterialSymbolsShuffleRounded width="15" height="15" />
               </button>
 
-              <button class="btn-menu" onclick={handleShowEdit}>
+              <button
+                class="btn-menu"
+                aria-label="Edit highlight"
+                onclick={handleShowEdit}
+              >
                 <MaterialSymbolsEditSquareOutlineRounded
                   width="15"
                   height="15"
                 />
               </button>
 
-              <button class="btn-menu" onclick={showInsertBookmark}>
+              <button
+                class="btn-menu"
+                aria-label="Import highlights"
+                onclick={showInsertBookmark}
+              >
                 <MaterialSymbolsDatabaseUploadOutlineRounded
                   width="15"
                   height="15"
@@ -1068,6 +1115,7 @@
 
               <button
                 class="btn-menu"
+                aria-label="Delete highlight"
                 onclick={() => (showDelete = !showDelete)}
               >
                 <MaterialSymbolsDeleteForeverOutlineRounded
@@ -1082,18 +1130,18 @@
           class="pageButton"
           aria-label="pageButton"
           onclick={handleGetPrevBookmark}
-          disabled={keyPressed || isRandomed}
-          class:disabled={keyPressed || isRandomed}
+          disabled={keyPressed}
+          class:disabled={keyPressed}
         ></button>
       </div>
     </div>
 
     {#if tweenCover.current < -90}
-      {#each flipPages as item}
+      {#each flipPages as item (item.id)}
         <HighlightPage
           data={item}
-          innerWidth={pageWidth() / 2 - 12 - 112}
-          innerHeight={pageHeight() - 24 - 96}
+          innerWidth={pageWidth / 2 - 12 - 112}
+          innerHeight={pageHeight - 24 - 96}
           length={flipPages.length}
           handleFlip={handleFlipPage}
         />
@@ -1111,14 +1159,15 @@
         class="pageButton"
         aria-label="pageButton"
         onclick={handleGetNextBookmark}
-        disabled={keyPressed || isRandomed}
-        class:disabled={keyPressed || isRandomed}
+        disabled={keyPressed}
+        class:disabled={keyPressed}
       >
       </button>
     </div>
 
     <button
       class="ribbon {tweenRibbon.current > 150 ? 'ribbonLong' : 'ribbonShort'}"
+      aria-label="Bookmark"
       style="height: {tweenRibbon.current}px; {tweenRibbon.current > 21
         ? 'box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); z-index: 999;'
         : 'z-index: 3;'}"
@@ -1175,7 +1224,7 @@
   {/if}
 </Container>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />
 
 <style lang="postcss">
   .book {

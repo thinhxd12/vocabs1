@@ -14,16 +14,12 @@
     listCardContent,
     listCardCount,
     scheduler,
-    // timezone,
   } from "$lib/store/layoutstore";
   import BiTranslate from "~icons/bi/translate";
   import { fly } from "svelte/transition";
   import { onDestroy, onMount } from "svelte";
   import type { WikiTranslationType } from "$lib/types";
   import { format } from "date-fns";
-  // import { enhance } from "$app/forms";
-  import { saveUserSetting } from "$lib/store/localstore";
-  // import RiMagicFill from "~icons/ri/magic-fill";
   import PhListStar from "~icons/ph/list-star";
   import MaterialSymbolsVolumeUpRounded from "~icons/material-symbols/volume-up-rounded";
   import Circle from "$lib/components/Circle.svelte";
@@ -44,7 +40,6 @@
   let translations = $state<WikiTranslationType[]>([]);
   let showTranslate = $state<boolean>(false);
   let activedButton = $state<number>(0);
-  // let startTime = $state<number>(0);
   let isDisabled = $state<boolean>(false);
   let numberWords = $state<number>(12);
   let clickTimeout: ReturnType<typeof setTimeout>;
@@ -107,7 +102,6 @@
     let { id, word, created_at, ...card } = $listCardContent[$listCardCount];
     if (!card.due) card = createEmptyCard();
     previews = $scheduler.repeat(card, new Date());
-    // startTime = Date.now();
   }
 
   async function handleRate(card: Card | CardInput, rate: Grade) {
@@ -144,24 +138,6 @@
         message: error.message as string,
       });
 
-    // SaveLog
-    // const duration = Date.now() - startTime;
-    // const { error: errorLog } = await layoutData.supabase
-    //   .from("reviewlogs_table")
-    //   .insert({
-    //     review_time: saved.log.review,
-    //     card_id: $listCardContent[$listCardCount].id,
-    //     review_rating: saved.log.rating,
-    //     review_duration: duration,
-    //     review_state: saved.log.state,
-    //   });
-    // if (errorLog)
-    //   addToast({
-    //     type: "error",
-    //     title: "Error!",
-    //     message: errorLog.message as string,
-    //   });
-
     handleSetNextWord();
   }
 
@@ -185,7 +161,7 @@
   }
 
   function calculateTimeDiff(due: Date) {
-    let diffMs = due.getTime() - new Date().getTime();
+    const diffMs = due.getTime() - new Date().getTime();
 
     const diffMin = Math.round(diffMs / (1000 * 60));
     const diffHour = Math.round(diffMs / (1000 * 60 * 60));
@@ -213,7 +189,7 @@
     }
   }
 
-  async function handlePlayAudio() {
+  function handlePlayAudio() {
     paused0 = true;
     src0 = `https://vocabs3.vercel.app/public/speech?text=${currentWord}`;
     paused0 = false;
@@ -256,28 +232,6 @@
     }, 150);
   }
 
-  async function setFSRSparams(data: number[]) {
-    const { error } = await layoutData.supabase
-      .from("dashboard_table")
-      .update({ fsrsparams: JSON.stringify(data) })
-      .eq("user", "thinh");
-    if (error) {
-      addToast({
-        type: "error",
-        title: "Error!",
-        message: error.message as string,
-      });
-    } else {
-      saveUserSetting();
-    }
-  }
-
-  // function handleVisibilityChange() {
-  //   if (document.visibilityState === "visible") {
-  //     startTime = Date.now();
-  //   }
-  // }
-
   async function updateTodaySchedule() {
     await getSchedule();
     getTodaySchedule();
@@ -318,11 +272,12 @@
     getTodaySchedule();
   }
 
-  function handleChangeNumber(e: any) {
+  function handleChangeNumber(e: Event) {
+    const target = e.target as HTMLInputElement;
     if (numberWords > 99) {
       numberWords = 99;
     }
-    if (e.target.value === "") {
+    if (target.value === "") {
       numberWords = 15;
     }
   }
@@ -339,52 +294,10 @@
   <meta name="fsrs" content="Free Spaced Repetition Scheduler!" />
 </svelte:head>
 
-<!-- <svelte:document onvisibilitychange={handleVisibilityChange} /> -->
-
 <audio src={src0} bind:paused={paused0} preload="auto"></audio>
 
 <Container fullscreen>
   <div class="w-[368px] flex-1 flex justify-end items-start gap-3 pt-3">
-    <!-- <form
-      method="post"
-      action="?/optimize"
-      use:enhance={({ formElement, formData, action, cancel }) => {
-        return async ({ result, update }) => {
-          if (result.type === "failure") {
-            addToast({
-              type: "error",
-              title: "Error!",
-              message: result.data?.error as string,
-            });
-          } else if (result.type === "success") {
-            addToast({
-              type: "success",
-              title: "Success!",
-              message: "Optimize successfully.",
-            });
-            setFSRSparams((result.data?.data as any)?.parameters);
-          }
-        };
-      }}
-    >
-      <input
-        type="text"
-        name="tz"
-        autocomplete="off"
-        value={$timezone}
-        hidden
-      />
-      <button
-        class="setting-button"
-        type="submit"
-        onclick={(e) => {
-          e.currentTarget.blur();
-        }}
-      >
-        <RiMagicFill width="14" height="14" />
-      </button>
-    </form> -->
-
     <button
       class="setting-button"
       onclick={(e) => {
@@ -444,14 +357,14 @@
             class="relative z-3 text-white w-full h-full overflow-y-scroll no-scrollbar px-15 pt-90 pb-15"
             style="text-shadow: 0 0 3px black;"
           >
-            {#each translations as item}
+            {#each translations as item, i (i)}
               <h3
                 class="text-16 font-800 leading-24 italic [&:not(:first-of-type)]:mt-9"
               >
                 {item.partOfSpeech}
               </h3>
 
-              {#each item.translation as el}
+              {#each item.translation as el, j (j)}
                 <p class="text-13 leading-18 indent-15 font-500">{el}</p>
               {/each}
             {/each}

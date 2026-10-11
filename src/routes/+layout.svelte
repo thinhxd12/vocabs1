@@ -52,6 +52,7 @@
 
   let videoSrc = $state<string>(videos[3].value);
   let isMuted = $state<boolean>(true);
+  let currentImage = $derived($localImageStore.data[$currentImageIndex]);
 
   onMount(() => {
     getCurrentImageBackground();
@@ -140,7 +141,7 @@
         class="btn-layout !w-36 text-center"
         name="videobg"
       >
-        {#each videos as item}
+        {#each videos as item (item.value)}
           <option value={item.value}>
             {item.label}
           </option>
@@ -219,7 +220,7 @@
   {#if $layoutSetting.showImage}
     {#if $localImageStore.data.length}
       <img
-        src={$localImageStore.data[$currentImageIndex].url}
+        src={currentImage.url}
         alt="main-layout-bg"
         class="w-full h-full object-cover"
       />
@@ -228,10 +229,10 @@
         class="absolute w-[calc(50vw-215px)] hidden md:flex flex-col items-start left-0 top-0 px-3 text-12 leading-16 text-white"
       >
         <p style="text-shadow: 0 0 3px black;" class="text-left">
-          {$localImageStore.data[$currentImageIndex].title || ""}
+          {currentImage.title || ""}
         </p>
         <p style="text-shadow: 0 0 3px black;" class="text-left">
-          {$localImageStore.data[$currentImageIndex].place || ""}
+          {currentImage.place || ""}
         </p>
       </div>
     {/if}

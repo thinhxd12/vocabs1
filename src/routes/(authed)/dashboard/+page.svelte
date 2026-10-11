@@ -68,7 +68,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       saveUserSetting();
@@ -96,14 +96,14 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       saveUserSetting();
       addToast({
         type: "success",
         title: "Success!",
-        message: "Insert successfully.",
+        message: "Delete successfully.",
       });
     }
   }
@@ -118,13 +118,13 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       saveUserSetting();
       const currentLocation = $locationList.find((item) => item.id === id);
       if (currentLocation) {
-        let param: WeatherQueryParams = {
+        const param: WeatherQueryParams = {
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
           tempUnit: "c",
@@ -160,7 +160,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       saveUserSetting();
@@ -186,7 +186,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       saveUserSetting();
@@ -194,7 +194,7 @@
         (item) => item.id === $currentLocationId,
       );
       if (currentLocation) {
-        let param: WeatherQueryParams = {
+        const param: WeatherQueryParams = {
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
           tempUnit: "c",
@@ -258,7 +258,7 @@
         </div>
       </div>
 
-      {#each $locationList as item}
+      {#each $locationList as item (item.id)}
         <div class="dashboardRow grid-cols-12">
           <span class="truncate col-span-4">{item.name}</span>
           <span class="col-span-3">{item.latitude}</span>
@@ -293,7 +293,7 @@
       onchange={(e) => setForecastModel(e.currentTarget.value)}
       class="dashboardItem w-main rounded-2 outline-none appearance-none"
     >
-      {#each modelList as item}
+      {#each modelList as item (item.value)}
         <option
           value={item.value}
           selected={item.value === $currentForecastModel}
@@ -332,7 +332,7 @@
         </div>
       </div>
 
-      {#each $yearProgressList as item}
+      {#each $yearProgressList as item (item.id)}
         <div class="dashboardRow grid-cols-9">
           <span class="col-span-4">{item.date}</span>
           <span class="col-span-4">{item.count}</span>

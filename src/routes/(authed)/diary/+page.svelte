@@ -17,8 +17,8 @@
   let { data: layoutData }: PageProps = $props();
 
   let currentPage = $state<number>(1);
-  let itemsPerPage = Math.floor(
-    (innerHeight.current! - 44 - 38 - 26 - 24) / 26,
+  let itemsPerPage = $derived(
+    Math.floor((innerHeight.current! - 44 - 38 - 26 - 24) / 26),
   );
   let totalItems = $state<number | undefined>(undefined);
   let paginationItems = $state<DBSelect["diary_table"][]>([]);
@@ -44,11 +44,12 @@
 
   onMount(async () => {
     await getTablePaginationLength();
-    getDataPaginationByIndex(1);
+    await getDataPaginationByIndex(1);
   });
 
   async function getDataPaginationByIndex(index: number) {
-    const totalPages = Math.ceil(totalItems! / itemsPerPage);
+    if (!totalItems) return;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const from = (totalPages - index) * itemsPerPage;
     const to = (totalPages - index + 1) * itemsPerPage - 1;
     const { data } = await layoutData.supabase
@@ -85,7 +86,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       await getTablePaginationLength();
@@ -103,7 +104,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       addToast({
@@ -128,7 +129,7 @@
       addToast({
         type: "error",
         title: "Error!",
-        message: error.message as string,
+        message: error.message,
       });
     } else {
       getDataPaginationByIndex(currentPage);
@@ -172,7 +173,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each paginationItems as item}
+        {#each paginationItems as item (item.id)}
           <tr
             class="bg-white/90 hover:bg-white w-full h-24 mb-12 text-12 leading-14 cursor-pointer"
             onclick={(e) => {
@@ -260,9 +261,6 @@
         autocomplete="off"
         onkeydown={(e) => e.stopPropagation()}
         bind:value={editItem.text}
-        onchange={(e) => {
-          e.preventDefault();
-        }}
       ></textarea>
     </div>
   </Modal>

@@ -15,6 +15,7 @@ import { fsrs } from "ts-fsrs";
 export const highlight = writable<HighlightType | undefined>();
 export const currentHighlightId = writable<string>("");
 export const bookInfo = writable<BookDetailType | undefined>();
+export const bookInfoCache = new Map<string, BookDetailType | undefined>();
 
 export const currentMode = writable<"focus" | "shortbreak" | "longbreak">(
   "focus",

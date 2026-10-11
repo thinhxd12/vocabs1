@@ -5,7 +5,7 @@ import type { DBInsert } from "$lib/types";
 import { v7 as uuidv7 } from "uuid";
 
 export const actions = {
-  setProgress: async ({ cookies, request, locals: { supabase } }) => {
+  setProgress: async ({ request, locals: { supabase } }) => {
     const formData = await request.formData();
     const count0 = formData.get("count0") as string;
     const count1 = formData.get("count1") as string;
@@ -20,17 +20,17 @@ export const actions = {
       });
     }
 
-    try {
-      await supabase
-        .from("schedule_table")
-        .update({ date: date0 ? new Date(date0) : null, count: Number(count0) })
-        .eq("id", id0);
+    const { error: error0 } = await supabase
+      .from("schedule_table")
+      .update({ date: date0 ? new Date(date0) : null, count: Number(count0) })
+      .eq("id", id0);
 
-      await supabase
-        .from("schedule_table")
-        .update({ date: date1 ? new Date(date1) : null, count: Number(count1) })
-        .eq("id", id1);
-    } catch (error) {
+    const { error: error1 } = await supabase
+      .from("schedule_table")
+      .update({ date: date1 ? new Date(date1) : null, count: Number(count1) })
+      .eq("id", id1);
+
+    if (error0 || error1) {
       return fail(422, { error: "Update error" });
     }
     return {
@@ -49,10 +49,11 @@ export const actions = {
       .select("*")
       .order("id", { ascending: false })
       .limit(1);
-    const lastWeekIndex = lastProgress[0].index;
-    const { count: lengthVocabTable } = await supabase
+    const lastWeekIndex = lastProgress?.[0]?.index ?? 0;
+    const { count } = await supabase
       .from("vocab_table")
       .select("*", { count: "exact", head: true });
+    const lengthVocabTable = count ?? 0;
 
     await supabase.from("schedule_table").delete().gte("count", 0);
 
@@ -82,7 +83,7 @@ export const actions = {
         index: thisWeekIndex + pattern[i % pattern.length],
       };
       const { error } = await supabase.from("schedule_table").insert(row);
-      if (error) throw fail(422, { error: "Error" });
+      if (error) return fail(422, { error: "Error" });
     }
     return {
       type: "success",

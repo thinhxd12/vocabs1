@@ -7,21 +7,22 @@ import {
 import { v7 as uuidv7 } from "uuid";
 
 export const actions = {
-  editBookmark: async ({ cookies, request, locals: { supabase } }) => {
+  editBookmark: async ({ request, locals: { supabase } }) => {
     const formData = await request.formData();
     const id = formData.get("id") as string;
     const bookTile = formData.get("bookTile") as string;
     const authors = formData.get("authors") as string;
     const dateOfCreation = formData.get("dateOfCreation") as string;
     const content = formData.get("content") as string;
-    const like = formData.get("like") as string;
+    const like = Number(formData.get("like"));
 
     if (
       id === "" ||
       bookTile === "" ||
       authors === "" ||
       dateOfCreation === "" ||
-      content === ""
+      content === "" ||
+      !Number.isFinite(like)
     )
       return fail(422, { error: "Invalid data" });
 
@@ -32,12 +33,12 @@ export const actions = {
         authors,
         dateOfCreation,
         content,
-        like: Number(like),
+        like,
       })
       .eq("id", id);
 
     if (error) {
-      return fail(422, { error: error.data.message });
+      return fail(422, { error: error.message });
     } else
       return {
         type: "success",
@@ -47,7 +48,7 @@ export const actions = {
         },
       } as ActionResult;
   },
-  insertBookmark: async ({ cookies, request, locals: { supabase } }) => {
+  insertBookmark: async ({ request, locals: { supabase } }) => {
     const formData = await request.formData();
     const content = formData.get("content") as string;
 
@@ -58,21 +59,19 @@ export const actions = {
 
     if (parsedEntries.length === 0) return fail(422, { error: "Invalid data" });
 
-    for (let i = 0; i < parsedEntries.length; i++) {
-      const row = {
-        authors: parsedEntries[i].authors,
-        bookTile: parsedEntries[i].bookTile,
-        page: parsedEntries[i].page,
-        location: parsedEntries[i].location,
-        dateOfCreation: parsedEntries[i].dateOfCreation,
-        content: parsedEntries[i].content,
-        type: parsedEntries[i].type,
-        id: uuidv7(),
-      };
+    const rows = parsedEntries.map((entry) => ({
+      authors: entry.authors,
+      bookTile: entry.bookTile,
+      page: entry.page,
+      location: entry.location,
+      dateOfCreation: entry.dateOfCreation,
+      content: entry.content,
+      type: entry.type,
+      id: uuidv7(),
+    }));
 
-      const { error } = await supabase.from("bookmark_table").insert(row);
-      if (error) throw fail(422, { error: "Error" });
-    }
+    const { error } = await supabase.from("bookmark_table").insert(rows);
+    if (error) return fail(422, { error: error.message });
 
     return {
       type: "success",

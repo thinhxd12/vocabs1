@@ -1,5 +1,4 @@
 {
-  "plugin": [
-    "@sveltejs/opencode"
-  ]
+  "plugin": ["@sveltejs/opencode"],
+  "session.permissions": "autoaccept"
 }

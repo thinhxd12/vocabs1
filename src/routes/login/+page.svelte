@@ -19,9 +19,9 @@
     name="signin"
     action="/login"
     method="post"
-    use:enhance={({ formElement, formData, action, cancel }) => {
+    use:enhance={() => {
       creating = true;
-      return async ({ result, update }) => {
+      return async ({ update }) => {
         await update();
         creating = false;
       };
