@@ -26,6 +26,7 @@ export default {
         tupa: ["Tupa Nova", "sans-serif"],
         copernicus: ["Copernicus", "sans-serif"],
         proxima: ["Proxima Nova", "sans-serif"],
+        bookerly: ["Bookerly", "sans-serif"],
       },
       fontSize: (theme) => ({
         ...theme("spacing"),

@@ -889,7 +889,7 @@
           {:else}
             <div class="w-full h-full flex items-center p-60">
               <p
-                class="text-[#d0c9c5] text-500 text-45 leading-50 font-copernicus"
+                class="text-[#d0c9c5] text-500 text-45 leading-50 font-bookerly"
               >
                 take a small step every day
               </p>
@@ -923,7 +923,7 @@
 
                 {#if $bookInfo.title}
                   <p
-                    class="mt-12 mb-3 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
+                    class="mt-12 mb-3 text-18 font-bookerly leading-28 text-[#1e1915] font-500 text-center"
                   >
                     {$bookInfo.title}
                   </p>
@@ -931,7 +931,7 @@
 
                 {#if $bookInfo.authors}
                   <p
-                    class="mb-3 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
+                    class="mb-3 text-14 font-bookerly leading-18 text-[#1e1915] font-300 text-center"
                   >
                     {$bookInfo.authors.join(", ")}
                   </p>
@@ -945,7 +945,7 @@
                       gap={6}
                     />
                     <span
-                      class="ml-9 pt-9 text-18 font-copernicus leading-16 text-[#1e1915] font-600"
+                      class="ml-9 pt-2 text-18 font-bookerly leading-18 text-[#1e1915] font-600"
                     >
                       {$bookInfo.rating}
                     </span>
@@ -1017,12 +1017,12 @@
                 {/if}
               {:else if $highlight}
                 <p
-                  class="mt-12 mb-6 text-18 font-copernicus leading-28 text-[#1e1915] font-600 text-center"
+                  class="mt-12 mb-6 text-18 font-bookerly leading-28 text-[#1e1915] font-600 text-center"
                 >
                   {$highlight.bookTile}
                 </p>
                 <p
-                  class="mb-6 text-14 font-copernicus leading-18 text-[#1e1915] font-400 text-center"
+                  class="mb-6 text-14 font-bookerly leading-18 text-[#1e1915] font-400 text-center"
                 >
                   {$highlight.authors}
                 </p>
@@ -1349,7 +1349,7 @@
   }
 
   .ribbonContent {
-    font-family: "Copernicus", sans-serif;
+    font-family: "bookerly", sans-serif;
     font-size: 27px;
     color: #ffffff;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
